@@ -21,7 +21,6 @@ import javax.swing.JPanel;
 import com.exchangeinfomanager.News.CreateNewsWithFurtherOperationDialog.AddController;
 import com.exchangeinfomanager.NodesServices.SvsForNodeOfBanKuai;
 import com.exchangeinfomanager.NodesServices.SvsForNodeOfStock;
-import com.exchangeinfomanager.Services.ServicesForNews;
 import com.exchangeinfomanager.Tag.Tag;
 import com.exchangeinfomanager.TagManagment.TagSearchOnNewsTableModel;
 import com.exchangeinfomanager.TagManagment.TagSearchOnNodesTableModel;

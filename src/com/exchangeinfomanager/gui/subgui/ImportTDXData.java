@@ -361,14 +361,10 @@ public class ImportTDXData extends JDialog {
 				long end=System.currentTimeMillis(); //获取结束时间
 				System.out.println("......导入网易股票数据结束" + LocalTime.now()  + ".....导入耗费时间： "+(end-start)+"ms \r\n");
 				List<String> lines = Files.readLines(resulttmpfilenetease, sysconfig.charSet());
-				for (String line : lines) {
+				for (String line : lines) 
 		        	tfldresult.append(line+"\n");
-		        }
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (java.lang.NullPointerException e) {
-				e.printStackTrace();
-			}
+			} catch (IOException e) {	e.printStackTrace();
+			} catch (java.lang.NullPointerException e) {e.printStackTrace();	}
 			ckbxnetease.setEnabled(false);
 		}
 		
@@ -389,7 +385,7 @@ public class ImportTDXData extends JDialog {
 			System.out.println("......导入大智慧板块信息结束" + LocalTime.now()  + ".....导入耗费时间： "+(end-start)+"ms \r\n");
 		}
 		
-//		if(ckbxtushare.isSelected()) { //导入TUSHARE的数据
+//		if(chkbximportgudong.isSelected()) { //导入TUSHARE的股东数据
 //			String pythoninterpreter = sysconfig.getPythonInterpreter();
 //			String pythonscripts = sysconfig.getPythonScriptsPath ();
 //			String cmd = pythoninterpreter + "/python.exe" + "   " + pythonscripts + "exportdailydata.py\"" ;
@@ -400,60 +396,16 @@ public class ImportTDXData extends JDialog {
 //				e.printStackTrace();
 //			}
 //		}
-		
+		if(chkbximportgudong.isSelected()) { //导入TUSHARE的股东数据
+			System.out.println("------导入股东信息开始" + LocalTime.now() );
+			long start=System.currentTimeMillis(); //获取开始时间
+			bkdbopt.refreshGuDongData (true);
+			long end=System.currentTimeMillis(); //获取结束时间
+			System.out.println("......导入股东信息结束" + LocalTime.now()  + ".....导入耗费时间： "+(end-start)+"ms \r\n");
+		}
 
 	}
 	
-//	private void queKouTongJi ()
-//	{
-////		ArrayList<Stock> allstocks = bkdbopt.getAllStocks ();
-////		for (Stock stock : allstocks ) {
-////		    
-////
-////		}
-//		
-//		LocalDate lastestdate = bkdbopt.getLatestTDXNodeQueKouDate ();
-//		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.allbksks.getAllBkStocksTree().getModel().getRoot();
-//		int bankuaicount = allbksks.getAllBkStocksTree().getModel().getChildCount(treeroot);
-//        
-////		TDXNodes childnode1 = (TDXNodes) allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode("300017", BkChanYeLianTreeNode.TDXGG);
-////		bkdbopt.tDXNodeQueKouInfo((TDXNodes) childnode1 , lastestdate.plusDays(1));
-//		
-//		for(int i=0;i< bankuaicount; i++) {
-//			
-//			BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode) this.allbksks.getAllBkStocksTree().getModel().getChild(treeroot, i);
-//			if(childnode.getType() != BkChanYeLianTreeNode.TDXGG) 
-//				continue;
-//			
-//		
-//			bkdbopt.tDXNodeQueKouInfo((TDXNodes) childnode , lastestdate.plusDays(1));
-//		}
-//
-//
-//	}
-
-//	private void importEastMoneyExportFile()
-//	{
-//		String parsedpath = sysconfig.getEastMoneyDownloadedFilePath ();
-//		JFileChooser chooser = new JFileChooser();
-//		chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-//		chooser.setCurrentDirectory(new File(parsedpath) );
-//		
-//		if(chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION){
-//		    
-//		    String linuxpath;
-//		    if(chooser.getSelectedFile().isDirectory())
-//		    	linuxpath = (chooser.getSelectedFile()+ "\\").replace('\\', '/');
-//		    else
-//		    	linuxpath = (chooser.getSelectedFile()).toString().replace('\\', '/');
-//		    
-//		    File emfile = chooser.getSelectedFile();
-//		    bkdbopt.importEastMoneyStockData (emfile);
-//
-//		}
-//		
-//		
-//	}
 	/*
 	 * 
 	 */
@@ -807,6 +759,7 @@ public class ImportTDXData extends JDialog {
 	private JCheckBox ckbxbuquanshuju;
 	private JLabel lblbqsjshijianduan;
 	private JCheckBox chckbximportdzhbk;
+	private JCheckBox chkbximportgudong;
 	
 	private void initializeGui() 
 	{
@@ -888,6 +841,8 @@ public class ImportTDXData extends JDialog {
 		lblbqsjshijianduan = new JLabel(" ");
 		
 		chckbximportdzhbk = new JCheckBox("\u5BFC\u5165\u5927\u667A\u6167\u677F\u5757\u548C\u4E2A\u80A1\u4FE1\u606F");
+		
+		chkbximportgudong = new JCheckBox("\u5BFC\u5165\u80A1\u4E1C\u6570\u636E(\u6BCF\u5B63\u5EA6\u5BFC\u5165\u4E00\u6B21\u5373\u53EF)");
 		GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
 		gl_contentPanel.setHorizontalGroup(
 			gl_contentPanel.createParallelGroup(Alignment.LEADING)
@@ -900,7 +855,7 @@ public class ImportTDXData extends JDialog {
 					.addGap(7)
 					.addComponent(chbximportcym)
 					.addGap(36)
-					.addComponent(progressBar, GroupLayout.DEFAULT_SIZE, 322, Short.MAX_VALUE)
+					.addComponent(progressBar, GroupLayout.DEFAULT_SIZE, 328, Short.MAX_VALUE)
 					.addContainerGap())
 				.addGroup(gl_contentPanel.createSequentialGroup()
 					.addGap(7)
@@ -922,32 +877,32 @@ public class ImportTDXData extends JDialog {
 					.addGap(7)
 					.addComponent(chbxdaorutdxsysbkvol)
 					.addGap(21)
-					.addComponent(progressBar_2, GroupLayout.DEFAULT_SIZE, 457, Short.MAX_VALUE)
+					.addComponent(progressBar_2, GroupLayout.DEFAULT_SIZE, 463, Short.MAX_VALUE)
 					.addContainerGap())
 				.addGroup(gl_contentPanel.createSequentialGroup()
 					.addGap(7)
 					.addComponent(cbxImportSzGeGuVol)
 					.addGap(10)
-					.addComponent(progressBar_4, GroupLayout.DEFAULT_SIZE, 480, Short.MAX_VALUE)
+					.addComponent(progressBar_4, GroupLayout.DEFAULT_SIZE, 486, Short.MAX_VALUE)
 					.addContainerGap())
 				.addGroup(gl_contentPanel.createSequentialGroup()
 					.addGap(7)
 					.addComponent(cbxImportShGeGuVol)
 					.addGap(14)
-					.addComponent(progressBar_3, GroupLayout.DEFAULT_SIZE, 476, Short.MAX_VALUE)
+					.addComponent(progressBar_3, GroupLayout.DEFAULT_SIZE, 482, Short.MAX_VALUE)
 					.addContainerGap())
 				.addGroup(gl_contentPanel.createSequentialGroup()
 					.addGap(7)
 					.addComponent(ckbxnetease)
 					.addGap(8)
-					.addComponent(cbximportoptions, 0, 410, Short.MAX_VALUE)
+					.addComponent(cbximportoptions, 0, 416, Short.MAX_VALUE)
 					.addContainerGap())
 				.addGroup(gl_contentPanel.createSequentialGroup()
 					.addGap(7)
 					.addComponent(chkbxforenotimportatwork))
 				.addGroup(gl_contentPanel.createSequentialGroup()
 					.addGap(7)
-					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 689, Short.MAX_VALUE)
+					.addComponent(scrollPane)
 					.addContainerGap())
 				.addGroup(gl_contentPanel.createSequentialGroup()
 					.addGap(15)
@@ -960,7 +915,7 @@ public class ImportTDXData extends JDialog {
 					.addComponent(lblNewLabel_6)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(lblbqsjshijianduan)
-					.addContainerGap(211, Short.MAX_VALUE))
+					.addContainerGap(259, Short.MAX_VALUE))
 				.addGroup(gl_contentPanel.createSequentialGroup()
 					.addContainerGap()
 					.addComponent(separator, GroupLayout.PREFERRED_SIZE, 692, GroupLayout.PREFERRED_SIZE)
@@ -968,6 +923,10 @@ public class ImportTDXData extends JDialog {
 				.addGroup(gl_contentPanel.createSequentialGroup()
 					.addContainerGap()
 					.addComponent(chckbximportdzhbk)
+					.addContainerGap(531, Short.MAX_VALUE))
+				.addGroup(gl_contentPanel.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(chkbximportgudong)
 					.addContainerGap(597, Short.MAX_VALUE))
 		);
 		gl_contentPanel.setVerticalGroup(
@@ -1022,7 +981,9 @@ public class ImportTDXData extends JDialog {
 						.addComponent(cbximportoptions, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(chckbximportdzhbk)
-					.addGap(77)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(chkbximportgudong)
+					.addGap(52)
 					.addComponent(separator, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)

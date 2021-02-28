@@ -13,8 +13,8 @@ import javax.swing.JLabel;
 import com.exchangeinfomanager.News.InsertedNews;
 import com.exchangeinfomanager.News.News;
 import com.exchangeinfomanager.News.NewsCache;
+import com.exchangeinfomanager.News.ServicesForNews;
 import com.exchangeinfomanager.News.ExternalNewsType.ExternalNewsType;
-import com.exchangeinfomanager.Services.ServicesForNews;
 import com.exchangeinfomanager.guifactory.JLabelFactory;
 import com.exchangeinfomanager.tongdaxinreport.TDXFormatedOpt;
 

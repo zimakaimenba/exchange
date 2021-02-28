@@ -1,12 +1,9 @@
-package com.exchangeinfomanager.Services;
+package com.exchangeinfomanager.News;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Collection;
 
-import com.exchangeinfomanager.News.InsertedNews;
-import com.exchangeinfomanager.News.News;
-import com.exchangeinfomanager.News.NewsCache;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
 public interface ServicesForNews 

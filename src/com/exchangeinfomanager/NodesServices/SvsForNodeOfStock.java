@@ -10,7 +10,6 @@ import java.util.Set;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 
-import com.exchangeinfomanager.Services.ServicesForNode;
 import com.exchangeinfomanager.ServicesOfDisplayNodeInfo.DisPlayNodeSuoShuBanKuaiListServices;
 import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
 import com.exchangeinfomanager.Trees.CreateExchangeTree;
@@ -24,11 +23,13 @@ import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.ServicesForNode;
+import com.exchangeinfomanager.nodes.ServicesOfNodeStock;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.TDXNodesXPeriodExternalData;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 
-public class SvsForNodeOfStock implements ServicesForNode
+public class SvsForNodeOfStock implements ServicesForNode, ServicesOfNodeStock
 {
 	private BanKuaiAndStockTree allbkstk;
 	private BanKuaiDbOperation bkdbopt;
@@ -81,6 +82,11 @@ public class SvsForNodeOfStock implements ServicesForNode
 		return node;
 	}
 
+	public BkChanYeLianTreeNode getStockGuDong(Stock node, String gudongtype ,LocalDate requiredstart, LocalDate requiredend)
+	{
+		node = bkdbopt.getStockGuDong (node, gudongtype, requiredstart, requiredend);
+		return node;
+	} 
 //	@Override
 //	public Collection<BkChanYeLianTreeNode> getRequiredSubSetOfTheNodes(Set<String> subtypesset) 
 //	{

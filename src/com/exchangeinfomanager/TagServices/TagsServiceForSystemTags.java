@@ -7,9 +7,9 @@ import java.util.Map;
 import java.util.Set;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.News.News;
-import com.exchangeinfomanager.Services.TagService;
 import com.exchangeinfomanager.Tag.InsertedTag;
 import com.exchangeinfomanager.Tag.Tag;
+import com.exchangeinfomanager.Tag.TagService;
 
 
 public class TagsServiceForSystemTags implements TagService  

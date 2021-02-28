@@ -3,7 +3,6 @@ package com.exchangeinfomanager.News;
 import java.sql.SQLException;
 import java.util.Collection;
 
-import com.exchangeinfomanager.Services.ServicesForNewsLabel;
 import com.exchangeinfomanager.database.StockCalendarAndNewDbOperation;
 
 public class NewsLabelServices implements ServicesForNewsLabel

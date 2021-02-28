@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.Services;
+package com.exchangeinfomanager.nodes;
 
 import java.util.List;
 import java.util.Map;

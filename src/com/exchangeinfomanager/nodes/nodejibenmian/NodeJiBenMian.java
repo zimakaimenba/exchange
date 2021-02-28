@@ -25,6 +25,7 @@ public class NodeJiBenMian
 			private String keHuCustom;
 			private String suoshujiaoyisuo;
 			private Object[][] zdgzmrmcykRecords;
+			private Object[][] gudonginfo;
 			private List<BkChanYeLianTreeNode> cylinfo;
 			
 			
@@ -119,12 +120,19 @@ public class NodeJiBenMian
 			public void setZdgzmrmcykRecords(Object[][] zdgzmrmcykRecords) {
 				this.zdgzmrmcykRecords = zdgzmrmcykRecords;
 			}
+			public Object[][] getGuDongInfo() {
+				return gudonginfo;
+			}
+			public void setGuDongInfo(Object[][] gdRecords) {
+				this.gudonginfo = gdRecords;
+			}
+			
 			/**
 			 * @return the zdgzmrmcykRecords
 			 */
-			public Object[][] getZdgzMrmcZdgzYingKuiRecords() {
-				return zdgzmrmcykRecords;
-			}
+//			public Object[][] getZdgzMrmcZdgzYingKuiRecords() {
+//				return zdgzmrmcykRecords;
+//			}
 			public void setChanYeLianInfo(List<BkChanYeLianTreeNode> result)
 			{
 				this.cylinfo = result;

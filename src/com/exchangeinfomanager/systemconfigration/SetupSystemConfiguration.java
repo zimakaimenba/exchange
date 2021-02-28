@@ -970,6 +970,11 @@ public class SetupSystemConfiguration
 		{
 			return this.dzhinstalledpath  + "/data/B$/block/";
 		}
+		public String getGuDongInfoCsvFile() 
+		{
+//			return this.systeminstalledpath  + "/dailydata/tushare/shareholder";
+			return "E:/stock/stockmanager/dailydata/tushare/shareholder";
+		}
 
 }
 
@@ -989,9 +994,7 @@ class TDXExportLineProcessor implements LineProcessor<List<String>>
     	else if(found == true && rowneedtoreadnum !=0) { //找到，开始读，共读rowneedtoreadnum行
     		stocklists.add(line);
     		rowneedtoreadnum --;
-    	} else if(found == true && rowneedtoreadnum ==0) {
-    		
-    	}
+    	} else if(found == true && rowneedtoreadnum ==0) {}
     		
     		
     	return true;

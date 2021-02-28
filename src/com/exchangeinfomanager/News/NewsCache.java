@@ -7,8 +7,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.exchangeinfomanager.Services.ServicesForNews;
-import com.exchangeinfomanager.Services.ServicesForNewsLabel;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
 public class NewsCache 

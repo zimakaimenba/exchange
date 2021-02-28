@@ -1,11 +1,9 @@
-package com.exchangeinfomanager.Services;
+package com.exchangeinfomanager.Tag;
 
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Set;
 
-import com.exchangeinfomanager.Tag.InsertedTag;
-import com.exchangeinfomanager.Tag.Tag;
 import com.exchangeinfomanager.TagServices.TagCache;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 

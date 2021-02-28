@@ -1,11 +1,7 @@
-package com.exchangeinfomanager.Services;
+package com.exchangeinfomanager.nodes;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
-
-import com.exchangeinfomanager.nodes.BanKuai;
-import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.nodes.StockOfBanKuai;
 
 public interface ServicesForNodeBanKuai 
 {

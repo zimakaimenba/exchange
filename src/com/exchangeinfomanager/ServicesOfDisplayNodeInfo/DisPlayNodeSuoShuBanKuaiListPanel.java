@@ -12,7 +12,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.Element;
 
-import com.exchangeinfomanager.Services.ServicesOfNodeJiBenMianInfo;
+import com.exchangeinfomanager.nodes.nodejibenmian.ServicesOfNodeJiBenMianInfo;
 
 public class DisPlayNodeSuoShuBanKuaiListPanel  extends DisplayNodeInfoPanel 
 {

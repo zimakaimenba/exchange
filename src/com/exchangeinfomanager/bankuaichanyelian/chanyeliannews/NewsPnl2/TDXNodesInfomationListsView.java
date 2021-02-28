@@ -34,7 +34,7 @@ import javax.swing.table.TableRowSorter;
 import com.exchangeinfomanager.News.InsertedNews;
 import com.exchangeinfomanager.News.News;
 import com.exchangeinfomanager.News.NewsCache;
-import com.exchangeinfomanager.Services.ServicesForNews;
+import com.exchangeinfomanager.News.ServicesForNews;
 import com.exchangeinfomanager.StockCalendar.View;
 import com.exchangeinfomanager.TagManagment.JDialogForTagSearchMatrixPanelForAddNewsToNode;
 

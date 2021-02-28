@@ -20,6 +20,7 @@ import java.time.format.DateTimeFormatter;
 
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.commonlib.ScrollUtil;
+import com.exchangeinfomanager.commonlib.Season;
 import com.exchangeinfomanager.commonlib.SystemAudioPlayed;
 import com.exchangeinfomanager.commonlib.TableCellListener;
 
@@ -35,17 +36,16 @@ import com.exchangeinfomanager.News.News;
 import com.exchangeinfomanager.News.NewsCache;
 import com.exchangeinfomanager.News.NewsLabelServices;
 import com.exchangeinfomanager.News.NewsServices;
+import com.exchangeinfomanager.News.ServicesForNewsLabel;
 import com.exchangeinfomanager.NodesServices.SvsForNodeOfBanKuai;
 import com.exchangeinfomanager.NodesServices.SvsForNodeOfDaPan;
 import com.exchangeinfomanager.NodesServices.SvsForNodeOfStock;
 import com.exchangeinfomanager.Search.SearchDialog;
-import com.exchangeinfomanager.Services.ServicesForNewsLabel;
-import com.exchangeinfomanager.Services.ServicesForNode;
 import com.exchangeinfomanager.Services.ServicesOfPaoMaDeng;
 
 import com.exchangeinfomanager.ServicesOfDisplayNodeInfo.DisPlayNodeSuoShuBanKuaiListPanel;
 import com.exchangeinfomanager.ServicesOfDisplayNodeInfo.DisPlayNodeSuoShuBanKuaiListServices;
-
+import com.exchangeinfomanager.ServicesOfDisplayNodeInfo.DisplayNodeGuDongInfoServices;
 import com.exchangeinfomanager.ServicesOfDisplayNodeInfo.DisplayNodeInfoPanel;
 import com.exchangeinfomanager.ServicesOfDisplayNodeInfo.DisplayNodeJiBenMianService;
 import com.exchangeinfomanager.ServicesOfDisplayNodeInfo.DisplayNodesRelatedNewsServices;
@@ -128,6 +128,7 @@ import com.exchangeinfomanager.tongdaxinreport.*;
 import com.google.common.base.Strings;
 
 import com.exchangeinfomanager.database.*;
+import com.exchangeinfomanager.gudong.JiGouService;
 import com.exchangeinfomanager.gui.subgui.BuyCheckListTreeDialog;
 import com.exchangeinfomanager.gui.subgui.BuyStockNumberPrice;
 import com.exchangeinfomanager.gui.subgui.DateRangeSelectPnl;
@@ -136,6 +137,8 @@ import com.exchangeinfomanager.gui.subgui.ImportTDXData;
 import com.exchangeinfomanager.gui.subgui.PaoMaDeng2;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.ServicesForNode;
+import com.exchangeinfomanager.nodes.ServicesOfNodeStock;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.TDXNodes;
@@ -168,6 +171,7 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Logger;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -194,6 +198,7 @@ import javax.swing.JComboBox;
 import java.awt.BorderLayout;
 import javax.swing.BoxLayout;
 import javax.swing.JSplitPane;
+import javax.swing.ListSelectionModel;
 
 
 public class StockInfoManager 
@@ -1006,6 +1011,21 @@ public class StockInfoManager
 				refreshChiCangAccountPanel ();
 			}
 		});
+		mntmShezhijigou.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent arg0)
+			{
+				int rowIndex = tablegudong.getSelectedRow();
+				String gudongname = (String)((DefaultTableModel)tablegudong.getModel()).getValueAt(rowIndex, 0);
+				String result = (String)JOptionPane.showInputDialog(null,"定义机构名",gudongname, JOptionPane.QUESTION_MESSAGE,null,null , gudongname);
+				if(result == null)
+					 return;
+				
+				JiGouService svsjg = new JiGouService ();
+				svsjg.addJiGou(result.replaceAll(" ", ""));
+ 				return;
+			}	
+		});
+
 		/*
 		 * 挂单成交
 		 */
@@ -1013,11 +1033,8 @@ public class StockInfoManager
 
 			public void mousePressed(MouseEvent arg0)
 			{
-				//logger.debug("popup");
 				int rowIndex = tblzhongdiangz.getSelectedRow();
-				
 				String actiontype = (String)((DefaultTableModel)tblzhongdiangz.getModel()).getValueAt(rowIndex, 1);
-				
  				String actiondate = (String)((DefaultTableModel)tblzhongdiangz.getModel()).getValueAt(rowIndex, 0);
  				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
  				LocalDateTime ldactiondate = LocalDateTime.parse(actiondate, formatter);
@@ -1909,12 +1926,7 @@ public class StockInfoManager
 		DisplayNodesRelatedNewsServices svsnews = new DisplayNodesRelatedNewsServices (this.nodeshouldbedisplayed);
 		svsnews.setTimeRangeForInfoRange(LocalDate.now().minusMonths(12), LocalDate.now());
 		DisplayNodeInfoPanel newspnl = new DisplayNodeInfoPanel (svsnews);
-		
 		pnlextrainfo.add (newspnl);
-
-//		editorPanenodeinfo.displayJSTestHtml();
-//		editorPanenodeinfo.displayChanYeLianNewsHtml (nodeshouldbedisplayed);
-//		editorPanenodeinfo.displayChanYeLianInfo(nodeshouldbedisplayed);
 	}
 
 
@@ -2012,53 +2024,30 @@ public class StockInfoManager
 	
 	private void displayStockJibenmianInfotoGui() 
 	{
-		ServicesForNode svsnode;
-		if(nodeshouldbedisplayed.getType() == BkChanYeLianTreeNode.TDXBK) {
-			 svsnode = new SvsForNodeOfBanKuai ();
-		} else
-			 svsnode = new SvsForNodeOfStock ();
+		ServicesForNode svsnode = ((TDXNodes)nodeshouldbedisplayed).getServicesForNode();
 		svsnode.getNodeJiBenMian(nodeshouldbedisplayed);
-		
-		try	{   
-				try {
-					txtFldStockName.setText(nodeshouldbedisplayed.getMyOwnName().trim());
-				} catch (java.lang.NullPointerException e) {
-					txtFldStockName.setText("");
-				}
-
+		svsnode = null;
+		  
+				try { txtFldStockName.setText(nodeshouldbedisplayed.getMyOwnName().trim());
+				} catch (java.lang.NullPointerException e) {txtFldStockName.setText("");}
 				
-			
-				try {
-					txtareagainiants.setText(nodeshouldbedisplayed.getNodeJiBenMian().getGainiantishi().trim());
-				} catch (java.lang.NullPointerException e) {
-					txtareagainiants.setText("");
-				}
+				try {		txtareagainiants.setText(nodeshouldbedisplayed.getNodeJiBenMian().getGainiantishi().trim());
+				} catch (java.lang.NullPointerException e) {txtareagainiants.setText("");}
 				
-				try {
-					dateChsgainian.setDate( Date.from(nodeshouldbedisplayed.getNodeJiBenMian().getGainiantishidate().atStartOfDay(ZoneId.systemDefault()).toInstant()));    
-				} catch(java.lang.NullPointerException e) {
-					dateChsgainian.setDate(null);
-				}
-				try {
-					txtfldquanshangpj.setText(nodeshouldbedisplayed.getNodeJiBenMian().getQuanshangpingji());
-				} catch(java.lang.NullPointerException e) {
-					txtfldquanshangpj.setText("");
-				}
-				try {
-					dateChsquanshang.setDate(Date.from(nodeshouldbedisplayed.getNodeJiBenMian().getQuanshangpingjidate().atStartOfDay(ZoneId.systemDefault()).toInstant()));
-				} catch(java.lang.NullPointerException e) {
-					dateChsquanshang.setDate(null);
-				}
-				try {
-					txtareafumianxx.setText(nodeshouldbedisplayed.getNodeJiBenMian().getFumianxiaoxi());
-				} catch(java.lang.NullPointerException e) {
-					txtareafumianxx.setText("");
-				}
-				try {
-					dateChsefumian.setDate( Date.from(nodeshouldbedisplayed.getNodeJiBenMian().getFumianxiaoxidate().atStartOfDay(ZoneId.systemDefault()).toInstant()) );
-				} catch(java.lang.NullPointerException e) {
-					dateChsefumian.setDate(null);
-				}
+				try {				dateChsgainian.setDate( Date.from(nodeshouldbedisplayed.getNodeJiBenMian().getGainiantishidate().atStartOfDay(ZoneId.systemDefault()).toInstant()));    
+				} catch(java.lang.NullPointerException e) {dateChsgainian.setDate(null);}
+				
+				try {	txtfldquanshangpj.setText(nodeshouldbedisplayed.getNodeJiBenMian().getQuanshangpingji());
+				} catch(java.lang.NullPointerException e) {txtfldquanshangpj.setText("");}
+				
+				try {dateChsquanshang.setDate(Date.from(nodeshouldbedisplayed.getNodeJiBenMian().getQuanshangpingjidate().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+				} catch(java.lang.NullPointerException e) {dateChsquanshang.setDate(null);}
+				
+				try {txtareafumianxx.setText(nodeshouldbedisplayed.getNodeJiBenMian().getFumianxiaoxi());
+				} catch(java.lang.NullPointerException e) {txtareafumianxx.setText("");}
+				
+				try {dateChsefumian.setDate( Date.from(nodeshouldbedisplayed.getNodeJiBenMian().getFumianxiaoxidate().atStartOfDay(ZoneId.systemDefault()).toInstant()) );
+				} catch(java.lang.NullPointerException e) {dateChsefumian.setDate(null);}
 //				try {
 //					txtfldzhengxg.setText(nodeshouldbedisplayed.getNodeJiBenMian().getZhengxiangguan());
 //				} catch(java.lang.NullPointerException e) {
@@ -2083,13 +2072,24 @@ public class StockInfoManager
 			lblStatusBarOperationIndicatior.setText("");
 			lblStatusBarOperationIndicatior.setText("相关信息查找成功");
 			
-		}catch(Exception e)
-		{
-			//JOptionPane.showMessageDialog(null,"displayInfotoGui 不可预知的错误");
-			e.printStackTrace();
-		}
-		 
-		
+			if( nodeshouldbedisplayed.getType() == BkChanYeLianTreeNode.TDXGG) {
+	       		ServicesOfNodeStock svsstk = ((Stock)nodeshouldbedisplayed).getServicesOfNodeStock();
+	       		LocalDate requiredstart = Season.getSeasonStartDate( LocalDate.now() );
+	       		requiredstart = Season.getLastSeasonStartDate( requiredstart ); // find 2 season in row
+       			LocalDate requiredend = Season.getSeasonEndDate( LocalDate.now() );
+		    	svsstk.getStockGuDong((Stock)nodeshouldbedisplayed, "LiuTong", requiredstart, requiredend);
+		    	
+		    	if(!ArrayUtils.isNotEmpty( nodeshouldbedisplayed.getNodeJiBenMian().getGuDongInfo() )) {  // if not data, find last season data
+		    		requiredstart = Season.getLastSeasonStartDate(requiredstart);
+		    		requiredend = Season.getLastSeasonEndDate(requiredend);
+		    		svsstk.getStockGuDong((Stock)nodeshouldbedisplayed, "LiuTong", requiredstart, requiredend);
+		    	}	
+		    	svsstk = null;
+		    	Object[][] sellbuyObjects = (nodeshouldbedisplayed).getNodeJiBenMian().getGuDongInfo();
+				for(int i=0;i<sellbuyObjects.length;i++) {
+					((DefaultTableModel)tablegudong.getModel()).addRow(sellbuyObjects[i]);
+				}
+		    }
 	}
 	
 
@@ -2275,7 +2275,7 @@ public class StockInfoManager
 	
 	private void displaySellBuyZdgzInfoToGui() 
 	{
-				Object[][] sellbuyObjects = (nodeshouldbedisplayed).getNodeJiBenMian().getZdgzMrmcZdgzYingKuiRecords();
+				Object[][] sellbuyObjects = (nodeshouldbedisplayed).getNodeJiBenMian().getZdgzmrmcykRecords();
 				for(int i=0;i<sellbuyObjects.length;i++) {
 					((DefaultTableModel)tblzhongdiangz.getModel()).addRow(sellbuyObjects[i]);
 				}
@@ -2387,6 +2387,7 @@ public class StockInfoManager
 	private JMenuItem menuItemggfx;
 	private JMenuItem mntmbkdwndata;
 	private JTable tablegudong;
+	private JMenuItem mntmShezhijigou;
 	
 	/**
 	 * Initialize the contents of the frame.
@@ -2420,8 +2421,6 @@ public class StockInfoManager
 			 
 		        Component comp = super.prepareRenderer(renderer, row, col);
 		        Object value = getModel().getValueAt(row, col);
-		        
-		        
 		        
 		        try{
 		        	if(value == null)
@@ -2778,12 +2777,80 @@ public class StockInfoManager
 		scrlpanofInfo.setViewportView(pnlextrainfo);
 		pnlextrainfo.setLayout(new BoxLayout(pnlextrainfo, BoxLayout.Y_AXIS));
 		
-		JScrollPane scrollPane_1 = new JScrollPane();
-		tabbedPane_1.addTab("\u80A1\u4E1C\u540D\u5355", null, scrollPane_1, null);
+		JScrollPane scrlpangudong = new JScrollPane();
+		tabbedPane_1.addTab("\u80A1\u4E1C\u540D\u5355", null, scrlpangudong, null);
 		
-		tablegudong = new JTable();
-		scrollPane_1.setViewportView(tablegudong);
+		tablegudong = new JTable(){
+//			    public Component prepareRenderer(TableCellRenderer renderer, int row, int col) {
+//			 
+//		        Component comp = super.prepareRenderer(renderer, row, col);
+//		        Object value = getModel().getValueAt(row, col);
+//		        
+//		        try{
+//		        	if(value == null)
+//		        		return null;
+//		            if (value.toString().trim().contains("买入") && !value.toString().trim().contains("挂单") && 1==col) { 
+//		                comp.setForeground(Color.red);
+//		            } else if ( value.toString().trim().contains("卖出") && !value.toString().trim().contains("挂单") && 1==col) {
+//		                comp.setForeground(Color.green);
+//		            } else if( value.toString().trim().contains("挂单") && 1==col ) {
+//		            	comp.setBackground(Color.yellow);
+//		            } else if ("加入关注".equals(value.toString().trim()) && 1==col ) {
+//		                comp.setForeground(Color.blue);
+//		            } else if ( "盈利".equals(value.toString().trim()) && 1==col ) {
+//		            	comp.setBackground(Color.red);
+//		            } else if ( "亏损".equals(value.toString().trim()) && 1==col ) {
+//		            	comp.setBackground(Color.green);
+//		            } else if ("明日计划".equals(value.toString().trim()) && 1==col ) {
+//		            	comp.setBackground(Color.ORANGE);
+//		            }else {
+//		                comp.setBackground(Color.white);
+//		                comp.setForeground(Color.BLACK);
+//		            }
+//		        } catch (java.lang.NullPointerException e ){
+//		        	comp.setBackground(Color.white);
+//	                comp.setForeground(Color.BLACK);
+//		        }
+//		        
+//		        return comp;
+//		    }
+			    
+			    public String getToolTipText(MouseEvent e) {
+	                String tip = null;
+	                java.awt.Point p = e.getPoint();
+	                int rowIndex = rowAtPoint(p);
+	                int colIndex = columnAtPoint(p);
+
+	                try {
+	                    tip = getValueAt(rowIndex, colIndex).toString();
+	                } catch (RuntimeException e1) {
+	                    //catch null pointer exception if mouse is over an empty line
+	                }
+
+	                return tip;
+	            }
+		};
+
+		tablegudong.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		tablegudong.setModel(new DefaultTableModel(
+			new Object[][] {
+			},
+			new String[] {
+				"\u80A1\u4E1C\u540D\u79F0", "\u80A1\u4E1C\u65E5\u671F", "\u6301\u80A1\u6570\u91CF"
+			}
+		));
+		tablegudong.getTableHeader().getColumnModel().getColumn(0).setMaxWidth(220);
+		tablegudong.getTableHeader().getColumnModel().getColumn(0).setMinWidth(220);
+		tablegudong.getTableHeader().getColumnModel().getColumn(0).setWidth(220);
+		tablegudong.getTableHeader().getColumnModel().getColumn(0).setPreferredWidth(220);
+		scrlpangudong.setViewportView(tablegudong);
 		panelinfo.setLayout(gl_panelinfo);
+		
+		JPopupMenu popupMenugudong = new JPopupMenu();
+		addPopup(tablegudong, popupMenugudong);
+		
+		mntmShezhijigou = new JMenuItem("加入机构列表");
+		popupMenugudong.add(mntmShezhijigou);
 		
 		cBxstockcode = new JStockComboBox();
 

@@ -7,8 +7,9 @@ import java.util.List;
 import org.jsoup.Jsoup;
 
 import com.exchangeinfomanager.NodesServices.SvsForNodeOfStock;
-import com.exchangeinfomanager.Services.ServicesOfNodeJiBenMianInfo;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.ServicesOfNodeStock;
+import com.exchangeinfomanager.nodes.nodejibenmian.ServicesOfNodeJiBenMianInfo;
 import com.google.common.base.Splitter;
 
 public class DisplayNodeSellBuyInfoServices implements ServicesOfNodeJiBenMianInfo
@@ -27,13 +28,11 @@ public class DisplayNodeSellBuyInfoServices implements ServicesOfNodeJiBenMianIn
      	String curbknodecode = node.getMyOwnCode();
      	
        	int type = node.getType();
-       	if( type == BkChanYeLianTreeNode.TDXBK) {
-//       		SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai (); 
-//       		svsbk.getNodeJiBenMian(node);
-//       		svsbk = null;
-       	} else
+       	if( type == BkChanYeLianTreeNode.TDXBK) 
+       		return null;
+       	
        	if( type == BkChanYeLianTreeNode.TDXGG) {
-	    	SvsForNodeOfStock svsstk = new SvsForNodeOfStock ();
+       		ServicesOfNodeStock svsstk = new SvsForNodeOfStock ();
 	    	svsstk.getNodeMrmcYingKuiInfo(node);
 	    	svsstk = null;
 	    }
@@ -43,7 +42,7 @@ public class DisplayNodeSellBuyInfoServices implements ServicesOfNodeJiBenMianIn
 	    org.jsoup.select.Elements content = doc.select("body"); 
 	       
 	    content.append("<h4>\""+ curbknodecode + "" + nodename + "\"个股交易信息</h4>");
-	    Object[][] sellbuyObjects = node.getNodeJiBenMian().getZdgzMrmcZdgzYingKuiRecords();
+	    Object[][] sellbuyObjects = node.getNodeJiBenMian().getZdgzmrmcykRecords();
 	    if(sellbuyObjects == null) 
 	    	return null;
 	    
@@ -69,7 +68,7 @@ public class DisplayNodeSellBuyInfoServices implements ServicesOfNodeJiBenMianIn
  			   e.printStackTrace();
 	    	   }
 	    	   
-	    	   content.append( "<p>"+ output + "</p>" );
+	    	   content.append( "<p style=\"font-size:9px\">" + output + "</p>" );
 	   }
 	     
 	    if(hasinfo) {

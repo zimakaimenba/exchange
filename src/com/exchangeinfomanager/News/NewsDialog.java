@@ -50,7 +50,6 @@ import javax.swing.SwingUtilities;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 
-import com.exchangeinfomanager.Services.ServicesForNews;
 import com.exchangeinfomanager.StockCalendar.ColorScheme;
 import com.exchangeinfomanager.Tag.Tag;
 import com.exchangeinfomanager.TagLabel.LabelTag;

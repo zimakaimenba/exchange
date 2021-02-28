@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.logging.Logger;
 
-import com.exchangeinfomanager.Services.ServicesForNews;
 import com.exchangeinfomanager.Tag.Tag;
 import com.exchangeinfomanager.TagServices.TagServicesForNews;
 import com.exchangeinfomanager.TagServices.TagsNewsDbOperation;

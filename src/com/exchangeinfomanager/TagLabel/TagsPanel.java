@@ -35,13 +35,13 @@ import javax.swing.JSeparator;
 import javax.swing.JTextField;
 
 import com.exchangeinfomanager.NodesServices.SvsForNodeOfFileNodes;
-import com.exchangeinfomanager.Services.TagService;
 import com.exchangeinfomanager.StockCalendar.ColorScheme;
 import com.exchangeinfomanager.Tag.CombineTagsDialog;
 import com.exchangeinfomanager.Tag.CreateTagDialog;
 import com.exchangeinfomanager.Tag.InsertedTag;
 import com.exchangeinfomanager.Tag.ModifyTagDialog;
 import com.exchangeinfomanager.Tag.Tag;
+import com.exchangeinfomanager.Tag.TagService;
 import com.exchangeinfomanager.TagManagment.JDialogForTagSearchMatrixPanelForWholeSearchTags;
 import com.exchangeinfomanager.TagManagment.JDislogForTagSearchMatrixPanelForTagsBundleAdd;
 import com.exchangeinfomanager.TagManagment.TagSearchMatrixPanelForWholeSearchTags;

@@ -6,7 +6,7 @@ import com.exchangeinfomanager.News.InsertedNews;
 import com.exchangeinfomanager.News.News;
 import com.exchangeinfomanager.News.NewsCache;
 import com.exchangeinfomanager.News.NewsCacheListener;
-import com.exchangeinfomanager.Services.ServicesForNews;
+import com.exchangeinfomanager.News.ServicesForNews;
 import com.exchangeinfomanager.Tag.Tag;
 import com.toedter.calendar.JDayChooser;
 

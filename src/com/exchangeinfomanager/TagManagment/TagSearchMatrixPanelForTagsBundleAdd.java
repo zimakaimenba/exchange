@@ -13,8 +13,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import com.exchangeinfomanager.NodesServices.SvsForNodeOfFileNodes;
-import com.exchangeinfomanager.Services.TagService;
 import com.exchangeinfomanager.Tag.Tag;
+import com.exchangeinfomanager.Tag.TagService;
 import com.exchangeinfomanager.TagManagment.TagSearchMatrixPanelForAddNewsToNode.AddController;
 import com.exchangeinfomanager.TagServices.TagCache;
 import com.exchangeinfomanager.TagServices.TagsServiceForNodes;

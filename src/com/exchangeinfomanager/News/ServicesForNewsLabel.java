@@ -1,11 +1,7 @@
-package com.exchangeinfomanager.Services;
+package com.exchangeinfomanager.News;
 
 import java.sql.SQLException;
 import java.util.Collection;
-
-import com.exchangeinfomanager.News.InsertedNews;
-import com.exchangeinfomanager.News.News;
-import com.exchangeinfomanager.News.NewsCache;
 
 
 

@@ -4,8 +4,7 @@ import javax.swing.*;
 
 import com.exchangeinfomanager.News.News;
 import com.exchangeinfomanager.News.NewsCache;
-import com.exchangeinfomanager.Services.ServicesForNews;
-
+import com.exchangeinfomanager.News.ServicesForNews;
 import com.exchangeinfomanager.guifactory.JLabelFactory;
 import com.exchangeinfomanager.guifactory.JPanelFactory;
 

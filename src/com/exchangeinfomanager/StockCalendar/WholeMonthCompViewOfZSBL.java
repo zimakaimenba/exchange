@@ -12,9 +12,7 @@ import javax.swing.JMenuItem;
 
 import javax.swing.JPopupMenu;
 
-
-import com.exchangeinfomanager.Services.ServicesForNews;
-
+import com.exchangeinfomanager.News.ServicesForNews;
 import com.exchangeinfomanager.guifactory.JLabelFactory;
 
 import com.exchangeinfomanager.tongdaxinreport.TDXFormatedOpt;

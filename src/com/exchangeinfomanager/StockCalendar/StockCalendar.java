@@ -3,13 +3,13 @@ package com.exchangeinfomanager.StockCalendar;
 import com.exchangeinfomanager.News.NewsCache;
 import com.exchangeinfomanager.News.NewsLabelServices;
 import com.exchangeinfomanager.News.NewsServices;
+import com.exchangeinfomanager.News.ServicesForNews;
+import com.exchangeinfomanager.News.ServicesForNewsLabel;
 import com.exchangeinfomanager.News.ExternalNewsType.ChangQiGuanZhuServices;
 import com.exchangeinfomanager.News.ExternalNewsType.DuanQiGuanZhuServices;
 import com.exchangeinfomanager.News.ExternalNewsType.QiangShiServices;
 import com.exchangeinfomanager.News.ExternalNewsType.RuoShiServices;
 import com.exchangeinfomanager.News.ExternalNewsType.ZhiShuBoLangServices;
-import com.exchangeinfomanager.Services.ServicesForNews;
-import com.exchangeinfomanager.Services.ServicesForNewsLabel;
 import com.exchangeinfomanager.TagManagment.JDialogForTagSearchMatrixPanelForAddNewsToNode;
 import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.guifactory.JLabelFactory;
@@ -63,6 +63,7 @@ public class StockCalendar extends JCalendar
 	private JDialogForTagSearchMatrixPanelForAddNewsToNode pnlsearchtags;
 	
 	private ServicesForNews svsdqgz ;
+	private ServicesForNews svsnews;
     
 	   public StockCalendar ()
 	    {
@@ -73,29 +74,29 @@ public class StockCalendar extends JCalendar
 	    	
 	    	ServicesForNewsLabel svslabel = new NewsLabelServices ();
 	    	
-	    	ServicesForNews svsnews = new NewsServices ();
+	    	svsnews = new NewsServices ();
 	    	NewsCache newcache = new NewsCache ("ALL",svsnews,svslabel,LocalDate.now().minusMonths(6),LocalDate.now().plusMonths(6));
-	    	svsnews.setCache(newcache);
+//	    	svsnews.setCache(newcache);
 	    	
 	    	ServicesForNews svscqgz = new ChangQiGuanZhuServices ();
 	    	NewsCache cqgzcache = new NewsCache ("ALL",svscqgz,svslabel,LocalDate.now().minusMonths(6),LocalDate.now().plusMonths(6));
-	    	svscqgz.setCache(cqgzcache);
+//	    	svscqgz.setCache(cqgzcache);
 	    	
 	    	ServicesForNews svsqs = new QiangShiServices ();
 	    	NewsCache qiangshicache = new NewsCache ("ALL",svsqs,svslabel,LocalDate.now().minusMonths(6),LocalDate.now().plusMonths(6));
-	    	svsqs.setCache(qiangshicache);
+//	    	svsqs.setCache(qiangshicache);
 	    	
 	    	ServicesForNews svsrs = new RuoShiServices ();
 	    	NewsCache ruoshicache = new NewsCache ("ALL",svsrs,svslabel,LocalDate.now().minusMonths(6),LocalDate.now().plusMonths(6));
-	    	svsrs.setCache(ruoshicache);
+//	    	svsrs.setCache(ruoshicache);
 	    	
 	    	svsdqgz = new DuanQiGuanZhuServices ();
 	    	NewsCache dqgzcache = new NewsCache ("ALL",svsdqgz,svslabel,LocalDate.now().minusMonths(6),LocalDate.now().plusMonths(6));
-	    	svsdqgz.setCache(dqgzcache);
+//	    	svsdqgz.setCache(dqgzcache);
 	    	
 	    	ServicesForNews svszsbl = new ZhiShuBoLangServices ();
 	    	NewsCache zsblcache = new NewsCache ("ALL",svszsbl,svslabel,LocalDate.now().minusMonths(6),LocalDate.now().plusMonths(6));
-	    	svszsbl.setCache(zsblcache);
+//	    	svszsbl.setCache(zsblcache);
 	    	
 	    	Collection<ServicesForNews> monthservices = new HashSet<> ();
 	    	monthservices.add(svsnews);
@@ -123,8 +124,6 @@ public class StockCalendar extends JCalendar
 		    this.initHeaderPanel(); //
 		    this.initViewDeck();
 		    this.initJFrame();
-	        
-//	        testJFrame ();
 	    }
 	   
 	   private void testJFrame ()
@@ -136,6 +135,10 @@ public class StockCalendar extends JCalendar
 	   public ServicesForNews getDuanQiGuanZhuService ()
 	   {
 		   return this.svsdqgz;
+	   }
+	   public ServicesForNews getNewsService ()
+	   {
+		   return this.svsnews;
 	   }
     /*
      * 

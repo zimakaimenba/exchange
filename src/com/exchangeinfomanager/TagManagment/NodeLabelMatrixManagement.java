@@ -22,10 +22,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
-
-
-import com.exchangeinfomanager.Services.TagService;
 import com.exchangeinfomanager.Tag.Tag;
+import com.exchangeinfomanager.Tag.TagService;
 import com.exchangeinfomanager.TagLabel.LabelTag;
 import com.exchangeinfomanager.TagLabel.TagsPanel;
 import com.exchangeinfomanager.TagServices.CacheForInsertedTag;

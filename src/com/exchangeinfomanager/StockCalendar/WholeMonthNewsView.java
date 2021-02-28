@@ -22,6 +22,7 @@ import javax.swing.JPanel;
 
 import com.exchangeinfomanager.News.News;
 import com.exchangeinfomanager.News.NewsCache;
+import com.exchangeinfomanager.News.ServicesForNews;
 import com.exchangeinfomanager.News.ExternalNewsType.ChangQiGuanZhuServices;
 
 import com.exchangeinfomanager.News.ExternalNewsType.DuanQiGuanZhuServices;
@@ -29,7 +30,6 @@ import com.exchangeinfomanager.News.ExternalNewsType.DuanQiGuanZhuServices;
 import com.exchangeinfomanager.News.ExternalNewsType.QiangShiServices;
 import com.exchangeinfomanager.News.ExternalNewsType.RuoShiServices;
 import com.exchangeinfomanager.News.ExternalNewsType.ZhiShuBoLangServices;
-import com.exchangeinfomanager.Services.ServicesForNews;
 
 
 /**

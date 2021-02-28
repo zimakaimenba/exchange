@@ -7,11 +7,11 @@ import java.util.Iterator;
 import org.jsoup.Jsoup;
 
 import com.exchangeinfomanager.News.News;
-import com.exchangeinfomanager.Services.ServicesOfNodeJiBenMianInfo;
 import com.exchangeinfomanager.Tag.Tag;
 import com.exchangeinfomanager.TagServices.CacheForInsertedTag;
 import com.exchangeinfomanager.TagServices.TagsServiceForNodes;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.nodejibenmian.ServicesOfNodeJiBenMianInfo;
 
 public class DisplayNodesRelatedTagsServices implements ServicesOfNodeJiBenMianInfo 
 {
@@ -45,8 +45,8 @@ public class DisplayNodesRelatedTagsServices implements ServicesOfNodeJiBenMianI
 	   			tagstr = tagstr + "'" + nodeonetag.getName() + "'"; 
 			}
 			
-			content.append( "<h4>" + node.getMyOwnCode() + " " + node.getMyOwnName() + "的关键词:" + "</h4>");
-			content.append( "<p>" + tagstr + "</p> ");
+			content.append( "<p style=\"font-size:9px\">" + node.getMyOwnCode() + " " + node.getMyOwnName() + "的关键词:" + "</h4>");
+			content.append( "<p style=\"font-size:9px\">" + tagstr + "</p> ");
 		}
 
 	   	if(hasinfo) {

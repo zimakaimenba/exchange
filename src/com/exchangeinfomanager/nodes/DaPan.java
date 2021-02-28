@@ -6,7 +6,6 @@ import java.time.LocalDate;
 
 
 import com.exchangeinfomanager.NodesServices.SvsForNodeOfDaPan;
-import com.exchangeinfomanager.Services.ServicesForNode;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC.DaPanXPeriodDataForJFC;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;

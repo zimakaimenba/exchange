@@ -3,7 +3,7 @@ package com.exchangeinfomanager.News.Labels;
 import javax.swing.*;
 
 import com.exchangeinfomanager.News.News;
-import com.exchangeinfomanager.Services.ServicesForNewsLabel;
+import com.exchangeinfomanager.News.ServicesForNewsLabel;
 import com.exchangeinfomanager.guifactory.JLabelFactory;
 import com.exchangeinfomanager.guifactory.JPanelFactory;
 import com.exchangeinfomanager.guifactory.JTextFactory;

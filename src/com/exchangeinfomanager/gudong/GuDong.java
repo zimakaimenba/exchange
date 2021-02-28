@@ -27,7 +27,8 @@ public class GuDong
 		if(this.chigushijian == null)
 			chigushijian = new ArrayList<> ();
 		
-		chigushijian.add(chigu);
+		if(!chigushijian.contains(chigu))
+			chigushijian.add(chigu);
 	}
 	
 	public Boolean isGuDongAtSpecificPeriod (LocalDate requiredtime)

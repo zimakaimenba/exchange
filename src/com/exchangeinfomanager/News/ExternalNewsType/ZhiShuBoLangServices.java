@@ -6,7 +6,7 @@ import java.util.Collection;
 
 import com.exchangeinfomanager.News.News;
 import com.exchangeinfomanager.News.NewsCache;
-import com.exchangeinfomanager.Services.ServicesForNews;
+import com.exchangeinfomanager.News.ServicesForNews;
 import com.exchangeinfomanager.database.StockCalendarAndNewDbOperation;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 

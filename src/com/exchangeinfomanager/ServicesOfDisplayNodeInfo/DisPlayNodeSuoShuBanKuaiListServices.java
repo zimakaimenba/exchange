@@ -13,10 +13,10 @@ import org.jsoup.Jsoup;
 import com.exchangeinfomanager.News.News;
 import com.exchangeinfomanager.News.ExternalNewsType.DuanQiGuanZhuServices;
 import com.exchangeinfomanager.NodesServices.SvsForNodeOfStock;
-import com.exchangeinfomanager.Services.ServicesOfNodeJiBenMianInfo;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.Stock;
+import com.exchangeinfomanager.nodes.nodejibenmian.ServicesOfNodeJiBenMianInfo;
 
 public class DisPlayNodeSuoShuBanKuaiListServices implements ServicesOfNodeJiBenMianInfo
 {

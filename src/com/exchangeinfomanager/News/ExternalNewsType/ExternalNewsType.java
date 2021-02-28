@@ -5,7 +5,7 @@ import java.util.Collection;
 
 import com.exchangeinfomanager.News.InsertedNews;
 import com.exchangeinfomanager.News.News;
-import com.exchangeinfomanager.Services.ServicesForNews;
+import com.exchangeinfomanager.News.ServicesForNews;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
 public abstract class ExternalNewsType extends News

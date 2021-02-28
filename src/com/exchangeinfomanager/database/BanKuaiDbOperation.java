@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.RandomAccessFile;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 
 import java.nio.charset.Charset;
@@ -49,6 +50,7 @@ import java.util.regex.Pattern;
 
 import javax.swing.JOptionPane;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -168,7 +170,7 @@ public class BanKuaiDbOperation
 	        	BanKuai tmpbk = new BanKuai (rs.getString("板块ID"),rs.getString("板块名称"),"TDX" );
 	        	tmpbk.setSuoShuJiaoYiSuo(rs.getString("指数所属交易所"));
 	        	tmpbk.setBanKuaiLeiXing( rs.getString("板块类型描述") );
-	        	
+	        	tmpbk.setImportBKGeGu(rs.getBoolean("导入板块个股"));
 	        	tmpbk.setExporttogehpi(rs.getBoolean("导出Gephi"));
 	        	tmpbk.setImportdailytradingdata(rs.getBoolean("导入交易数据"));
 	        	tmpbk.setShowinbkfxgui(rs.getBoolean("板块分析"));
@@ -187,55 +189,6 @@ public class BanKuaiDbOperation
 	    
 	    return tmpsysbankuailiebiaoinfo;
 	}
-//	/*
-//	 * 找出通达信定义的所有板块.不包括交易所的指数板块
-//	 */
-//	private HashSet<String> getTDXBanKuaiSet(String jys)
-//	{
-//		HashSet<String> tmpsysbankuailiebiaoinfo = new HashSet<String>();
-//		
-//		String sqlquerystat;
-//		if(!jys.toLowerCase().equals("all"))
-//			 sqlquerystat = "SELECT 板块ID,板块名称,指数所属交易所,板块类型描述  FROM 通达信板块列表 	WHERE 指数所属交易所 = '" + jys +"' "  ;
-//		else
-//			 sqlquerystat = "SELECT 板块ID,板块名称,指数所属交易所,板块类型描述 FROM 通达信板块列表 	"  ;
-//		logger.debug(sqlquerystat);
-//		CachedRowSetImpl rs = null;
-//	    try {  
-//	    	rs = connectdb.sqlQueryStatExecute(sqlquerystat);
-//	    	
-//	        rs.last();  
-//	        int rows = rs.getRow();  
-////	        data = new Object[rows][];    
-////	        int columnCount = 3;//列数  
-//	        rs.first();  
-//	        //int k = 0;  
-//	        //while(rs.next())
-//	        for(int j=0;j<rows;j++) {  
-//	        	String bkcode = rs.getString("板块ID");
-//	        	tmpsysbankuailiebiaoinfo.add(bkcode);
-//	        	
-//	            rs.next();
-//	        }
-//	        
-//	    }catch(java.lang.NullPointerException e){ 
-//	    	e.printStackTrace();
-//	    } catch (SQLException e) {
-//	    	e.printStackTrace();
-//	    }catch(Exception e){
-//	    	e.printStackTrace();
-//	    } finally {
-//	    	if(rs != null)
-//				try {
-//					rs.close();
-//					rs = null;
-//				} catch (SQLException e) {
-//					e.printStackTrace();
-//				}
-//	    } 
-//	    
-//	    return tmpsysbankuailiebiaoinfo;
-//	}
 	/*
 	 * 
 	 */
@@ -276,8 +229,7 @@ public class BanKuaiDbOperation
 			}
 		} catch (Exception e) { e.printStackTrace();
 		} finally {
-			try {	rsagu.close();
-			} catch (SQLException e) {	e.printStackTrace();}
+			try {	rsagu.close();	} catch (SQLException e) {	e.printStackTrace();}
 			rsagu = null;
 		}
 		
@@ -297,15 +249,9 @@ public class BanKuaiDbOperation
 			while(rsagu.next())
 				setSingleNodeInfo (stockbasicinfo,rsagu);
 
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (Exception e) {	e.printStackTrace();
 		} finally {
-			try {
-				rsagu.close();
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			try {rsagu.close();} catch (SQLException e) {e.printStackTrace();}
 			rsagu = null;
 		}
 		
@@ -347,9 +293,9 @@ public class BanKuaiDbOperation
 		        	nodenamelist.add(tmpnode);
 		        }
 		       
-		    }catch(java.lang.NullPointerException e){e.printStackTrace();
+		    } catch(java.lang.NullPointerException e){e.printStackTrace();
 		    } catch (SQLException e) {e.printStackTrace();
-		    }catch(Exception e){e.printStackTrace();
+		    } catch(Exception e){e.printStackTrace();
 		    } finally {
 		    	if(rs != null)	try {rs.close();rs = null;} catch (SQLException e) {e.printStackTrace();}
 		    }
@@ -893,32 +839,18 @@ public class BanKuaiDbOperation
 //   			        	} while(rs.next() );
    			        }
    			      
-   			    }catch(java.lang.NullPointerException e){ 
-   			    	e.printStackTrace();
-   			    } catch (SQLException e) {
-   			    	e.printStackTrace();
-   			    }catch(Exception e){
-   			    	e.printStackTrace();
+   			    } catch(java.lang.NullPointerException e) { e.printStackTrace();
+   			    } catch (SQLException e) {e.printStackTrace();
+   			    } catch(Exception e){e.printStackTrace();
    			    } finally {
-   			    	if(rs != null)
-						try {
-							rs.close();
-							rs = null;
-						} catch (SQLException e) {
-							e.printStackTrace();
-						}
+   			    	if(rs != null)	try {rs.close();rs = null;} catch (SQLException e) {e.printStackTrace();}
    			    }
-				
 			}
-			
 		} catch (FileNotFoundException e) {e.printStackTrace();return -1;
 		} catch (IOException e) {e.printStackTrace();return -1;
 		} finally {
-			try {fr.close();				fr = null;
-			} catch (IOException e) {e.printStackTrace();}
-			try {bufr.close();bufr = null;
-			} catch (IOException e) {e.printStackTrace();
-			}
+			try {fr.close(); fr = null;} catch (IOException e) {e.printStackTrace();}
+			try {bufr.close();bufr = null; } catch (IOException e) {e.printStackTrace();}
 		}
 		 
 		 return allupdatednum;
@@ -1027,12 +959,11 @@ public class BanKuaiDbOperation
 	   			    		String stockcode = rs.getString("股票代码");
 	   			        	tmpstockcodesetold.add(stockcode);
 	   			    	}
-	   			    }catch(java.lang.NullPointerException e){e.printStackTrace();
+	   			    } catch(java.lang.NullPointerException e){e.printStackTrace();
 	   			    } catch (SQLException e) {e.printStackTrace();
-	   			    }catch(Exception e){e.printStackTrace();
+	   			    } catch(Exception e){e.printStackTrace();
 	   			    } finally {
-				    	if(rs != null)
-							try {rs.close();rs = null;} catch (SQLException e) {e.printStackTrace();}
+				    	if(rs != null)		try {rs.close();rs = null;} catch (SQLException e) {e.printStackTrace();}
 				    }
 	   			    
 	   			 //把 tmpstockcodesetold 里面有的，tmpstockcodesetnew没有的选出，这是旧的，要从数据库中删除
@@ -1126,13 +1057,8 @@ public class BanKuaiDbOperation
 			logger.debug(sqlinsertstat);
 			try {
 				autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
-			} catch (MysqlDataTruncation e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			} catch (MysqlDataTruncation e) {e.printStackTrace();
+			} catch (SQLException e) {e.printStackTrace();}
 		
 	}
 	
@@ -1553,8 +1479,8 @@ public class BanKuaiDbOperation
                
 		 } catch (Exception e) { e.printStackTrace();	 return -1;
 		 } finally {
-			 try {		in.close();	} catch (IOException e) {	e.printStackTrace();}
-             try {	dis.close();            } catch (IOException e) {e.printStackTrace();}     
+			 try { in.close();	} catch (IOException e) {e.printStackTrace();}
+             try { dis.close(); } catch (IOException e) {e.printStackTrace();}     
 		 }
 		 
 		 SetView<String> differencebankuaiold = Sets.difference( curallshbk, allinsertbk );
@@ -1712,16 +1638,12 @@ public class BanKuaiDbOperation
 					autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
 				} catch (MysqlDataTruncation e1) {e1.printStackTrace();
 				} catch (SQLException e) {e.printStackTrace();	}
-
 			 }
 		 }
 		 differencebankuaiold = null;
 		 curallszbk = null;
 		 return -1;
 	}
-
-	
-
 	/*
 	 * 所有股票
 	 */
@@ -3408,10 +3330,7 @@ public class BanKuaiDbOperation
 			        .withSkipLines(2)
 			        .withCSVParser(new CSVParserBuilder().withSeparator(',').withEscapeChar('\'').build())
 			        .build();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} catch (FileNotFoundException e) {e.printStackTrace();}
 
 		try {
 			LocalDate lastdaydate = requiredstartday.with(fieldCH, 6); //
@@ -4965,19 +4884,10 @@ public class BanKuaiDbOperation
 		            k++; 
 		            rs.next();
 		        } 
-		       
-		    } catch(java.lang.NullPointerException e) { 
-		    	e.printStackTrace();
-		    }catch(Exception e) {
-		    	e.printStackTrace();
-		    } finally {
-		    	if(rs != null)
-					try {
-						rs.close();
-						rs = null;
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
+		    } catch(java.lang.NullPointerException e) { e.printStackTrace();
+		    } catch(Exception e) {e.printStackTrace();
+		    } finally {	if(rs != null)
+					try {rs.close();rs = null;} catch (SQLException e) {e.printStackTrace();}
 		    }
 		    
 		    return data;
@@ -5886,10 +5796,7 @@ public class BanKuaiDbOperation
 				
 			try {
 				FileUtils.cleanDirectory(new File(sysconfig.getNetEaseDownloadedFilePath () ) );
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
+			} catch (IOException e1) {e1.printStackTrace();}
 			
 			ArrayList<Stock> allstocks = this.getAllStocks ();
 			//下载需要的时间段的数据
@@ -5925,21 +5832,12 @@ public class BanKuaiDbOperation
 				    			 Files.append(stockcode + "在数据库中似乎没有数据，请检查！" +  System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
 				    		 }
 				    }
-				} catch(java.lang.NullPointerException e) { 
-			    	e.printStackTrace();
-				} catch (SQLException e) {
-			    	e.printStackTrace();
-				}catch(Exception e){
-			    	e.printStackTrace();
+				} catch(java.lang.NullPointerException e) { e.printStackTrace();
+				} catch (SQLException e) {e.printStackTrace();
+				}catch(Exception e){e.printStackTrace();
 				} finally {
-			    	if(rs != null)
-					try {
-						rs.close();
-						rs = null;
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-			   }
+			    	if(rs != null)	try {rs.close();rs = null;} catch (SQLException e) {e.printStackTrace();}
+				}
 				
 			   if(ldlastestdbrecordsdate == null)
 				   ldlastestdbrecordsdate =  LocalDate.parse("2013-03-04"); //当前数据的起点
@@ -7312,7 +7210,7 @@ public class BanKuaiDbOperation
 			
 			return node;
 		}
-		/*
+				/*
 		 * 
 		 */
 		public BkChanYeLianTreeNode setNodeCjeExtremeZhanbiUpDownLevel(TDXNodes node, Double min, Double max) 
@@ -7336,8 +7234,295 @@ public class BanKuaiDbOperation
 		
 			return node;
 		}
-		
-		
+		/*
+		 * 
+		 */
+		private LocalDate[] getCurrentStockGuDongDateRange (BkChanYeLianTreeNode stock, String liutongorgudong)
+		{
+//			String searchtalbe;
+//			if(liutongorgudong.equalsIgnoreCase("liutong"))
+//				searchtalbe = "股票流通股东对应表";
+//			else
+//				searchtalbe = "股票股东对应表";
+			
+			CachedRowSetImpl  rs = null;
+			LocalDate maxrecordsdate = null; LocalDate minrecordsdate = null; String sqlquerystat;
+			if(liutongorgudong.equalsIgnoreCase("LIUTONG"))				
+				sqlquerystat = "SELECT  MAX(股东日期) 	MAX_RECENT_TIME , MIN(股东日期) 	MIN_RECENT_TIME "
+						+ " FROM " + "股票股东对应表" + "   WHERE  代码 = " 
+							+ "'"  + stock.getMyOwnCode().trim() + "'" 
+							+ " AND 流通股东 = TRUE"
+							;
+			else
+				sqlquerystat = "SELECT  MAX(股东日期) 	MAX_RECENT_TIME , MIN(股东日期) 	MIN_RECENT_TIME "
+						+ " FROM " + "股票股东对应表" + "   WHERE  代码 = " 
+							+ "'"  + stock.getMyOwnCode().trim() + "'" 
+							+ " AND 十大股东 = TRUE"
+							;
+				try { 
+			    	rs = connectdb.sqlQueryStatExecute(sqlquerystat);
+			    	
+			    	while(rs.next()) {
+			    		 maxrecordsdate = rs.getDate("MAX_RECENT_TIME").toLocalDate(); //mOST_RECENT_TIME
+			    		 minrecordsdate = rs.getDate("MIN_RECENT_TIME").toLocalDate(); //mOST_RECENT_TIME
+			    	}
+			    } catch(java.lang.NullPointerException e) {
+			    } catch (SQLException e) {e.printStackTrace();
+			    } catch(Exception e){e.printStackTrace();
+			    } finally {
+			    	if(rs != null)
+					try { rs.close();rs = null;
+					} catch (SQLException e) {e.printStackTrace();}
+			    }
+			
+			LocalDate[] result = {minrecordsdate,maxrecordsdate};
+			return result;
+		}
+		/*
+		 * 
+		 */
+		private Set<String> getJiGouList ()
+		{
+			Set<String> jigouset = new HashSet<> ();
+			CachedRowSetImpl  rs = null;
+			String sqlquerystat = "SELECT  * FROM 机构股东"  ;
+				try { 
+			    	rs = connectdb.sqlQueryStatExecute(sqlquerystat);
+			    	
+			    	while(rs.next()) {
+			    		 String jigouname = rs.getString("机构名称"); //mOST_RECENT_TIME
+			    		 jigouset.add(jigouname.trim());
+			    	}
+			    } catch(java.lang.NullPointerException e) {
+			    } catch (SQLException e) {e.printStackTrace();
+			    } catch(Exception e){e.printStackTrace();
+			    } finally {
+			    	if(rs != null)
+					try { rs.close();rs = null;} catch (SQLException e) {e.printStackTrace();}
+			    }
+				
+				return jigouset;
+		}
+		/*
+		 * 
+		 */
+		public void refreshGuDongData(Boolean onlyimportwithjigougudong) 
+		{
+			String csvfilepath = sysconfig.getGuDongInfoCsvFile();
+			Set<String> jigou = null;
+			if(onlyimportwithjigougudong)
+				jigou = getJiGouList (); 
+			
+			Collection<BkChanYeLianTreeNode> allstocks = AllCurrentTdxBKAndStoksTree.getInstance().getAllBkStocksTree().getAllRequiredNodes(BkChanYeLianTreeNode.TDXGG);
+			for(BkChanYeLianTreeNode stock : allstocks) {
+				String stockcode = stock.getMyOwnCode();
+				String floatcsvfilename = stockcode + "_floatholders.csv";
+				String top10csvfilename = stockcode + "_top10holders.csv";
+				File floatcsvfile = new File(csvfilepath + "/" + floatcsvfilename);
+				File top10csvfile = new File(csvfilepath + "/" + top10csvfilename);
+				if (  (!floatcsvfile.exists()  || !floatcsvfile.canRead() ) && (!top10csvfile.exists()  || !top10csvfile.canRead())   ) {  
+						logger.info(stockcode + "股东文件不全或者读取错误。没有导入任何数据。");
+						continue;
+				}
+
+				readGuDongCsvFile (stock, csvfilepath + "/" + floatcsvfilename, "liutong", jigou);
+//				readGuDongCsvFile (stock, csvfilepath + "/" + top10csvfilename,"gudong");
+			}
+		}
+		private void readGuDongCsvFile (BkChanYeLianTreeNode stock, String gdfile ,String ggtype,Set<String> jigou)
+		{
+			LocalDate[] currecorddate = getCurrentStockGuDongDateRange (stock, ggtype);
+			if(currecorddate[0] == null)
+				currecorddate[0] = LocalDate.parse("3990-01-01");
+			if(currecorddate[1] == null)
+				currecorddate[1] = LocalDate.parse("3990-12-01");
+			CSVReader floatcsvreader = null;
+			try {
+				floatcsvreader=new CSVReader(
+					    new InputStreamReader(new FileInputStream(gdfile), "UTF-8"), 
+					    ',', '\'', 1);
+//				floatcsvreader = new CSVReaderBuilder(new FileReader(csvfilepath + "/" + floatcsvfilename))
+//				        .withSkipLines(1)
+//				        .withCSVParser(new CSVParserBuilder().withSeparator(',').withEscapeChar('\'').build())
+//				        .build();
+			} catch (FileNotFoundException e) {e.printStackTrace(); return;} 
+			catch (UnsupportedEncodingException e) {e.printStackTrace(); return;}
+			
+			try {
+				String [] linevalue ; int linenumber = 1; Boolean foundjigou = false;
+				List<String[]> gdlinevalueforoneseason = new ArrayList<>();
+				LocalDate curseasondate = null;
+				while ( (linevalue = floatcsvreader.readNext() )!=null ) {
+					LocalDate curlinedate;
+					try {
+						String gudongdate = linevalue[3];
+						DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd" );
+						curlinedate = LocalDate.parse(gudongdate,formatter);
+					} catch (java.time.format.DateTimeParseException e) {linenumber = 1; continue;}
+					
+					if(curlinedate.isAfter(currecorddate[0].minusDays(1)) && curlinedate.isBefore(currecorddate[1].plusDays(1)) ) {
+						linenumber = 1 ; continue;//已经存在
+					}
+					
+					String gudongname = linevalue[4].replaceAll(" ", "");
+					if(jigou != null)//only store jigou holder ,
+						for(String tmpjg : jigou) 
+							if(gudongname.contains(tmpjg))
+								foundjigou = true;
+					
+					if(linenumber != 1) {
+						if(curseasondate.equals(curlinedate)  ) { 
+							if(foundjigou)
+								gdlinevalueforoneseason.add(linevalue);
+						}
+						else {
+								storeGuDongXinToDatabase (stock, gdlinevalueforoneseason, ggtype);
+								gdlinevalueforoneseason.clear();
+								if(foundjigou)
+									gdlinevalueforoneseason.add(linevalue);
+								curseasondate = curlinedate;
+								linenumber = 1;
+						}
+					} else {
+						curseasondate = curlinedate;
+						if(foundjigou)
+							gdlinevalueforoneseason.add(linevalue);
+					}
+					
+					foundjigou = false;
+					linenumber ++;
+				}
+			} catch (IOException e) {e.printStackTrace();}
+			
+		}
+		private void storeGuDongXinToDatabase(BkChanYeLianTreeNode stock, List<String[]> linevaluelist, String liutongorgudong)
+		{
+			for(String[] linevalue : linevaluelist) {
+				LocalDate curgudongdate; LocalDate gonggaodate;
+				try {
+					String gudongdate = linevalue[3];
+					DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd" );
+					curgudongdate = LocalDate.parse(linevalue[3],formatter);
+					gonggaodate = LocalDate.parse(linevalue[2],formatter);
+				} catch (java.time.format.DateTimeParseException e) {return;}
+				String gudongname = linevalue[4].replaceAll(" ", "");
+				Double chigushu = null;
+				try {
+					chigushu = Double.parseDouble(linevalue[5]);
+				} catch (Exception ex) {}
+				String sqlinsertstat;
+				if(liutongorgudong.equalsIgnoreCase("LIUTONG"))
+					sqlinsertstat = "INSERT INTO 股票股东对应表(代码,机构名称,股东日期,公告日期,流通股数,流通股东) VALUES ("
+							+ "'" + stock.getMyOwnCode().trim() + "'" + ","
+							+ "'" + gudongname + "',"
+		    				+ "'" + curgudongdate + "'," 
+		    				+ "'" + gonggaodate + "',"
+		    				+ chigushu + ","
+		    				+ "true"
+								+ ")"
+								+ " ON DUPLICATE KEY UPDATE "
+								+ " 机构名称 = '" + gudongname + "'," 
+								+ " 股东日期 = '" + curgudongdate + "',"
+								+ " 公告日期 = '" + gonggaodate + "',"
+								+ " 流通股数= " + chigushu + ","
+								+ " 流通股东= true"
+								;
+				else
+					sqlinsertstat = "INSERT INTO 股票股东对应表(代码,机构名称,股东日期,公告日期,股份数, 十大股东) VALUES ("
+							+ "'" + stock.getMyOwnCode().trim() + "'" + ","
+							+ "'" + gudongname + "',"
+		    				+ "'" + curgudongdate + "'," 
+		    				+ "'" + gonggaodate + "',"
+		    				+ chigushu + ","
+		    				+ "true"
+								+ ")"
+								+ " ON DUPLICATE KEY UPDATE "
+								+ " 机构名称 = '" + gudongname + "'," 
+								+ " 股东日期 = '" + curgudongdate + "',"
+								+ " 公告日期 = '" + gonggaodate + "',"
+								+ " 股份数= " + chigushu + ","
+								+ " 十大股东= true"
+								;
+				
+				try {
+					int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
+				} catch (MysqlDataTruncation e) {e.printStackTrace();
+				} catch (SQLException e) {	System.out.print(sqlinsertstat);			e.printStackTrace();}
+				
+			}
+		}
+		public Stock getStockGuDong(Stock stock, String liutongorgudong, LocalDate requiredstart, LocalDate requiredend)
+		{
+			Object[][] data = null;
+			CachedRowSetImpl  rs = null;
+			LocalDate maxrecordsdate = null; LocalDate minrecordsdate = null; String sqlquerystat;
+			if(liutongorgudong.equalsIgnoreCase("LIUTONG"))				
+				sqlquerystat = "SELECT  * FROM 股票股东对应表  WHERE  代码 = " 
+							+ "'"  + stock.getMyOwnCode().trim() + "'" 
+							+ " AND 流通股东 = TRUE"
+							+ " AND 股东日期 BETWEEN '" + requiredstart + "' AND '" + requiredend + "'"
+							;
+			else
+				sqlquerystat = "SELECT  * FROM 股票股东对应表   WHERE  代码 = " 
+							+ "'"  + stock.getMyOwnCode().trim() + "'" 
+							+ " AND 十大股东 = TRUE"
+							+ " AND 股东日期 BETWEEN '" + requiredstart + "' AND '" + requiredend + "'"
+							;
+				try { 
+			    	rs = connectdb.sqlQueryStatExecute(sqlquerystat);
+			    	int k = 0;
+			        int columnCount = 3;//列数
+			        
+			        rs.last();  
+			        int rows = rs.getRow();  
+			        data = new Object[rows][];
+			        rs.first();  
+			        //while(rs.next())  //{ "日期", "操作", "说明","ID","操作账户","信息表" };
+			        for(int j=0;j<rows;j++) {   //{ "日期", "操作", "说明","ID","操作账户","信息表" };
+			        	Object[] row = new Object[columnCount];
+			        	
+			    		 String gudong = rs.getString("机构名称"); //mOST_RECENT_TIME
+			    		 Double chigushu = rs.getDouble("流通股数"); //mOST_RECENT_TIME
+			    		 LocalDate riqi = rs.getDate("股东日期").toLocalDate();
+			    		 row[0] = gudong;
+			    		 row[1] = riqi;
+			    		 row[2] = chigushu;
+			    		 data[k] = row;
+			    		 
+			    		 k++; 
+				         rs.next();
+			    	}
+			        
+			        if(ArrayUtils.isNotEmpty(data))
+			        	stock.getNodeJiBenMian().setGuDongInfo (data);
+			    } catch(java.lang.NullPointerException e) {
+			    } catch (SQLException e) {e.printStackTrace();
+			    } catch(Exception e){e.printStackTrace();
+			    } finally {
+			    	if(rs != null)
+					try { rs.close();rs = null;
+					} catch (SQLException e) {e.printStackTrace();}
+			    }
+				
+				return stock;
+		}
+		/*
+		 * 
+		 */
+		public Integer storeJiGouToDb(String jigouname)
+		{
+			String	sqlinsertstat = "INSERT INTO 机构股东(机构名称) VALUES ("
+						+ "'" + jigouname+ "')"
+							;
+			int autoIncKeyFromApi = 0;
+			try {
+				autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
+			} catch (MysqlDataTruncation e) {e.printStackTrace();
+			} catch (SQLException e) {	return null;}
+			
+			return autoIncKeyFromApi;
+		}
+
 }
 
 

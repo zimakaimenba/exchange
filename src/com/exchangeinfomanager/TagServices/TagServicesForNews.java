@@ -5,8 +5,8 @@ import java.util.Collection;
 import java.util.Set;
 
 import com.exchangeinfomanager.News.News;
-import com.exchangeinfomanager.Services.TagService;
 import com.exchangeinfomanager.Tag.Tag;
+import com.exchangeinfomanager.Tag.TagService;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
 public class TagServicesForNews implements TagService 

@@ -12,7 +12,7 @@ import javax.swing.text.html.HTMLEditorKit;
 
 import org.jsoup.Jsoup;
 
-import com.exchangeinfomanager.Services.ServicesOfNodeJiBenMianInfo;
+import com.exchangeinfomanager.nodes.nodejibenmian.ServicesOfNodeJiBenMianInfo;
 
 public class DisplayNodeInfoPanel extends JEditorPane //extends JPanel 
 {

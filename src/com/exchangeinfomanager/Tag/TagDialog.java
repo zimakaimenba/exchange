@@ -17,7 +17,6 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import com.exchangeinfomanager.News.Labels.ColorChooser;
-import com.exchangeinfomanager.Services.TagService;
 import com.exchangeinfomanager.guifactory.JLabelFactory;
 import com.exchangeinfomanager.guifactory.JPanelFactory;
 import com.exchangeinfomanager.guifactory.JTextFactory;

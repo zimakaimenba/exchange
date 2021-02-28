@@ -12,8 +12,8 @@ import javax.swing.table.DefaultTableModel;
 
 import com.exchangeinfomanager.News.InsertedNews;
 import com.exchangeinfomanager.News.News;
-import com.exchangeinfomanager.Services.TagService;
 import com.exchangeinfomanager.Tag.Tag;
+import com.exchangeinfomanager.Tag.TagService;
 import com.exchangeinfomanager.TagLabel.TagsPanel;
 import com.exchangeinfomanager.TagServices.CacheForInsertedTag;
 import com.exchangeinfomanager.TagServices.TagsServiceForNodes;

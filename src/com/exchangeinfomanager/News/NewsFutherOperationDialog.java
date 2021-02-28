@@ -20,7 +20,6 @@ import javax.swing.JTable;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
-import com.exchangeinfomanager.Services.ServicesForNews;
 import com.exchangeinfomanager.Tag.Tag;
 import com.exchangeinfomanager.TagLabel.TagsPanel;
 import com.exchangeinfomanager.TagManagment.TagSearchOnNewsTableModel;

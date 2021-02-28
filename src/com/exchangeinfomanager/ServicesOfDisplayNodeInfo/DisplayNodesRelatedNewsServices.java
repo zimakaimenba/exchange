@@ -11,16 +11,16 @@ import com.exchangeinfomanager.News.News;
 import com.exchangeinfomanager.News.NewsCache;
 import com.exchangeinfomanager.News.NewsLabelServices;
 import com.exchangeinfomanager.News.NewsServices;
+import com.exchangeinfomanager.News.ServicesForNews;
+import com.exchangeinfomanager.News.ServicesForNewsLabel;
 import com.exchangeinfomanager.News.ExternalNewsType.ChangQiGuanZhuServices;
 import com.exchangeinfomanager.News.ExternalNewsType.DuanQiGuanZhuServices;
 import com.exchangeinfomanager.News.ExternalNewsType.QiangShiServices;
 import com.exchangeinfomanager.News.ExternalNewsType.RuoShiServices;
 import com.exchangeinfomanager.News.ExternalNewsType.ZhiShuBoLangServices;
-import com.exchangeinfomanager.Services.ServicesForNews;
-import com.exchangeinfomanager.Services.ServicesForNewsLabel;
-import com.exchangeinfomanager.Services.ServicesOfNodeJiBenMianInfo;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.DaPan;
+import com.exchangeinfomanager.nodes.nodejibenmian.ServicesOfNodeJiBenMianInfo;
 
 public class DisplayNodesRelatedNewsServices implements ServicesOfNodeJiBenMianInfo
 {
@@ -109,9 +109,9 @@ public class DisplayNodesRelatedNewsServices implements ServicesOfNodeJiBenMianI
 	   		String newdate = cylnew.getStart().toString(); 
 	   		String slackurl = cylnew.getNewsUrl();
 	   		if(slackurl != null && !slackurl.isEmpty() )	    		
-	   			content.append( "<p>" + newdate + "<a href=\" " +   slackurl + "\"> " + title + "</a></p> ");
+	   			content.append( "<p style=\"font-size:9px\">" + newdate + "<a href=\" " +   slackurl + "\"> " + title + "</a></p> ");
 	   		else
-	   			content.append( "<p>" + newdate  + title + "</p> ");
+	   			content.append( "<p style=\"font-size:9px\">" + newdate  + title + "</p> ");
 		}
 		
 		if(hasinfo) {

@@ -4,9 +4,9 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Set;
 
-import com.exchangeinfomanager.Services.TagService;
 import com.exchangeinfomanager.Tag.InsertedTag;
 import com.exchangeinfomanager.Tag.Tag;
+import com.exchangeinfomanager.Tag.TagService;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
 public class TagsServiceForURLAndFile implements TagService

@@ -42,9 +42,12 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.exchangeinfomanager.News.News;
 import com.exchangeinfomanager.News.NewsCache;
 import com.exchangeinfomanager.News.NewsLabelServices;
 import com.exchangeinfomanager.News.NewsServices;
+import com.exchangeinfomanager.News.ServicesForNews;
+import com.exchangeinfomanager.News.ServicesForNewsLabel;
 import com.exchangeinfomanager.News.ExternalNewsType.CreateExternalNewsDialog;
 import com.exchangeinfomanager.News.ExternalNewsType.DuanQiGuanZhu;
 import com.exchangeinfomanager.News.ExternalNewsType.DuanQiGuanZhuServices;
@@ -53,14 +56,11 @@ import com.exchangeinfomanager.News.ExternalNewsType.QiangShiServices;
 import com.exchangeinfomanager.News.ExternalNewsType.RuoShiServices;
 import com.exchangeinfomanager.NodesServices.SvsForNodeOfBanKuai;
 import com.exchangeinfomanager.NodesServices.SvsForNodeOfStock;
-import com.exchangeinfomanager.Services.ServicesForNews;
-import com.exchangeinfomanager.Services.ServicesForNewsLabel;
-import com.exchangeinfomanager.Services.ServicesForNode;
-import com.exchangeinfomanager.Services.ServicesForNodeBanKuai;
 import com.exchangeinfomanager.ServicesOfDisplayNodeInfo.DisPlayNodeSuoShuBanKuaiListPanel;
 import com.exchangeinfomanager.ServicesOfDisplayNodeInfo.DisPlayNodeSuoShuBanKuaiListServices;
 import com.exchangeinfomanager.ServicesOfDisplayNodeInfo.DisplayNodeExchangeDataServices;
 import com.exchangeinfomanager.ServicesOfDisplayNodeInfo.DisplayNodeExchangeDataServicesPanel;
+import com.exchangeinfomanager.ServicesOfDisplayNodeInfo.DisplayNodeGuDongInfoServices;
 import com.exchangeinfomanager.ServicesOfDisplayNodeInfo.DisplayNodeInfoPanel;
 import com.exchangeinfomanager.ServicesOfDisplayNodeInfo.DisplayNodeJiBenMianService;
 import com.exchangeinfomanager.ServicesOfDisplayNodeInfo.DisplayNodeSellBuyInfoServices;
@@ -108,6 +108,8 @@ import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.DaPan;
+import com.exchangeinfomanager.nodes.ServicesForNode;
+import com.exchangeinfomanager.nodes.ServicesForNodeBanKuai;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
@@ -437,12 +439,9 @@ public class BanKuaiFengXi extends JDialog
 	private List<BkChanYeLianTreeNode> getDZHBanKuaiFenXiQualifiedNodes (LocalDate checkdate, String globeperiod, Boolean globecalwholeweek, Boolean forcetogetnodedataagain)
 	{
 		List<BkChanYeLianTreeNode> bkwithcje = new ArrayList<BkChanYeLianTreeNode> ();
-//		SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai ();
 		
 		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode) CreateExchangeTree.CreateTreeOfDZHBanKuaiAndStocks().getModel().getRoot();
 		int bankuaicount = CreateExchangeTree.CreateTreeOfDZHBanKuaiAndStocks().getModel().getChildCount(treeroot);
-
-		LocalDate requirestart = CommonUtility.getSettingRangeDate(checkdate,"large").with(DayOfWeek.MONDAY);
 		for(int i=0;i< bankuaicount; i++) {
 			
 			BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode) CreateExchangeTree.CreateTreeOfDZHBanKuaiAndStocks().getModel().getChild(treeroot, i);
@@ -455,7 +454,6 @@ public class BanKuaiFengXi extends JDialog
 			if( ((BanKuai)childnode).getBanKuaiLeiXing().equals(BanKuai.HASGGNOSELFCJL) 
 					||  ((BanKuai)childnode).getBanKuaiLeiXing().equals(BanKuai.NOGGNOSELFCJL)  ) //有些指数是没有个股和成交量的，不列入比较范围
 				continue;
-			
 			
 			bkwithcje.add( (BanKuai)childnode );
 
@@ -2891,6 +2889,17 @@ public class BanKuaiFengXi extends JDialog
 				
 				extrainfotabpane.addTab(selectednode.getMyOwnName() + "买卖关注记录", displaybksbpnl);	
 			}
+			
+			DisplayNodeGuDongInfoServices svsgd = new DisplayNodeGuDongInfoServices(selectednode);
+			DisplayNodeInfoPanel gdpnl = new DisplayNodeInfoPanel (svsgd);
+			if(gdpnl.isHtmlContainedUsefulInfo ()) {
+				Dimension size3 = new Dimension(sclpinfosummary.getViewport().getSize().width, displaybksbpnl.getContentHeight() + 10);
+				gdpnl.setPreferredSize(size3);
+				gdpnl.setMinimumSize(size3);
+				gdpnl.setMaximumSize(size3);
+				
+				extrainfotabpane.addTab(selectednode.getMyOwnName() + "股东信息", gdpnl);
+			}
 		}
 
 		pnlextrainfo.add(extrainfotabpane);
@@ -3026,23 +3035,25 @@ public class BanKuaiFengXi extends JDialog
 	 */
 	private void initializePaoMaDeng() 
 	{
-		// TODO Auto-generated method stub
-		String title = "明日计划:";
-//		Calendar cal = Calendar.getInstance();
-//		cal.add(Calendar.DAY_OF_MONTH, -1);
-//		Date ystday = cal.getTime();
-		//asinglestockinfomation = new ASingleStockOperations("");
-		PaoMaDengServices svspmd = new PaoMaDengServices ();
-		String paomad = svspmd.getPaoMaDengInfo();
-//		List<String> pmdinfolist = Splitter.on("*").omitEmptyStrings().splitToList(paomad); //内蒙板块|880232|3|1|0|32
-//		String[] pmdarray = new String[pmdinfolist.size()];
-//		pmdinfolist.toArray(pmdarray);
+		String displayinfo = "";
+		String PaoMaDengDisplayMrjh   = bkfxsettingprop.getProperty ("PaoMaDengDisplayMrjh");
+		if(PaoMaDengDisplayMrjh  != null && PaoMaDengDisplayMrjh .toUpperCase().equals("TRUE") ) {
+			String title = "明日计划:";
+			PaoMaDengServices svspmd = new PaoMaDengServices ();
+			displayinfo = title + svspmd.getPaoMaDengInfo();
+		}
+			
+		String PaoMaDengDisplayNews   = bkfxsettingprop.getProperty ("PaoMaDengDisplayNews");
+		if(PaoMaDengDisplayNews  != null && PaoMaDengDisplayNews .toUpperCase().equals("TRUE") ) {
+			ServicesForNews svsnews = dateChooser.getStockCalendar().getNewsService();
+			Collection<News> allnews = svsnews.getCache().produceNews();
+			for(News tmpnews : allnews) {
+				displayinfo = displayinfo + "   [ " + tmpnews.getStart().toString() + "  " + tmpnews.getTitle() + " ]   ";
+	        }
+		}
 		
-		if(!paomad.isEmpty())
-			pnl_paomd.refreshMessage(title+paomad);
-//			pnl_paomd.refreshMessage(pmdarray);
-		else 
-			pnl_paomd.refreshMessage("");
+		if(!displayinfo.isEmpty())
+			pnl_paomd.refreshMessage(displayinfo);
 	}
 	/*
 	 * 在本周各個股票占比的餅圖顯示選中的股票
