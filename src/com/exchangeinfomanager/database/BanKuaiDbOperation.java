@@ -7329,6 +7329,42 @@ public class BanKuaiDbOperation
 //				readGuDongCsvFile (stock, csvfilepath + "/" + top10csvfilename,"gudong");
 			}
 		}
+		public Stock refreshStockGuDongData (Stock stock, Boolean onlyimportwithjigougudong, Boolean forcetorefrshallgudong)
+		{
+			if( forcetorefrshallgudong)
+				this.deleteStockGuDong (stock);
+				
+			String csvfilepath = sysconfig.getGuDongInfoCsvFile();
+			
+			Set<String> jigou = null;
+			if(onlyimportwithjigougudong)
+				jigou = getJiGouList ();
+			
+			String stockcode = stock.getMyOwnCode();
+			String floatcsvfilename = stockcode + "_floatholders.csv";
+			String top10csvfilename = stockcode + "_top10holders.csv";
+			File floatcsvfile = new File(csvfilepath + "/" + floatcsvfilename);
+			File top10csvfile = new File(csvfilepath + "/" + top10csvfilename);
+			if (  (!floatcsvfile.exists()  || !floatcsvfile.canRead() ) && (!top10csvfile.exists()  || !top10csvfile.canRead())   ) {  
+					logger.info(stockcode + "股东文件不全或者读取错误。没有导入任何数据。");
+					return stock;
+			}
+
+			readGuDongCsvFile (stock, csvfilepath + "/" + floatcsvfilename, "liutong", jigou);
+//			readGuDongCsvFile (stock, csvfilepath + "/" + top10csvfilename,"gudong");
+			
+			return stock;
+		}
+		private void deleteStockGuDong (BkChanYeLianTreeNode stock) 
+		{
+			String sqldeletestat = "DELETE  FROM 股票股东对应表"
+					+ " WHERE 代码 = " + "'" + stock.getMyOwnCode() + "'"
+					;
+			
+			try {
+				int autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletestat);
+			} catch (SQLException e) {e.printStackTrace();}
+		}
 		private void readGuDongCsvFile (BkChanYeLianTreeNode stock, String gdfile ,String ggtype,Set<String> jigou)
 		{
 			LocalDate[] currecorddate = getCurrentStockGuDongDateRange (stock, ggtype);

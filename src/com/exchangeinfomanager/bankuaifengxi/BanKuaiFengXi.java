@@ -2893,7 +2893,7 @@ public class BanKuaiFengXi extends JDialog
 			DisplayNodeGuDongInfoServices svsgd = new DisplayNodeGuDongInfoServices(selectednode);
 			DisplayNodeInfoPanel gdpnl = new DisplayNodeInfoPanel (svsgd);
 			if(gdpnl.isHtmlContainedUsefulInfo ()) {
-				Dimension size3 = new Dimension(sclpinfosummary.getViewport().getSize().width, displaybksbpnl.getContentHeight() + 10);
+				Dimension size3 = new Dimension(sclpinfosummary.getViewport().getSize().width, gdpnl.getContentHeight() + 10);
 				gdpnl.setPreferredSize(size3);
 				gdpnl.setMinimumSize(size3);
 				gdpnl.setMaximumSize(size3);

@@ -1022,6 +1022,20 @@ public class StockInfoManager
 				
 				JiGouService svsjg = new JiGouService ();
 				svsjg.addJiGou(result.replaceAll(" ", ""));
+				svsjg = null;
+ 				return;
+			}	
+		});
+		mntmRefreshgudong.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent arg0)
+			{
+				BkChanYeLianTreeNode node = cBxstockcode.getUserInputNode();
+				if(node.getType() != BkChanYeLianTreeNode.TDXGG)
+					return;
+				
+				JiGouService svsjg = new JiGouService ();
+				svsjg.getStockGuDong((Stock)node, true, true);
+				svsjg = null;
  				return;
 			}	
 		});
@@ -2105,19 +2119,10 @@ public class StockInfoManager
 	    
 	    dateChsefumian.setDate(null);
 	    txtareafumianxx.setText("");
-		
-//	    txtfldzhengxg.setText("");
-//		txtfldfuxg.setText("");
-//		tfdCustom.setText("");
-//		tfdJingZhengDuiShou.setText("");
-		
-//		editorpansuosubk.setText("");
-//		editorPanenodeinfo.setText("");
-	
+			
 		((DefaultTableModel)tblzhongdiangz.getModel()).setRowCount(0);
-		//tableStockAccountsInfo.setModel( new DefaultTableModel()  );
+		((DefaultTableModel)tablegudong.getModel()).setRowCount(0);
 		((AccountsInfoTableModel)(tableStockAccountsInfo.getModel())).deleteAllRows();
-		
 		
 		kspanel.resetInput ();
 		
@@ -2128,30 +2133,16 @@ public class StockInfoManager
 		scrlnodebankuai.getViewport().repaint();
 			
 		pnltags.removeAll();
-//		editorPaneBanKuai.setText("");
-//		panelZhanBi.resetDate();
-//		pnlGeGuWkZhanBi.resetDate();
-//		panelbkcje.resetDate();
-//		panelgegucje.resetDate();
-//		
-//		dateChsBanKuaiZhanbi.setDate(new Date() );
-//		btnResetDate.setEnabled(false);
-		
-//		//xml tree 应该也要刷新
 	}
 
 	private void enableGuiEditable () 
 	{
-		
 			dateChsgainian.setEnabled(true);
 			txtareagainiants.setEnabled(true);
 			dateChsquanshang.setEnabled(true);
 			txtfldquanshangpj.setEnabled(true);
 			dateChsefumian.setEnabled(true);
 			txtareafumianxx.setEnabled(true);
-//			txtfldzhengxg.setEnabled(true);
-//			txtfldfuxg.setEnabled(true);
-			
 			btnCaiwufengxi.setEnabled(true);
 			btnexportcsv.setEnabled(true);
 			btnRongzirongquan.setEnabled(true);
@@ -2164,12 +2155,8 @@ public class StockInfoManager
 			tblzhongdiangz.setEnabled(true);
 			btnMai.setEnabled(true);
 			btnSell.setEnabled(true);
-			
 			btnjiaruzdgz.setEnabled(true);
 			btnSongZhuanGu.setEnabled(true);
-//			tfdCustom.setEnabled(true);
-//			tfdJingZhengDuiShou.setEnabled(true);
-			
 			btnRemvZdy.setEnabled(true);
 			btndetailfx.setEnabled(true);
 			
@@ -2190,13 +2177,6 @@ public class StockInfoManager
 	 */
 	private void setGuiInfoToDatabase()
 	{
-
-//		String stockcode = "'" + formatStockCode((String)cBxstockcode.getSelectedItem()) + "'";
-//		if(stockcode.equals("''") )	{
-//			JOptionPane.showMessageDialog(null,"股票代码不可以为空！");
-//			return;
-//		}
-	    
 		nodeshouldbedisplayed.setMyOwnName(txtFldStockName.getText().trim().replaceAll("\\s*", "")); //去除股票名中间所有的空格
 		if(dateChsgainian.getDate() != null)
 			nodeshouldbedisplayed.getNodeJiBenMian().setGainiantishidate(dateChsgainian.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
@@ -2207,11 +2187,6 @@ public class StockInfoManager
 		if(dateChsefumian.getDate() != null)
 		nodeshouldbedisplayed.getNodeJiBenMian().setFumianxiaoxidate(dateChsefumian.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
 		nodeshouldbedisplayed.getNodeJiBenMian().setFumianxiaoxi(txtareafumianxx.getText().trim());
-//		nodeshouldbedisplayed.getNodeJiBenMian().setZhengxiangguan( txtfldzhengxg.getText().trim());
-//		nodeshouldbedisplayed.getNodeJiBenMian().setFuxiangguan(txtfldfuxg.getText().trim());
-//		nodeshouldbedisplayed.getNodeJiBenMian().setKeHuCustom(tfdCustom.getText().trim());
-//		nodeshouldbedisplayed.getNodeJiBenMian().setJingZhengDuiShou(tfdJingZhengDuiShou.getText().trim());
-	    
 	    if( bkdbopt.updateStockNewInfoToDb(nodeshouldbedisplayed) ) {
 	    	lblStatusBarOperationIndicatior.setText("");
 			lblStatusBarOperationIndicatior.setText("股票信息更新成功！");
@@ -2222,37 +2197,6 @@ public class StockInfoManager
 	    };
 		
 	}
-	
-/*
- * 	
- */
-//	private void updateStockCombox() 
-//	{
-//		boolean isaddItem=true;
-//		String tmp= formatStockCode((String)cBxstockcode.getSelectedItem());//有可能是原来输入过的，要把代码选择出来。
-//		
-//
-//	   	  //判断用户所输入的项目是否有重复，若有重复则不增加到JComboBox中。
-//	   	  try{
-//	   			  for(int i=0;i< cBxstockcode.getItemCount();i++) {
-//		   	  	  	  if (cBxstockcode.getItemAt(i).toString().substring(0, 6).equals(tmp)){
-//		   	  	  	  	 isaddItem=false;
-//		   	  	  	  	 break;
-//		   	  	  	  }
-//		   	  	  }
-//	   	  	  
-//	   	  	  
-//	   	  	  if (isaddItem){
-//	  			  tmp = nodeshouldbedisplayed.getMyOwnCode().trim() + nodeshouldbedisplayed.getMyOwnName().trim();
-//
-//	   	  		  cBxstockcode.insertItemAt(tmp,0);//插入项目tmp到0索引位置(第一列中).
-//	   	  	  }
-//	   	  }catch(NumberFormatException ne){
-//	   		
-//	   	  }
-//		
-//	}
-	
 	
 	private  void addPopup(Component component, final JPopupMenu popup) 
 	{
@@ -2282,10 +2226,10 @@ public class StockInfoManager
 
 	}
 	
-	private String formatStockCode (String stockcode)
-	{
-		return stockcode.substring(0,6).trim(); 
-	}
+//	private String formatStockCode (String stockcode)
+//	{
+//		return stockcode.substring(0,6).trim(); 
+//	}
 	
 	private void setTableNewInfoToDB(Object[] tableData) 
 	{
@@ -2306,18 +2250,6 @@ public class StockInfoManager
 
 	}
 	
-
-	private void updateSearchDialog ()
-	{
-//		try {
-//			if(searchdialog.isVisible())
-//				searchdialog.updateSearchGui ();
-//		} catch (java.lang.NullPointerException ex) {
-//			ex.printStackTrace();
-//		}
-		
-	}
-
 	private JFrame frame;
 	private JTextField txtfldquanshangpj;
 	private JButton btnSearchCode;
@@ -2388,6 +2320,7 @@ public class StockInfoManager
 	private JMenuItem mntmbkdwndata;
 	private JTable tablegudong;
 	private JMenuItem mntmShezhijigou;
+	private JMenuItem mntmRefreshgudong;
 	
 	/**
 	 * Initialize the contents of the frame.
@@ -2851,6 +2784,8 @@ public class StockInfoManager
 		
 		mntmShezhijigou = new JMenuItem("加入机构列表");
 		popupMenugudong.add(mntmShezhijigou);
+		mntmRefreshgudong = new JMenuItem("刷新股东名单");
+		popupMenugudong.add(mntmRefreshgudong);
 		
 		cBxstockcode = new JStockComboBox();
 
