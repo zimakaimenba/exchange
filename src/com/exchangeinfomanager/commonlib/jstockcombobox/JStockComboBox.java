@@ -113,9 +113,6 @@ public class JStockComboBox extends  JComboBox<String>
 	 */
 	public BkChanYeLianTreeNode updateUserSelectedNode (BkChanYeLianTreeNode node)
 	{
-//		SvsForNodeOfStock svsbk = new SvsForNodeOfStock ();
-//		svsbk.getNodeJiBenMian(stock);
-		
 		Integer alreadyin = ((JStockComboBoxModel)getModel()).hasTheNode(node.getMyOwnCode());
 		if(alreadyin == -1) {
 			((JStockComboBoxModel)getModel()).addElement( node );

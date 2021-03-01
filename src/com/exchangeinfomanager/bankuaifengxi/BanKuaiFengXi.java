@@ -428,7 +428,6 @@ public class BanKuaiFengXi extends JDialog
 			NodeXPeriodData bkxdata = ((TDXNodes)childnode).getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
 			if(bkxdata.getIndexOfSpecificDateOHLCData(checkdate, 0) != null)//板块当周没有数据也不考虑，板块一般不可能没有数据，没有数据说明该板块这周还没有诞生，或者过去有，现在成交量已经不存入数据库
 				bkwithcje.add( (BanKuai)childnode );
-
 		}
 		
 		return bkwithcje;
@@ -1035,22 +1034,20 @@ public class BanKuaiFengXi extends JDialog
             		
             		String selbk = evt.getNewValue().toString();
     				String selbkcode;
-    				if(selbk != null)
-    					 selbkcode = selbk.trim().substring(1, 7);
-    				else 
-    					return;
+    				if(selbk != null)	 selbkcode = selbk.trim().substring(1, 7);
+    				else 	return;
     				
     				int rowindex = 0;
     				try {
     					tableBkZhanBi.resetTableHeaderFilter ();
     					rowindex = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getNodeRowIndex(selbkcode);
-    				} catch (java.lang.NullPointerException  e) {
-    					logger.info("板块列表中没有找到 " + selbkcode + "，请转到板块设置中修改该板块设置。");
-//    					e.printStackTrace();
+    				} catch (java.lang.NullPointerException  e) { logger.info("板块列表中没有找到 " + selbkcode + "，请转到板块设置中修改该板块设置。");			return;}
+    				
+    				if(rowindex == -1) {
+    					JOptionPane.showMessageDialog(null,"该板块设置为不显示在板块列表中，请在 ‘重点关注与产业链’ 变更设置！","Warning",JOptionPane.WARNING_MESSAGE);
     					return;
     				}
-    				if(rowindex != -1) {
-    					
+
     					Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
     					setCursor(hourglassCursor);
     					
@@ -1059,7 +1056,7 @@ public class BanKuaiFengXi extends JDialog
     					tableBkZhanBi.scrollRectToVisible(new Rectangle(tableBkZhanBi.getCellRect(modelRow, 0, true)));
     					
     					//找到用户选择的板块
-    					 BkChanYeLianTreeNode selectedbk = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getNode(rowindex);
+    					BkChanYeLianTreeNode selectedbk = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getNode(rowindex);
     					unifiedOperationsAfterUserSelectABanKuai ( (BanKuai)selectedbk );
     					
     					//找不到该股票
@@ -1068,15 +1065,11 @@ public class BanKuaiFengXi extends JDialog
     					if(!findInputedNodeInTable (stockcode) )
     						JOptionPane.showMessageDialog(null,"在某个个股表内没有发现该股，可能在这个时间段内该股停牌","Warning",JOptionPane.WARNING_MESSAGE);
     					
-//    					Toolkit.getDefaultToolkit().beep();
     					hourglassCursor = null;
     					Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
     					setCursor(hourglassCursor2);
     					
     					SystemAudioPlayed.playSound();
-    				} else {
-    					JOptionPane.showMessageDialog(null,"该板块设置为不显示在板块列表中，请在 ‘重点关注与产业链’ 变更设置！","Warning",JOptionPane.WARNING_MESSAGE);
-    				}
             	}
             }
 		});
@@ -2451,14 +2444,18 @@ public class BanKuaiFengXi extends JDialog
 	{
 		String result = JOptionPane.showInputDialog("请输入板块代码");
 		if(result != null) {
-			BanKuai bk = (BanKuai) treeofbkstk.getSpecificNodeByHypyOrCode(result.trim(), BkChanYeLianTreeNode.TDXBK);
-			if(bk != null) {
-				SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai ();
+			BanKuai bk = (BanKuai) CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode(result.trim(), BkChanYeLianTreeNode.TDXBK);
+			if(bk == null)
+				bk = (BanKuai) CreateExchangeTree.CreateTreeOfDZHBanKuaiAndStocks().getSpecificNodeByHypyOrCode(result.trim(), BkChanYeLianTreeNode.DZHBK);
+			
+			if(bk == null)
+				return;
+			
+				ServicesForNodeBanKuai svsbk = bk.getBanKuaiService();
 				bk = svsbk.getAllGeGuOfBanKuai (bk); 
 				List<BkChanYeLianTreeNode> allbkgg = bk.getAllGeGuOfBanKuaiInHistory();
 				List<String> listNames = allbkgg.stream().map(u -> u.getMyOwnCode()).collect(Collectors.toList());
 				parseTempGeGeFromList (listNames);
-			}
 		}
 	}
 	/*
@@ -2533,10 +2530,7 @@ public class BanKuaiFengXi extends JDialog
 				tmpstock = (Stock) svstock.getNodeData( tmpstock , CommonUtility.getSettingRangeDate(curselectdate,"middle"), curselectdate,
 						globeperiod,this.globecalwholeweek);
 				svstock.syncNodeData(tmpstock);
-			} catch (java.lang.NullPointerException e) {
-				logger.info(tmpgegu + "数据有误！");
-				e.printStackTrace();
-			}
+			} catch (java.lang.NullPointerException e) {logger.info(tmpgegu + "数据有误！");e.printStackTrace();}
 
 			StockOfBanKuai bkofst = new StockOfBanKuai(tempbankuai,tmpstock);
 			LocalDate joindate = LocalDate.parse("1997-01-01");
@@ -3030,7 +3024,7 @@ public class BanKuaiFengXi extends JDialog
 //		decrorateExportButton (expc3);
 //	}
 	
-		/*
+	/*
 	 * 跑马灯
 	 */
 	private void initializePaoMaDeng() 
@@ -3094,60 +3088,35 @@ public class BanKuaiFengXi extends JDialog
 	private BanKuaiGeGuTableFromPropertiesFile tablexuandingplusone;
 	private BanKuaiGeGuTableFromPropertiesFile tableTempGeGu;
 	
-	
 	private final JPanel contentPanel = new JPanel();
 	private JStockCalendarDateChooser dateChooser; //https://toedter.com/jcalendar/
 	private JScrollPane sclpleft;
-
-	
-	
 	private JScrollPane editorPanebankuai;
 	private JButton btnresetdate;
 	private JStockComboBox combxstockcode;
-	
 	private JTabbedPane tabbedPanegegu;
-	
 	private JTabbedPane tabbedPanegeguzhanbi;
-
 	private JPanel tfldselectedmsg;
 	private JStockComboBox combxsearchbk;
-
-
-
-
 	private PaoMaDeng2 pnl_paomd;
 	private JTabbedPane tabbedPanebk;
 	private JButton btnexportcsv;
 	private Action exportCancelAction;
 	private Action bkfxCancelAction;
-
-	
-	
-
 	private BanKuaiAndStockTree cyltreecopy;
 	private JMenuItem menuItemRmvNodeFmFile;
-	
-	
-	
 	private JPopupMenu jPopupMenuoftabbedpane;
 	private JMenuItem menuItemliutong ; //系统默认按流通市值排名
 	private JMenuItem menuItemzongshizhi ;
 	private JMenuItem menuItemchengjiaoer ;
 //	private JMenuItem menuItemstocktocsv ;
-	
 //	private JPopupMenu jPopupMenuoftabbedpanebk;
 //	private JMenuItem menuItembktocsv ; //系统默认按流通市值排名
 	private JMenuItem menuItemsiglestocktocsv;
 //	private JProgressBar progressBarExport;
 	private JMenuItem menuItemsiglebktocsv;
-
-	
-
-	
-
 	private JMenuItem menuItemnonfixperiod;
 	private JScrollPane scrollPane_1;
-	
 	private JTabbedPane tabbedPanebkzb;
 	private JMenuItem menuItemnonshowselectbkinfo;
 	private JMenuItem menuItemQiangShibk;
@@ -3166,27 +3135,18 @@ public class BanKuaiFengXi extends JDialog
 	private JMenuItem menuItemTempGeGuFromTDXSw;
 //	private JComboBox cbbxmore;
 	private JMenuItem menuItemAddRmvStockToYellow;
-
 	private JMenuItem menuItemAddRmvBkToYellow;
-
 	private JMenuItem menuItemTempGeGuFromZhidingbk;
-
 	private JMenuItem menuItemsMrjh;
 	private JMenuItem menuItemTempGeGuClear;
 	private JMenuItem menuItemAddRmvStockToRed;
-
 	private JMenuItem menuItemDuanQiGuanZhu;
 	private JPanel pnlZhiShu;
-
 //	private JMenu menuItemhistorycsvfile;
-
 	private JMenu historycsvfileMenu;
-
-private BkfxHightLightPnl bkhlpnl;
-
-private JMenu stkhistorycsvfileMenu;
-
-private JMenuItem menuItemcancelreviewedtoday;
+	private BkfxHightLightPnl bkhlpnl;
+	private JMenu stkhistorycsvfileMenu;
+	private JMenuItem menuItemcancelreviewedtoday;
 	
 	
 	private void initializeGuiOfNormal() {
@@ -3329,7 +3289,7 @@ private JMenuItem menuItemcancelreviewedtoday;
 		tabbedPanebk.setUI(new com.exchangeinfomanager.commonlib.MetalBorderlessTabbedPaneUI());
 		combxstockcode = new JStockComboBox(BkChanYeLianTreeNode.TDXGG);
 		
-		combxsearchbk = new JStockComboBox(BkChanYeLianTreeNode.TDXBK);
+		combxsearchbk = new JStockComboBox();
 		combxsearchbk.setEditable(true);
 		
 		pnl_paomd = new PaoMaDeng2();
@@ -3773,7 +3733,7 @@ private JMenuItem menuItemcancelreviewedtoday;
 		tabbedPanebk.setUI(new com.exchangeinfomanager.commonlib.MetalBorderlessTabbedPaneUI());
 		combxstockcode = new JStockComboBox(BkChanYeLianTreeNode.TDXGG);
 		
-		combxsearchbk = new JStockComboBox(BkChanYeLianTreeNode.TDXBK);
+		combxsearchbk = new JStockComboBox();
 		combxsearchbk.setEditable(true);
 		
 		pnl_paomd = new PaoMaDeng2();
@@ -4141,9 +4101,6 @@ private JMenuItem menuItemcancelreviewedtoday;
 			tabbedPanegeguzhanbi.setSelectedIndex(0);
 		else
 			tabbedPanegeguzhanbi.setSelectedIndex(1);
-
-		
-		
 	}
 	/*
 	 * 个股表里的板块占比MAX暂时不用，先隐藏

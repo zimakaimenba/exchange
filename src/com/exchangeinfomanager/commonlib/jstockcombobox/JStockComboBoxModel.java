@@ -14,9 +14,8 @@ public class JStockComboBoxModel<BkChanYeLianTreeNode> extends DefaultComboBoxMo
 	 */
 	private static final long serialVersionUID = 1L;
 	private ArrayList<BkChanYeLianTreeNode> nodelist;
-//	 private AllCurrentTdxBKAndStoksTree allbkstock;
 
-	 BkChanYeLianTreeNode selection = null;
+	BkChanYeLianTreeNode selection = null;
 	private int onlyselectnodetype;
 	private LocalDate curdisplaydate;
 	

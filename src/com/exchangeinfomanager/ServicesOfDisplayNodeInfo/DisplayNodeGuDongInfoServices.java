@@ -35,38 +35,38 @@ public class DisplayNodeGuDongInfoServices implements ServicesOfNodeJiBenMianInf
 		String nodename = node.getMyOwnName();
      	String curbknodecode = node.getMyOwnCode();
      	
-       	int type = node.getType();
-       	if( type == BkChanYeLianTreeNode.TDXBK || type == BkChanYeLianTreeNode.DZHBK) 
+       	if( node.getType() != BkChanYeLianTreeNode.TDXGG) 
        		return null;
        	
-       	if( type == BkChanYeLianTreeNode.TDXGG) {
-       		ServicesOfNodeStock svsstk = new SvsForNodeOfStock ();
-       		if(this.requiredstart == null) {
-       			this.requiredstart = Season.getSeasonStartDate( LocalDate.now() );
-       			this.requiredstart = Season.getLastSeasonStartDate( this.requiredstart ); // find 2 season in row
-       		}
-       		if(this.requiredend == null)
-       			this.requiredend = Season.getSeasonEndDate( LocalDate.now() );
-	    	svsstk.getStockGuDong(node, "LiuTong", this.requiredstart, this.requiredend);
-	    	
-	    	if(!ArrayUtils.isNotEmpty( node.getNodeJiBenMian().getGuDongInfo() )) {  // if not data, find last season data
-	    		this.requiredstart = Season.getLastSeasonStartDate(this.requiredstart);
-	    		this.requiredend = Season.getLastSeasonEndDate(this.requiredend);
-	    		svsstk.getStockGuDong(node, "LiuTong", requiredstart, this.requiredend);
-	    	}	
+       		Object[][] dgObjects = this.node.getNodeJiBenMian().getGuDongInfo();
+       		if(!ArrayUtils.isNotEmpty( dgObjects )) {
+       			ServicesOfNodeStock svsstk = new SvsForNodeOfStock ();
+           		if(this.requiredstart == null) {
+           			this.requiredstart = Season.getSeasonStartDate( LocalDate.now() );
+           			this.requiredstart = Season.getLastSeasonStartDate( this.requiredstart ); // find 2 season in row
+           		}
+           		if(this.requiredend == null)	this.requiredend = Season.getSeasonEndDate( LocalDate.now() );
+    	    	svsstk.getStockGuDong(node, "LiuTong", this.requiredstart, this.requiredend);
+    	    	
+    	    	if(!ArrayUtils.isNotEmpty( node.getNodeJiBenMian().getGuDongInfo() )) {  // if not data, find last season data
+    	    		this.requiredstart = Season.getLastSeasonStartDate(this.requiredstart);
+    	    		requiredstart = Season.getLastSeasonStartDate(requiredstart);
+    	    		this.requiredend = Season.getLastSeasonEndDate(this.requiredend);
+    	    		svsstk.getStockGuDong(node, "LiuTong", requiredstart, this.requiredend);
+    	    	}	
 
-	    	svsstk = null;
-	    }
-       	
+    	    	svsstk = null;
+       		}
+        
+       		dgObjects = node.getNodeJiBenMian().getGuDongInfo();
+    	    if(dgObjects == null) 
+    	    	return null;
+    	    
         String htmlstring = ""; Boolean hasinfo = false;
 	    org.jsoup.nodes.Document doc = Jsoup.parse(htmlstring);
 	    org.jsoup.select.Elements content = doc.select("body"); 
-	       
 	    content.append("<h4 style=\"font-size:9px\">"+ curbknodecode + "" + nodename + "\"股东信息</h4>");
-	    Object[][] dgObjects = node.getNodeJiBenMian().getGuDongInfo();
-	    if(dgObjects == null) 
-	    	return null;
-	    
+	
 	    for(int i=0;i<dgObjects.length;i++) {
 	    	hasinfo = true;
 	    	   String output = "";

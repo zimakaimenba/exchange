@@ -142,6 +142,7 @@ import com.exchangeinfomanager.nodes.ServicesOfNodeStock;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.TDXNodes;
+import com.exchangeinfomanager.nodes.nodejibenmian.NodeJiBenMian;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.exchangeinfomanager.systemconfigration.DataBaseConfigration;
 import com.exchangeinfomanager.systemconfigration.SetupSystemConfiguration;
@@ -1033,9 +1034,13 @@ public class StockInfoManager
 				if(node.getType() != BkChanYeLianTreeNode.TDXGG)
 					return;
 				
+				((Stock)node).getNodeJiBenMian().setGuDongInfo(null);
 				JiGouService svsjg = new JiGouService ();
 				svsjg.getStockGuDong((Stock)node, true, true);
 				svsjg = null;
+				
+				refreshGudongInfo ( (Stock)node );
+				
  				return;
 			}	
 		});
@@ -1615,15 +1620,41 @@ public class StockInfoManager
 				if(exchangeresult == JOptionPane.CANCEL_OPTION)
 						return;
 					
-				try {
-						Desktop.getDesktop().open(new File(jbmexportresult));
-				} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-				}
+				try {	Desktop.getDesktop().open(new File(jbmexportresult));
+				} catch (IOException e1) {e1.printStackTrace();}
 			}
 		});
-}
+	}
+	/*
+	 * 
+	 */
+	protected void refreshGudongInfo(Stock node) 
+	{
+		ServicesOfNodeStock svsstk = node.getServicesOfNodeStock();
+   		LocalDate requiredstart = Season.getSeasonStartDate( LocalDate.now() );
+   		requiredstart = Season.getLastSeasonStartDate( requiredstart ); // find 2 season in row
+			LocalDate requiredend = Season.getSeasonEndDate( LocalDate.now() );
+    	svsstk.getStockGuDong(node, "LiuTong", requiredstart, requiredend);
+    	
+    	if(!ArrayUtils.isNotEmpty( nodeshouldbedisplayed.getNodeJiBenMian().getGuDongInfo() )) {  // if not data, find last season data
+    		requiredstart = Season.getLastSeasonStartDate(requiredstart);
+    		requiredstart = Season.getLastSeasonStartDate(requiredstart);
+    		requiredend = Season.getLastSeasonEndDate(requiredend);
+    		svsstk.getStockGuDong(node, "LiuTong", requiredstart, requiredend);
+    	}	
+    	svsstk = null;
+    	
+		((DefaultTableModel)tablegudong.getModel()).setRowCount(0);
+		Object[][] gudongObjects = node.getNodeJiBenMian().getGuDongInfo();
+		if(gudongObjects == null)
+			return;
+		
+		for(int i=0;i<gudongObjects.length;i++) 
+			((DefaultTableModel)tablegudong.getModel()).addRow(gudongObjects[i]);
+	}
+	/*
+	 * 
+	 */
 	protected void startChanyeLianDlg() 
 	{
 		if(cyldialog == null ) {
@@ -2062,48 +2093,13 @@ public class StockInfoManager
 				
 				try {dateChsefumian.setDate( Date.from(nodeshouldbedisplayed.getNodeJiBenMian().getFumianxiaoxidate().atStartOfDay(ZoneId.systemDefault()).toInstant()) );
 				} catch(java.lang.NullPointerException e) {dateChsefumian.setDate(null);}
-//				try {
-//					txtfldzhengxg.setText(nodeshouldbedisplayed.getNodeJiBenMian().getZhengxiangguan());
-//				} catch(java.lang.NullPointerException e) {
-//					txtfldzhengxg.setText("");
-//				}
-//				try {
-//					txtfldfuxg.setText(nodeshouldbedisplayed.getNodeJiBenMian().getFuxiangguan());
-//				} catch(java.lang.NullPointerException e) {
-//					txtfldfuxg.setText("");
-//				}
-//				try {
-//					tfdJingZhengDuiShou.setText(nodeshouldbedisplayed.getNodeJiBenMian().getJingZhengDuiShou());
-//				} catch(java.lang.NullPointerException e) {
-//					tfdJingZhengDuiShou.setText("");
-//				}
-//				try {
-//				tfdCustom.setText(nodeshouldbedisplayed.getNodeJiBenMian().getKeHuCustom());
-//				} catch(java.lang.NullPointerException e) {
-//					tfdCustom.setText("");
-//				}
 			
 			lblStatusBarOperationIndicatior.setText("");
 			lblStatusBarOperationIndicatior.setText("相关信息查找成功");
 			
-			if( nodeshouldbedisplayed.getType() == BkChanYeLianTreeNode.TDXGG) {
-	       		ServicesOfNodeStock svsstk = ((Stock)nodeshouldbedisplayed).getServicesOfNodeStock();
-	       		LocalDate requiredstart = Season.getSeasonStartDate( LocalDate.now() );
-	       		requiredstart = Season.getLastSeasonStartDate( requiredstart ); // find 2 season in row
-       			LocalDate requiredend = Season.getSeasonEndDate( LocalDate.now() );
-		    	svsstk.getStockGuDong((Stock)nodeshouldbedisplayed, "LiuTong", requiredstart, requiredend);
-		    	
-		    	if(!ArrayUtils.isNotEmpty( nodeshouldbedisplayed.getNodeJiBenMian().getGuDongInfo() )) {  // if not data, find last season data
-		    		requiredstart = Season.getLastSeasonStartDate(requiredstart);
-		    		requiredend = Season.getLastSeasonEndDate(requiredend);
-		    		svsstk.getStockGuDong((Stock)nodeshouldbedisplayed, "LiuTong", requiredstart, requiredend);
-		    	}	
-		    	svsstk = null;
-		    	Object[][] sellbuyObjects = (nodeshouldbedisplayed).getNodeJiBenMian().getGuDongInfo();
-				for(int i=0;i<sellbuyObjects.length;i++) {
-					((DefaultTableModel)tablegudong.getModel()).addRow(sellbuyObjects[i]);
-				}
-		    }
+			if( nodeshouldbedisplayed.getType() == BkChanYeLianTreeNode.TDXGG) 
+		    	refreshGudongInfo ((Stock)nodeshouldbedisplayed);
+		    
 	}
 	
 
