@@ -198,4 +198,10 @@ public class SvsForNodeOfFileNodes implements ServicesForNode
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public Collection<BkChanYeLianTreeNode> getNodesWithKeyWords(String keywords) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

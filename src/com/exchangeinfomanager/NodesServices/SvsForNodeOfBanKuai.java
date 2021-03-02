@@ -581,5 +581,12 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 		return node;
 		        
 	}
+
+	@Override
+	public Collection<BkChanYeLianTreeNode> getNodesWithKeyWords(String keywords)
+	{
+		Collection<BkChanYeLianTreeNode> result = this.bkdbopt.searchKeyWordsInBanKuaiJiBenMian (keywords);
+		return result;
+	}
 	
 }

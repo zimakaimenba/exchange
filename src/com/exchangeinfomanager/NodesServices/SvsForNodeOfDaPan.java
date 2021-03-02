@@ -266,4 +266,10 @@ public class SvsForNodeOfDaPan implements ServicesForNode
 		
 	}
 
+	@Override
+	public Collection<BkChanYeLianTreeNode> getNodesWithKeyWords(String keywords) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

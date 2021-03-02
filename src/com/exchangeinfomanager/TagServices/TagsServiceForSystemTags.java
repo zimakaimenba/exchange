@@ -129,6 +129,11 @@ public class TagsServiceForSystemTags implements TagService
 		Collection<BkChanYeLianTreeNode> nodesetfortagname = this.dboptforsys.getNodesSetWithAllSpecificTags (tagname);
 		 return nodesetfortagname;
 	}
+	public   Collection<BkChanYeLianTreeNode> getNodesSetWithAllSpecificKeyWordsInNodeJbm (String tagname)
+	{
+		Collection<BkChanYeLianTreeNode> nodesetfortagname = this.dboptforsys.getNodesSetWithAllSpecificTags (tagname);
+		 return nodesetfortagname;
+	}
 	public   Collection<BkChanYeLianTreeNode> getNodesSetWithAllSpecificTags (Collection<Tag> tags)
 	{
 		Collection<BkChanYeLianTreeNode> nodesetfortagname = this.dboptforsys.getNodesSetWithAllSpecificTags (tags);

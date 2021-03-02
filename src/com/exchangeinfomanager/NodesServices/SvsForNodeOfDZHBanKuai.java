@@ -196,5 +196,10 @@ public class SvsForNodeOfDZHBanKuai implements ServicesForNode ,ServicesForNodeB
 		
 		return node;
 	}
+	@Override
+	public Collection<BkChanYeLianTreeNode> getNodesWithKeyWords(String keywords) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

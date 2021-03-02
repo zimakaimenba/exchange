@@ -61,7 +61,19 @@ public class TagSearchMatrixPanelForWholeSearchTags extends TagSearchMatrixPanel
 
 	private void searchTags ()
 	{
-		Collection<BkChanYeLianTreeNode> nodesearchresult = super.sysservice.getNodesSetWithAllSpecificTags(tfldmusthavetags.getText());
+		Collection<BkChanYeLianTreeNode> nodesearchresult = super.sysservice.getNodesSetWithAllSpecificTags( tfldmusthavetags.getText() );
+		if(super.chkbxsearchgntsfmxx.isSelected()) {
+			SvsForNodeOfStock svsstock = new SvsForNodeOfStock ();
+			Collection<BkChanYeLianTreeNode> stockset = svsstock.getNodesWithKeyWords( tfldmusthavetags.getText() );
+			nodesearchresult.addAll(stockset);
+			svsstock = null;
+			
+			SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai ();
+			Collection<BkChanYeLianTreeNode> bkset = svsbk.getNodesWithKeyWords( tfldmusthavetags.getText() );
+			nodesearchresult.addAll(bkset);
+			svsbk = null;
+		}
+		
 		((TagSearchOnNodesTableModel)super.tblofnodes.getModel()).refresh(nodesearchresult);
 		
 		Collection<News> newsearchresult = super.sysservice.getNewsSetWithAllSpecificTags(tfldmusthavetags.getText());

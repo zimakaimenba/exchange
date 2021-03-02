@@ -1,9 +1,12 @@
 package com.exchangeinfomanager.gudong;
 
+import java.time.LocalDate;
+import java.util.Collection;
+
 import com.exchangeinfomanager.nodes.Stock;
 
 public interface ServicesForJiGou 
 {
 	public void addJiGou (String jigouname);
-	public Stock getStockGuDong (Stock stock, Boolean onlyimporjigougudong,  Boolean forcetorefrshallgudong);
+	public Collection<Stock> getJiGouStock(String jigouname, LocalDate requiredstart, LocalDate requiredend);
 }

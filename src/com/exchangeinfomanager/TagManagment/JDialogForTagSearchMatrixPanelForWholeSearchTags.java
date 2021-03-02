@@ -71,9 +71,7 @@ public class JDialogForTagSearchMatrixPanelForWholeSearchTags extends JDialog {
 			JDialogForTagSearchMatrixPanelForWholeSearchTags dialog = new JDialogForTagSearchMatrixPanelForWholeSearchTags();
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			dialog.setVisible(true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		} catch (Exception e) {	e.printStackTrace();}
 	}
 
 

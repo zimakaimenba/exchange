@@ -1,30 +1,32 @@
 package com.exchangeinfomanager.gudong;
 
-import com.exchangeinfomanager.database.BanKuaiDbOperation;
+import java.time.LocalDate;
+import java.util.Collection;
+
+import com.exchangeinfomanager.database.JiGouGuDongDbOperation;
 import com.exchangeinfomanager.nodes.Stock;
+
 
 public class JiGouService implements ServicesForJiGou
 {
-	BanKuaiDbOperation dbopt;
+	JiGouGuDongDbOperation dbopt;
 	
 	public JiGouService ()
 	{
-		dbopt = new BanKuaiDbOperation ();
+		dbopt = new JiGouGuDongDbOperation ();
 	}
 	
 	@Override
 	public void addJiGou(String jigouname) 
 	{
-		int result = dbopt.storeJiGouToDb (jigouname);
+		dbopt.storeJiGouToDb (jigouname);
 		return;
 	}
 
 	@Override
-	public Stock  getStockGuDong(Stock stock, Boolean onlyimportwithjigougudong, Boolean forcetorefrshallgudong) 
-	{
-		stock = dbopt.refreshStockGuDongData ( stock,  onlyimportwithjigougudong, forcetorefrshallgudong);
-		return stock;
-		
+	public Collection<Stock> getJiGouStock(String jigouname, LocalDate requiredstart, LocalDate requiredend) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

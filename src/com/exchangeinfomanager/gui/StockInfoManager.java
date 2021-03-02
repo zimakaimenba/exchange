@@ -40,7 +40,6 @@ import com.exchangeinfomanager.News.ServicesForNewsLabel;
 import com.exchangeinfomanager.NodesServices.SvsForNodeOfBanKuai;
 import com.exchangeinfomanager.NodesServices.SvsForNodeOfDaPan;
 import com.exchangeinfomanager.NodesServices.SvsForNodeOfStock;
-import com.exchangeinfomanager.Search.SearchDialog;
 import com.exchangeinfomanager.Services.ServicesOfPaoMaDeng;
 
 import com.exchangeinfomanager.ServicesOfDisplayNodeInfo.DisPlayNodeSuoShuBanKuaiListPanel;
@@ -187,16 +186,11 @@ import java.awt.FlowLayout;
 
 import javax.swing.JTabbedPane;
 import net.miginfocom.swing.MigLayout;
-import net.sf.javaml.clustering.Clusterer;
-import net.sf.javaml.clustering.KMeans;
-import net.sf.javaml.core.Dataset;
-import net.sf.javaml.core.DefaultDataset;
-import net.sf.javaml.core.DenseInstance;
-import net.sf.javaml.core.Instance;
+
 
 import com.exchangeinfomanager.commonlib.jstockcombobox.JStockComboBoxModel;
 import javax.swing.JComboBox;
-import java.awt.BorderLayout;
+
 import javax.swing.BoxLayout;
 import javax.swing.JSplitPane;
 import javax.swing.ListSelectionModel;
@@ -273,7 +267,6 @@ public class StockInfoManager
 	private BanKuaiGuanLi bkgldialog = null;
 	private BanKuaiFengXi bkfx ; ////////////////////////////////////////////////////////////////////////
 	private GeGuTDXFengXi ggfx ;
-	private SearchDialog searchdialog;
 	private WeeklyExportFileFengXi effx;
 	private TagCache bkstkkwcache;
 	private JDialogOfBanKuaiChanYeLian cyldialog;
@@ -813,22 +806,6 @@ public class StockInfoManager
 			}
 		});
 		
-		
-		
-		mntmNewMenuItem_1.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent arg0) 
-			{
-				initializeSearchDialog();
-				
-				if(!searchdialog.isVisible() ) {
-					 searchdialog.setVisible(true);
-				 } 
-				searchdialog.toFront();
-				
-			}
-		});
-		
 		btnXueQiu.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent arg0) 
@@ -1035,8 +1012,8 @@ public class StockInfoManager
 					return;
 				
 				((Stock)node).getNodeJiBenMian().setGuDongInfo(null);
-				JiGouService svsjg = new JiGouService ();
-				svsjg.getStockGuDong((Stock)node, true, true);
+				ServicesOfNodeStock svsjg = ((Stock)node).getServicesOfNodeStock();
+				svsjg.refreshStockGuDong( (Stock)node, true, true );
 				svsjg = null;
 				
 				refreshGudongInfo ( (Stock)node );
@@ -1846,22 +1823,6 @@ public class StockInfoManager
 			Object[] tableData = new Object[] { addedday, action,  buyresult, autoIncKeyFromApi ,actionstockaccount,"¸ö¹ÉÓ¯¿÷"};
 			DefaultTableModel tableModel = (DefaultTableModel) tblzhongdiangz.getModel();
 			tableModel.insertRow(0, tableData);
-			
-		}
-
-	}
-
-
-
-	protected void initializeSearchDialog() 
-	{
-		if(searchdialog == null ) {
-			try {
-				searchdialog = new SearchDialog (this);
-			} catch (java.lang.NullPointerException ex) {
-				
-			}
-		} else {
 			
 		}
 

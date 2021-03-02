@@ -19,6 +19,7 @@ import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDZHDbOperation;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.CylTreeDbOperation;
+import com.exchangeinfomanager.database.JiGouGuDongDbOperation;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.BanKuai;
@@ -31,49 +32,21 @@ import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDa
 
 public class SvsForNodeOfStock implements ServicesForNode, ServicesOfNodeStock
 {
-	private BanKuaiAndStockTree allbkstk;
+//	private BanKuaiAndStockTree allbkstk;
 	private BanKuaiDbOperation bkdbopt;
 	private CylTreeDbOperation dboptforcyltree;
-	private TreeOfChanYeLian cyltree;
+//	private TreeOfChanYeLian cyltree;
+	private JiGouGuDongDbOperation jgdbopt;
 
 	public SvsForNodeOfStock ()
 	{
-		allbkstk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks();
-		this.cyltree = CreateExchangeTree.CreateTreeOfChanYeLian();
+//		allbkstk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks();
+//		this.cyltree = ;
 		
 		this.bkdbopt = new BanKuaiDbOperation ();
-		dboptforcyltree = new CylTreeDbOperation (this.cyltree);
+		this.jgdbopt = new JiGouGuDongDbOperation ();
+		dboptforcyltree = new CylTreeDbOperation (CreateExchangeTree.CreateTreeOfChanYeLian());
 	}
-
-//	@Override
-//	public Collection<BkChanYeLianTreeNode> getNodes(Collection<String> nodenames) 
-//	{
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
-//
-//	@Override
-//	public BkChanYeLianTreeNode getNode(String nodenames) 
-//	{
-//		return allbkstk.getSpecificNodeByHypyOrCode(nodenames, BkChanYeLianTreeNode.TDXGG);
-//	}
-
-//	@Override
-//	public Collection<BkChanYeLianTreeNode> getAllNodes() 
-//	{
-//		Collection<BkChanYeLianTreeNode> allbks = new ArrayList<> ();
-//		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)allbkstk.getModel().getRoot();
-//		int bankuaicount = allbkstk.getModel().getChildCount(treeroot);
-//		for(int i=0;i< bankuaicount; i++) {
-//			BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode) this.allbkstk.getModel().getChild(treeroot, i);
-//			if(childnode.getType() != BkChanYeLianTreeNode.TDXGG) 
-//				continue;
-//			
-//			allbks.add(childnode);
-//		}
-//		
-//		return allbks;
-//	}
 
 	@Override
 	public BkChanYeLianTreeNode getNodeJiBenMian(BkChanYeLianTreeNode node)
@@ -84,16 +57,9 @@ public class SvsForNodeOfStock implements ServicesForNode, ServicesOfNodeStock
 
 	public BkChanYeLianTreeNode getStockGuDong(Stock node, String gudongtype ,LocalDate requiredstart, LocalDate requiredend)
 	{
-		node = bkdbopt.getStockGuDong (node, gudongtype, requiredstart, requiredend);
+		node = this.jgdbopt.getStockGuDong (node, gudongtype, requiredstart, requiredend);
 		return node;
 	} 
-//	@Override
-//	public Collection<BkChanYeLianTreeNode> getRequiredSubSetOfTheNodes(Set<String> subtypesset) 
-//	{
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
-
 	@Override
 	public BkChanYeLianTreeNode getNodeData(BkChanYeLianTreeNode stk, LocalDate requiredstartday,
 			LocalDate requiredendday, String period, Boolean calwholeweek)
@@ -527,7 +493,16 @@ public class SvsForNodeOfStock implements ServicesForNode, ServicesOfNodeStock
 		
 	}
 
-	
-	
-
+	@Override
+	public BkChanYeLianTreeNode refreshStockGuDong(Stock stock, Boolean onlyimportwithjigougudong,
+			Boolean forcetorefrshallgudong) {
+		stock = this.jgdbopt.refreshStockGuDongData ( stock,  onlyimportwithjigougudong, forcetorefrshallgudong);
+		return stock;
+	}
+	@Override
+	public Collection<BkChanYeLianTreeNode> getNodesWithKeyWords (String keywords)
+	{
+		Collection<BkChanYeLianTreeNode> result = this.bkdbopt.searchKeyWordsInStockJiBenMian (keywords);
+		return result;
+	}
 }

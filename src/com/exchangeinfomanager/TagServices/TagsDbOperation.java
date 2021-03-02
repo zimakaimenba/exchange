@@ -64,15 +64,9 @@ public class TagsDbOperation
 							return anewtag;
 						}
 			 		}
-		} catch (com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException exc) {
-						exc.printStackTrace();
-						return null;
-		} catch (MysqlDataTruncation e) {
-					e.printStackTrace();
-						return null;
-		} catch (SQLException e) {
-						e.printStackTrace();
-						return null;
+		} catch (com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException exc) {exc.printStackTrace();return null;
+		} catch (MysqlDataTruncation e) {e.printStackTrace();return null;
+		} catch (SQLException e) {e.printStackTrace();return null;
 		}
 		
 		return null;
@@ -98,16 +92,9 @@ public class TagsDbOperation
 		int autoIncKeyFromApi = 0;
 		try {
 			autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertquery);
-		} catch (com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException exc) {
-			exc.printStackTrace();
-			return null;
-		} catch (MysqlDataTruncation e) {
-			e.printStackTrace();
-			return null;
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return null;
-		}
+		} catch (com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException exc) {exc.printStackTrace();return null;
+		} catch (MysqlDataTruncation e) {e.printStackTrace();return null;
+		} catch (SQLException e) {e.printStackTrace();return null;}
 		
 		return new InsertedTag (newtag, autoIncKeyFromApi);
 	}
@@ -139,18 +126,10 @@ public class TagsDbOperation
  		        	InsertedTag label = new InsertedTag(newtag,id );
  	                labels.add(label);
  	        }
- 		} catch(java.lang.NullPointerException e) { 
- 	    	e.printStackTrace();
- 	    } catch(Exception e){
- 	    	e.printStackTrace();
- 	    }  finally {
- 	    	try {
- 	    		result.close();
- 	    		result = null;
- 	    		
- 			} catch (SQLException e) {
- 				e.printStackTrace();
- 			}
+ 		} catch(java.lang.NullPointerException e) {e.printStackTrace();
+ 	    } catch(Exception e){e.printStackTrace();
+ 	    } finally {
+ 	    	try {	result.close(); 		result = null;} catch (SQLException e) {e.printStackTrace();}
  	    }
 		return labels;
     }
@@ -626,18 +605,9 @@ public class TagsDbOperation
 			     nodecodeset.add (node);
 			}
 			 
-		}catch(java.lang.NullPointerException e){ 
-				e.printStackTrace();
-		} catch(Exception e){
-				e.printStackTrace();
-		}  finally {
-				try {
-					result.close();
-					result = null;
-					
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
+		} catch(java.lang.NullPointerException e) {e.printStackTrace();
+		} catch(Exception e){e.printStackTrace();
+		} finally {	try {result.close();result = null;	} catch (SQLException e) {e.printStackTrace();} 
 		}
 		
 		return nodecodeset;

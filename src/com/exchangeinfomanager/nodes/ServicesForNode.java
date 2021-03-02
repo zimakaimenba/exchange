@@ -28,5 +28,6 @@ public interface ServicesForNode
 	List<BkChanYeLianTreeNode> getNodeChanYeLianInfo (String nodecode  );
 	List<BkChanYeLianTreeNode> getNodeSlidingInChanYeLianInfo (String nodecode );
 	List<BkChanYeLianTreeNode> getNodeChildrenInChanYeLianInfo (String nodecode );
+	Collection<BkChanYeLianTreeNode> getNodesWithKeyWords(String keywords);
 	
 }

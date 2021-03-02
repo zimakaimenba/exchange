@@ -55,7 +55,7 @@ public class TagSearchMatrixPanel extends JPanel
 	protected TagsServiceForSystemTags sysservice;
 	protected JUpdatedTextField tfldmusthavetags;
 	protected JUpdatedTextField tfldoneoftags;
-	private JCheckBox chkbxsearchgntsfmxx;
+	protected JCheckBox chkbxsearchgntsfmxx;
 
 	/**
 	 * Create the panel.
@@ -221,6 +221,7 @@ public class TagSearchMatrixPanel extends JPanel
     	eastPanel.add(Box.createVerticalStrut(10));
     	
     	chkbxsearchgntsfmxx = new JCheckBox ("同时在概念提示和负面消息中搜索相同关键字。");
+    	chkbxsearchgntsfmxx.setSelected(true);
     	eastPanel.add(chkbxsearchgntsfmxx);
 
 	}
