@@ -1,6 +1,9 @@
 package com.exchangeinfomanager.bankuaifengxi.BankuaiAndGeguTableBasic;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -9,6 +12,8 @@ import javax.swing.table.DefaultTableModel;
 
 import org.apache.log4j.Logger;
 
+import com.exchangeinfomanager.Tag.Tag;
+import com.exchangeinfomanager.TagServices.TagsServiceForNodes;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchCondition;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
@@ -186,6 +191,21 @@ public abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 		  }
 		    
 		  switch (column_keyword) {
+		  case "keywords":
+			  TagsServiceForNodes tagsservicesfornode = new TagsServiceForNodes (node);
+		      Collection<Tag> nodetags = null;
+			  try { nodetags = tagsservicesfornode.getTags();
+			  } catch (SQLException e) {e.printStackTrace();}
+			  tagsservicesfornode = null;
+				
+		      String tagslist = " ";
+		      for (Iterator<Tag> it = nodetags.iterator(); it.hasNext(); ) {
+		    		Tag t = it.next();
+		    		tagslist = tagslist + t.getName() + "  ";
+		      }
+		      value = tagslist;
+			  break;
+			  
 		  		case "suoshubankuai" :
 		  			if (node.getType() == BkChanYeLianTreeNode.TDXBK) {
 		  				value = node.getMyOwnCode() + node.getMyOwnName();

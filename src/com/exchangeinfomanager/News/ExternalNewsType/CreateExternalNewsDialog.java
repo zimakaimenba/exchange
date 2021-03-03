@@ -99,11 +99,8 @@ public class CreateExternalNewsDialog  extends ExternalNewsDialog<ExternalNewsTy
                 try {
                 	NewsService.createNews(mt);
                 	setVisible(false);
-                } catch (com.mysql.jdbc.MysqlDataTruncation e2) {
-                	e2.printStackTrace();
-                }catch (SQLException e1) {
-                	e1.printStackTrace();
-                }
+                } catch (com.mysql.jdbc.MysqlDataTruncation e2) {e2.printStackTrace();
+                } catch (SQLException e1) {e1.printStackTrace();     }
       }
       
       private Boolean checkDuplicate(ExternalNewsType ExternalNewsType)

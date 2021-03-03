@@ -236,7 +236,7 @@ public class BanKuaiFengXi extends JDialog
 	}
 	
 	private static Logger logger = Logger.getLogger(BanKuaiFengXi.class);
-	
+ 	
 	private Properties bkfxsettingprop;
 	private Properties highlightpnlprop;
 	private String globeperiod;

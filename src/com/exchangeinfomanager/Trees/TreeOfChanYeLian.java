@@ -8,9 +8,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.swing.JComponent;
@@ -32,7 +34,7 @@ import com.sun.rowset.CachedRowSetImpl;
 
 public class TreeOfChanYeLian  extends BanKuaiAndStockTree
 {
-	private CylTreeNestedSetNode treeroot;
+//	private CylTreeNestedSetNode treeroot;
 	private CylTreeDbOperation dboptforcyl; 
 
 	public TreeOfChanYeLian (BkChanYeLianTreeNode bkcylrootnode,String treeid)
@@ -89,7 +91,7 @@ public class TreeOfChanYeLian  extends BanKuaiAndStockTree
 	private void createTreeOfChanYeLian ()
 	{
 		 List<BkChanYeLianTreeNode> nodelist = dboptforcyl.createTreeOfChanYeLian();
-		 treeroot = (CylTreeNestedSetNode)this.getModel().getRoot();
+		 CylTreeNestedSetNode treeroot = (CylTreeNestedSetNode)this.getModel().getRoot();
 		 treeroot.setNestedId (1);
 
 		 InvisibleTreeModel treemodel = (InvisibleTreeModel)this.getModel();
@@ -109,7 +111,22 @@ public class TreeOfChanYeLian  extends BanKuaiAndStockTree
 		 
 		 this.setTransferHandler(new TreeTransferHandler() );
 	}
-	
+	/*
+	 * 
+	 */
+	public Collection<BkChanYeLianTreeNode> getGuoPiaoChi ()
+	{
+		Collection<BkChanYeLianTreeNode> gpcset = new HashSet<> ();
+		
+		CylTreeNestedSetNode treeroot = (CylTreeNestedSetNode)this.getModel().getRoot();
+		 int bankuaicount = this.getModel().getChildCount(treeroot);
+		 for(int i=0;i< bankuaicount; i++) {
+			 BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode) this.getModel().getChild(treeroot, i);
+			 gpcset.add(childnode);
+		 }
+		 
+		 return gpcset;
+	}
 	/*
 	 * 
 	 */

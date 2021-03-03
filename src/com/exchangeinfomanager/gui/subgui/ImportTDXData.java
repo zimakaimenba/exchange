@@ -17,6 +17,7 @@ import com.exchangeinfomanager.commonlib.UserSelectingForMultiSameCodeNode;
 import com.exchangeinfomanager.commonlib.WrapLayout;
 import com.exchangeinfomanager.database.BanKuaiDZHDbOperation;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
+import com.exchangeinfomanager.database.JiGouGuDongDbOperation;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.systemconfigration.SetupSystemConfiguration;
 import com.exchangeinfomanager.zhidingyibankuai.TDXZhiDingYiBanKuaiServices;
@@ -381,6 +382,7 @@ public class ImportTDXData extends JDialog {
 			long start=System.currentTimeMillis(); //获取开始时间
 			BanKuaiDZHDbOperation dzhdbopt = new BanKuaiDZHDbOperation ();
 			dzhdbopt.refreshDZHGaiNianBanKuaiGeGu ();
+			dzhdbopt = null;
 			long end=System.currentTimeMillis(); //获取结束时间
 			System.out.println("......导入大智慧板块信息结束" + LocalTime.now()  + ".....导入耗费时间： "+(end-start)+"ms \r\n");
 		}
@@ -399,7 +401,9 @@ public class ImportTDXData extends JDialog {
 		if(chkbximportgudong.isSelected()) { //导入TUSHARE的股东数据
 			System.out.println("------导入股东信息开始" + LocalTime.now() );
 			long start=System.currentTimeMillis(); //获取开始时间
-			bkdbopt.refreshGuDongData (true);
+			JiGouGuDongDbOperation gudongdbopt = new JiGouGuDongDbOperation ();
+			gudongdbopt.refreshGuDongData (true);
+			gudongdbopt = null;
 			long end=System.currentTimeMillis(); //获取结束时间
 			System.out.println("......导入股东信息结束" + LocalTime.now()  + ".....导入耗费时间： "+(end-start)+"ms \r\n");
 		}

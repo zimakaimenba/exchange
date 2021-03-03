@@ -55,6 +55,7 @@ import com.exchangeinfomanager.News.Labels.ColorChooser;
 import com.exchangeinfomanager.StockCalendar.ColorScheme;
 import com.exchangeinfomanager.Tag.Tag;
 import com.exchangeinfomanager.TagServices.TagsServiceForURLAndFile;
+import com.exchangeinfomanager.Trees.CreateExchangeTree;
 import com.exchangeinfomanager.commonlib.JUpdatedTextField;
 import com.exchangeinfomanager.commonlib.JComboCheckBox.JComboCheckBox;
 import com.exchangeinfomanager.commonlib.JLocalDataChooser.JLocalDateChooser;
@@ -135,7 +136,9 @@ public class ExternalNewsDialog <T extends ExternalNewsType> extends JDialog
 			});
 			
 		}
-
+	    /*
+	     * 
+	     */
 		protected void createKeyWordsForZhiShuBoLang()
 		{
 			ColorChooser colorChooser = new ColorChooser();
@@ -143,7 +146,9 @@ public class ExternalNewsDialog <T extends ExternalNewsType> extends JDialog
             Color selectcolor = colorChooser.getColor();
             keywordsField.setText(String.format("#%06x", selectcolor.getRGB() & 0xFFFFFF) );
 		}
-
+		/*
+		 * 
+		 */
 		protected void createKeyWrordsGeneral() 
 		{
 			String urlcontent = "";
@@ -191,8 +196,8 @@ public class ExternalNewsDialog <T extends ExternalNewsType> extends JDialog
 	        this.labelListDialog = new LabelListDialog();
 	        
 	        if(this.NewsService instanceof DuanQiGuanZhuServices) {
-	        	CylTreeDbOperation cyldbopt = new CylTreeDbOperation ();
-	        	Set<BkChanYeLianTreeNode> gpc = cyldbopt.getGuPiaoChi();
+
+	        	Collection<BkChanYeLianTreeNode> gpc = CreateExchangeTree.CreateTreeOfChanYeLian().getGuoPiaoChi();
 	        	Vector v = new Vector();
 	        	for(BkChanYeLianTreeNode tmpgpc : gpc ) {
 	        		v.add(new JCheckBox(tmpgpc.getMyOwnName(),false));

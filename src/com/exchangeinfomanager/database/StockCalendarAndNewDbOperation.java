@@ -1203,6 +1203,7 @@ public final class StockCalendarAndNewDbOperation
     	String title = meeting.getTitle();
     	String description = meeting.getDescription().replace("'", " ");
     	String keywords = meeting.getKeyWords();
+    	if(keywords.contains("Ö¸Êý")) keywords = "";
     	String slackurl = meeting.getNewsUrl();
     	
     	InsertedNews InsertedNews = null;

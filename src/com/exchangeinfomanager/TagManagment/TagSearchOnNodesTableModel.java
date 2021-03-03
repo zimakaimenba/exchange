@@ -64,12 +64,9 @@ public class TagSearchOnNodesTableModel extends DefaultTableModel
 	    	BkChanYeLianTreeNode node = info.get(rowIndex);
 	    	TagsServiceForNodes tagsservicesfornode = new TagsServiceForNodes (node);
 	    	Collection<Tag> nodetags = null;
-			try {
-				nodetags = tagsservicesfornode.getTags();
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			try { nodetags = tagsservicesfornode.getTags();
+			} catch (SQLException e) {e.printStackTrace();}
+			
 	    	String tagslist = " ";
 	    	for (Iterator<Tag> it = nodetags.iterator(); it.hasNext(); ) {
 	    		Tag t = it.next();
