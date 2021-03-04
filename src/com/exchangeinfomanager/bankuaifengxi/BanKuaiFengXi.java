@@ -189,7 +189,7 @@ import com.exchangeinfomanager.bankuaifengxi.BankuaiAndGeguTableBasic.BandKuaiAn
 
 
 import java.awt.Graphics;
-
+import java.awt.Point;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import javax.swing.BoxLayout;
@@ -517,7 +517,6 @@ public class BanKuaiFengXi extends JDialog
 		if(allbkgg == null)
 			return;
 		
-		
 		for(BkChanYeLianTreeNode stockofbk : allbkgg)   {
 		    	if( ((StockOfBanKuai)stockofbk).isInBanKuaiAtSpecificDate(this.dateChooser.getLocalDate() )  ) {
 		    		Stock stock = ((StockOfBanKuai)stockofbk).getStock ();
@@ -526,12 +525,8 @@ public class BanKuaiFengXi extends JDialog
 					try {
 						tagsofstock = tagsevofnode.getTags();
 		    			stock.setNodeTags(tagsofstock);
-					} catch (SQLException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} finally {
-						tagsevofnode = null;
-					}
+					} catch (SQLException e) { e.printStackTrace();
+					} finally {	tagsevofnode = null;}
 		    	 }
 		}
 			
@@ -2895,8 +2890,9 @@ public class BanKuaiFengXi extends JDialog
 				extrainfotabpane.addTab(selectednode.getMyOwnName() + "股东信息", gdpnl);
 			}
 		}
-
 		pnlextrainfo.add(extrainfotabpane);
+		sclpinfosummary.getVerticalScrollBar().setValue(pnlextrainfo.getHeight() - extrainfotabpane.getHeight() );
+		
 		setUserSelectedColumnMessage( (TDXNodes)selectednode, this.dateChooser.getLocalDate());
 	}
 	/*

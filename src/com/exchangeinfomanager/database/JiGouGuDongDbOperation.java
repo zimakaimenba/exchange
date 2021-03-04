@@ -184,10 +184,12 @@ public class JiGouGuDongDbOperation
 		catch (UnsupportedEncodingException e) {e.printStackTrace(); return;}
 		
 		try {
-			String [] linevalue ; int linenumber = 1; Boolean foundjigou = false;
+			int linenumber = 1; Boolean foundjigou = false;
 			List<String[]> gdlinevalueforoneseason = new ArrayList<>();
 			LocalDate curseasondate = null;
-			while ( (linevalue = floatcsvreader.readNext() )!=null ) {
+//			while ( (linevalue = floatcsvreader.readNext() )!=null ) {
+			List<String[]> records = floatcsvreader.readAll();
+			for (String[] linevalue : records) {
 				LocalDate curlinedate;
 				try {
 					String gudongdate = linevalue[3];
@@ -227,6 +229,7 @@ public class JiGouGuDongDbOperation
 				foundjigou = false;
 				linenumber ++;
 			}
+			records = null;
 		} catch (IOException e) {e.printStackTrace();}
 		
 	}

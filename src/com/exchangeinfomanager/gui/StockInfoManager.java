@@ -2671,39 +2671,31 @@ public class StockInfoManager
 		tabbedPane_1.addTab("\u80A1\u4E1C\u540D\u5355", null, scrlpangudong, null);
 		
 		tablegudong = new JTable(){
-//			    public Component prepareRenderer(TableCellRenderer renderer, int row, int col) {
-//			 
-//		        Component comp = super.prepareRenderer(renderer, row, col);
-//		        Object value = getModel().getValueAt(row, col);
-//		        
-//		        try{
-//		        	if(value == null)
-//		        		return null;
-//		            if (value.toString().trim().contains("买入") && !value.toString().trim().contains("挂单") && 1==col) { 
-//		                comp.setForeground(Color.red);
-//		            } else if ( value.toString().trim().contains("卖出") && !value.toString().trim().contains("挂单") && 1==col) {
-//		                comp.setForeground(Color.green);
-//		            } else if( value.toString().trim().contains("挂单") && 1==col ) {
-//		            	comp.setBackground(Color.yellow);
-//		            } else if ("加入关注".equals(value.toString().trim()) && 1==col ) {
-//		                comp.setForeground(Color.blue);
-//		            } else if ( "盈利".equals(value.toString().trim()) && 1==col ) {
-//		            	comp.setBackground(Color.red);
-//		            } else if ( "亏损".equals(value.toString().trim()) && 1==col ) {
-//		            	comp.setBackground(Color.green);
-//		            } else if ("明日计划".equals(value.toString().trim()) && 1==col ) {
-//		            	comp.setBackground(Color.ORANGE);
-//		            }else {
-//		                comp.setBackground(Color.white);
-//		                comp.setForeground(Color.BLACK);
-//		            }
-//		        } catch (java.lang.NullPointerException e ){
-//		        	comp.setBackground(Color.white);
-//	                comp.setForeground(Color.BLACK);
-//		        }
-//		        
-//		        return comp;
-//		    }
+			    public Component prepareRenderer(TableCellRenderer renderer, int row, int col) {
+			 
+		        Component comp = super.prepareRenderer(renderer, row, col);
+		        Object value = getModel().getValueAt(row, col);
+		        
+		        comp.setBackground(Color.white);
+                comp.setForeground(Color.BLACK);
+		        
+		        if(col == 1) {
+//		        	LocalDate gudongdate = LocalDate.parse((String)value);
+		        	String seasonname = Season.getSeasonName( (LocalDate)value );
+		        	switch(seasonname) {
+		        	case "ONE": comp.setForeground(Color.BLACK);
+		        		break;
+		        	case "TWO": comp.setForeground(Color.BLUE);
+		        		break;
+		        	case "THREE": comp.setForeground(Color.YELLOW);
+		        		break;
+		        	case "FOUR": comp.setForeground(Color.RED);
+		        		break;
+		        	}
+		        }
+
+		        return comp;
+		    }
 			    
 			    public String getToolTipText(MouseEvent e) {
 	                String tip = null;
@@ -2713,9 +2705,7 @@ public class StockInfoManager
 
 	                try {
 	                    tip = getValueAt(rowIndex, colIndex).toString();
-	                } catch (RuntimeException e1) {
-	                    //catch null pointer exception if mouse is over an empty line
-	                }
+	                } catch (RuntimeException e1) {}
 
 	                return tip;
 	            }

@@ -3341,8 +3341,10 @@ public class BanKuaiDbOperation
 			OHLCSeries nodenewohlc = new OHLCSeries (stock.getMyOwnCode());
 			int linenumber =0;
 			
-			String [] linevalue ;
-			while ( (linevalue = stockcsvreader.readNext())!=null ) {
+//			String [] linevalue ;
+//			while ( (linevalue = stockcsvreader.readNext())!=null ) {
+			List<String[]> records = stockcsvreader.readAll();
+			for (String[] linevalue : records) {
 				linenumber ++;
 				
 				String recordsdate = linevalue[0];
@@ -3358,8 +3360,7 @@ public class BanKuaiDbOperation
 				
 				try {
 					if(curlinedate.isBefore(requiredstartday) || curlinedate.isAfter(requiredendday) ) continue;		
-				} catch (java.lang.NullPointerException e) { continue;
-				}
+				} catch (java.lang.NullPointerException e) { continue;}
 				// 为生成ohlc的时间做处理
 				java.sql.Date sqldate = null;
 				try {
@@ -3416,6 +3417,7 @@ public class BanKuaiDbOperation
 			this.calTDXNodesWeekyHighestAndLowestZhangFuForJFC (stock, lastdaydate.with(DayOfWeek.FRIDAY), nodenewohlc);;
 			
 			nodenewohlc = null;
+			records = null;
 		} catch (IOException e) {e.printStackTrace();}
 
 		return stock;
@@ -5906,8 +5908,11 @@ public class BanKuaiDbOperation
 								CSVReader csvReader = new CSVReader(filereader);
 					    ){ 
 					            // Reading Records One by One in a String array
-					            String[] nextRecord; int titlesign = -1;//标记网易CSV文件的第一行 
-					            while ((nextRecord = csvReader.readNext()) != null) {
+//					            String[] nextRecord; int titlesign = -1;//标记网易CSV文件的第一行
+//					            while ((nextRecord = csvReader.readNext()) != null) {
+							int titlesign = -1;//标记网易CSV文件的第一行
+							List<String[]> records = csvReader.readAll();
+							for (String[] nextRecord : records) {
 					            	if(-1 == titlesign) {
 						                String huanshoulv = nextRecord[10];
 						                String zongshizhi = nextRecord[13];
@@ -5985,7 +5990,7 @@ public class BanKuaiDbOperation
 					            	Files.append(stockcode + "网易文件没有数据，导入0个记录！" +  System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
 					            }
 					            
-					            
+					            records = null;
 					        } catch (IOException e) {
 								e.printStackTrace();
 							} 
