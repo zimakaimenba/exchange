@@ -3,6 +3,7 @@ package com.exchangeinfomanager.database;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -746,7 +747,7 @@ public class AccountDbOperation
 			String actionacnt = rs.getString("买卖账号").trim();
 
 			stocknumberpricepanel = new BuyStockNumberPrice(stockcode,null,maimaisign);
-			stocknumberpricepanel.setActionDay(actionday);
+			stocknumberpricepanel.setActionDay(actionday.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
 			stocknumberpricepanel.setJiaoYiGuShu(gushu);
 			stocknumberpricepanel.setJiaoYiJiaGe(chengben/gushu);
 			stocknumberpricepanel.setJiaoyiZhanghu(actionacnt);
@@ -768,18 +769,11 @@ public class AccountDbOperation
 				shuoming = tmpshuolist.get(0)+ "|" + replacement + "|" ;
 
 			stocknumberpricepanel.setJiaoYiShuoMing(shuoming);
-		} catch (SQLException e) {
-				e.printStackTrace();
-		} catch(Exception e){
-				e.printStackTrace();
+		} catch (SQLException e) {e.printStackTrace();
+		} catch(Exception e){e.printStackTrace();
 		}  finally {
 	    	if(rs != null)
-				try {
-					rs.close();
-					rs = null;
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
+				try {rs.close();rs = null;} catch (SQLException e) {e.printStackTrace();}
 	    }
 
 		
@@ -1187,21 +1181,14 @@ public class AccountDbOperation
 			stocknumberpricepanel.setJiaoYiJiaGe(chengben/gushu);
 			stocknumberpricepanel.setJiaoYiShuoMing (shuoming);
 			stocknumberpricepanel.setGuadan(guadan);
-			stocknumberpricepanel.setActionDay(jyriqi);
+			stocknumberpricepanel.setActionDay(jyriqi.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
 			stocknumberpricepanel.setJiaoyiZhanghu(tmpnewaccount); //旧表只要有数据库ID旧可以删除，新的买入/出需要新的账户ID
 			stocknumberpricepanel.setDatabaseid(databaseid);
-		} catch (SQLException e) {
-				e.printStackTrace();
-		} catch(Exception e){
-				e.printStackTrace();
+		} catch (SQLException e) {e.printStackTrace();
+		} catch(Exception e){e.printStackTrace();
 		} finally {
 	    	if(rs != null)
-				try {
-					rs.close();
-					rs = null;
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
+				try {rs.close();rs = null;	} catch (SQLException e) {e.printStackTrace();}
 	    }
 		
 		if(actionoldtable.equals(actionnewtable) ) { //同表只要update

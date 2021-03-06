@@ -1,8 +1,13 @@
 package com.exchangeinfomanager.nodes.nodejibenmian;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.joda.time.DateTime;
+import org.joda.time.Interval;
+
+import com.exchangeinfomanager.commonlib.Season;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
 public class NodeJiBenMian 
@@ -27,7 +32,37 @@ public class NodeJiBenMian
 			private Object[][] zdgzmrmcykRecords;
 			private Object[][] gudonginfo;
 			private List<BkChanYeLianTreeNode> cylinfo;
+			private List<Interval> hqgqgudong;
 			
+			public void addGuDongHqgqInterval (LocalDate time) {
+				if(hqgqgudong == null)
+					hqgqgudong = new ArrayList<> ();
+				
+				LocalDate seasonstart = Season.getSeasonStartDate(time);
+				LocalDate seasonend = Season.getSeasonEndDate(time);
+				
+				DateTime nodestartdt= new DateTime(seasonstart.getYear(), seasonstart.getMonthValue(), seasonstart.getDayOfMonth(), 0, 0, 0, 0);
+				DateTime nodeenddt = new DateTime(seasonend.getYear(), seasonend.getMonthValue(), seasonend.getDayOfMonth(), 0, 0, 0, 0);
+				Interval nodeinterval = new Interval(nodestartdt, nodeenddt);
+				
+				if(!hqgqgudong.contains(nodeinterval))
+					hqgqgudong.add(nodeinterval);
+			}
+			public Boolean hasHqgqGuDong (LocalDate time)
+			{
+				Boolean has = false;
+				for(Interval tmpinterval : hqgqgudong) {
+					DateTime newstartdt = tmpinterval.getStart();
+					DateTime newenddt = tmpinterval.getEnd();
+					
+					LocalDate requiredstartday = LocalDate.of(newstartdt.getYear(), newstartdt.getMonthOfYear(), newstartdt.getDayOfMonth()).minusDays(1);
+					LocalDate requiredendday = LocalDate.of(newenddt.getYear(), newenddt.getMonthOfYear(), newenddt.getDayOfMonth()).plusDays(1);
+					if(time.isAfter(requiredstartday) && time.isBefore(requiredendday))
+						has = true;
+				}
+				
+				return has;
+			}
 			
 			public List<BkChanYeLianTreeNode> getChanYeLianInfo ()
 			{

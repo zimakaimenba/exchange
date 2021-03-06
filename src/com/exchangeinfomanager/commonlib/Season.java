@@ -1,5 +1,6 @@
 package com.exchangeinfomanager.commonlib;
 
+import java.awt.Color;
 import java.time.LocalDate;
 
 public class Season 
@@ -65,7 +66,24 @@ public class Season
 					String result = date.getYear() 	+	seasonsenddate[ lasmonthvalue]		    		; 
 					return LocalDate.parse(result);
 				}
-				
 			}
+			public static Color getSeasonColor (LocalDate date)
+			{
+				Color result = null;
+				String seasonname = Season.getSeasonName( date );
+	        	switch(seasonname) {
+	        	case "ONE": result = Color.BLACK;
+	        		break;
+	        	case "TWO": result = Color.BLUE;
+	        		break;
+	        	case "THREE": result = Color.YELLOW;
+	        		break;
+	        	case "FOUR": result = Color.RED;
+	        		break;
+	        	}
+	        	
+	        	return result;
+			}
+			
 
 }

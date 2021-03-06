@@ -2366,7 +2366,7 @@ public class BanKuaiDbOperation
 		
 		HashMap<String, String> actiontables = this.getActionRelatedTables(currentbk,null);
 		String bktypetable = actiontables.get("股票板块对应表");
-		String bknametable = actiontables.get("板块指数名称表");
+//		String bknametable = actiontables.get("板块指数名称表");
 		if(bktypetable == null) 
 			return currentbk;
 
@@ -2386,16 +2386,12 @@ public class BanKuaiDbOperation
 						 			+ bktypetable + ".`股票权重` , "+ bktypetable + ".`板块龙头`, \r\n "
 						 			+ bktypetable + ".`加入时间`, " + bktypetable + ".`移除时间`  \r\n"
 						 			+ " from "+ bktypetable + ", a股\r\n" + 
-					 		"          where "+ bktypetable + ".`股票代码`  = a股.`股票代码`  AND a股.`已退市` IS NULL \r\n" + 
+					 		"          where "+ bktypetable + ".`股票代码`  = a股.`股票代码`   \r\n" + 
 					 		
 					 		"and (  (  Date("+ bktypetable + ".`加入时间`) between '" +  selecteddatestart + "'  and '" +  selecteddateend + "')\r\n" + 
 					 		"           		 or( ifnull("+ bktypetable + ".`移除时间`, '2099-12-31') between '" +  selecteddatestart + "'  and '" +  selecteddateend + "')\r\n" + 
 					 		"           		 or( Date("+ bktypetable + ".`加入时间`) <= '" +  selecteddatestart + "' and ifnull(" + bktypetable + ".`移除时间`, '2099-12-31') >= '" +  selecteddateend + "' )\r\n" + 
 					 		"			  )" +
-//					 		"           and '" +  formatedstartdate + "' >= Date("+ bktypetable + ".`加入时间`)\r\n" + 
-//					 		"           and '" +  formatedenddate + "' <  ifnull("+ bktypetable + ".`移除时间`, '2099-12-31')\r\n" + 
-					 		
-					 		
 					 		"           and "+ bktypetable + ".`板块代码` =  '" + currentbkcode + "'\r\n" + 
 					 		"         \r\n"  
 					 		;
@@ -2466,6 +2462,10 @@ public class BanKuaiDbOperation
 		
 		return currentbk;
 	}
+	/*
+	 * 
+	 */
+	
 	/*
 	 * 查找在市值范围内的所有股票代码,日期如果是周六/日按周五的市值
 	 */

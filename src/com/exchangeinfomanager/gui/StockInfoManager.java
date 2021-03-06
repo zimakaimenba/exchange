@@ -1113,6 +1113,7 @@ public class StockInfoManager
 					saveKuaiSuJiLuJiaoYi ();
 					return ;
 				}
+				
 				BkChanYeLianTreeNode buynode = 	(BkChanYeLianTreeNode) cBxstockcode.getSelectedItem();
 				BuyStockNumberPrice stocknumberpricepanel = new BuyStockNumberPrice ( buynode.getMyOwnCode(),accountschicangconfig,true);
 				int exchangeresult = JOptionPane.showConfirmDialog(null, stocknumberpricepanel, "买入交易细节", JOptionPane.OK_CANCEL_OPTION);
@@ -1131,7 +1132,6 @@ public class StockInfoManager
 				}
 				
 				int autoIncKeyFromApi = accountschicangconfig.buySellYuanZiOpertion (stocknumberpricepanel);
-				
 				if(autoIncKeyFromApi > 0) {
 					stocknumberpricepanel.setDatabaseid(autoIncKeyFromApi);
 					updatActionResultToGui (stocknumberpricepanel);
@@ -1733,7 +1733,6 @@ public class StockInfoManager
 		protected void saveKuaiSuJiLuJiaoYi() 
 		{
 			try {
-				
 				@SuppressWarnings("unused")
 				int stocknumber = kspanel.getJiaoyiGushu();
 				@SuppressWarnings("unused")
@@ -1749,15 +1748,11 @@ public class StockInfoManager
 					setGuiInfoToDatabase();
 				}
 			}
-			
-			kspanel.setActionDay(new Date());
+
 			int autoIncKeyFromApi = accountschicangconfig.buySellYuanZiOpertion (kspanel); 
-			
 			if(autoIncKeyFromApi > 0) {
 				cBxstockcode.updateUserSelectedNode(kspanel.getStockcode());
 				preUpdateSearchResultToGui(kspanel.getStockcode());
-//				updateStockCombox();
-				
 				kspanel.resetInput(); 
 			} else {
 				JOptionPane.showMessageDialog(frame, "账户现金余额可能不足，无法买入！","Warning", JOptionPane.WARNING_MESSAGE);
@@ -1765,7 +1760,6 @@ public class StockInfoManager
 			}
 			
 			refreshChiCangAccountPanel ();
-			
 		}
 		/*
 		 * 
@@ -2679,20 +2673,8 @@ public class StockInfoManager
 		        comp.setBackground(Color.white);
                 comp.setForeground(Color.BLACK);
 		        
-		        if(col == 1) {
-//		        	LocalDate gudongdate = LocalDate.parse((String)value);
-		        	String seasonname = Season.getSeasonName( (LocalDate)value );
-		        	switch(seasonname) {
-		        	case "ONE": comp.setForeground(Color.BLACK);
-		        		break;
-		        	case "TWO": comp.setForeground(Color.BLUE);
-		        		break;
-		        	case "THREE": comp.setForeground(Color.YELLOW);
-		        		break;
-		        	case "FOUR": comp.setForeground(Color.RED);
-		        		break;
-		        	}
-		        }
+		        if(col == 1) 
+		        	comp.setForeground( Season.getSeasonColor( (LocalDate)value ) );
 
 		        return comp;
 		    }

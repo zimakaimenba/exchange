@@ -10,6 +10,7 @@ import javax.swing.JLabel;
 import javax.swing.JComboBox;
 
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountInfoBasic;
+import com.exchangeinfomanager.commonlib.JLocalDataChooser.JLocalDateChooser;
 import com.exchangeinfomanager.AccountAndChiCang.AccountAndChiCangConfiguration;
 
 
@@ -145,7 +146,7 @@ public class BuyStockNumberPrice extends JPanel
 		tfldJiage.setText("");
 		tfldGushu.setText("");
 		chckbxNewCheckBox.setSelected(true);
-		dChsActionDay.setDate(new Date());
+		dChsActionDay.setLocalDate(LocalDate.now() );
 		tfdShuoMing.setText("");
 	}
 
@@ -269,9 +270,9 @@ public class BuyStockNumberPrice extends JPanel
 	{
 		this.dChsActionDay.setDate(Date.from(datetime.atZone(ZoneId.systemDefault()).toInstant()));
 	}
-	public void setActionDay (Date date) 
+	public void setLActionDay (LocalDate date) 
 	{
-		this.dChsActionDay.setDate(date);
+		this.dChsActionDay.setLocalDate(date);
 	}
 	public int getProfitDatabaseid ()
 	{
@@ -304,7 +305,7 @@ public class BuyStockNumberPrice extends JPanel
 	private JLabel lblNewLabel;
 	private JLabel lblNewLabel_1;
 	private JLabel lblNewLabel_2;
-	private JDateChooser dChsActionDay;
+	private JLocalDateChooser dChsActionDay;
 	private JTextField tfldStockCode;
 	private JTextField tfldGushu;
 	private JComboBox<String> cbxZhanghu;
@@ -337,9 +338,9 @@ public class BuyStockNumberPrice extends JPanel
 		tfdShuoMing = new JTextField();
 		tfdShuoMing.setColumns(10);
 		
-		dChsActionDay = new JDateChooser();
+		dChsActionDay = new JLocalDateChooser();
 		dChsActionDay.setDateFormatString("yyyy-MM-dd HH:mm:ss");
-		dChsActionDay.setDate(new Date());
+		dChsActionDay.setLocalDate(LocalDate.now());
 		
 		tfldStockCode = new JTextField();
 		tfldStockCode.setColumns(10);

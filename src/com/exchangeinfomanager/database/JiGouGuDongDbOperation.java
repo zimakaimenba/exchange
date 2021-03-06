@@ -20,8 +20,10 @@ import org.apache.log4j.Logger;
 
 import com.exchangeinfomanager.Trees.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.Trees.CreateExchangeTree;
+import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.Stock;
+import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.systemconfigration.SetupSystemConfiguration;
 import com.mysql.jdbc.MysqlDataTruncation;
 import com.opencsv.CSVReader;
@@ -389,6 +391,52 @@ public class JiGouGuDongDbOperation
 		
 	    
 	 return nodeset;
+	}
+	/*
+	 * 
+	 */
+	public void checkBanKuaiGeGuHasHuangQinGuoQieAndMingXin (BanKuai bk, LocalDate checkdate)
+	{
+		String bkggstr = "";
+		List<BkChanYeLianTreeNode> bkgg = bk.getAllGeGuOfBanKuaiInHistory();
+		for(BkChanYeLianTreeNode stockofbk : bkgg) 
+			if( ((StockOfBanKuai)stockofbk).isInBanKuaiAtSpecificDate(checkdate)  ) 
+				bkggstr = bkggstr + "'" + stockofbk.getMyOwnCode() +  "', ";
+		bkggstr = bkggstr.substring(0, bkggstr.length() -2);
+		
+		String sqlstat = "SELECT *\r\n" + 
+				"FROM 股票股东对应表\r\n" + 
+				"WHERE 机构名称 REGEXP  \r\n" + 
+				" (SELECT \r\n" + 
+				"   GROUP_CONCAT(DISTINCT 机构名称 SEPARATOR '|')\r\n" + 
+				"FROM 机构股东\r\n" + 
+				"WHERE 皇亲国戚 = TRUE OR 明星 = TRUE )\r\n" + 
+				"AND 代码 \r\n" + 
+				"IN  "
+				+ "(" + bkggstr + ") \r\n"
+				+ "GROUP BY 股票股东对应表.`代码`, 股票股东对应表.`股东日期` "
+				;
+		CachedRowSetImpl  rs = null;
+		try {
+			rs = connectdb.sqlQueryStatExecute(sqlstat);
+			while(rs.next() ) {
+				String stockcode = rs.getString("代码");
+				Stock node = (Stock)CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode(stockcode, BkChanYeLianTreeNode.TDXGG);
+				if(node == null) 
+					continue;
+				
+				LocalDate gddate = rs.getDate("股东日期").toLocalDate();
+				node.getNodeJiBenMian().addGuDongHqgqInterval (gddate);
+			}
+		} catch(java.lang.NullPointerException e) {
+	    } catch(Exception e){e.printStackTrace();
+	    } finally {
+	    	if(rs != null)
+			try { rs.close();rs = null;
+			} catch (SQLException e) {e.printStackTrace();}
+	    }
+		
+		return;
 	}
 
 }

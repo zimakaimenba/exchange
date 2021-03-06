@@ -1,9 +1,12 @@
 package com.exchangeinfomanager.ServicesOfDisplayNodeInfo;
 
+import java.awt.Color;
 import java.time.LocalDate;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import com.exchangeinfomanager.NodesServices.SvsForNodeOfStock;
 import com.exchangeinfomanager.commonlib.Season;
@@ -32,8 +35,8 @@ public class DisplayNodeGuDongInfoServices implements ServicesOfNodeJiBenMianInf
 	@Override
 	public String getRequiredHtmlInfo() 
 	{
-		String nodename = node.getMyOwnName();
-     	String curbknodecode = node.getMyOwnCode();
+//		String nodename = node.getMyOwnName();
+//     	String curbknodecode = node.getMyOwnCode();
      	
        	if( node.getType() != BkChanYeLianTreeNode.TDXGG) 
        		return null;
@@ -64,22 +67,70 @@ public class DisplayNodeGuDongInfoServices implements ServicesOfNodeJiBenMianInf
     	    
         String htmlstring = ""; Boolean hasinfo = false;
 	    org.jsoup.nodes.Document doc = Jsoup.parse(htmlstring);
+	    
+	    Elements head = doc.select("head");
+	    for (Element hd : head) {
+//	    	org.jsoup.nodes.Element style = hd.appendElement("style");
+//	    	style.append("table, th, td {\r\n" + 
+//		    		"  border: 1px solid black;\r\n" + 
+//		    		"  border-collapse: collapse;\r\n" + 
+//		    		"}");
+	    }
+	    
 	    org.jsoup.select.Elements content = doc.select("body"); 
-	    content.append("<h4 style=\"font-size:9px\">"+ curbknodecode + "" + nodename + "\"股东信息</h4>");
-	
-	    for(int i=0;i<dgObjects.length;i++) {
-	    	hasinfo = true;
-	    	   String output = "";
-	    	   try {
-	    		   String output1 = dgObjects[i][0].toString();
-	    		   String output2 = dgObjects[i][1].toString();
-	    		   String output3 = dgObjects[i][2].toString();
+	    for (Element ct : content) {
+	    	org.jsoup.nodes.Element table = ct.appendElement("table");
+	    	table.attr("border", "1");
+	    	table.attr("cellpadding", "0");  
+	    	table.attr("cellspacing", "0");
+	    	
+	    	org.jsoup.nodes.Element trheader = table.appendElement("tr");
+	    	org.jsoup.nodes.Element thgdname = trheader.appendElement("th");
+	    	org.jsoup.nodes.Element fontgdname = thgdname.appendElement("font");
+	    	fontgdname.attr("size", "3");
+	    	fontgdname.appendText("股东名称");
+	    	
+	    	org.jsoup.nodes.Element thgddate = trheader.appendElement("th");
+	    	org.jsoup.nodes.Element fontgddate = thgddate.appendElement("font");
+	    	fontgddate.attr("size", "3");
+	    	fontgddate.appendText("股东日期");
+	    	
+	    	org.jsoup.nodes.Element thgdnum = trheader.appendElement("th");
+	    	org.jsoup.nodes.Element fontgdnum = thgdnum.appendElement("font");
+	    	fontgdnum.attr("size", "3");
+	    	fontgdnum.appendText("持股数量");
+	    	
+	    	for(int i=0;i<dgObjects.length;i++) {
+	    		hasinfo = true;
+	    		
+	    		String output1 = dgObjects[i][0].toString();
+	    		String output2 = dgObjects[i][1].toString();
+	    		String output3 = dgObjects[i][2].toString();
 	    		   
-	    		   output =  output1 + " " + output2 + " " + output3;
-	    	   } catch (java.lang.Exception e) {e.printStackTrace();}
-	    	   
-	    	   content.append( "<p style=\"font-size:9px\">"+ output + "</p>" );
-	   }
+	    		org.jsoup.nodes.Element trdata = table.appendElement("tr");
+		    	org.jsoup.nodes.Element tmpthgdname = trdata.appendElement("th");
+		    	org.jsoup.nodes.Element tmpfontgdname = tmpthgdname.appendElement("font");
+		    	tmpfontgdname.attr("size", "3");
+		    	tmpfontgdname.attr("face", "verdana");
+		    	tmpfontgdname.appendText(output1);
+		    	
+		    	org.jsoup.nodes.Element tmpthgddate = trdata.appendElement("th");
+		    	org.jsoup.nodes.Element tmpfontgddate = tmpthgddate.appendElement("font");
+		    	tmpfontgddate.attr("size", "2");
+		    	tmpfontgddate.attr("face", "verdana");
+		    	Color seasoncolor = Season.getSeasonColor( (LocalDate)dgObjects[i][1] );
+		    	String seasonresult = String.format("#%02x%02x%02x", seasoncolor.getRed(), seasoncolor.getGreen(), seasoncolor.getBlue());
+		    	tmpfontgddate.attr("color", seasonresult);
+		    	tmpfontgddate.appendText(output2);
+		    	
+		    	org.jsoup.nodes.Element tmpthgdnum = trdata.appendElement("th");
+		    	org.jsoup.nodes.Element tmpfontgdnum = tmpthgdnum.appendElement("font");
+		    	tmpfontgdnum.attr("size", "3");
+		    	tmpfontgdnum.attr("face", "verdana");
+		    	tmpfontgdnum.appendText(output3);
+	    		
+	    	}
+	    }
 	     
 	    if(hasinfo) {
 	    	htmlstring = doc.toString();
@@ -87,4 +138,6 @@ public class DisplayNodeGuDongInfoServices implements ServicesOfNodeJiBenMianInf
 	    } else
 	    	return null;
 	}
+	
+	
 }

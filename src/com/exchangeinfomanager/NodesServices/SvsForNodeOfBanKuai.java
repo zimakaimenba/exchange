@@ -20,6 +20,7 @@ import com.exchangeinfomanager.Trees.TreeOfChanYeLian;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.CylTreeDbOperation;
+import com.exchangeinfomanager.database.JiGouGuDongDbOperation;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.ServicesForNode;
@@ -35,6 +36,7 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 	private BanKuaiDbOperation bkdbopt;
 	private CylTreeDbOperation dboptforcyltree;
 	private TreeOfChanYeLian cyltree;
+	private JiGouGuDongDbOperation gddbopt;
 
 	public SvsForNodeOfBanKuai ()
 	{
@@ -42,6 +44,7 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 		
 		this.bkdbopt = new BanKuaiDbOperation ();
 		dboptforcyltree = new CylTreeDbOperation (this.cyltree);
+		gddbopt = new JiGouGuDongDbOperation ();
 	}
 
 	@Override
@@ -507,7 +510,9 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 			    	 }
 			}
 			
-			if(calwholeweek ) { //
+			gddbopt.checkBanKuaiGeGuHasHuangQinGuoQieAndMingXin(bk, requiredendday); //查询板块个股是否有皇亲国戚
+
+			if(calwholeweek ) { 
 				this.getNodeQueKouInfo(bk, requiredstartday, requiredendday, period);
 				this.getNodeZhangDieTingInfo(bk, requiredstartday, requiredendday, period);
 			}
