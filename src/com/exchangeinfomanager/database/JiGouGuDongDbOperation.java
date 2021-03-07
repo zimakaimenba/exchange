@@ -404,18 +404,41 @@ public class JiGouGuDongDbOperation
 				bkggstr = bkggstr + "'" + stockofbk.getMyOwnCode() +  "', ";
 		bkggstr = bkggstr.substring(0, bkggstr.length() -2);
 		
-		String sqlstat = "SELECT *\r\n" + 
+		String sqlstat = "SELECT * FROM \r\n" + 
+				"(\r\n" + 
+				"SELECT *\r\n" + 
 				"FROM 股票股东对应表\r\n" + 
 				"WHERE 机构名称 REGEXP  \r\n" + 
 				" (SELECT \r\n" + 
 				"   GROUP_CONCAT(DISTINCT 机构名称 SEPARATOR '|')\r\n" + 
 				"FROM 机构股东\r\n" + 
 				"WHERE 皇亲国戚 = TRUE OR 明星 = TRUE )\r\n" + 
-				"AND 代码 \r\n" + 
-				"IN  "
-				+ "(" + bkggstr + ") \r\n"
-				+ "GROUP BY 股票股东对应表.`代码`, 股票股东对应表.`股东日期` "
+				"AND 代码 IN  (" + bkggstr + ") \r\n" + 
+				"GROUP BY 股票股东对应表.`代码`, 股票股东对应表.`股东日期` \r\n" + 
+				"ORDER  BY 股票股东对应表.`股东日期` DESC \r\n" + 
+				") gd\r\n" + 
+				"LEFT  JOIN \r\n" + 
+				"(\r\n" + 
+				"SELECT 股票股东对应表.`代码` dm,  MAX( 股票股东对应表.`股东日期`)  maxgdrq \r\n" + 
+				"FROM 股票股东对应表\r\n" + 
+				"WHERE 代码 IN  (" + bkggstr + ") \r\n" + 
+				"GROUP BY 股票股东对应表.`代码`)  gdmaxtime\r\n" + 
+				" \r\n" + 
+				"ON gd.`代码` = gdmaxtime.dm"
 				;
+//		String sqlstat = "SELECT *\r\n" + 
+//				"FROM 股票股东对应表\r\n" + 
+//				"WHERE 机构名称 REGEXP  \r\n" + 
+//				" (SELECT \r\n" + 
+//				"   GROUP_CONCAT(DISTINCT 机构名称 SEPARATOR '|')\r\n" + 
+//				"FROM 机构股东\r\n" + 
+//				"WHERE 皇亲国戚 = TRUE OR 明星 = TRUE )\r\n" + 
+//				"AND 代码 \r\n" + 
+//				"IN  "
+//				+ "(" + bkggstr + ") \r\n"
+//				+ "GROUP BY 股票股东对应表.`代码`, 股票股东对应表.`股东日期` \r\n"
+//				+ " ORDER  BY 股票股东对应表.`股东日期` DESC "
+//				;
 		CachedRowSetImpl  rs = null;
 		try {
 			rs = connectdb.sqlQueryStatExecute(sqlstat);
@@ -427,6 +450,9 @@ public class JiGouGuDongDbOperation
 				
 				LocalDate gddate = rs.getDate("股东日期").toLocalDate();
 				node.getNodeJiBenMian().addGuDongHqgqInterval (gddate);
+				
+				LocalDate maxgdrq = rs.getDate("maxgdrq").toLocalDate();
+				node.getNodeJiBenMian().setLastestCaiBaoDate(maxgdrq);
 			}
 		} catch(java.lang.NullPointerException e) {
 	    } catch(Exception e){e.printStackTrace();

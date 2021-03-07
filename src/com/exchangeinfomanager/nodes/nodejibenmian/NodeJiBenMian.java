@@ -33,7 +33,19 @@ public class NodeJiBenMian
 			private Object[][] gudonginfo;
 			private List<BkChanYeLianTreeNode> cylinfo;
 			private List<Interval> hqgqgudong;
+			private LocalDate lastestcaibaoriqi;
 			
+			public void setLastestCaiBaoDate (LocalDate time)
+			{
+				if(lastestcaibaoriqi == null)
+					lastestcaibaoriqi = time;
+				else if(!this.lastestcaibaoriqi.equals(time))
+					lastestcaibaoriqi = time;
+			}
+			public LocalDate getLastestCaiBaoDate ()
+			{
+				return lastestcaibaoriqi;
+			}
 			public void addGuDongHqgqInterval (LocalDate time) {
 				if(hqgqgudong == null)
 					hqgqgudong = new ArrayList<> ();
@@ -51,14 +63,19 @@ public class NodeJiBenMian
 			public Boolean hasHqgqGuDong (LocalDate time)
 			{
 				Boolean has = false;
+				if(hqgqgudong == null)
+					return false;
+				
 				for(Interval tmpinterval : hqgqgudong) {
 					DateTime newstartdt = tmpinterval.getStart();
 					DateTime newenddt = tmpinterval.getEnd();
 					
 					LocalDate requiredstartday = LocalDate.of(newstartdt.getYear(), newstartdt.getMonthOfYear(), newstartdt.getDayOfMonth()).minusDays(1);
 					LocalDate requiredendday = LocalDate.of(newenddt.getYear(), newenddt.getMonthOfYear(), newenddt.getDayOfMonth()).plusDays(1);
-					if(time.isAfter(requiredstartday) && time.isBefore(requiredendday))
+					if(time.isAfter(requiredstartday) && time.isBefore(requiredendday)) {
 						has = true;
+						break;
+					}
 				}
 				
 				return has;

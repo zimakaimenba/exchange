@@ -69,14 +69,6 @@ public class DisplayNodeGuDongInfoServices implements ServicesOfNodeJiBenMianInf
 	    org.jsoup.nodes.Document doc = Jsoup.parse(htmlstring);
 	    
 	    Elements head = doc.select("head");
-	    for (Element hd : head) {
-//	    	org.jsoup.nodes.Element style = hd.appendElement("style");
-//	    	style.append("table, th, td {\r\n" + 
-//		    		"  border: 1px solid black;\r\n" + 
-//		    		"  border-collapse: collapse;\r\n" + 
-//		    		"}");
-	    }
-	    
 	    org.jsoup.select.Elements content = doc.select("body"); 
 	    for (Element ct : content) {
 	    	org.jsoup.nodes.Element table = ct.appendElement("table");
@@ -125,7 +117,7 @@ public class DisplayNodeGuDongInfoServices implements ServicesOfNodeJiBenMianInf
 		    	
 		    	org.jsoup.nodes.Element tmpthgdnum = trdata.appendElement("th");
 		    	org.jsoup.nodes.Element tmpfontgdnum = tmpthgdnum.appendElement("font");
-		    	tmpfontgdnum.attr("size", "3");
+		    	tmpfontgdnum.attr("size", "1");
 		    	tmpfontgdnum.attr("face", "verdana");
 		    	tmpfontgdnum.appendText(output3);
 	    		

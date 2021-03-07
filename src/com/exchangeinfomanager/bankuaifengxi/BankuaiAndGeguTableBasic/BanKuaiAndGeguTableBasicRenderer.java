@@ -30,6 +30,8 @@ import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfMA;
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfQueKou;
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfWeeklyAverageChenJiaoErMaxWk;
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfZongShiZhi;
+import com.exchangeinfomanager.commonlib.Season;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.TDXNodes;
@@ -49,7 +51,8 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 	
 	protected Object[] getTableCellRendererBackgroundForegroundColor (JTable table, TDXNodes node,Object value, int row,  int col)
 	{
-		Color foreground = Color.BLACK, background = Color.white; String valuetext ="";
+		String valuetext =""; Font font = this.getFont();Color foreground = Color.BLACK, background = Color.white;
+		
 	    String current_column_bg_kw = null;
 	    switch (col) {
 	    case 0:
@@ -69,6 +72,8 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	if(column_info_valueformat != null)
         		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_info_valueformat);
         	
+        	font = rendererOperationsForColumnFont (node, "hashqgq");
+        	
         	break;
         case 1:
         	String column_bg_kw1  = prop.getProperty ("1column_background_highlight_keyword");
@@ -87,6 +92,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	if(column_info_valueformat != null)
         		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_info_valueformat);
 
+        	font = rendererOperationsForColumnFont (node, "hashqgq");
         	break;
         case 2:
         	String column_bg_kw2  = prop.getProperty ("2column_background_highlight_keyword");
@@ -104,7 +110,8 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	column_info_valueformat = prop.getProperty ("2column_info_valueformat"); 
         	if(column_info_valueformat != null)
         		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_info_valueformat);
-
+        	
+        	font = rendererOperationsForColumnFont (node, "hashqgq");
         	break;
         case 3:
         	String column_bg_kw3  = prop.getProperty ("3column_background_highlight_keyword");
@@ -122,7 +129,8 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	column_info_valueformat = prop.getProperty ("3column_info_valueformat"); 
         	if(column_info_valueformat != null)
         		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_info_valueformat);
-
+        	
+        	font = rendererOperationsForColumnFont (node, "hashqgq");
         	break;
         case 4:
         	String column_bg_kw4  = prop.getProperty ("4column_background_highlight_keyword");
@@ -140,7 +148,8 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	column_info_valueformat = prop.getProperty ("4column_info_valueformat"); 
         	if(column_info_valueformat != null)
         		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_info_valueformat);
-
+        	
+        	font = rendererOperationsForColumnFont (node, "hashqgq");
         	break;
         case 5:
         	String column_bg_kw5  = prop.getProperty ("5column_background_highlight_keyword");
@@ -158,7 +167,8 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	column_info_valueformat = prop.getProperty ("5column_info_valueformat"); 
         	if(column_info_valueformat != null)
         		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_info_valueformat);
-
+        	
+        	font = rendererOperationsForColumnFont (node, "hashqgq");
         	break;
         case 6:
         	String column_bg_kw6  = prop.getProperty ("6column_background_highlight_keyword");
@@ -176,7 +186,8 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	column_info_valueformat = prop.getProperty ("6column_info_valueformat"); 
         	if(column_info_valueformat != null)
         		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_info_valueformat);
-
+        	
+        	font = rendererOperationsForColumnFont (node, "hashqgq");
         	break;
         case 7:
         	String column_bg_kw7  = prop.getProperty ("7column_background_highlight_keyword");
@@ -195,6 +206,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	if(column_info_valueformat != null)
         		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_info_valueformat);
 
+        	font = rendererOperationsForColumnFont (node, "hashqgq");
         	break;
         case 8:
         	String column_bg_kw8  = prop.getProperty ("8column_background_highlight_keyword");
@@ -213,6 +225,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	if(column_info_valueformat != null)
         		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_info_valueformat);
 
+        	font = rendererOperationsForColumnFont (node, "hashqgq");
         	break;
         case 9:
         	String column_bg_kw9  = prop.getProperty ("9column_background_highlight_keyword");
@@ -231,6 +244,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	if(column_info_valueformat != null)
         		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_info_valueformat);
 
+        	font = rendererOperationsForColumnFont (node, "hashqgq");
         	break;
 
         case 10:
@@ -250,9 +264,8 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	if(column_info_valueformat != null)
         		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_info_valueformat);
 
+        	font = rendererOperationsForColumnFont (node, "hashqgq");
         	break;
-
-        	
 	    };
 	    
 		Stock stock = null ; Boolean reviewedtoday = false; 
@@ -268,20 +281,16 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         if(range != null)  
         	background = new Color(102,178,255);
 	    
-	    Font font = this.getFont();
-	    if(reviewedtoday && table.isRowSelected(row) ) {
-        	Font defaultFont = this.getFont();
-        	 font = new Font(defaultFont.getName(), Font.ITALIC,defaultFont.getSize());
-        	
-        } else
+	    
+	    if(reviewedtoday && table.isRowSelected(row) ) 
+        	font = new Font(font.getName(), font.getStyle() | Font.ITALIC,font.getSize());
+        else
         if(reviewedtoday && !table.isRowSelected(row) && ( current_column_bg_kw == null || !current_column_bg_kw.equalsIgnoreCase("infengxifile") ) ) { //已经浏览过的个股，全部灰色，不会混淆，更加清晰
-            	Font defaultFont = this.getFont();
-            	font = new Font(defaultFont.getName(), Font.ITALIC,defaultFont.getSize());
+            	font = new Font(font.getName(), font.getStyle() | Font.ITALIC,font.getSize());
             	background = Color.gray;
         } else
         if (reviewedtoday && !table.isRowSelected(row) && current_column_bg_kw != null && current_column_bg_kw.equalsIgnoreCase("infengxifile") ) {//已经浏览过的个股，全部灰色，不会混淆，更加清晰
-        	Font defaultFont = this.getFont();
-        	font = new Font(defaultFont.getName(), Font.ITALIC,defaultFont.getSize());
+        	font = new Font(font.getName(), font.getStyle() | Font.ITALIC,font.getSize());
         	if(background == Color.WHITE)
         		background = Color.gray;
         }
@@ -320,13 +329,34 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	 valuepect = percentFormat.format (formatevalue );
     	} catch (java.lang.NullPointerException e) {
     		valuepect = "";
-    	}catch (java.lang.NumberFormatException e)   	{
-    		e.printStackTrace();
-    	} catch (ParseException e) {
-			e.printStackTrace();
-		}
+    	}catch (java.lang.NumberFormatException e)  { e.printStackTrace();
+    	} catch (ParseException e) {e.printStackTrace();}
     	
     	return valuepect;
+	}
+	/*
+	 * 
+	 */
+	protected Font rendererOperationsForColumnFont ( TDXNodes node, String column_keyword )
+	{
+		Font defaultFont = this.getFont();
+		if(node.getType() != BkChanYeLianTreeNode.BKGEGU )
+			return defaultFont;
+		
+		LocalDate requireddate = tablemodel.getCurDisplayedDate();
+		switch (column_keyword) {
+		case "hashqgq":
+			Boolean has = ((StockOfBanKuai)node).getStock().getNodeJiBenMian().hasHqgqGuDong(requireddate);
+			if(has) defaultFont =  new Font(defaultFont.getName(), Font.BOLD,defaultFont.getSize());
+			else {
+				LocalDate maxcbrq = ((StockOfBanKuai)node).getStock().getNodeJiBenMian().getLastestCaiBaoDate();
+				has = ((StockOfBanKuai)node).getStock().getNodeJiBenMian().hasHqgqGuDong(maxcbrq);
+				if(has) defaultFont =  new Font("Hei", Font.BOLD,defaultFont.getSize());
+			}
+			break;
+		}
+		
+		return defaultFont;
 	}
 	/*
 	 * 
