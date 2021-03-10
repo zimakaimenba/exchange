@@ -29,7 +29,7 @@ public class NodeJiBenMian
 			private String jingZhengDuiShou;
 			private String keHuCustom;
 			private String suoshujiaoyisuo;
-			private Object[][] zdgzmrmcykRecords;
+			private List<Object[]> zdgzmrmcykRecords;
 			private Object[][] gudonginfo;
 			private List<BkChanYeLianTreeNode> cylinfo;
 			private List<Interval> hqgqgudong;
@@ -166,11 +166,18 @@ public class NodeJiBenMian
 			public void setSuoshujiaoyisuo(String suoshujiaoyisuo) {
 				this.suoshujiaoyisuo = suoshujiaoyisuo;
 			}
-			public Object[][] getZdgzmrmcykRecords() {
+			public List<Object[]> getZdgzmrmcykRecords() {
 				return zdgzmrmcykRecords;
 			}
-			public void setZdgzmrmcykRecords(Object[][] zdgzmrmcykRecords) {
+			public void setZdgzmrmcykRecords(List<Object[]> zdgzmrmcykRecords) {
 				this.zdgzmrmcykRecords = zdgzmrmcykRecords;
+			}
+			public void addZdgzmrmcykRecord (Object[] record)
+			{
+				if(this.zdgzmrmcykRecords == null)
+					this.zdgzmrmcykRecords = new ArrayList<>();
+				
+				this.zdgzmrmcykRecords.add(record);
 			}
 			public Object[][] getGuDongInfo() {
 				return gudonginfo;

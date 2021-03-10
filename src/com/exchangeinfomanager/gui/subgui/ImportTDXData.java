@@ -358,13 +358,10 @@ public class ImportTDXData extends JDialog {
 			try {
 				System.out.println("------导入网易股票数据开始" + LocalTime.now() );
 				long start=System.currentTimeMillis(); //获取开始时间
-				File resulttmpfilenetease = bkdbopt.importNetEaseStockData ();
+				bkdbopt.importNetEaseStockData ("SH");
+				bkdbopt.importNetEaseStockData ("SZ");
 				long end=System.currentTimeMillis(); //获取结束时间
 				System.out.println("......导入网易股票数据结束" + LocalTime.now()  + ".....导入耗费时间： "+(end-start)+"ms \r\n");
-				List<String> lines = Files.readLines(resulttmpfilenetease, sysconfig.charSet());
-				for (String line : lines) 
-		        	tfldresult.append(line+"\n");
-			} catch (IOException e) {	e.printStackTrace();
 			} catch (java.lang.NullPointerException e) {e.printStackTrace();	}
 			ckbxnetease.setEnabled(false);
 		}

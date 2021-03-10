@@ -8,6 +8,7 @@ import java.util.List;
 import org.jsoup.Jsoup;
 
 import com.exchangeinfomanager.Tag.Tag;
+import com.exchangeinfomanager.nodes.nodejibenmian.ShuJuJiLuInfo;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
@@ -37,6 +38,15 @@ public abstract class TDXNodes extends BkChanYeLianTreeNode
 	private Double nodecjezhanbidownlevel;
 	private Double nodecjlzhanbiuplevel;
 	private Double nodecjlzhanbidownlevel;
+	private ShuJuJiLuInfo ShuJuJiLu;
+	
+	public ShuJuJiLuInfo getShuJuJiLuInfo ()
+	{
+		if(this.ShuJuJiLu == null)
+			ShuJuJiLu = new ShuJuJiLuInfo();
+		
+		return ShuJuJiLu;
+	}
 	public void setNodeCjeZhanbiLevel (Double min, Double max)
 	{
 		if(min == null || min == 0.0) min = null;

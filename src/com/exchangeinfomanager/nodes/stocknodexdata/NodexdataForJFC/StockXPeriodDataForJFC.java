@@ -93,8 +93,7 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 		
 		try {
 			stockmaichuujl.add(period,fxjg);
-		} catch (org.jfree.data.general.SeriesException e) {
-		}
+		} catch (org.jfree.data.general.SeriesException e) {	}
 	}
 	/*
 	 * (non-Javadoc)
@@ -294,36 +293,12 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 	public void resetAllData ()
 	{
 		super.resetAllData();
-		try {
-			stockhuanshoulv.clear();
-		} catch (java.lang.NullPointerException e) {
-			
-		}
-		try {
-			stockliutongshizhi.clear();
-		} catch (java.lang.NullPointerException e) {
-			
-		}
-		try {
-			stockzongshizhi.clear();
-		} catch (java.lang.NullPointerException e) {
-			
-		}
-		try {
-			periodhighestzhangdiefu.clear();
-		} catch (java.lang.NullPointerException e) {
-			
-		}
-		try {
-			periodlowestzhangdiefu.clear();
-		} catch (java.lang.NullPointerException e) {
-			
-		}
-		try {
-			stockgzjl.clear();
-		} catch (java.lang.NullPointerException e) {
-			
-		}
+		try {stockhuanshoulv.clear();} catch (java.lang.NullPointerException e) {}
+		try {stockliutongshizhi.clear();} catch (java.lang.NullPointerException e) {}
+		try {stockzongshizhi.clear();} catch (java.lang.NullPointerException e) {}
+		try {periodhighestzhangdiefu.clear();} catch (java.lang.NullPointerException e) {}
+		try {periodlowestzhangdiefu.clear();} catch (java.lang.NullPointerException e) {}
+		try { stockgzjl.clear();	} catch (java.lang.NullPointerException e) {}
 	}
 	/*
 	 * (non-Javadoc)
@@ -339,10 +314,7 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 			Double curhsl = curhslrecord.getValue().doubleValue();
 			
 			return curhsl;
-		} catch (java.lang.NullPointerException e) {
-//			e.printStackTrace();
-			return null;
-		}
+		} catch (java.lang.NullPointerException e) {return null;}
 		
 	}
 	/*
@@ -356,12 +328,8 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 			return null;
 		TimeSeriesDataItem curzszrecord = stockzongshizhi.getDataItem(period);
 		Double curzsz = null ;
-		try {
-			curzsz = curzszrecord.getValue().doubleValue();
-		} catch (Exception e) {
-//			e.printStackTrace();
-			
-		}
+		try { curzsz = curzszrecord.getValue().doubleValue();
+		} catch (Exception e) {}
 		
 		return curzsz;
 	}
@@ -376,12 +344,8 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 		
 		TimeSeriesDataItem curhighzdfrecord = periodhighestzhangdiefu.getDataItem(period);
 		Double curhzdf = null ;
-		try {
-			curhzdf = curhighzdfrecord.getValue().doubleValue();
-		} catch (Exception e) {
-//			logger.info( super.getNodeCode() + ":" + requireddate + "-"+ difference    + "周没有涨跌幅数据，可能是停牌" );
-			return null;
-		}
+		try {curhzdf = curhighzdfrecord.getValue().doubleValue();
+		} catch (Exception e) {return null;}
 		
 		return curhzdf;
 	}
@@ -395,12 +359,8 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 			return null;
 		TimeSeriesDataItem curlowzdfrecord = periodlowestzhangdiefu.getDataItem(period);
 		Double curlzdf = null ;
-		try {
-			curlzdf = curlowzdfrecord.getValue().doubleValue();
-		} catch (Exception e) {	
-//			logger.info( super.getNodeCode() + ":" + requireddate + "-"+ difference    + "周没有涨跌幅数据，可能是停牌" );
-			return null;
-		}
+		try { curlzdf = curlowzdfrecord.getValue().doubleValue();
+		} catch (Exception e) {return null;}
 		
 		return curlzdf;
 	}
@@ -418,9 +378,7 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 		try{
 			Double curltsz = curltszrecord.getValue().doubleValue();
 			return curltsz;
-		} catch (java.lang.NullPointerException e ) {
-			return null;
-		}
+		} catch (java.lang.NullPointerException e ) {return null;}
 	}
 	/*
 	 * (non-Javadoc)

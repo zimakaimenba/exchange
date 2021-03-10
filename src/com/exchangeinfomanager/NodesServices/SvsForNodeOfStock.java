@@ -40,9 +40,6 @@ public class SvsForNodeOfStock implements ServicesForNode, ServicesOfNodeStock
 
 	public SvsForNodeOfStock ()
 	{
-//		allbkstk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks();
-//		this.cyltree = ;
-		
 		this.bkdbopt = new BanKuaiDbOperation ();
 		this.jgdbopt = new JiGouGuDongDbOperation ();
 		dboptforcyltree = new CylTreeDbOperation (CreateExchangeTree.CreateTreeOfChanYeLian());
@@ -87,6 +84,8 @@ public class SvsForNodeOfStock implements ServicesForNode, ServicesOfNodeStock
 		
 		if(nodedayperioddata.getAmoRecordsStartDate() == null) {
 			stock = bkdbopt.getStockZhanBi (stock,requiredstartday,requiredendday,period);
+//			bkdbopt.getStockFengXiJieGuo(stock, requiredstartday,requiredendday, period);
+			this.getNodeGzMrMcYkInfo(stock, requiredstartday,requiredendday, period);
 //			((TDXNodesXPeriodExternalData)nodedayperioddata).getKLearnResult ();
 			return stock;
 		}
@@ -104,12 +103,19 @@ public class SvsForNodeOfStock implements ServicesForNode, ServicesOfNodeStock
 				requiredendday = LocalDate.of(newenddt.getYear(), newenddt.getMonthOfYear(), newenddt.getDayOfMonth());
 				
 				stock = bkdbopt.getStockZhanBi (stock,requiredstartday,requiredendday,period);
+//				bkdbopt.getStockFengXiJieGuo(stock, requiredstartday,requiredendday, period);
+				this.getNodeGzMrMcYkInfo(stock, requiredstartday,requiredendday, period);
 		}
 		
 //		((TDXNodesXPeriodExternalData)nodedayperioddata).getKLearnResult ();
 		return stock;
 	}
-
+	@Override
+	public BkChanYeLianTreeNode getNodeGzMrMcYkInfo (BkChanYeLianTreeNode node,LocalDate selecteddatestart,LocalDate selecteddateend,String period)
+	{
+		node =  bkdbopt.getNodeGzMrMcYkInfo((TDXNodes)node, selecteddatestart,selecteddateend, period);
+		return node;
+	}
 	@Override
 	public BkChanYeLianTreeNode getNodeData(String bkcode, LocalDate requiredstartday, LocalDate requiredendday,
 			String period, Boolean calwholeweek) {
@@ -444,20 +450,14 @@ public class SvsForNodeOfStock implements ServicesForNode, ServicesOfNodeStock
 		return zhanbiresult;
 				
 	}
-	
-	public BkChanYeLianTreeNode getNodeMrmcYingKuiInfo (BkChanYeLianTreeNode node)
-	{
-		node =  bkdbopt.getZdgzMrmcZdgzYingKuiFromDB(node);
-		
-		return node;
-	}
-	
+
 	public BkChanYeLianTreeNode getNodeSuoShuBanKuaiList (BkChanYeLianTreeNode node)
 	{
-		node = bkdbopt.getTDXBanKuaiForAStock ((Stock)node); //通达信板块信息
+		bkdbopt.getTDXBanKuaiSetForStock ((Stock)node ); //通达信板块信息
 		
 		BanKuaiDZHDbOperation dzhdbopt = new BanKuaiDZHDbOperation ();
 		dzhdbopt.getDZHBanKuaiForAStock((Stock)node);
+		dzhdbopt = null;
 		
 		return node;
 	}

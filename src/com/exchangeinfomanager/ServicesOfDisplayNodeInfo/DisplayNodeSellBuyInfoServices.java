@@ -10,6 +10,7 @@ import com.exchangeinfomanager.NodesServices.SvsForNodeOfStock;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.ServicesOfNodeStock;
 import com.exchangeinfomanager.nodes.nodejibenmian.ServicesOfNodeJiBenMianInfo;
+import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.google.common.base.Splitter;
 
 public class DisplayNodeSellBuyInfoServices implements ServicesOfNodeJiBenMianInfo
@@ -26,42 +27,37 @@ public class DisplayNodeSellBuyInfoServices implements ServicesOfNodeJiBenMianIn
 	{
 		String nodename = node.getMyOwnName();
      	String curbknodecode = node.getMyOwnCode();
-     	
-       	int type = node.getType();
-       	if( type == BkChanYeLianTreeNode.TDXBK) 
+
+       	if( node.getType() != BkChanYeLianTreeNode.TDXGG) 
        		return null;
        	
-       	if( type == BkChanYeLianTreeNode.TDXGG) {
-       		ServicesOfNodeStock svsstk = new SvsForNodeOfStock ();
-	    	svsstk.getNodeMrmcYingKuiInfo(node);
-	    	svsstk = null;
-	    }
-       	
-        String htmlstring = ""; Boolean hasinfo = false;
+   		SvsForNodeOfStock svsstk = new SvsForNodeOfStock ();
+	   	svsstk.getNodeGzMrMcYkInfo(node,null,null,NodeGivenPeriodDataItem.WEEK);
+	   	svsstk = null;
+	
+	   	String htmlstring = ""; Boolean hasinfo = false;
 	    org.jsoup.nodes.Document doc = Jsoup.parse(htmlstring);
 	    org.jsoup.select.Elements content = doc.select("body"); 
 	       
 	    content.append("<h4>\""+ curbknodecode + "" + nodename + "\"个股交易信息</h4>");
-	    Object[][] sellbuyObjects = node.getNodeJiBenMian().getZdgzmrmcykRecords();
+	    List<Object[]> sellbuyObjects = node.getNodeJiBenMian().getZdgzmrmcykRecords();
 	    if(sellbuyObjects == null) 
 	    	return null;
 	    
 	    
-	    for(int i=0;i<sellbuyObjects.length;i++) {
+	    for(Object[] tmprecords : sellbuyObjects) {
 	    	hasinfo = true;
 	    	   String output = "";
 	    	   try {
-	    		   String output1 = sellbuyObjects[i][0].toString().substring(0, 10);
-	    		   String output2 = sellbuyObjects[i][1].toString() ;
+	    		   String output1 = tmprecords[0].toString().substring(0, 10);
+	    		   String output2 = tmprecords[1].toString() ;
 	    		   String outpu3part = "";
 	    		   try {
-	    			   String output3 = sellbuyObjects[i][2].toString();
+	    			   String output3 = tmprecords[2].toString();
 	    			   List<String> tmpoutput3 = Splitter.on("|").omitEmptyStrings().splitToList(output3);
 	    			   outpu3part = tmpoutput3.get(0);
-	    		   } catch (java.lang.NullPointerException e) {
-	    			   
+	    		   } catch (java.lang.NullPointerException e) {   
 	    		   } catch (java.lang.IndexOutOfBoundsException e) {
-	    			   
 	    		   }
 	    		   output =  output1 + " " + output2 + " " + outpu3part;
 	    	   } catch (java.lang.Exception e) {

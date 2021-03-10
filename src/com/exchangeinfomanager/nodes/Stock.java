@@ -154,7 +154,6 @@ public class Stock extends TDXNodes {
 		else
 			return suoShuCurTDXBanKuai;
 	}
-
 	/**
 	 * @param stockbanks 
 	 * @param tmpsysbk the suoShuBanKuai to set
@@ -162,12 +161,16 @@ public class Stock extends TDXNodes {
 	public void setGeGuCurSuoShuTDXSysBanKuaiList( Set<BkChanYeLianTreeNode> stockbanks) {
 		this.suoShuCurTDXBanKuai = stockbanks;
 	}
+	public void addGeGuTDXSysBanKuai (BanKuai bk)
+	{
+		if( this.suoShuCurTDXBanKuai == null)
+			this.suoShuCurTDXBanKuai = new HashSet<>();
+		
+		if(!this.suoShuCurTDXBanKuai.contains(bk))
+			this.suoShuCurTDXBanKuai.add(bk);
+	}
 	
-	
-	
- 
 	List<String> nodeallchanyelian ;
-	
 	public void setGeGuAllChanYeLianInfo(List<String> ggcyl) 
 	{
 		this.nodeallchanyelian = ggcyl;

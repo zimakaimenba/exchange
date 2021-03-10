@@ -30,4 +30,5 @@ public interface ServicesForNode
 	List<BkChanYeLianTreeNode> getNodeChildrenInChanYeLianInfo (String nodecode );
 	Collection<BkChanYeLianTreeNode> getNodesWithKeyWords(String keywords);
 	
+	public BkChanYeLianTreeNode getNodeGzMrMcYkInfo (BkChanYeLianTreeNode node,LocalDate selecteddatestart,LocalDate selecteddateend,String period);
 }

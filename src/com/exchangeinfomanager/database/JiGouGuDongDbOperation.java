@@ -388,7 +388,6 @@ public class JiGouGuDongDbOperation
 			try { rs.close();rs = null;
 			} catch (SQLException e) {e.printStackTrace();}
 	    }
-		
 	    
 	 return nodeset;
 	}
@@ -426,19 +425,7 @@ public class JiGouGuDongDbOperation
 				" \r\n" + 
 				"ON gd.`代码` = gdmaxtime.dm"
 				;
-//		String sqlstat = "SELECT *\r\n" + 
-//				"FROM 股票股东对应表\r\n" + 
-//				"WHERE 机构名称 REGEXP  \r\n" + 
-//				" (SELECT \r\n" + 
-//				"   GROUP_CONCAT(DISTINCT 机构名称 SEPARATOR '|')\r\n" + 
-//				"FROM 机构股东\r\n" + 
-//				"WHERE 皇亲国戚 = TRUE OR 明星 = TRUE )\r\n" + 
-//				"AND 代码 \r\n" + 
-//				"IN  "
-//				+ "(" + bkggstr + ") \r\n"
-//				+ "GROUP BY 股票股东对应表.`代码`, 股票股东对应表.`股东日期` \r\n"
-//				+ " ORDER  BY 股票股东对应表.`股东日期` DESC "
-//				;
+
 		CachedRowSetImpl  rs = null;
 		try {
 			rs = connectdb.sqlQueryStatExecute(sqlstat);
@@ -451,7 +438,7 @@ public class JiGouGuDongDbOperation
 				LocalDate gddate = rs.getDate("股东日期").toLocalDate();
 				node.getNodeJiBenMian().addGuDongHqgqInterval (gddate);
 				
-				LocalDate maxgdrq = rs.getDate("maxgdrq").toLocalDate();
+				LocalDate maxgdrq = rs.getDate("maxgdrq").toLocalDate(); //最新研报日期
 				node.getNodeJiBenMian().setLastestCaiBaoDate(maxgdrq);
 			}
 		} catch(java.lang.NullPointerException e) {

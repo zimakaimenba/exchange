@@ -283,11 +283,8 @@ public class BanKuaiDbOperation
 		        	BkChanYeLianTreeNode tmpnode = null;
 		        	
 		        	if(rs.getString("type").equals("gegu")) {
-		        		
 		        		tmpnode = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode(nodecode, BkChanYeLianTreeNode.TDXGG);
-		        		
 		        		this.getStockBasicInfo(tmpnode );
-
 		        	} else {
 		        		tmpnode = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode(nodecode, BkChanYeLianTreeNode.TDXBK);
 		        		this.getBanKuaiBasicInfo( (BanKuai)tmpnode );
@@ -1864,7 +1861,7 @@ public class BanKuaiDbOperation
 	/*
 	 * 同步通达信上证板块的每日成交量信息，信息存在"通达信板块每日交易信息"，
 	 */
-	public File refreshTDXBanKuaiVolAmoToDb (String cys)
+	public File refreshTDXBanKuaiVolAmoToDb (String jiaoyisuo)
 	{
 		File tmpreportfolder = Files.createTempDir();
 		File tmprecordfile = new File(tmpreportfolder + "同步板块成交量报告.tmp");
@@ -1875,15 +1872,47 @@ public class BanKuaiDbOperation
 		String dateRule = volamooutput.get(2);
 		
 		String cjltablename;
-		if(cys.toLowerCase().equals("sh"))
+		if(jiaoyisuo.toLowerCase().equals("sh"))
 			cjltablename = "通达信板块每日交易信息";
 		else
 			cjltablename = "通达信交易所指数每日交易信息";
 		
-//		 List<BanKuai> allbklist = this.getTDXBanKuaiList(cys.toLowerCase()); //这样可以判断哪些板块无需导入每日数据
-		 Collection<BkChanYeLianTreeNode> requiredbk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getRequiredSubSetOfTheNodesByJiaoYiSuo(BkChanYeLianTreeNode.TDXBK,cys);
+		CachedRowSetImpl  rsdm = null;
+		try { 	
+			String sqlquerystat = "SELECT * FROM \r\n" + 
+					"(SELECT 板块ID  FROM 通达信板块列表\r\n" + 
+					"WHERE 指数所属交易所 = '" + jiaoyisuo + "' ) agu\r\n" + 
+					"\r\n" + 
+					"LEFT JOIN \r\n" + 
+					"( SELECT 代码, MIN(交易日期) minjytime , MAX(交易日期) maxjytime FROM " + cjltablename + "\r\n" + 
+					"  GROUP BY 代码) shjyt\r\n" + 
+					" ON agu.板块ID =  shjyt.`代码`\r\n" + 
+					""
+					;
+	    	rsdm = connectdb.sqlQueryStatExecute(sqlquerystat);
+	    	while(rsdm.next()) {
+		    		 String bkcode = rsdm.getString("代码"); //mOST_RECENT_TIME
+		    		 BanKuai bk = (BanKuai) CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode(bkcode, BkChanYeLianTreeNode.TDXBK);
+		    		 if(bk == null) 
+		    			 continue;
+		    		 try { LocalDate mintime = rsdm.getDate("minjytime").toLocalDate();
+		    		 		bk.getShuJuJiLuInfo().setJyjlmindate(mintime);
+		    		 } catch (java.lang.NullPointerException ex) {}
+		    		 try { LocalDate maxtime = rsdm.getDate("maxjytime").toLocalDate();
+		    		 		bk.getShuJuJiLuInfo().setJyjlmaxdate(maxtime);
+		    		 } catch (java.lang.NullPointerException ex) {}
+		    	}
+		    } catch(java.lang.NullPointerException e) {	e.printStackTrace();
+		    } catch (SQLException e) {	e.printStackTrace();
+		    } catch(Exception e){	e.printStackTrace();
+		    } finally {
+		    	if(rsdm != null)
+				try {rsdm.close();rsdm = null;
+				} catch (SQLException e) {	e.printStackTrace();}
+		    }
+
+		 Collection<BkChanYeLianTreeNode> requiredbk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getRequiredSubSetOfTheNodesByJiaoYiSuo(BkChanYeLianTreeNode.TDXBK,jiaoyisuo);
 		 for(BkChanYeLianTreeNode tmpnode :  requiredbk ) {
-			 
 			BanKuai bk = (BanKuai) tmpnode;
 			if(!bk.isImportdailytradingdata())
 				continue;
@@ -1893,33 +1922,33 @@ public class BanKuaiDbOperation
 			if(bk.getMyOwnCode().equalsIgnoreCase("000852"))  //通达信不知道为什么，中证1000的每日交易数据输出文件不一样
 				 bkfilename = "62000852.TXT";
 			else 
-				bkfilename = (filenamerule.replaceAll("YY",cys.toUpperCase())).replaceAll("XXXXXX", tmpbkcode);
+				bkfilename = (filenamerule.replaceAll("YY",jiaoyisuo.toUpperCase())).replaceAll("XXXXXX", tmpbkcode);
 			tmpbkfile = new File(exportath + "/" + bkfilename);
 			if (!tmpbkfile.exists() || tmpbkfile.isDirectory() || !tmpbkfile.canRead())   
 			    continue; 
 
-			CachedRowSetImpl  rs = null;
-				LocalDate ldlastestdbrecordsdate = null;
-				try { 				
-					String sqlquerystat = "SELECT  MAX(交易日期) 	MOST_RECENT_TIME"
-							+ " FROM " + cjltablename + "  WHERE  代码 = " 
-   							+ "'"  + tmpbkcode + "'" 
-   							;
-   			    	rs = connectdb.sqlQueryStatExecute(sqlquerystat);
-   			    	while(rs.next()) {
-   			    		java.sql.Date lastestdbrecordsdate = rs.getDate("MOST_RECENT_TIME"); //mOST_RECENT_TIME
-   			    		try {
-   			    			ldlastestdbrecordsdate = lastestdbrecordsdate.toLocalDate();
-   			    		} catch (java.lang.NullPointerException e) {	logger.debug(tmpbkcode + "没有记录");	}
-   			    	}
-   			    } catch(java.lang.NullPointerException e) { e.printStackTrace();
-   			    } catch (SQLException e) {e.printStackTrace();
-   			    } catch(Exception e){e.printStackTrace();
-   			    } finally {
-   			    	if(rs != null)
-						try { rs.close();rs = null;
-						} catch (SQLException e) {e.printStackTrace();}
-   			    }
+			LocalDate ldlastestdbrecordsdate = bk.getShuJuJiLuInfo().getJyjlmaxdate();
+//			CachedRowSetImpl  rs = null;
+//				try { 				
+//					String sqlquerystat = "SELECT  MAX(交易日期) 	MOST_RECENT_TIME"
+//							+ " FROM " + cjltablename + "  WHERE  代码 = " 
+//   							+ "'"  + tmpbkcode + "'" 
+//   							;
+//   			    	rs = connectdb.sqlQueryStatExecute(sqlquerystat);
+//   			    	while(rs.next()) {
+//   			    		java.sql.Date lastestdbrecordsdate = rs.getDate("MOST_RECENT_TIME"); //mOST_RECENT_TIME
+//   			    		try {
+//   			    			ldlastestdbrecordsdate = lastestdbrecordsdate.toLocalDate();
+//   			    		} catch (java.lang.NullPointerException e) {	logger.debug(tmpbkcode + "没有记录");	}
+//   			    	}
+//   			    } catch(java.lang.NullPointerException e) { e.printStackTrace();
+//   			    } catch (SQLException e) {e.printStackTrace();
+//   			    } catch(Exception e){e.printStackTrace();
+//   			    } finally {
+//   			    	if(rs != null)
+//						try { rs.close();rs = null;
+//						} catch (SQLException e) {e.printStackTrace();}
+//   			    }
 				
 				setVolAmoRecordsFromFileToDatabase(tmpbkcode,tmpbkfile,ldlastestdbrecordsdate,cjltablename,dateRule,tmprecordfile);
 		}
@@ -2802,7 +2831,6 @@ public class BanKuaiDbOperation
 //		this.getStockZhanBi (stock.getStock(), selecteddatestart, selecteddateend,addposition,period);
 		
 		return stockofbk;
-
 	}
 	/*
 	 * //上面是个股对板块的指定周期(默认是周线)，下面部分是为个股自身周线数据，用来计算个股对大盘的数据
@@ -2944,91 +2972,240 @@ public class BanKuaiDbOperation
 		} catch(java.lang.NullPointerException e){ e.printStackTrace();
 	    } catch(Exception e){e.printStackTrace();
 	    } finally {
-	    	try { rs.close(); rs = null;
-			} catch (SQLException e) {e.printStackTrace();}
-	    	
+	    	try { rs.close(); rs = null;} catch (SQLException e) {e.printStackTrace();}
 	    	bkcjltable = null;
 	    	nodewkperioddata = null; 
 	    }
 
-		this.getStockGuanZhuJiLu(stock, selecteddatestart, selecteddateend, period);
-		this.getStockFengXiJieGuo(stock, selecteddatestart, selecteddateend, period);
-		this.getStockMaiRuMaiChuJiLu(stock, selecteddatestart, selecteddateend, period);
 		return stock;
 	}
-	/**
-	 * 
-	 */
-	public Stock getStockGuanZhuJiLu (Stock stock,LocalDate selecteddatestart,LocalDate selecteddateend,String period)
+	public BanKuai getBanKuaiGeGuZhanBi(BanKuai bk,LocalDate selecteddatestart,LocalDate selecteddateend,String period)
 	{
-		if(stock == null)
-			return null;
-		
-		selecteddatestart = selecteddatestart.with(DayOfWeek.MONDAY);
-		if(!stock.isNodeDataAtNotCalWholeWeekMode())
-			selecteddateend = selecteddateend.with(DayOfWeek.FRIDAY);
-		
 		if(period.equals(NodeGivenPeriodDataItem.DAY)) //调用日线查询函数
 			; 
 		else if(period.equals(NodeGivenPeriodDataItem.MONTH)) //调用月线查询函数
 			;
 		
-		NodeXPeriodData nodewkperioddata = stock.getNodeXPeroidData(period);
-
-		String stockcode = stock.getMyOwnCode();
-		String guanzhubk = sysconfig.getCurZdyBanKuaiOfGuanZhuGeGu();
-	    String sqlquerystat6="SELECT zdgz.加入时间   AS 日期,"
-					+ "'加入关注' AS ACTION ,"
-					+ "null, "
-					+ "null,"
-					+ "null,"
-					+ "'操作记录重点关注'"
-					+ " FROM 股票通达信自定义板块对应表  zdgz" 
-					+ " WHERE zdgz.股票代码 ="  + "'" + stockcode + "'"
-					+ " AND 自定义板块="  + "'" + guanzhubk + "'" 
-
-					+ " \n UNION ALL \n"
-					;
-	     String sqlquerystat7="SELECT zdgz.移除时间 AS 日期 ,"
-					+ "'移除关注' AS ACTION,"
-					+ "null, "
-					+ "null,"
-					+ "null,"
-					+ "'操作记录重点关注'"
-					+ " FROM 股票通达信自定义板块对应表  zdgz" 
-					+ " WHERE zdgz.股票代码 ="  + "'" + stockcode + "'"
-					+ " AND 自定义板块="  + "'" + guanzhubk + "'" 
-					+ " AND zdgz.移除时间 IS NOT NULL \n"
-					+ " ORDER BY 1 DESC,5,3 " //desc
-					;
-	     String sqlquerystatgz = sqlquerystat6 + sqlquerystat7;
+		getBanKuaiGeGuZhanBiByJys( bk, selecteddatestart, selecteddateend, period,"SH");
+		getBanKuaiGeGuZhanBiByJys( bk, selecteddatestart, selecteddateend, period,"SZ");
 		
-		//关注数据
-		CachedRowSetImpl rs = connectdb.sqlQueryStatExecute(sqlquerystatgz);
-		try {
-			while(rs.next()) {
-				java.sql.Date recdate = rs.getDate("日期");
-				org.jfree.data.time.Week wknum = new org.jfree.data.time.Week(recdate);
-				
-				String action = rs.getString("ACTION").trim();
-				if(action.equals("加入关注"))
-					((StockNodesXPeriodData)nodewkperioddata).addGzjlToPeriod(wknum, 1);
-				else if(action.equals("移除关注"))
-					((StockNodesXPeriodData)nodewkperioddata).addGzjlToPeriod(wknum, 0);
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-	    	try {
-				rs.close();
-				rs = null;
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-	    }
-		
-		return stock;
+		return bk;
 	}
+	/*
+	 * 
+	 */
+	private BanKuai getBanKuaiGeGuZhanBiByJys(BanKuai bk,LocalDate selecteddatestart,LocalDate selecteddateend,String period,String jys)
+	{
+		List<BkChanYeLianTreeNode> bkshgegu = bk.getAllGeGuOfBanKuaiInHistoryByJiaoYiSuo(jys);
+		if(bkshgegu.isEmpty())
+			return bk;
+		
+		String bkggstr = "";
+		for(BkChanYeLianTreeNode stockofbk : bkshgegu) 
+				bkggstr  = bkggstr + "'" + stockofbk.getMyOwnCode() +  "', ";
+		bkggstr = bkggstr.substring(0, bkggstr.length() -2);
+		
+		String bkcjltable;
+		if(jys.equalsIgnoreCase("SH"))
+			bkcjltable = "通达信上交所股票每日交易信息";
+		else
+			bkcjltable = "通达信深交所股票每日交易信息";
+		
+		String formatedstartdate = selecteddatestart.toString();
+		String formatedenddate  = selecteddateend.toString();
+		//包含成交量和成交额的SQL
+				String sqlquerystat = "SELECT YEAR(t.workday) AS CALYEAR, WEEK(t.workday,1) AS CALWEEK, M.BKCODE AS BKCODE, \r\n"
+						+ "t.StartOfWeekDate AS StartOfWeekDate, t.EndOfWeekDate AS EndOfWeekDate, \r\n" +
+						 "M.板块周交易额 as 板块周交易额, SUM(T.AMO) AS 大盘周交易额 ,  M.板块周交易额/SUM(T.AMO) AS CJE占比, \r\n" +
+						"M.板块周交易量 as 板块周交易量, SUM(T.VOL) AS 大盘周交易量 ,  M.板块周交易量/SUM(T.VOL) AS VOL占比, \r\n" +
+						"M.板块周换手率 as 板块周换手率, "
+						+ "M.总市值/M.SHIZHIJILUTIAOSHU   as 周平均总市值, "
+						+ "M.总流通市值/M.SHIZHIJILUTIAOSHU   as 周平均流通市值, "
+						+ "M.JILUTIAOSHU , M.SHIZHIJILUTIAOSHU  , "
+						+ "M.周最大涨跌幅,M.周最小涨跌幅   ,M.涨停,M.跌停        \r\n" +
+						 
+						"FROM\r\n" + 
+						"(\r\n" + 
+						"select 通达信板块每日交易信息.`交易日期` as workday, "
+						+ " 	DATE(通达信板块每日交易信息.交易日期 + INTERVAL (2 - DAYOFWEEK(通达信板块每日交易信息.交易日期)) DAY) as StartOfWeekDate, \r\n"
+						+ "		DATE(通达信板块每日交易信息.交易日期 + INTERVAL (6 - DAYOFWEEK(通达信板块每日交易信息.交易日期)) DAY) as EndOfWeekDate, \r\n" + 
+						"		sum(通达信板块每日交易信息.`成交额`) AS AMO , sum(通达信板块每日交易信息.`成交量`) AS VOL \r\n" + 
+						"from 通达信板块每日交易信息\r\n" + 
+						"where 代码 = '999999'\r\n" + 
+						" AND 通达信板块每日交易信息.`交易日期` BETWEEN '" + formatedstartdate + "' AND '" + formatedenddate + "' \r\n"+
+						" group by YEARWEEK(通达信板块每日交易信息.`交易日期`,2)\r\n" + 
+						"\r\n" + 
+						"UNION ALL\r\n" + 
+						"\r\n" + 
+						"select  通达信交易所指数每日交易信息.`交易日期` as workday,   "
+						+"		DATE(通达信交易所指数每日交易信息.交易日期 + INTERVAL (2 - DAYOFWEEK(通达信交易所指数每日交易信息.交易日期)) DAY) as StartOfWeekDate, \r\n"
+						+" 		DATE(通达信交易所指数每日交易信息.交易日期 + INTERVAL (6 - DAYOFWEEK(通达信交易所指数每日交易信息.交易日期)) DAY) as EndOfWeekDate, \r\n" + 
+						"		sum(通达信交易所指数每日交易信息.`成交额`) AS AMO, sum(通达信交易所指数每日交易信息.`成交量`) AS VOL \r\n" + 
+						"from 通达信交易所指数每日交易信息\r\n" + 
+						"where 代码 = '399001' "
+						+" AND 通达信交易所指数每日交易信息.`交易日期` BETWEEN '" + formatedstartdate + "' AND '" + formatedenddate + "' \r\n"+ 
+						"group by YEARWEEK(通达信交易所指数每日交易信息.`交易日期`,2)\r\n" + 
+						") T,\r\n" + 
+						"\r\n" + 
+						"(select " + bkcjltable + ".`代码` AS BKCODE, " + bkcjltable + ".`交易日期` as workday,  "
+								+ " sum( " + bkcjltable + ".`成交额`) AS 板块周交易额 , \r\n"
+								+ " sum( " + bkcjltable + ".`成交量`) /100 AS 板块周交易量,  \r\n"
+								+ " sum( " + bkcjltable + ".`换手率`) AS 板块周换手率 , \r\n"
+								+ " sum( " + bkcjltable + ".`总市值`) AS 总市值 , \r\n"
+								+ " sum( " + bkcjltable + ".`流通市值`) AS 总流通市值, \r\n"
+								+ "  COUNT(1) as JILUTIAOSHU ,\r\n"
+								+ "  COUNT(" + bkcjltable + ".`总市值`) AS SHIZHIJILUTIAOSHU,"
+								+ ""
+								+ "max(" + bkcjltable + ".`涨跌幅`) as 周最大涨跌幅, \r\n"
+								+ "min(" + bkcjltable + ".`涨跌幅`) as 周最小涨跌幅, \r\n"
+								+ "COUNT( IF(" + bkcjltable + ".`涨跌幅` >= 9.0,1,NULL) ) AS 涨停, \r\n"
+								+ "COUNT( IF(" + bkcjltable + ".`涨跌幅` <= -9.0,1,NULL) ) AS 跌停  \r\n"
+								+ " from " + bkcjltable + "\r\n" +  
+						" Where 代码  IN (" + bkggstr + " ) \r\n" + 
+						" AND " + bkcjltable + ".`交易日期` BETWEEN '" + formatedstartdate + "' AND '" + formatedenddate + "' \r\n" +
+						" GROUP BY 代码,  YEARWEEK( " + bkcjltable +".`交易日期`,2)\r\n" + 
+						") M\r\n" + 
+						" WHERE   YEARWEEK(T.WORKDAY,2) = YEARWEEK(M.WORKDAY,2)\r\n" + 
+						" GROUP BY bkcode,  YEARWEEK(t.workday,2)"
+						;
+		CachedRowSetImpl rs = null; Stock stock = null; String curstockcode = ""; NodeXPeriodData nodewkperioddata = null;
+		try {
+			rs = connectdb.sqlQueryStatExecute(sqlquerystat);
+			while(rs.next()) {
+				String stockcode = rs.getString("bkcode");
+				if(!curstockcode.equalsIgnoreCase(stockcode) )  {
+					curstockcode = stockcode;
+					stock = (Stock) CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode(stockcode, BkChanYeLianTreeNode.TDXGG);
+					if(stock == null) continue;
+					else nodewkperioddata = stock.getNodeXPeroidData(period);
+				}
+				java.sql.Date startdayofweek = rs.getDate("StartOfWeekDate");
+				java.sql.Date lastdayofweek = rs.getDate("EndOfWeekDate");
+				double stockcje = rs.getDouble("板块周交易额") ;
+				double dapancje = rs.getDouble("大盘周交易额") ;
+				double cjezb = rs.getDouble("CJE占比") ;
+				double stockcjl = rs.getDouble("板块周交易量") ;
+				double dapancjl = rs.getDouble("大盘周交易量") ;
+				double cjlzb = rs.getDouble("VOL占比") ;
+				double huanshoulv = rs.getDouble("板块周换手率") ;
+				double pingjunzongshizhi = rs.getDouble("周平均总市值") ;
+				double pingjunliutongshizhi = rs.getDouble("周平均流通市值") ;
+				double periodhighestzhangdiefu = rs.getDouble("周最大涨跌幅") ;
+				double periodlowestzhangdiefu = rs.getDouble("周最小涨跌幅") ;
+				int exchengdaysnumber = rs.getInt("JILUTIAOSHU") ;
+				int zhangtingnum = rs.getInt("涨停") ;
+				int dietingnum = rs.getInt("跌停") ;
+				
+				org.jfree.data.time.Week recordwk = new org.jfree.data.time.Week (lastdayofweek);
+
+				NodeGivenPeriodDataItem stockperiodrecord = new NodeGivenPeriodDataItemForJFC( stock.getMyOwnCode(), NodeGivenPeriodDataItem.WEEK,
+						recordwk, 0.0, 0.0,  0.0,  0.0, 
+						stockcjl, stockcje );
+				
+//				NodeGivenPeriodDataItem stockperiodrecord = new NodeGivenPeriodDataItemForTA4J( stock.getMyOwnCode(), NodeGivenPeriodDataItem.WEEK,
+//						zdtime, PrecisionNum.valueOf(0.0), PrecisionNum.valueOf(0.0),  PrecisionNum.valueOf(0.0),  PrecisionNum.valueOf(0.0), 
+//						PrecisionNum.valueOf(stockcjl), PrecisionNum.valueOf(stockcje) );
+				
+				stockperiodrecord.setNodeToDpChenJiaoErZhanbi(cjezb);
+				stockperiodrecord.setNodeToDpChenJiaoLiangZhanbi(cjlzb);
+				stockperiodrecord.setUplevelChengJiaoEr(dapancje);
+				stockperiodrecord.setUplevelChengJiaoLiang(dapancjl);
+				stockperiodrecord.setPeriodHighestZhangDieFu(periodhighestzhangdiefu);
+				stockperiodrecord.setPeriodLowestZhangDieFu(periodlowestzhangdiefu);
+				stockperiodrecord.setExchangeDaysNumber(exchengdaysnumber);
+				stockperiodrecord.setZhangTingNumber(zhangtingnum);
+				stockperiodrecord.setDieTingNumber(dietingnum);
+				stockperiodrecord.setHuanShouLv(huanshoulv);
+				stockperiodrecord.setLiuTongShiZhi(pingjunliutongshizhi);
+				stockperiodrecord.setZongShiZhi(pingjunzongshizhi);
+				
+				nodewkperioddata.addNewXPeriodData(stockperiodrecord);
+				
+				stockperiodrecord = null;
+
+			}
+		} catch(java.lang.NullPointerException e){ e.printStackTrace();
+	    } catch(Exception e){e.printStackTrace();
+	    } finally {
+	    	try { rs.close(); rs = null;	} catch (SQLException e) {e.printStackTrace();}
+	    	bkcjltable = null;
+	    }
+
+		return bk;
+	}
+	/**
+	 * 
+	 */
+//	public Stock getStockGuanZhuJiLu (Stock stock,LocalDate selecteddatestart,LocalDate selecteddateend,String period)
+//	{
+//		if(stock == null)
+//			return null;
+//		
+//		selecteddatestart = selecteddatestart.with(DayOfWeek.MONDAY);
+//		if(!stock.isNodeDataAtNotCalWholeWeekMode())
+//			selecteddateend = selecteddateend.with(DayOfWeek.FRIDAY);
+//		
+//		if(period.equals(NodeGivenPeriodDataItem.DAY)) //调用日线查询函数
+//			; 
+//		else if(period.equals(NodeGivenPeriodDataItem.MONTH)) //调用月线查询函数
+//			;
+//		
+//		NodeXPeriodData nodewkperioddata = stock.getNodeXPeroidData(period);
+//
+//		String stockcode = stock.getMyOwnCode();
+//		String guanzhubk = sysconfig.getCurZdyBanKuaiOfGuanZhuGeGu();
+//	    String sqlquerystat6="SELECT zdgz.加入时间   AS 日期,"
+//					+ "'加入关注' AS ACTION ,"
+//					+ "null, "
+//					+ "null,"
+//					+ "null,"
+//					+ "'操作记录重点关注'"
+//					+ " FROM 股票通达信自定义板块对应表  zdgz" 
+//					+ " WHERE zdgz.股票代码 ="  + "'" + stockcode + "'"
+//					+ " AND 自定义板块="  + "'" + guanzhubk + "'" 
+//
+//					+ " \n UNION ALL \n"
+//					;
+//	     String sqlquerystat7="SELECT zdgz.移除时间 AS 日期 ,"
+//					+ "'移除关注' AS ACTION,"
+//					+ "null, "
+//					+ "null,"
+//					+ "null,"
+//					+ "'操作记录重点关注'"
+//					+ " FROM 股票通达信自定义板块对应表  zdgz" 
+//					+ " WHERE zdgz.股票代码 ="  + "'" + stockcode + "'"
+//					+ " AND 自定义板块="  + "'" + guanzhubk + "'" 
+//					+ " AND zdgz.移除时间 IS NOT NULL \n"
+//					+ " ORDER BY 1 DESC,5,3 " //desc
+//					;
+//	     String sqlquerystatgz = sqlquerystat6 + sqlquerystat7;
+//		
+//		//关注数据
+//		CachedRowSetImpl rs = connectdb.sqlQueryStatExecute(sqlquerystatgz);
+//		try {
+//			while(rs.next()) {
+//				java.sql.Date recdate = rs.getDate("日期");
+//				org.jfree.data.time.Week wknum = new org.jfree.data.time.Week(recdate);
+//				
+//				String action = rs.getString("ACTION").trim();
+//				if(action.equals("加入关注"))
+//					((StockNodesXPeriodData)nodewkperioddata).addGzjlToPeriod(wknum, 1);
+//				else if(action.equals("移除关注"))
+//					((StockNodesXPeriodData)nodewkperioddata).addGzjlToPeriod(wknum, 0);
+//			}
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		} finally {
+//	    	try {
+//				rs.close();
+//				rs = null;
+//			} catch (SQLException e) {
+//				e.printStackTrace();
+//			}
+//	    }
+//		
+//		return stock;
+//	}
 	/*
 	 * 
 	 */
@@ -3091,93 +3268,87 @@ public class BanKuaiDbOperation
 	/*
 	 * 
 	 */
-	public Stock getStockMaiRuMaiChuJiLu (Stock stock,LocalDate selecteddatestart,LocalDate selecteddateend,String period)
-	{
-		if(stock == null)
-			return null;
-		
-		selecteddatestart = selecteddatestart.with(DayOfWeek.MONDAY);
-		if(!stock.isNodeDataAtNotCalWholeWeekMode())
-			selecteddateend = selecteddateend.with(DayOfWeek.FRIDAY);
-		
-		if(period.equals(NodeGivenPeriodDataItem.DAY)) //调用日线查询函数
-			; 
-		else if(period.equals(NodeGivenPeriodDataItem.MONTH)) //调用月线查询函数
-			;
-		
-		NodeXPeriodData nodewkperioddata = stock.getNodeXPeroidData(period);
-
-		String stockcode = stock.getMyOwnCode();
-
-		String sqlquerystat2="SELECT czjl.日期, " +		""
-				+ "IF(czjl.买入卖出标志,'买入','卖出')  AS 买卖,"
-				+ " czjl.原因描述,"
-				+ " czjl.ID,"
-				+ " czjl.买卖账号,"
-				+ "'操作记录买卖'" 
-				+ " FROM 操作记录买卖 czjl "
-				+ "	WHERE czjl.股票代码 =" + "'" + stockcode + "'"
-				+ " AND czjl.买卖金额 > 0 "
-				+ " AND czjl.挂单 = FALSE"  
-				+ "  AND `日期`  between '" + selecteddatestart + "' AND '" + selecteddateend + "' \r\n" 
-				
-				+ " \n UNION ALL \n" 
-				;
-
-		String sqlquerystat3="SELECT rqczjl.日期,"
-				+ " IF(rqczjl.买入卖出标志,'买入','卖出')  AS 买卖,"
-				+ " rqczjl.原因描述,"
-				+ " rqczjl.ID,"
-				+ " rqczjl.买卖账号,"
-				+ " '操作记录融券买卖'"
-				+ " FROM 操作记录融券买卖 rqczjl"
-				+ "	WHERE rqczjl.股票代码 =" + "'" + stockcode + "'"
-				+ " AND rqczjl.买卖金额 > 0 "
-				+ " AND rqczjl.挂单 = FALSE"
-				+ "  AND `日期`  between '" + selecteddatestart + "' AND '" + selecteddateend + "' \r\n" 
-				
-				+ " \n UNION ALL \n"
-				;
-
-		String sqlquerystat4="SELECT rzczjl.日期,"
-				+ "IF(rzczjl.买入卖出标志,'买入','卖出')  AS 买卖,"
-				+ "rzczjl.原因描述,"
-				+ "rzczjl.ID,"
-				+ "rzczjl.买卖账号,"
-				+ "'操作记录融资买卖'"
-				+ " FROM 操作记录融资买卖 rzczjl"
-				+ " WHERE rzczjl.股票代码 =" + "'" + stockcode + "'"
-				+ " AND rzczjl.买卖金额 > 0 "
-				+ " AND rzczjl.挂单 = FALSE"
-				+ "  AND `日期`  between '" + selecteddatestart + "' AND '" + selecteddateend + "' \r\n" 
-				;
-		String sqlquerystatfx = sqlquerystat2 + sqlquerystat3 + sqlquerystat4;
-		CachedRowSetImpl rsfx = connectdb.sqlQueryStatExecute(sqlquerystatfx);
-		try {
-			while(rsfx.next()) {
-				java.sql.Date recdate = rsfx.getDate("日期");
-				org.jfree.data.time.Week wknum = new org.jfree.data.time.Week(recdate);
-				String maimai = rsfx.getString("买卖");
-				if(maimai.equals("买入")) {
-					((StockNodesXPeriodData)nodewkperioddata).addMaiRuJiLu(wknum, 1);
-				} else
-				if(maimai.equals("卖出")) {
-					((StockNodesXPeriodData)nodewkperioddata).addMaiChuJiLu(wknum, 0);
-				}
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-	    	try {
-				rsfx.close();
-				rsfx = null;
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-	    }
-		
-		return stock;
-	}
+//	public Stock getStockMaiRuMaiChuJiLu (Stock stock,LocalDate selecteddatestart,LocalDate selecteddateend,String period)
+//	{
+//		if(stock == null)
+//			return null;
+//		
+//		selecteddatestart = selecteddatestart.with(DayOfWeek.MONDAY);
+//		if(!stock.isNodeDataAtNotCalWholeWeekMode())
+//			selecteddateend = selecteddateend.with(DayOfWeek.FRIDAY);
+//		
+//		if(period.equals(NodeGivenPeriodDataItem.DAY)) //调用日线查询函数
+//			; 
+//		else if(period.equals(NodeGivenPeriodDataItem.MONTH)) //调用月线查询函数
+//			;
+//		
+//		NodeXPeriodData nodewkperioddata = stock.getNodeXPeroidData(period);
+//
+//		String stockcode = stock.getMyOwnCode();
+//
+//		String sqlquerystat2="SELECT czjl.日期, " +		""
+//				+ "IF(czjl.买入卖出标志,'买入','卖出')  AS 买卖,"
+//				+ " czjl.原因描述,"
+//				+ " czjl.ID,"
+//				+ " czjl.买卖账号,"
+//				+ "'操作记录买卖'" 
+//				+ " FROM 操作记录买卖 czjl "
+//				+ "	WHERE czjl.股票代码 =" + "'" + stockcode + "'"
+//				+ " AND czjl.买卖金额 > 0 "
+//				+ " AND czjl.挂单 = FALSE"  
+//				+ "  AND `日期`  between '" + selecteddatestart + "' AND '" + selecteddateend + "' \r\n" 
+//				
+//				+ " \n UNION ALL \n" 
+//				;
+//
+//		String sqlquerystat3="SELECT rqczjl.日期,"
+//				+ " IF(rqczjl.买入卖出标志,'买入','卖出')  AS 买卖,"
+//				+ " rqczjl.原因描述,"
+//				+ " rqczjl.ID,"
+//				+ " rqczjl.买卖账号,"
+//				+ " '操作记录融券买卖'"
+//				+ " FROM 操作记录融券买卖 rqczjl"
+//				+ "	WHERE rqczjl.股票代码 =" + "'" + stockcode + "'"
+//				+ " AND rqczjl.买卖金额 > 0 "
+//				+ " AND rqczjl.挂单 = FALSE"
+//				+ "  AND `日期`  between '" + selecteddatestart + "' AND '" + selecteddateend + "' \r\n" 
+//				
+//				+ " \n UNION ALL \n"
+//				;
+//
+//		String sqlquerystat4="SELECT rzczjl.日期,"
+//				+ "IF(rzczjl.买入卖出标志,'买入','卖出')  AS 买卖,"
+//				+ "rzczjl.原因描述,"
+//				+ "rzczjl.ID,"
+//				+ "rzczjl.买卖账号,"
+//				+ "'操作记录融资买卖'"
+//				+ " FROM 操作记录融资买卖 rzczjl"
+//				+ " WHERE rzczjl.股票代码 =" + "'" + stockcode + "'"
+//				+ " AND rzczjl.买卖金额 > 0 "
+//				+ " AND rzczjl.挂单 = FALSE"
+//				+ "  AND `日期`  between '" + selecteddatestart + "' AND '" + selecteddateend + "' \r\n" 
+//				;
+//		String sqlquerystatfx = sqlquerystat2 + sqlquerystat3 + sqlquerystat4;
+//		CachedRowSetImpl rsfx = connectdb.sqlQueryStatExecute(sqlquerystatfx);
+//		try {
+//			while(rsfx.next()) {
+//				java.sql.Date recdate = rsfx.getDate("日期");
+//				org.jfree.data.time.Week wknum = new org.jfree.data.time.Week(recdate);
+//				String maimai = rsfx.getString("买卖");
+//				if(maimai.equals("买入")) {
+//					((StockNodesXPeriodData)nodewkperioddata).addMaiRuJiLu(wknum, 1);
+//				} else
+//				if(maimai.equals("卖出")) {
+//					((StockNodesXPeriodData)nodewkperioddata).addMaiChuJiLu(wknum, 0);
+//				}
+//			}
+//		} catch (SQLException e) {e.printStackTrace();
+//		} finally {
+//	    	try {rsfx.close();rsfx = null;} catch (SQLException e) {e.printStackTrace();}
+//	    }
+//		
+//		return stock;
+//	}
 
 	/*
 	 * 这个函数计算出某个不固定周期个股和大盘的占比数据
@@ -4202,19 +4373,38 @@ public class BanKuaiDbOperation
 		String dateRule = volamooutput.get(2);
 		
 		ConvertTxtToCsv cttc = new ConvertTxtToCsv ();
-		
-		ArrayList<String> allgegucode = new ArrayList<String>( );
+		Collection<BkChanYeLianTreeNode> allgegucode = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getRequiredSubSetOfTheNodesByJiaoYiSuo(BkChanYeLianTreeNode.TDXGG,jiaoyisuo);		
+
+		String optTable = null;
+		if(jiaoyisuo.equalsIgnoreCase("SZ")  )
+			optTable = "通达信深交所股票每日交易信息";
+		else if(jiaoyisuo.equalsIgnoreCase("SH") )
+			optTable = "通达信上交所股票每日交易信息";
 		CachedRowSetImpl  rsdm = null;
 		try { 	
-			String sqlquerystat = "SELECT  股票代码  FROM A股  WHERE ifnull(已退市,1 )  or 已退市 = false "
-						;
+			String sqlquerystat = "SELECT * FROM \r\n" + 
+					"(SELECT 股票代码  FROM A股\r\n" + 
+					"WHERE 所属交易所 = '" + jiaoyisuo + "' ) agu\r\n" + 
+					"\r\n" + 
+					"LEFT JOIN \r\n" + 
+					"( SELECT 代码, MIN(交易日期) minjytime , MAX(交易日期) maxjytime FROM " + optTable + "\r\n" + 
+					"GROUP BY 代码) shjyt\r\n" + 
+					"ON agu.股票代码 =  shjyt.`代码`\r\n"
+					;
 	    	rsdm = connectdb.sqlQueryStatExecute(sqlquerystat);
 	    	while(rsdm.next()) {
 		    		 String ggcode = rsdm.getString("股票代码"); //mOST_RECENT_TIME
-		    		 if( sysconfig.isShenZhengStock(ggcode) && jiaoyisuo.toLowerCase().equals("sz") )
-		    			 allgegucode.add(ggcode);
-		    		 else if ( sysconfig.isShangHaiStock(ggcode)  && jiaoyisuo.toLowerCase().equals("sh") )
-		    			 allgegucode.add(ggcode);
+		    		 Stock stock = (Stock) CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode(ggcode, BkChanYeLianTreeNode.TDXGG);
+		    		 if(stock == null) 
+		    			 continue;
+		    		 try { LocalDate mintime = rsdm.getDate("minjytime").toLocalDate();
+		    		 		stock.getShuJuJiLuInfo().setJyjlmindate(mintime);
+		    		 } catch (java.lang.NullPointerException ex) {}
+		    		 try { LocalDate maxtime = rsdm.getDate("maxjytime").toLocalDate();
+		    		 		stock.getShuJuJiLuInfo().setJyjlmaxdate(maxtime);
+		    		 } catch (java.lang.NullPointerException ex) {}
+		    		 
+		    		 
 		    	}
 		    } catch(java.lang.NullPointerException e) {	e.printStackTrace();
 		    } catch (SQLException e) {	e.printStackTrace();
@@ -4224,14 +4414,9 @@ public class BanKuaiDbOperation
 				try {rsdm.close();rsdm = null;
 				} catch (SQLException e) {	e.printStackTrace();}
 		    }
-		
-		String optTable = null;
-		if(jiaoyisuo.toLowerCase().equals("sz")  )
-			optTable = "通达信深交所股票每日交易信息";
-		else if(jiaoyisuo.toLowerCase().equals("sh") )
-			optTable = "通达信上交所股票每日交易信息";
-		
-		for(String tmpbkcode:allgegucode) {
+
+		for(BkChanYeLianTreeNode tmpnode :allgegucode) {
+			String tmpbkcode = tmpnode.getMyOwnCode();
 			String bkfilename = null;
 			if(jiaoyisuo.toLowerCase().equals("sz") )
 				bkfilename = (filenamerule.replaceAll("YY","SZ")).replaceAll("XXXXXX", tmpbkcode);
@@ -4243,33 +4428,31 @@ public class BanKuaiDbOperation
 			    continue; 
 			} 
 
-				CachedRowSetImpl  rs = null;
-				LocalDate ldlastestdbrecordsdate = null;
-				try { 				
-					String sqlquerystat = "SELECT  MAX(交易日期) 	MOST_RECENT_TIME"
-							+ " FROM "+ optTable +  " WHERE  代码 = " 
-   							+ "'"  + tmpbkcode + "'" 
-   							;
-					logger.debug(sqlquerystat);
-   			    	rs = connectdb.sqlQueryStatExecute(sqlquerystat);
-   			    	while(rs.next()) {
-//   			    		logger.debug(rs.getMetaData().getColumnCount());
-   			    		 java.sql.Date lastestdbrecordsdate = rs.getDate("MOST_RECENT_TIME"); //mOST_RECENT_TIME 
-   			    		 try {
-   			    			 ldlastestdbrecordsdate =lastestdbrecordsdate.toLocalDate();
-   			    		 } catch (java.lang.NullPointerException e) {
-   			    			 logger.info(tmpbkcode + "个股数据文件没有相关数据，请检查！");
-   			    		 }
-   			    	}
-   			    } catch(java.lang.NullPointerException e) {	e.printStackTrace();
-   			    } catch (SQLException e) {	e.printStackTrace();
-   			    } catch(Exception e){	e.printStackTrace();
-   			    } finally {
-   			    	if(rs != null)
-						try { rs.close(); rs = null;
-						} catch (SQLException e) {	e.printStackTrace(); }
-   			    	allgegucode = null;
-   			    }
+			LocalDate ldlastestdbrecordsdate = ((Stock)tmpnode).getShuJuJiLuInfo().getJyjlmaxdate();
+//				CachedRowSetImpl  rs = null;
+//				try { 				
+//					String sqlquerystat = "SELECT  MAX(交易日期) 	MOST_RECENT_TIME"
+//							+ " FROM "+ optTable +  " WHERE  代码 = " 
+//   							+ "'"  + tmpbkcode + "'" 
+//   							;
+//   			    	rs = connectdb.sqlQueryStatExecute(sqlquerystat);
+//   			    	while(rs.next()) {
+//   			    		 java.sql.Date lastestdbrecordsdate = rs.getDate("MOST_RECENT_TIME"); //mOST_RECENT_TIME 
+//   			    		 try {
+//   			    			 ldlastestdbrecordsdate =lastestdbrecordsdate.toLocalDate();
+//   			    		 } catch (java.lang.NullPointerException e) {
+//   			    			 logger.info(tmpbkcode + "个股数据文件没有相关数据，请检查！");
+//   			    		 }
+//   			    	}
+//   			    } catch(java.lang.NullPointerException e) {	e.printStackTrace();
+//   			    } catch (SQLException e) {	e.printStackTrace();
+//   			    } catch(Exception e){	e.printStackTrace();
+//   			    } finally {
+//   			    	if(rs != null)
+//						try { rs.close(); rs = null;
+//						} catch (SQLException e) {	e.printStackTrace(); }
+//   			    	allgegucode = null;
+//   			    }
 				
 				Boolean newdataimported = setVolAmoRecordsFromFileToDatabase(tmpbkcode,tmpbkfile,ldlastestdbrecordsdate,optTable,dateRule,tmprecordfile);
 				
@@ -4667,13 +4850,8 @@ public class BanKuaiDbOperation
 	    		int autoIncKeyFromApi;
 				try {
 					autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
-				} catch (MysqlDataTruncation e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				} catch (MysqlDataTruncation e1) {e1.printStackTrace();
+				} catch (SQLException e) {e.printStackTrace();}
 
 	    		
 	    		sqldeletetstat = "DELETE  FROM 股票通达信自定义板块对应表 "
@@ -4682,52 +4860,86 @@ public class BanKuaiDbOperation
 				//logger.debug(sqldeletetstat);
 				try {
 					autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
-				} catch (MysqlDataTruncation e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				} catch (MysqlDataTruncation e) {e.printStackTrace();
+				} catch (SQLException e) {e.printStackTrace();}
 	        }
-	        differencebankuaiold = null;
 	        
+	        differencebankuaiold = null;
 	        neededimportzdybknames = null;
 	        curzdybknames = null;
-	        
-	        
+
 	        return 1;
 	}
 		/*
 		 * 获取板块或个股的买入卖出关注送配股等信息
 		 */
-		public BkChanYeLianTreeNode getZdgzMrmcZdgzYingKuiFromDB (BkChanYeLianTreeNode stockbasicinfo)
+		public BkChanYeLianTreeNode getNodeGzMrMcYkInfo (TDXNodes node,LocalDate selecteddatestart,LocalDate selecteddateend,String period)
 		{
+			if(node == null)	return null;
+			if(node.getNodeJiBenMian().getZdgzmrmcykRecords() != null &&  !node.getNodeJiBenMian().getZdgzmrmcykRecords().isEmpty())
+	        	return node;
+//			selecteddatestart = selecteddatestart.with(DayOfWeek.MONDAY);
+//			selecteddateend = selecteddateend.with(DayOfWeek.FRIDAY);
+			
+			if(period.equals(NodeGivenPeriodDataItem.DAY)) //调用日线查询函数
+				; 
+			else if(period.equals(NodeGivenPeriodDataItem.MONTH)) //调用月线查询函数
+				;
+			
+			NodeXPeriodData nodewkperioddata = node.getNodeXPeroidData(period);
 			String sqlquerystat;
-			if(stockbasicinfo.getType() == BkChanYeLianTreeNode.TDXGG || stockbasicinfo.getType() == BkChanYeLianTreeNode.BKGEGU) 
-				sqlquerystat = getZdgzMrmcYingKuiSQLForStock (stockbasicinfo);
+			if(node.getType() == BkChanYeLianTreeNode.TDXGG || node.getType() == BkChanYeLianTreeNode.BKGEGU) 
+				sqlquerystat = getZdgzMrmcYingKuiSQLForStock (node);
 			else //板块和个股是不一样的，板块没有买入卖出信息
-				sqlquerystat = getZdgzMrmcYingKuiSQLForBanKuai (stockbasicinfo);
+				sqlquerystat = getZdgzMrmcYingKuiSQLForBanKuai (node);
 			
 			 CachedRowSetImpl rs = null;
-			 rs = connectdb.sqlQueryStatExecute(sqlquerystat);
-			 stockbasicinfo.getNodeJiBenMian().setZdgzmrmcykRecords( setZdgzMrmcZdgzYingKuiRecords (rs) );
-			 
 			 try {
-					rs.close();
+				 rs = connectdb.sqlQueryStatExecute(sqlquerystat);
+				 List<Object[]> data = new ArrayList<>();
+				 int columnCount = 6;//列数
+			     while(rs.next()) {   //{ "日期", "操作", "说明","ID","操作账户","信息表" };
+			            Object[] row = new Object[columnCount];  
+			            row[0] = (java.sql.Date) rs.getDate("日期");
+			            row[1] = rs.getString(2);
+			            row[2] = rs.getString(3);
+			            row[3] = rs.getString(4);
+			            row[4] = rs.getString(5);
+			            row[5] = rs.getString(6);
+			            String action = (String) row[1];
+						if(action.equals("买入")) {
+							org.jfree.data.time.Week wknum = new org.jfree.data.time.Week( (java.sql.Date)row[0]);
+							((StockNodesXPeriodData)nodewkperioddata).addMaiRuJiLu(wknum, 1);
+						} else
+						if(action.equals("卖出")) {
+							org.jfree.data.time.Week wknum = new org.jfree.data.time.Week( (java.sql.Date)row[0]);
+							((StockNodesXPeriodData)nodewkperioddata).addMaiChuJiLu(wknum, 0);
+						} else
+						if(action.equals("加入关注")) {
+							org.jfree.data.time.Week wknum = new org.jfree.data.time.Week( (java.sql.Date)row[0]);
+							((StockNodesXPeriodData)nodewkperioddata).addGzjlToPeriod(wknum, 1);
+						} else 
+						if(action.equals("移除关注")) {
+							org.jfree.data.time.Week wknum = new org.jfree.data.time.Week( (java.sql.Date)row[0]);
+							((StockNodesXPeriodData)nodewkperioddata).addGzjlToPeriod(wknum, 0);
+						}
+						
+			            data.add(row);
+			        }   
+			        if(!data.isEmpty())  	node.getNodeJiBenMian().setZdgzmrmcykRecords( data );
+				} catch (SQLException e) {e.printStackTrace();
+				} finally {try {rs.close();} catch (SQLException e) {e.printStackTrace();}
 					rs = null;
-				} catch (SQLException e) {
-					e.printStackTrace();
-			 } 
-			
-			 return stockbasicinfo;
+				}
+			 
+			 return node;
 		}
 		/*
 		 * 获取板块的相关信息
 		 */
-		private String getZdgzMrmcYingKuiSQLForBanKuai(BkChanYeLianTreeNode stockbasicinfo) 
+		private String getZdgzMrmcYingKuiSQLForBanKuai(BkChanYeLianTreeNode node) 
 		{
-			String stockcode = stockbasicinfo.getMyOwnCode();
+			String stockcode = node.getMyOwnCode();
 			
 			String serachnodecode ; //除了以下和大盘紧密相关的指数外，其他板块应该只找和自己相关的记录。
 			Set<String> zhishucodes = new HashSet<String> ();
@@ -4762,9 +4974,9 @@ public class BanKuaiDbOperation
 		/*
 		 * 获取个股的相关信息
 		 */
-		private String getZdgzMrmcYingKuiSQLForStock(BkChanYeLianTreeNode stockbasicinfo) 
+		private String getZdgzMrmcYingKuiSQLForStock(BkChanYeLianTreeNode node) 
 		{
-			String stockcode = stockbasicinfo.getMyOwnCode();
+			String stockcode = node.getMyOwnCode();
 			String sqlquerystat1= "SELECT ggyk.日期, "
 								+ "IF(ggyk.盈亏金额>0,'盈利','亏损') AS 盈亏情况,"
 								+ " ggyk.原因描述,"
@@ -4854,48 +5066,7 @@ public class BanKuaiDbOperation
 					;
 		
 	     String sqlquerystat = sqlquerystat1 + sqlquerystat2 + sqlquerystat3 + sqlquerystat4 + sqlquerystat5 + sqlquerystat6 +sqlquerystat7;
-	     //logger.debug(sqlquerystat);
-	     
 	     return sqlquerystat;
-		}
-
-		/*
-		 * 获得和该股票相关的所有信息
-		 */
-		private Object[][] setZdgzMrmcZdgzYingKuiRecords(CachedRowSetImpl rs) 
-		{
-			String[][] data = null;  
-		    try  {
-		    	int k = 0;
-		        int columnCount = 6;//列数
-		        
-		        rs.last();  
-		        int rows = rs.getRow();  
-		        data = new String[rows][];
-		        rs.first();  
-		        //while(rs.next())  //{ "日期", "操作", "说明","ID","操作账户","信息表" };
-		        for(int j=0;j<rows;j++) {   //{ "日期", "操作", "说明","ID","操作账户","信息表" };
-		            String[] row = new String[columnCount];  
-		            row[0] = rs.getTimestamp(1).toString();
-		            if(row[0].contains("."))
-		            	row[0] = row[0].substring(0, row[0].length()-2);
-		            row[1] = rs.getString(2);
-		            row[2] = rs.getString(3);
-		            row[3] = rs.getString(4);
-		            row[4] = rs.getString(5);
-		            row[5] = rs.getString(6);
-	              
-		            data[k] = row;  
-		            k++; 
-		            rs.next();
-		        } 
-		    } catch(java.lang.NullPointerException e) { e.printStackTrace();
-		    } catch(Exception e) {e.printStackTrace();
-		    } finally {	if(rs != null)
-					try {rs.close();rs = null;} catch (SQLException e) {e.printStackTrace();}
-		    }
-		    
-		    return data;
 		}
 		/*
 		 * 
@@ -5073,81 +5244,190 @@ public class BanKuaiDbOperation
 			 
 			 return null;
 		}
-
-
-//		public boolean updateChecklistsitemsToDb (Stock stockbasicinfo)
-//		{
-//			String stockcode = stockbasicinfo.getMyOwnCode();
-//			String checklistsitems = stockbasicinfo.getChecklistXml();
-//			String sqlupdatestat= "UPDATE A股  SET "
-//					+ "checklistsitems=" + "'" + checklistsitems + "'"
-//					+ "WHERE 股票代码=" + stockcode
-//					
-//					;
-//		// logger.debug(sqlupdatestat);
-//		 connectdb.sqlUpdateStatExecute(sqlupdatestat);
-//		 return true;
-//		}
-
-		public Stock getTDXBanKuaiForAStock(Stock stock) 
+		/*
+		 * 
+		 */
+		public BanKuai getBanKuaiGeGuGzMrMcYkInfo (BanKuai bk)
 		{
-			if(stock.getGeGuCurSuoShuTDXSysBanKuaiList() != null && !stock.getGeGuCurSuoShuTDXSysBanKuaiList().isEmpty() )
-				return  stock;
+			List<BkChanYeLianTreeNode> bkshgegu = bk.getAllGeGuOfBanKuaiInHistory();
+			if(bkshgegu.isEmpty())
+				return bk;
 			
-			BanKuaiAndStockTree treeofstkbk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks() ;
-			String stockcode = stock.getMyOwnCode();
-			Set<BkChanYeLianTreeNode> stockbanks = new HashSet<>();
-
-			String sqlquerystat =null;
-			sqlquerystat=  "SELECT gpgn.板块代码 板块代码, tdxbk.`板块名称` 板块名称 ,  gpgn.`股票权重`\r\n" + 
-					"FROM 股票通达信概念板块对应表 gpgn, 通达信板块列表 tdxbk  \r\n" + 
-					"WHERE 股票代码='" + stockcode + "'AND gpgn.板块代码 = tdxbk.`板块ID` AND ISNULL(移除时间)\r\n" + 
-					"\r\n" + 
-					"UNION  \r\n" + 
-					"\r\n" + 
-					"SELECT gphy.板块代码 板块代码, tdxbk.`板块名称` 板块名称 , gphy.`股票权重`\r\n" + 
-					"FROM 股票通达信行业板块对应表 gphy, 通达信板块列表 tdxbk  \r\n" + 
-					"WHERE 股票代码='" + stockcode + "'AND gphy.`板块代码` = tdxbk.`板块ID` AND ISNULL(移除时间)\r\n" + 
-					"\r\n" + 
-					"UNION \r\n" + 
-					" \r\n" + 
-					"SELECT gpfg.`板块代码` 板块代码, tdxbk.`板块名称` 板块名称  ,  gpfg.`股票权重`\r\n" + 
-					"FROM 股票通达信风格板块对应表 gpfg, 通达信板块列表 tdxbk \r\n" + 
-					" WHERE 股票代码= '" + stockcode + "'AND gpfg.`板块代码` = tdxbk.`板块ID` AND ISNULL(移除时间)" +
-					"\r\n" +
-					"UNION \r\n" + 
-					" \r\n" + 
-					"SELECT gpfg.`板块代码` 板块代码, tdxbk.`板块名称` 板块名称  ,  gpfg.`股票权重`\r\n" + 
-					"FROM 股票通达信交易所指数对应表 gpfg, 通达信板块列表 tdxbk \r\n" + 
-					" WHERE 股票代码= '" + stockcode + "'AND gpfg.`板块代码` = tdxbk.`板块ID` AND ISNULL(移除时间)"
+			String bkggstr = ""; int ggcount = 0;
+			for(BkChanYeLianTreeNode stockofbk : bkshgegu) {
+				StockOfBanKuai stkbk = (StockOfBanKuai)stockofbk;
+				if(stkbk.getStock().getNodeJiBenMian().getZdgzmrmcykRecords()!= null &&  !stkbk.getStock().getNodeJiBenMian().getZdgzmrmcykRecords().isEmpty())
+		        	continue;
+				else {
+					bkggstr  = bkggstr + "'" + stockofbk.getMyOwnCode() +  "', ";
+					ggcount ++;
+				}
+			}
+			bkggstr = bkggstr.substring(0, bkggstr.length() -2);
+			
+			String sqlquerystat = "\r\n" + 
+					"SELECT ggyk.股票代码, ggyk.日期, IF(ggyk.盈亏金额>0,'盈利','亏损') AS 盈亏情况, ggyk.原因描述, ggyk.ID, ggyk.操作账号,'个股盈亏' FROM  A股个股盈亏 ggyk \r\n" + 
+					" WHERE ggyk.股票代码 IN ( " + bkggstr + ") \r\n" + 
+					" UNION ALL \r\n" + 
+					"SELECT czjl.股票代码, czjl.日期, IF( czjl.买卖金额=0,'送转股',IF(czjl.挂单 = true,IF(czjl.买入卖出标志, '挂单买入', '挂单卖出'),IF(czjl.买入卖出标志,'买入','卖出') )  ) AS 买卖, czjl.原因描述, czjl.ID, czjl.买卖账号,'操作记录买卖' FROM 操作记录买卖 czjl \r\n" + 
+					"	WHERE czjl.股票代码 IN (" + bkggstr + ") \r\n" + 
+					" UNION ALL \r\n" + 
+					"SELECT rqczjl.股票代码, rqczjl.日期,IF( rqczjl.买卖金额=0,'送转股',IF(rqczjl.挂单 = true,IF(rqczjl.买入卖出标志, '挂单买入', '挂单卖出'),IF(rqczjl.买入卖出标志,'买入','卖出') )  ) AS 买卖,rqczjl.原因描述,rqczjl.ID,rqczjl.买卖账号,'操作记录融券买卖' FROM 操作记录融券买卖 rqczjl	\r\n" + 
+					"WHERE rqczjl.股票代码 IN (" + bkggstr + ") \r\n" + 
+					" UNION ALL \r\n" + 
+					"SELECT rzczjl.股票代码 , rzczjl.日期,IF( rzczjl.买卖金额=0,'送转股',IF(rzczjl.挂单 = true,IF(rzczjl.买入卖出标志, '挂单买入', '挂单卖出'),IF(rzczjl.买入卖出标志,'买入','卖出') )  ) AS 买卖,rzczjl.原因描述,rzczjl.ID,rzczjl.买卖账号,'操作记录融资买卖' FROM 操作记录融资买卖 rzczjl\r\n" + 
+					" WHERE rzczjl.股票代码 IN (" + bkggstr + ") \r\n" + 
+					" UNION ALL \r\n" + 
+					"SELECT zdgz.股票代码, zdgz.日期,zdgz.加入移出标志,zdgz.原因描述,zdgz.ID,null,'操作记录重点关注' FROM 操作记录重点关注  zdgz \r\n" + 
+					"WHERE zdgz.股票代码 IN (" + bkggstr + ") \r\n" + 
+					" UNION ALL \r\n" + 
+					"SELECT zdgz.股票代码, zdgz.加入时间,'加入关注',null, null,null,'操作记录重点关注' FROM 股票通达信自定义板块对应表  zdgz \r\n" + 
+					"WHERE zdgz.股票代码 IN (" + bkggstr + ") \r\n" + 
+					" AND 自定义板块='模型验证' \r\n" + 
+					" UNION ALL \r\n" + 
+					"SELECT zdgz.股票代码, zdgz.移除时间,'移除关注',null, null,null,'操作记录重点关注' FROM 股票通达信自定义板块对应表  zdgz\r\n" + 
+					" WHERE zdgz.股票代码 IN (" + bkggstr + ") \r\n" + 
+					"  AND 自定义板块='模型验证' AND zdgz.移除时间 IS NOT NULL \r\n" + 
+					" ORDER BY 1 ,2 DESC "
 					;
+			CachedRowSetImpl rs = connectdb.sqlQueryStatExecute(sqlquerystat); 
+			String curstockcode = ""; Stock tmpstock = null;
+			try  {  
+				while(rs.next()) {
+					String stockcode = rs.getString("股票代码");
+					Stock stock = (Stock) CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode(stockcode, BkChanYeLianTreeNode.TDXGG);
+					NodeXPeriodData nodewkperioddata = stock.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
+					Object[] row = new Object[6];  
+		            row[0] = (java.sql.Date) rs.getDate("日期");
+		            row[1] = rs.getString(3);
+		            row[2] = rs.getString(4);
+		            row[3] = rs.getString(5);
+		            row[4] = rs.getString(6);
+		            row[5] = rs.getString(7);
+		            String action = (String) row[1];
+					if(action.equals("买入")) {
+						org.jfree.data.time.Week wknum = new org.jfree.data.time.Week( (java.sql.Date)row[0]);
+						((StockNodesXPeriodData)nodewkperioddata).addMaiRuJiLu(wknum, 1);
+					} else
+					if(action.equals("卖出")) {
+						org.jfree.data.time.Week wknum = new org.jfree.data.time.Week( (java.sql.Date)row[0]);
+						((StockNodesXPeriodData)nodewkperioddata).addMaiChuJiLu(wknum, 0);
+					} else
+					if(action.equals("加入关注")) {
+						org.jfree.data.time.Week wknum = new org.jfree.data.time.Week( (java.sql.Date)row[0]);
+						((StockNodesXPeriodData)nodewkperioddata).addGzjlToPeriod(wknum, 1);
+					} else 
+					if(action.equals("移除关注")) {
+						org.jfree.data.time.Week wknum = new org.jfree.data.time.Week( (java.sql.Date)row[0]);
+						((StockNodesXPeriodData)nodewkperioddata).addGzjlToPeriod(wknum, 0);
+					}
+					
+					stock.getNodeJiBenMian().addZdgzmrmcykRecord(row);
+				}
+				
+			 } catch(java.lang.NullPointerException e){	e.printStackTrace();
+			 } catch(Exception e) {e.printStackTrace();
+			 } finally {
+			    	if(rs != null) {	try {rs.close();	} catch (SQLException e) {	e.printStackTrace();}
+			    	rs = null;    }
+			 }
 			
+			return bk;
+		}
+		/*
+		 * 
+		 */
+		public BanKuai getTDXBanKuaiSetForBanKuaiGeGu (BanKuai bk) 
+		{
+			List<BkChanYeLianTreeNode> bkgg = bk.getAllGeGuOfBanKuaiInHistory();
+			List<Stock> bkstock = new ArrayList<> ();
+			for(BkChanYeLianTreeNode tmpbkgg : bkgg) 
+				bkstock.add( ((StockOfBanKuai)tmpbkgg).getStock()    );
 			
-			CachedRowSetImpl rs_gn = connectdb.sqlQueryStatExecute(sqlquerystat);
-			try  {     
-		        while(rs_gn.next()) {
-		        	String bkcode = rs_gn.getString("板块代码");
-		        	Integer quanzhong = rs_gn.getInt("股票权重");
-		        	BanKuai bk = (BanKuai)treeofstkbk.getSpecificNodeByHypyOrCode(bkcode, BkChanYeLianTreeNode.TDXBK);
-		        	Stock tmpstock = (Stock)treeofstkbk.getSpecificNodeByHypyOrCode (stock.getMyOwnCode(),BkChanYeLianTreeNode.TDXGG);
-					StockOfBanKuai bkofst = new StockOfBanKuai(bk,tmpstock);
-					bkofst.setStockQuanZhong (quanzhong);
-					bk.addNewBanKuaiGeGu(bkofst);
-		        	stockbanks.add(bk);
-		        } 
-		        
-		    } catch(java.lang.NullPointerException e){	e.printStackTrace();
-		    } catch(Exception e) {e.printStackTrace();
-		    } finally {
-		    	if(rs_gn != null) {
-		    		try {rs_gn.close();
-					} catch (SQLException e) {	e.printStackTrace();}
-		    		rs_gn = null;
-		    }	}
-//		    Collections.sort (stockbanks);
-			stock.setGeGuCurSuoShuTDXSysBanKuaiList(stockbanks);
+			this.getTDXBanKuaiSetForStocks(bkstock);
+			
+			return bk;
+		}
+		/*
+		 * 
+		 */
+		public Stock getTDXBanKuaiSetForStock(Stock stock)
+		{
+			List<Stock> nodeset = new ArrayList<>();
+			nodeset.add((Stock)stock);
+			this.getTDXBanKuaiSetForStocks (nodeset ); //通达信板块信息
 			
 			return stock;
+		}
+		/*
+		 * 
+		 */
+		public List<Stock> getTDXBanKuaiSetForStocks(List<Stock> stocklist) 
+		{
+			String bkggstr = "";
+			for(Stock stock : stocklist ) {
+				if(  stock.getGeGuCurSuoShuTDXSysBanKuaiList() != null && ! stock.getGeGuCurSuoShuTDXSysBanKuaiList().isEmpty() )
+					continue;
+				else bkggstr  = bkggstr + "'" + stock.getMyOwnCode() +  "', ";
+			}
+			if(bkggstr.isEmpty())
+				return stocklist;
+			else
+				bkggstr = bkggstr.substring(0, bkggstr.length() -2);
+			
+			BanKuaiAndStockTree treeofstkbk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks() ;
+			Set<BkChanYeLianTreeNode> stockbanksset = new HashSet<>();
+			String sqlquerystat = 
+						"SELECT gpgn.`股票代码`,    gpgn.板块代码 板块代码, tdxbk.`板块名称` 板块名称 ,  gpgn.`股票权重`\r\n" + 
+						"FROM 股票通达信概念板块对应表 gpgn, 通达信板块列表 tdxbk  \r\n" + 
+						"WHERE 股票代码 IN (" + bkggstr + " )  AND gpgn.板块代码 = tdxbk.`板块ID` AND ISNULL(移除时间)\r\n" + 
+						"GROUP BY 股票代码, 板块代码\r\n" + 
+						"UNION  \r\n" + 
+						"\r\n" + 
+						"SELECT gphy.`股票代码`,  gphy.板块代码 板块代码, tdxbk.`板块名称` 板块名称 , gphy.`股票权重`\r\n" + 
+						"FROM 股票通达信行业板块对应表 gphy, 通达信板块列表 tdxbk  \r\n" + 
+						"WHERE 股票代码 IN (" + bkggstr + " )  AND gphy.`板块代码` = tdxbk.`板块ID` AND ISNULL(移除时间)\r\n" + 
+						"GROUP BY 股票代码, 板块代码\r\n" + 
+						"UNION \r\n" + 
+						" \r\n" + 
+						"SELECT gpfg.`股票代码`, gpfg.`板块代码` 板块代码, tdxbk.`板块名称` 板块名称  ,  gpfg.`股票权重`\r\n" + 
+						"FROM 股票通达信风格板块对应表 gpfg, 通达信板块列表 tdxbk \r\n" + 
+						"WHERE 股票代码 IN (" + bkggstr + " )  AND gpfg.`板块代码` = tdxbk.`板块ID` AND ISNULL(移除时间)\r\n" + 
+						"GROUP BY 股票代码, 板块代码\r\n" + 
+						"UNION \r\n" + 
+						" \r\n" + 
+						"SELECT gpfg.`股票代码`,  gpfg.`板块代码` 板块代码, tdxbk.`板块名称` 板块名称  ,  gpfg.`股票权重`\r\n" + 
+						"FROM 股票通达信交易所指数对应表 gpfg, 通达信板块列表 tdxbk \r\n" + 
+						"WHERE 股票代码 IN (" + bkggstr + ")  AND gpfg.`板块代码` = tdxbk.`板块ID` AND ISNULL(移除时间) \r\n" + 
+						"GROUP BY 股票代码, 板块代码"
+						;
+			CachedRowSetImpl rs_gn = connectdb.sqlQueryStatExecute(sqlquerystat); 
+			String curstockcode = ""; Stock tmpstock = null;
+			try  {     
+			        while(rs_gn.next()) {
+			        	String stockcode = rs_gn.getString("股票代码");
+			        	if(!stockcode.equalsIgnoreCase(curstockcode)) {
+			        		curstockcode = stockcode;
+			        		tmpstock = (Stock)treeofstkbk.getSpecificNodeByHypyOrCode (stockcode,BkChanYeLianTreeNode.TDXGG);
+			        	}
+			        	
+			        	String bkcode = rs_gn.getString("板块代码");
+			        	Integer quanzhong = rs_gn.getInt("股票权重");
+			        	BanKuai bk = (BanKuai)treeofstkbk.getSpecificNodeByHypyOrCode(bkcode, BkChanYeLianTreeNode.TDXBK);
+						StockOfBanKuai bkofst = new StockOfBanKuai(bk,tmpstock);
+						bkofst.setStockQuanZhong (quanzhong);
+						bk.addNewBanKuaiGeGu(bkofst);
+//						stockbanksset.add(bk);
+						tmpstock.addGeGuTDXSysBanKuai (bk);
+			        } 
+			    } catch(java.lang.NullPointerException e){	e.printStackTrace();
+			    } catch(Exception e) {e.printStackTrace();
+			    } finally {
+			    	if(rs_gn != null) {	try {rs_gn.close();	} catch (SQLException e) {	e.printStackTrace();}
+			    	rs_gn = null;    }
+			    }
+
+			return stocklist;
 		}
 
 		public String getStockCodeByName(String stockname) 
@@ -5794,7 +6074,7 @@ public class BanKuaiDbOperation
 		/*
 		 * 导入网易股票行情接口的数据，
 		 */
-		public File importNetEaseStockData() 
+		public File importNetEaseStockData(String jiaoyisuo) 
 		{
 			File tmpreportfolder = Files.createTempDir();
 			File tmprecordfile = new File(tmpreportfolder + "导入网易股票信息.tmp");
@@ -5803,46 +6083,84 @@ public class BanKuaiDbOperation
 				FileUtils.cleanDirectory(new File(sysconfig.getNetEaseDownloadedFilePath () ) );
 			} catch (IOException e1) {e1.printStackTrace();}
 			
-			ArrayList<Stock> allstocks = this.getAllStocks ();
+			Collection<BkChanYeLianTreeNode> allgegucode = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getRequiredSubSetOfTheNodesByJiaoYiSuo(BkChanYeLianTreeNode.TDXGG,jiaoyisuo);		
+
+			String optTable = null;
+			if(jiaoyisuo.equalsIgnoreCase("SZ")  )
+				optTable = "通达信深交所股票每日交易信息";
+			else if(jiaoyisuo.equalsIgnoreCase("SH") )
+				optTable = "通达信上交所股票每日交易信息";
+			CachedRowSetImpl  rsdm = null;
+			try { 	
+				String sqlquerystat = "SELECT * FROM \r\n" + 
+						"(SELECT 股票代码  FROM A股\r\n" + 
+						"WHERE 所属交易所 = '" + jiaoyisuo + "' ) agu\r\n" + 
+						"\r\n" + 
+						"LEFT JOIN \r\n" + 
+						"( SELECT 代码, MIN(交易日期) minjytime , MAX(交易日期) maxjytime FROM " + optTable + "\r\n" + 
+						" WHERE  换手率 IS NOT NULL AND 总市值 IS  NOT NULL AND 流通市值 IS  NOT NULL" +
+						" GROUP BY 代码) shjyt\r\n" + 
+						" ON agu.股票代码 =  shjyt.`代码`\r\n"
+						;
+		    	rsdm = connectdb.sqlQueryStatExecute(sqlquerystat);
+		    	while(rsdm.next()) {
+			    		 String ggcode = rsdm.getString("股票代码"); //mOST_RECENT_TIME
+			    		 Stock stock = (Stock) CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode(ggcode, BkChanYeLianTreeNode.TDXGG);
+			    		 if(stock == null) 
+			    			 continue;
+			    		 try { LocalDate mintime = rsdm.getDate("minjytime").toLocalDate();
+			    		 		stock.getShuJuJiLuInfo().setNeteasejlmindate(mintime);
+			    		 } catch (java.lang.NullPointerException ex) {}
+			    		 try { LocalDate maxtime = rsdm.getDate("maxjytime").toLocalDate();
+			    		 		stock.getShuJuJiLuInfo().setNeteasejlmaxdate(maxtime);
+			    		 } catch (java.lang.NullPointerException ex) {}
+			    	}
+			    } catch(java.lang.NullPointerException e) {	e.printStackTrace();
+			    } catch (SQLException e) {	e.printStackTrace();
+			    } catch(Exception e){	e.printStackTrace();
+			    } finally {
+			    	if(rsdm != null)
+					try {rsdm.close();rsdm = null;
+					} catch (SQLException e) {	e.printStackTrace();}
+			    }
+
 			//下载需要的时间段的数据
-			for(Stock stock : allstocks) {
+			for(BkChanYeLianTreeNode tmpnode : allgegucode) {
+				Stock stock = (Stock)tmpnode;
 				boolean neteasthasdata = false;
 				String stockcode = stock.getMyOwnCode();
-				
-				String formatedstockcode; String stockdatatable ;
-				if(stock.getSuoShuJiaoYiSuo().trim().toLowerCase().equals("sh")) { 
+				String formatedstockcode; 
+				if(stock.getSuoShuJiaoYiSuo().trim().toLowerCase().equals("sh"))  
 					formatedstockcode = "0" + stockcode;
-					stockdatatable = "通达信上交所股票每日交易信息";
-				} else {
+				else 
 					formatedstockcode = "1" + stockcode;
-					stockdatatable = "通达信深交所股票每日交易信息";
-				}
 				
-				CachedRowSetImpl  rs = null;
-				LocalDate ldlastestdbrecordsdate = null;
-				try { 	
-					//找出每日交易的起点终点
-					String sqlquerystat = "SELECT  MAX(交易日期) 	MOST_RECENT_TIME FROM  " + stockdatatable + 
-											" WHERE  代码 = '" + stockcode + "' AND 换手率 IS NOT NULL AND 总市值 IS  NOT NULL AND 流通市值 IS  NOT NULL"
-											;
-					logger.debug(sqlquerystat);
-				    rs = connectdb.sqlQueryStatExecute(sqlquerystat);
-				    while(rs.next()) {
-//				    		logger.debug(rs.getMetaData().getColumnCount());
-				    		 java.sql.Date lastestdbrecordsdate = rs.getDate("MOST_RECENT_TIME"); //mOST_RECENT_TIME 
-				    		 try {
-				    			 ldlastestdbrecordsdate = lastestdbrecordsdate.toLocalDate();
-				    		 } catch (java.lang.NullPointerException e) {
-				    			 logger.info(stockcode + "似乎没有数据，请检查！");
-				    			 Files.append(stockcode + "在数据库中似乎没有数据，请检查！" +  System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
-				    		 }
-				    }
-				} catch(java.lang.NullPointerException e) { e.printStackTrace();
-				} catch (SQLException e) {e.printStackTrace();
-				}catch(Exception e){e.printStackTrace();
-				} finally {
-			    	if(rs != null)	try {rs.close();rs = null;} catch (SQLException e) {e.printStackTrace();}
-				}
+				
+				
+				LocalDate ldlastestdbrecordsdate = stock.getShuJuJiLuInfo().getNeteasejlmaxdate();
+//				CachedRowSetImpl  rs = null;
+//				try { 	
+//					//找出每日交易的起点终点
+//					String sqlquerystat = "SELECT  MAX(交易日期) 	MOST_RECENT_TIME FROM  " + stockdatatable + 
+//											" WHERE  代码 = '" + stockcode + "' AND 换手率 IS NOT NULL AND 总市值 IS  NOT NULL AND 流通市值 IS  NOT NULL"
+//											;
+//				    rs = connectdb.sqlQueryStatExecute(sqlquerystat);
+//				    while(rs.next()) {
+////				    		logger.debug(rs.getMetaData().getColumnCount());
+//				    		 java.sql.Date lastestdbrecordsdate = rs.getDate("MOST_RECENT_TIME"); //mOST_RECENT_TIME 
+//				    		 try {
+//				    			 ldlastestdbrecordsdate = lastestdbrecordsdate.toLocalDate();
+//				    		 } catch (java.lang.NullPointerException e) {
+//				    			 logger.info(stockcode + "似乎没有数据，请检查！");
+//				    			 Files.append(stockcode + "在数据库中似乎没有数据，请检查！" +  System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
+//				    		 }
+//				    }
+//				} catch(java.lang.NullPointerException e) { e.printStackTrace();
+//				} catch (SQLException e) {e.printStackTrace();
+//				}catch(Exception e){e.printStackTrace();
+//				} finally {
+//			    	if(rs != null)	try {rs.close();rs = null;} catch (SQLException e) {e.printStackTrace();}
+//				}
 				
 			   if(ldlastestdbrecordsdate == null)
 				   ldlastestdbrecordsdate =  LocalDate.parse("2013-03-04"); //当前数据的起点
@@ -5861,9 +6179,8 @@ public class BanKuaiDbOperation
 				    
 				    LocalTime tdytime = LocalTime.now(); //如果是在交易时间导入数据的话，当天的数据还没有，所以要判断一下
 				    LocalDate endldate = LocalDate.now(); 
-					if( ( tdytime.compareTo(LocalTime.of(9, 0, 0)) >0 && tdytime.compareTo(LocalTime.of(18, 0, 0)) <0) ) {
+					if( ( tdytime.compareTo(LocalTime.of(9, 0, 0)) >0 && tdytime.compareTo(LocalTime.of(18, 0, 0)) <0) ) 
 						 endldate = endldate.minusDays(1);
-					}
 				    
 					if(ldlastestdbrecordsdate.compareTo(endldate) >0)  //说明只有今天的数据没有导入，而今天还没有数据，所以跳出
 						continue;
@@ -5882,34 +6199,23 @@ public class BanKuaiDbOperation
 							savedfile.delete();
 						
 						FileUtils.copyURLToFile(URLink, savedfile,10000,10000); //http://commons.apache.org/proper/commons-io/javadocs/api-2.4/org/apache/commons/io/FileUtils.html#copyURLToFile(java.net.URL,%20java.io.File)
-					} catch (java.net.SocketTimeoutException e)  {
-						logger.info("获取" + stockcode + "网易数据超时！");
+					} catch (java.net.SocketTimeoutException e)  {logger.info("获取" + stockcode + "网易数据超时！");
 					} catch ( IOException e) {
-//						e.printStackTrace();
-					}finally {
-						URLink = null;
+					} finally {URLink = null;
 					}
 					//导入数据到数据库
 					if(!savedfile.exists()) {
 						System.out.println(stockcode + "：未能从网易获得"+ stockcode + "的数据文件，请检查！");
 						try {
 							Files.append(stockcode + "未能从网易得到"+ stockcode + "的数据文件，请检查！" +  System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+						} catch (IOException e) {e.printStackTrace();
 						}
 						neteasthasdata = false;
 					} else {
 						try (
-//								java.io.Reader filereader = java.nio.file.Files.newBufferedReader(Paths.get(savedfilename));
-//					            CSVReader csvReader = new CSVReaderBuilder(filereader).withSkipLines(1).build();
-								
 								FileReader filereader = new FileReader(savedfile);
 								CSVReader csvReader = new CSVReader(filereader);
 					    ){ 
-					            // Reading Records One by One in a String array
-//					            String[] nextRecord; int titlesign = -1;//标记网易CSV文件的第一行
-//					            while ((nextRecord = csvReader.readNext()) != null) {
 							int titlesign = -1;//标记网易CSV文件的第一行
 							List<String[]> records = csvReader.readAll();
 							for (String[] nextRecord : records) {
@@ -5950,7 +6256,7 @@ public class BanKuaiDbOperation
 						                //update 涨跌幅和换手率数据
 //						                INSERT INTO table (id, name, age) VALUES(1, "A", 19) ON DUPLICATE KEY UPDATE    
 //						                name="A", age=19
-						                String sqlupdateorinsert = "INSERT INTO " + stockdatatable + "(涨跌幅,换手率,流通市值,总市值) VALUES("
+						                String sqlupdateorinsert = "INSERT INTO " + optTable + "(涨跌幅,换手率,流通市值,总市值) VALUES("
 						                							+ Double.parseDouble(zhangdiefu) + "," 
 						                							+ Double.parseDouble(huanshoulv) + ","
 						                							+ Double.parseDouble(liutongshizhi) + ","
@@ -5959,7 +6265,7 @@ public class BanKuaiDbOperation
 						                							+ "交易日期 = '" + lactiondate + "'," 
 						                							+ "代码= '" + stockcode + "'"
 						                							;	
-						                String sqlupdate = "Update " + stockdatatable + " SET " +
+						                String sqlupdate = "Update " + optTable + " SET " +
 						                					" 涨跌幅=" + Double.parseDouble(zhangdiefu) + "," +
 						                					" 换手率=" + Double.parseDouble(huanshoulv) + "," +
 						                					" 流通市值= " + Double.parseDouble(liutongshizhi) + "," +
@@ -5967,44 +6273,23 @@ public class BanKuaiDbOperation
 						                					" WHERE 交易日期 = '" + lactiondate + "'" + 
 						                					" AND 代码= '" + stockcode + "'"
 						                					;
-						                logger.debug(sqlupdate);
 									    try {
 											int result = connectdb.sqlUpdateStatExecute(sqlupdate);
-										} catch (MysqlDataTruncation e) {
-											// TODO Auto-generated catch block
-											e.printStackTrace();
-										} catch (SQLException e) {
-											// TODO Auto-generated catch block
-											e.printStackTrace();
-										}
+										} catch (MysqlDataTruncation e) {e.printStackTrace();
+										} catch (SQLException e) {e.printStackTrace();}
 									    
 									    Files.append(stockcode + "导入网易数据成功！" +  System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
 									    
 									    neteasthasdata = true;
-									    
-									    
 					            	}
-					            	
 					            }
-					            if(!neteasthasdata) {
+					            if(!neteasthasdata) 
 					            	Files.append(stockcode + "网易文件没有数据，导入0个记录！" +  System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
-					            }
-					            
-					            records = null;
-					        } catch (IOException e) {
-								e.printStackTrace();
-							} 
-					}
-				 
-				
-//				if(!neteasthasdata) { //网易有时候会得不到数据，就要用雪球的方法得到数据
-//					logger.info(stockcode + "未能从网易获取日期为" + ldlastestdbrecordsdate + "数据，将从其他数据源获取数据！");
-//					importXueQiuStockData (stockcode,ldlastestdbrecordsdate);
-//				}
-			}
 
-			allstocks = null;
-			
+					            records = null;
+					        } catch (IOException e) {e.printStackTrace();} 
+					}
+			}
 			return tmprecordfile;
 		}
 		/*

@@ -499,9 +499,14 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 			requiredendday = bkdataendday;
 	
 		if(bk.getBanKuaiLeiXing().equals(BanKuai.HASGGWITHSELFCJL)) {
-			SvsForNodeOfStock svstock = new SvsForNodeOfStock ();
 			bk = this.getAllGeGuOfBanKuai (bk); 
+			bk = bkdbopt.getBanKuaiGeGuZhanBi (bk,requiredstartday,requiredendday,period);
+			bkdbopt.getTDXBanKuaiSetForBanKuaiGeGu (bk);
+			bkdbopt.getBanKuaiGeGuGzMrMcYkInfo (bk);
+			gddbopt.checkBanKuaiGeGuHasHuangQinGuoQieAndMingXin(bk, requiredendday); //查询板块个股是否有皇亲国戚
+			
 			List<BkChanYeLianTreeNode> allbkgg = bk.getAllGeGuOfBanKuaiInHistory();
+			SvsForNodeOfStock svstock = new SvsForNodeOfStock ();
 			if(allbkgg != null) {
 				for(BkChanYeLianTreeNode stockofbk : allbkgg)   
 			    	if( ((StockOfBanKuai)stockofbk).isInBanKuaiAtSpecificDate(requiredendday)  ) { 
@@ -509,8 +514,6 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 		    			 svstock.syncNodeData(stock);
 			    	 }
 			}
-			
-			gddbopt.checkBanKuaiGeGuHasHuangQinGuoQieAndMingXin(bk, requiredendday); //查询板块个股是否有皇亲国戚
 
 			if(calwholeweek ) { 
 				this.getNodeQueKouInfo(bk, requiredstartday, requiredendday, period);
@@ -592,6 +595,13 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 	{
 		Collection<BkChanYeLianTreeNode> result = this.bkdbopt.searchKeyWordsInBanKuaiJiBenMian (keywords);
 		return result;
+	}
+
+	@Override
+	public BkChanYeLianTreeNode getNodeGzMrMcYkInfo(BkChanYeLianTreeNode node, LocalDate selecteddatestart,
+			LocalDate selecteddateend, String period) {
+		node =  bkdbopt.getNodeGzMrMcYkInfo((TDXNodes)node, selecteddatestart,selecteddateend, period);
+		return node;
 	}
 	
 }

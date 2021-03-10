@@ -242,6 +242,15 @@ public class BanKuai extends TDXNodes
 	{
 		return this.stockofbklist;
     }
+	public List<BkChanYeLianTreeNode> getAllGeGuOfBanKuaiInHistoryByJiaoYiSuo(String jiaoyisuo) 
+	{
+		List<BkChanYeLianTreeNode> gegubyjys = new ArrayList<> ();
+		for(BkChanYeLianTreeNode tmpgg : this.stockofbklist )
+			if( ((StockOfBanKuai)tmpgg).getStock().getSuoShuJiaoYiSuo().equalsIgnoreCase(jiaoyisuo)    )
+				gegubyjys.add(tmpgg);
+		
+		return gegubyjys;
+    } 
 	public Interval getBanKuaiGeGuTimeRange ()
 	{
 		return this.bkgegusearchtimerange;

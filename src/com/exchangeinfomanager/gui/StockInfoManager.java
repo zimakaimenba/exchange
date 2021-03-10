@@ -311,8 +311,7 @@ public class StockInfoManager
 		}
 		try {
 			kspanel.setStockcode(cBxstockcode.getSelectedItem().toString().substring(0, 6));
-		} catch (java.lang.NullPointerException e) {
-		}
+		} catch (java.lang.NullPointerException e) {}
 		
 		((JStockComboBoxNodeRenderer)cBxstockcode.getRenderer()).setChiCangGeGuList(new HashSet<String> (tmpchicangname));
 	}
@@ -364,20 +363,27 @@ public class StockInfoManager
 				
 				 displayStockJibenmianInfotoGui (); //显示基本信息
 				 
-				 if(!systemconfig.getPrivateModeSetting()) { //隐私模式不显示持仓信息
-					 nodeshouldbedisplayed = bkdbopt.getZdgzMrmcZdgzYingKuiFromDB(nodeshouldbedisplayed);
+				 if(nodeshouldbedisplayed.getType() == BkChanYeLianTreeNode.TDXBK) {
+					 ServicesForNode svsnode =  ((BanKuai)nodeshouldbedisplayed).getServicesForNode();
+					 svsnode.getNodeGzMrMcYkInfo((TDXNodes)nodeshouldbedisplayed, null,null, NodeGivenPeriodDataItem.WEEK);
+					 svsnode = null;
 					 displaySellBuyZdgzInfoToGui ();
 				 }
 				 
-				 if(nodeshouldbedisplayed.getType() == 6) { //是个股
+				 if(nodeshouldbedisplayed.getType() == BkChanYeLianTreeNode.TDXGG) {
+					 displayStockSuoShuBanKuai ();
+					 setKuaiSuGui (stockcode);
+						
 					if(accountschicangconfig.isSystemChiCang(stockcode)) 
 						nodeshouldbedisplayed = accountschicangconfig.setStockChiCangAccount((Stock)nodeshouldbedisplayed);
 					if(!systemconfig.getPrivateModeSetting()) { //隐私模式不显示持仓信息
 						displayAccountTableToGui ();
+						
+						ServicesForNode svsnode = ((Stock)nodeshouldbedisplayed).getServicesForNode();
+						svsnode.getNodeGzMrMcYkInfo((TDXNodes)nodeshouldbedisplayed, null,null, NodeGivenPeriodDataItem.WEEK);
+						svsnode = null;
+						displaySellBuyZdgzInfoToGui ();
 					}
-
-					displayStockSuoShuBanKuai ();
-					setKuaiSuGui (stockcode);
 				 } 
 				 
 				 
@@ -1424,60 +1430,16 @@ public class StockInfoManager
 				}
 			}
 		});
-		
-//		btnSearchCode.addMouseListener(new MouseAdapter() 
-//		{
-//			@Override
-//			public void mouseClicked(MouseEvent arg0) 
-//			{	
-//				nodeshouldbedisplayed = cBxstockcode.getUserInputNode();
-//				if(nodeshouldbedisplayed != null)
-//					preUpdateSearchResultToGui(nodeshouldbedisplayed.getMyOwnCode());
-//				else {
-//					clearGuiDispalyedInfo ();
-//				}
-//				
-//				String stockcode = null;
-//				try	{
-//					stockcode = formatStockCode((String)cBxstockcode.getSelectedItem());
-//					preUpdateSearchResultToGui(stockcode);
-//					
-////					if(!checkCodeInputFormat(stockcode)) {
-////						logger.debug("股票代码有误");
-////						JOptionPane.showMessageDialog(null,"股票代码有误！");
-////						return;
-////					}else {
-////						preUpdateSearchResultToGui(stockcode);
-////					}
-//				}catch(java.lang.NullPointerException e)	{
-//					e.printStackTrace();
-//					JOptionPane.showMessageDialog(frame, "请输入股票代码！","Warning", JOptionPane.WARNING_MESSAGE);
-//					return;
-//				}catch(java.lang.StringIndexOutOfBoundsException ex2) {
-//					ex2.printStackTrace();
-//					JOptionPane.showMessageDialog(null,"股票代码有误！");
-//					return;
-//				}
-//			}
-//		});
-
-		
 		btngengxinxx.addMouseListener(new MouseAdapter() 
 		{
 			@Override
 			public void mouseClicked(MouseEvent arg0) 
 			{
-				if(!btngengxinxx.isEnabled())
-					return;
+				if(!btngengxinxx.isEnabled())	return;
 				setGuiInfoToDatabase();
-//				setCkLstTreeInfoToDatabase ();
-				
-				//setZdgzMrmcInfoToDB();
 			}
 			
 		});
-		
-		
 		frame.addWindowListener(new WindowAdapter() 
 		{
 			@Override
@@ -1752,6 +1714,7 @@ public class StockInfoManager
 			int autoIncKeyFromApi = accountschicangconfig.buySellYuanZiOpertion (kspanel); 
 			if(autoIncKeyFromApi > 0) {
 				cBxstockcode.updateUserSelectedNode(kspanel.getStockcode());
+				this.nodeshouldbedisplayed.getNodeJiBenMian().setZdgzmrmcykRecords(null); //强制重新刷新交易记录
 				preUpdateSearchResultToGui(kspanel.getStockcode());
 				kspanel.resetInput(); 
 			} else {
@@ -1951,57 +1914,6 @@ public class StockInfoManager
 			((AccountsInfoTableModel)tableStockAccountsInfo.getModel()).deleteAllRows();
 		
 	}
-
-
-	/*
-	 * Display checklist Items to Gui
-	 */
-//	private void displayChecklistsItemsToGui() 
-//	{
-//		//ASingleStockSubInfoCheckListsTreeInfo checklistinfo = new ASingleStockSubInfoCheckListsTreeInfo ( (String)cBxstockcode.getSelectedItem() ); 
-////		checklisttree.setChecklistsitems(stockchklst.getChecklistsitems());
-////		checklisttree.setStockcode(stockchklst.getStockcode());
-////		checklisttree.epdTree(true);
-////		checklisttree.updateUI();
-//		try {
-////			if(buychklstdialog.isVisible() ) {
-////				 logger.debug("dialog v");
-////				 buychklstdialog.refreshTreeGui(stockchklst.getStockcode(), stockchklst.getChecklistsitems());
-////			}
-//			 buychklstdialog.refreshTreeGui(nodeshouldbedisplayed.getMyOwnCode(), ((Stock)nodeshouldbedisplayed).getChecklistXml());
-//			
-//		}catch (java.lang.NullPointerException e) {
-//			e.printStackTrace();
-//		}
-//		
-//	}
-//
-//	protected void setCkLstTreeInfoToDatabase() 
-//	{
-//		if(buychklstdialog == null)
-//			return;
-//    
-//	    String tmpchecklist = buychklstdialog.getChkLstItemsTiCai() 
-//	    					+ buychklstdialog.getChkLstItemsGuDong()
-//	    					+ buychklstdialog.getChkLstItemsCaiWu()
-//	    					+ buychklstdialog.getChkLstItemsJiShu()
-//	    					+ buychklstdialog.getChkLstItemsZhenChe()
-//	    					;
-//	    String tmpupdatedate = buychklstdialog.getChkLstUpdatedDate();
-//	    if(tmpchecklist != null) {
-//	    	((Stock)nodeshouldbedisplayed).setChecklistXml(tmpupdatedate + tmpchecklist);
-//	    	bkdbopt.updateChecklistsitemsToDb((Stock)nodeshouldbedisplayed);
-//	    }
-//	    	
-//	    buychklstdialog.refreshTreeGui(cBxstockcode.getSelectedItem().toString(),tmpupdatedate + tmpchecklist);
-//	}
-	
-	private void initializeNetWorkOperation(String stockname) 
-	{
-		// TODO Auto-generated method stub
-		//networkoperation = new NetworkOperation(stockname); 
-		
-	}
 	
 	
 	private boolean checkCodeInputFormat(String stockcode) 
@@ -2170,17 +2082,14 @@ public class StockInfoManager
 	
 	private void displaySellBuyZdgzInfoToGui() 
 	{
-				Object[][] sellbuyObjects = (nodeshouldbedisplayed).getNodeJiBenMian().getZdgzmrmcykRecords();
-				for(int i=0;i<sellbuyObjects.length;i++) {
-					((DefaultTableModel)tblzhongdiangz.getModel()).addRow(sellbuyObjects[i]);
+				List<Object[]> sellbuyObjects = (nodeshouldbedisplayed).getNodeJiBenMian().getZdgzmrmcykRecords();
+				if(sellbuyObjects == null)
+					return;
+				for(int i=0;i<sellbuyObjects.size();i++) {
+					((DefaultTableModel)tblzhongdiangz.getModel()).addRow(sellbuyObjects.get(i));
 				}
 
 	}
-	
-//	private String formatStockCode (String stockcode)
-//	{
-//		return stockcode.substring(0,6).trim(); 
-//	}
 	
 	private void setTableNewInfoToDB(Object[] tableData) 
 	{
@@ -2197,8 +2106,6 @@ public class StockInfoManager
 //		
 //			
 //		 acntdbopt.setRecordNewInfoToDb(dabataseid.intValue(),shuoming);
-		
-
 	}
 	
 	private JFrame frame;

@@ -204,4 +204,11 @@ public class SvsForNodeOfFileNodes implements ServicesForNode
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public BkChanYeLianTreeNode getNodeGzMrMcYkInfo(BkChanYeLianTreeNode node, LocalDate selecteddatestart,
+			LocalDate selecteddateend, String period) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

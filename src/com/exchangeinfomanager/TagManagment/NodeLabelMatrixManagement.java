@@ -10,9 +10,11 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.swing.JButton;
@@ -96,7 +98,7 @@ public class NodeLabelMatrixManagement extends JDialog
 		//所属板块KW
 		Set<BkChanYeLianTreeNode> suosusysbankuai = new HashSet<> ();
 		if(node.getType () == BkChanYeLianTreeNode.TDXGG) {
-			node = this.nodedbopt.getTDXBanKuaiForAStock ((Stock) node);
+			nodedbopt.getTDXBanKuaiSetForStock ((Stock)node ); //通达信板块信息
 			suosusysbankuai = ((Stock) node).getGeGuCurSuoShuTDXSysBanKuaiList();
 			
 			lbbkdbservice = new TagsServiceForNodes (suosusysbankuai);
