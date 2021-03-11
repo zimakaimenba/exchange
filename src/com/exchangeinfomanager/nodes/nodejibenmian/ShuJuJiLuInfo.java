@@ -8,6 +8,14 @@ public class ShuJuJiLuInfo
 	LocalDate jyjlmindate;
 	LocalDate neteasejlmaxdate;
 	LocalDate neteasejlmindate;
+	String gupiaobankuaiduiyingbiao;
+	
+	public String getGuPiaoBanKuaiDuiYingBiao() {
+		return gupiaobankuaiduiyingbiao;
+	}
+	public void setGuPiaoBanKuaiDuiYingBiao(String gupiaobankuaiduiyingbiao) {
+		this.gupiaobankuaiduiyingbiao = gupiaobankuaiduiyingbiao;
+	}
 	public LocalDate getJyjlmaxdate() {
 		return jyjlmaxdate;
 	}

@@ -398,6 +398,9 @@ public class JiGouGuDongDbOperation
 	{
 		String bkggstr = "";
 		List<BkChanYeLianTreeNode> bkgg = bk.getAllGeGuOfBanKuaiInHistory();
+		if(bkgg == null || bkgg.isEmpty())
+			return;
+		
 		for(BkChanYeLianTreeNode stockofbk : bkgg) 
 			if( ((StockOfBanKuai)stockofbk).isInBanKuaiAtSpecificDate(checkdate)  ) 
 				bkggstr = bkggstr + "'" + stockofbk.getMyOwnCode() +  "', ";

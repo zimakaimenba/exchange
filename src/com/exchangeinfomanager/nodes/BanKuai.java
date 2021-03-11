@@ -244,6 +244,9 @@ public class BanKuai extends TDXNodes
     }
 	public List<BkChanYeLianTreeNode> getAllGeGuOfBanKuaiInHistoryByJiaoYiSuo(String jiaoyisuo) 
 	{
+		if(stockofbklist == null)
+			return null;
+		
 		List<BkChanYeLianTreeNode> gegubyjys = new ArrayList<> ();
 		for(BkChanYeLianTreeNode tmpgg : this.stockofbklist )
 			if( ((StockOfBanKuai)tmpgg).getStock().getSuoShuJiaoYiSuo().equalsIgnoreCase(jiaoyisuo)    )

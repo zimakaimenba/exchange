@@ -272,7 +272,7 @@ public class ImportTDXData extends JDialog {
 			
 			try {
 				long start=System.currentTimeMillis(); //获取开始时间
-				File resulttmpfilebkamo = bkdbopt.refreshTDXBanKuaiVolAmoToDb("sh");
+				File resulttmpfilebkamo = bkdbopt.refreshTDXBanKuaiVolAmoToDbBulkImport("sh");
 				long end=System.currentTimeMillis(); //获取结束时间
 				System.out.println(".......导入上海指数/板块当日成交信息结束" + LocalTime.now() + ".....导入耗费时间： "+(end-start)+"ms \r\n");
 //				List<String> lines = Files.readLines(resulttmpfilebkamo, sysconfig.charSet());
@@ -294,7 +294,7 @@ public class ImportTDXData extends JDialog {
 			
 			try {
 				long start=System.currentTimeMillis(); //获取开始时间
-				File resulttmpfilezsamo = bkdbopt.refreshTDXBanKuaiVolAmoToDb ("sz");
+				File resulttmpfilezsamo = bkdbopt.refreshTDXBanKuaiVolAmoToDbBulkImport ("sz");
 				long end=System.currentTimeMillis(); //获取结束时间
 				System.out.println("......导入深圳指数板块当日成交信息结束" + LocalTime.now() + ".....导入耗费时间： "+(end-start)+"ms \r\n");
 //				List<String> lines = Files.readLines(resulttmpfilezsamo, sysconfig.charSet());
@@ -313,7 +313,7 @@ public class ImportTDXData extends JDialog {
 			try {
 				System.out.println("------导入深证股票当日成交信息开始于" +  LocalTime.now());
 				long start=System.currentTimeMillis(); //获取开始时间
-				File resulttmpfilebkamo = bkdbopt.refreshTDXGeGuVolAmoToDb("sz");
+				File resulttmpfilebkamo = bkdbopt.refreshTDXGeGuVolAmoToDbBulkImport("sz");
 				long end=System.currentTimeMillis(); //获取结束时间
 				System.out.println("......导入深圳股票当日成交信息结束于" + LocalTime.now() + "......导入耗费时间： "+(end-start)+"ms \r\n");
 //				List<String> lines = Files.readLines(resulttmpfilebkamo, sysconfig.charSet());
@@ -330,7 +330,7 @@ public class ImportTDXData extends JDialog {
 			try {
 				System.out.println("------导入上证股票当日成交信息开始于" + LocalTime.now() );
 				long start=System.currentTimeMillis(); //获取开始时间
-				File resulttmpfilebkamo = bkdbopt.refreshTDXGeGuVolAmoToDb("sh");
+				File resulttmpfilebkamo = bkdbopt.refreshTDXGeGuVolAmoToDbBulkImport("sh");
 				long end=System.currentTimeMillis(); //获取结束时间
 				System.out.println("......导入上海股票当日成交信息结束于" + LocalTime.now() + "。.....导入耗费时间： "+(end-start)+"ms \r\n");
 //				List<String> lines = Files.readLines(resulttmpfilebkamo, sysconfig.charSet());
@@ -713,22 +713,21 @@ public class ImportTDXData extends JDialog {
 
 	protected void checkDataSyncResult() 
 	{
-		File synccheckresult = bkdbopt.checkTDXDataImportIsCompleted ();
-		if(synccheckresult != null) {
-			int exchangeresult = JOptionPane.showConfirmDialog(null, "同步通达信数据完整性检查完成，请在" + synccheckresult.getAbsolutePath() + "下查看！是否打开该目录？","检查完毕", JOptionPane.OK_CANCEL_OPTION);
-      		  if(exchangeresult == JOptionPane.CANCEL_OPTION)
-      				return;
-      		  try {
-      			String path = synccheckresult.getParent();
-//      			Desktop.getDesktop().open(new File( path ));
-      			Runtime.getRuntime().exec("explorer.exe /select," + synccheckresult.getAbsolutePath() );
-      		  } catch (IOException e1) {
-      				e1.printStackTrace();
-      		  }
-		} else {
-//			JOptionPane.showMessageDialog(null, "通达信数据完整！","Warning", JOptionPane.WARNING_MESSAGE);
-		}
-			
+//		File synccheckresult = bkdbopt.checkTDXDataImportIsCompleted ();
+//		if(synccheckresult != null) {
+//			int exchangeresult = JOptionPane.showConfirmDialog(null, "同步通达信数据完整性检查完成，请在" + synccheckresult.getAbsolutePath() + "下查看！是否打开该目录？","检查完毕", JOptionPane.OK_CANCEL_OPTION);
+//      		  if(exchangeresult == JOptionPane.CANCEL_OPTION)
+//      				return;
+//      		  try {
+//      			String path = synccheckresult.getParent();
+////      			Desktop.getDesktop().open(new File( path ));
+//      			Runtime.getRuntime().exec("explorer.exe /select," + synccheckresult.getAbsolutePath() );
+//      		  } catch (IOException e1) {
+//      				e1.printStackTrace();
+//      		  }
+//		} else {
+////			JOptionPane.showMessageDialog(null, "通达信数据完整！","Warning", JOptionPane.WARNING_MESSAGE);
+//		}
 	}
 
 	private final JPanel contentPanel = new JPanel();
