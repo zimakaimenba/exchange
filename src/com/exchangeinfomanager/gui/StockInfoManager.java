@@ -10,6 +10,7 @@ import javax.swing.JTextField;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
 import java.text.NumberFormat;
 
 import java.time.LocalDate;
@@ -92,7 +93,7 @@ import java.awt.event.MouseEvent;
 import javax.swing.JMenu;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-
+import javax.swing.Box;
 import javax.swing.ButtonGroup;
 
 import java.util.ArrayList;
@@ -530,9 +531,7 @@ public class StockInfoManager
 					logger.debug(cmd);
 					Process p  = Runtime.getRuntime().exec(cmd);
 					p.waitFor();
-				} catch (Exception e1){
-					e1.printStackTrace();
-				}
+				} catch (Exception e1){e1.printStackTrace();}
 			}
 		});
 		
@@ -1000,14 +999,30 @@ public class StockInfoManager
 			{
 				int rowIndex = tablegudong.getSelectedRow();
 				String gudongname = (String)((DefaultTableModel)tablegudong.getModel()).getValueAt(rowIndex, 0);
-				String result = (String)JOptionPane.showInputDialog(null,"定义机构名",gudongname, JOptionPane.QUESTION_MESSAGE,null,null , gudongname);
-				if(result == null)
-					 return;
 				
-				JiGouService svsjg = new JiGouService ();
-				svsjg.addJiGou(result.replaceAll(" ", ""));
-				svsjg = null;
- 				return;
+				  JTextField jfldjigou = new JTextField(25);
+				  jfldjigou.setText(gudongname);
+				  JCheckBox jchkhqgq = new JCheckBox("皇亲国戚"); 
+				  JCheckBox jchkmx = new JCheckBox("明星基金");
+				  
+			      JPanel myPanel = new JPanel();
+			      myPanel.add(new JLabel("定义机构:"));
+			      myPanel.add(jfldjigou);
+			      myPanel.add(Box.createVerticalStrut(15) ); // a spacer
+			      myPanel.add(jchkhqgq);
+			      myPanel.add(jchkmx);
+
+			      int result = JOptionPane.showConfirmDialog(null, myPanel, "机构设置", JOptionPane.OK_CANCEL_OPTION);
+			      if (result == JOptionPane.OK_OPTION) {
+			    	  Boolean hqgq = false; if(jchkhqgq.isSelected()) hqgq = true;
+			    	  Boolean mx = false; if(jchkmx.isSelected()) mx = true;
+			    	  
+			    	  JiGouService svsjg = new JiGouService ();
+						svsjg.addJiGou(jfldjigou.getText().replaceAll(" ", "") ,hqgq, mx );
+						svsjg = null;
+			      }
+
+			      return;
 			}	
 		});
 		mntmRefreshgudong.addMouseListener(new MouseAdapter() {
@@ -1024,6 +1039,21 @@ public class StockInfoManager
 				
 				refreshGudongInfo ( (Stock)node );
 				
+ 				return;
+			}	
+		});
+		mntmgudongfx.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent arg0)
+			{
+				int rowIndex = tablegudong.getSelectedRow();
+				String gudongname = (String)((DefaultTableModel)tablegudong.getModel()).getValueAt(rowIndex, 0);
+				StringSelection selection = new StringSelection(gudongname);
+				Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+				clipboard.setContents(selection, selection);
+				
+				try {
+					Runtime.getRuntime().exec(new String[]{"cmd", "/c","start chrome  " + systemconfig.getGuDongFenXiURL() });
+				} catch (IOException e) {e.printStackTrace();}				
  				return;
 			}	
 		});
@@ -2179,6 +2209,7 @@ public class StockInfoManager
 	private JTable tablegudong;
 	private JMenuItem mntmShezhijigou;
 	private JMenuItem mntmRefreshgudong;
+	private JMenuItem mntmgudongfx;
 	
 	/**
 	 * Initialize the contents of the frame.
@@ -2580,10 +2611,15 @@ public class StockInfoManager
 		        comp.setBackground(Color.white);
                 comp.setForeground(Color.BLACK);
 		        
-		        if(col == 1) 
+                if(col == 0) {
+                	Boolean hqgq = (Boolean) getModel().getValueAt(row, 3);
+                	if(hqgq)
+                		comp.setForeground(Color.RED);
+                }else 
+                if(col == 1) 
 		        	comp.setForeground( Season.getSeasonColor( (LocalDate)value ) );
 
-		        return comp;
+                return comp;
 		    }
 			    
 			    public String getToolTipText(MouseEvent e) {
@@ -2605,13 +2641,17 @@ public class StockInfoManager
 			new Object[][] {
 			},
 			new String[] {
-				"\u80A1\u4E1C\u540D\u79F0", "\u80A1\u4E1C\u65E5\u671F", "\u6301\u80A1\u6570\u91CF"
+				"\u80A1\u4E1C\u540D\u79F0", "\u80A1\u4E1C\u65E5\u671F", "\u6301\u80A1\u6570\u91CF", "皇亲国戚"
 			}
 		));
 		tablegudong.getTableHeader().getColumnModel().getColumn(0).setMaxWidth(220);
 		tablegudong.getTableHeader().getColumnModel().getColumn(0).setMinWidth(220);
 		tablegudong.getTableHeader().getColumnModel().getColumn(0).setWidth(220);
 		tablegudong.getTableHeader().getColumnModel().getColumn(0).setPreferredWidth(220);
+		tablegudong.getTableHeader().getColumnModel().getColumn(3).setMaxWidth(0);
+		tablegudong.getTableHeader().getColumnModel().getColumn(3).setMinWidth(0);
+		tablegudong.getTableHeader().getColumnModel().getColumn(3).setWidth(0);
+		tablegudong.getTableHeader().getColumnModel().getColumn(3).setPreferredWidth(0);
 		scrlpangudong.setViewportView(tablegudong);
 		panelinfo.setLayout(gl_panelinfo);
 		
@@ -2619,20 +2659,19 @@ public class StockInfoManager
 		addPopup(tablegudong, popupMenugudong);
 		
 		mntmShezhijigou = new JMenuItem("加入机构列表");
-		popupMenugudong.add(mntmShezhijigou);
 		mntmRefreshgudong = new JMenuItem("刷新股东名单");
+		mntmgudongfx = new JMenuItem("股东分析");
+		popupMenugudong.add(mntmShezhijigou);
 		popupMenugudong.add(mntmRefreshgudong);
+		popupMenugudong.add(mntmgudongfx);
 		
 		cBxstockcode = new JStockComboBox();
-
 	
 		btnSearchCode = new JButton("\u67E5\u627E");
-		
 		
 		btngengxinxx = new JButton("\u4FDD\u5B58");
 		btngengxinxx.setForeground(Color.RED);
 		btngengxinxx.setEnabled(false);
-		
 		
 		txtFldStockName = new JTextField();
 		

@@ -485,9 +485,7 @@ public class BanKuaiDbOperation
 			 return -1;
 		 }
 		 
-		 int addednumber =0;
-		 BufferedInputStream dis = null;
-		 FileInputStream in = null;
+		 int addednumber =0;BufferedInputStream dis = null;FileInputStream in = null;
 		 try {
 			    in = new FileInputStream(file);  
 			    dis = new BufferedInputStream(in);
@@ -623,12 +621,10 @@ public class BanKuaiDbOperation
 		FileReader tongdaxinfile = null;
 		try {
 			tongdaxinfile = new FileReader(sysconfig.getTDXSysAllBanKuaiFile() );
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
+		} catch (FileNotFoundException e) {e.printStackTrace();}
 		BufferedReader bufr = new BufferedReader (tongdaxinfile);
 		
-		HashMap<String,List<String>> tmpsysbkmap = new HashMap<String, List<String>> ();
+//		Map<String,List<String>> tmpsysbkmap = new HashMap<String, List<String>> ();
 		String line = null;  
         try {
 			while((line = bufr.readLine()) != null) {
@@ -1145,23 +1141,21 @@ public class BanKuaiDbOperation
                    Set<String> tmpstockcodesetnew = new HashSet<>(tmpstockcodestr);
                    
                    //从数据库中读出当前该板块的个股
+                   String sqlquerystat;
+   				   if(hasbkcode)
+   			    	sqlquerystat = "SELECT fgbk.股票代码  FROM 股票通达信风格板块对应表 fgbk, 通达信板块列表 bklb"
+   			    						+ " WHERE  fgbk.板块代码 = bklb.`板块ID`"
+   			    						+ " AND bklb.`板块名称` = '"  + gupiaoheader + "'"
+   			    						+ " AND ISNULL(fgbk.移除时间)"
+   			    						;
+   				   else 
+   					sqlquerystat = "SELECT 股票代码  FROM 股票通达信风格板块对应表 "
+   									+ " WHERE 板块代码='" + gupiaoheader + "'"
+   									+ " AND ISNULL(移除时间)"
+   									;  
                    Set<String> tmpstockcodesetold = new HashSet<>();
-                   CachedRowSetImpl rs = null; 
+   				   CachedRowSetImpl rs = connectdb.sqlQueryStatExecute(sqlquerystat);
 	   			   try {
-	   				   String sqlquerystat;
-	   				   if(hasbkcode)
-	   			    	sqlquerystat = "SELECT fgbk.股票代码  FROM 股票通达信风格板块对应表 fgbk, 通达信板块列表 bklb"
-	   			    						+ " WHERE  fgbk.板块代码 = bklb.`板块ID`"
-	   			    						+ " AND bklb.`板块名称` = '"  + gupiaoheader + "'"
-	   			    						+ " AND ISNULL(fgbk.移除时间)"
-	   			    						;
-	   				   else 
-	   					sqlquerystat = "SELECT 股票代码  FROM 股票通达信风格板块对应表 "
-	   									+ " WHERE 板块代码='" + gupiaoheader + "'"
-	   									+ " AND ISNULL(移除时间)"
-	   									;  
-
-	   			    	rs = connectdb.sqlQueryStatExecute(sqlquerystat);
 	   			    	while(rs.next() ) {
 	   			    		String stockcode = rs.getString("股票代码");
 	   			        	tmpstockcodesetold.add(stockcode);
@@ -1265,14 +1259,10 @@ public class BanKuaiDbOperation
 	private int refreshTDXZhiShuBanKuaiToGeGu (File tmprecordfile)
 	{
 		File file = new File(sysconfig.getTDXZhiShuBanKuaiToGeGuFile() );
-		if(!file.exists() ) {
-			 logger.debug("File not exist");
+		if(!file.exists() ) 
 			 return -1;
-		 }
 		 
-		 int addednumber =0;
-		 FileInputStream in = null;  
-		 BufferedInputStream dis = null;
+		 int addednumber =0;FileInputStream in = null;BufferedInputStream dis = null;
 		 try {
 			    in = new FileInputStream(file);  
 			    dis = new BufferedInputStream(in);
@@ -1345,14 +1335,14 @@ public class BanKuaiDbOperation
                   Set<String> tmpstockcodesetnew = new HashSet<>(tmpstockcodestr);
                   //从数据库中读出当前该板块的个股
                   Set<String> tmpstockcodesetold = new HashSet<>();
-                  CachedRowSetImpl rs = null;
+                  String sqlquerystat = "SELECT zsbk.股票代码  FROM 股票通达信交易所指数对应表  zsbk, 通达信板块列表 zslb"
+  						+ " WHERE  zsbk.板块代码 = zslb.`板块ID`"
+  						+ " AND zslb.`板块名称` = '"  + gupiaoheader + "'"
+  						+ " AND ISNULL(zsbk.移除时间)"
+  						;
+                  CachedRowSetImpl rs = connectdb.sqlQueryStatExecute(sqlquerystat);
 	   			    try {
-	   			    	String sqlquerystat = "SELECT zsbk.股票代码  FROM 股票通达信交易所指数对应表  zsbk, 通达信板块列表 zslb"
-	    						+ " WHERE  zsbk.板块代码 = zslb.`板块ID`"
-	    						+ " AND zslb.`板块名称` = '"  + gupiaoheader + "'"
-	    						+ " AND ISNULL(zsbk.移除时间)"
-	    						;
-	   			    	rs = connectdb.sqlQueryStatExecute(sqlquerystat);
+	   			    	
 	   			    	while(rs.next()) {  
 	   			        	String stockcode = rs.getString("股票代码");
 	   			        	tmpstockcodesetold.add(stockcode);
@@ -1410,20 +1400,14 @@ public class BanKuaiDbOperation
 		Set<String> curallshbk = new HashSet<> ();
 		for(BkChanYeLianTreeNode tmpnode : requiredbk)
 			curallshbk.add(tmpnode.getMyOwnCode());
-		
-		//从文件中读取最新的指数
-		Set<String> allinsertbk = new HashSet<> (); //所有最新的指数，用来和curallshbk，以判断是否有旧的指数需要被删除
-		
+
 		File file = new File(sysconfig.getTDXShangHaiZhiShuNameFile() );
-		
-		if(!file.exists() ) {
-			 logger.debug("File not exist");
+		if(!file.exists() ) 
 			 return -1;
-		 }
 		
 		 int addednumber =0;
-		 BufferedInputStream dis = null;
-		 FileInputStream in = null;
+		 Set<String> allinsertbk = new HashSet<> (); //所有最新的指数，用来和curallshbk，以判断是否有旧的指数需要被删除
+		 BufferedInputStream dis = null;  FileInputStream in = null;
 		 try {
 			    in = new FileInputStream(file);  
 			    dis = new BufferedInputStream(in);
@@ -1474,45 +1458,45 @@ public class BanKuaiDbOperation
              try { dis.close(); } catch (IOException e) {e.printStackTrace();}     
 		 }
 		 
-		 SetView<String> differencebankuaiold = Sets.difference( curallshbk, allinsertbk );
-		 if(differencebankuaiold.size() >0 ) { //说明有某些板块需要删除
-			 for(String oldbkcode : differencebankuaiold) {
-				 String sqldeletetstat = "DELETE  FROM  通达信板块列表 WHERE "
-						 				+ " 板块ID =" + " '" + oldbkcode.trim() + "'" 
-						 				;
-	   			try {
-					int autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
-				} catch (MysqlDataTruncation e) {e.printStackTrace();
-				} catch (SQLException e) {e.printStackTrace();				}
-	   			
-	   		//还要删除该板块在 股票概念对应表/股票行业对应表/股票风格对应表/产业链子版块列表  中的股票和板块的对应信息
-	    		sqldeletetstat = "DELETE  FROM  股票通达信概念板块对应表"
-						+ " WHERE 板块代码=" + "'"  + oldbkcode.trim() + "'"
-						;
-				try {
-					int autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
-				} catch (MysqlDataTruncation e3) {e3.printStackTrace();
-				} catch (SQLException e) {e.printStackTrace();}
-				
-				sqldeletetstat = "DELETE  FROM  股票通达信行业板块对应表"
-						+ " WHERE 板块代码=" + "'"  + oldbkcode.trim() + "'"
-						;
-				try {
-					int autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
-				} catch (MysqlDataTruncation e2) {e2.printStackTrace();
-				} catch (SQLException e) {e.printStackTrace();}
-				
-				sqldeletetstat = "DELETE  FROM 股票通达信风格板块对应表"
-						+ " WHERE 板块代码=" + "'"  + oldbkcode.trim() + "'"
-						;
-				try {
-					int autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
-				} catch (MysqlDataTruncation e1) {e1.printStackTrace();
-				} catch (SQLException e) {e.printStackTrace();	}
-
-			 }
-		 }
-		 differencebankuaiold = null;
+//		 SetView<String> differencebankuaiold = Sets.difference( curallshbk, allinsertbk );
+//		 if(differencebankuaiold.size() >0 ) { //说明有某些板块需要删除
+//			 for(String oldbkcode : differencebankuaiold) {
+//				 String sqldeletetstat = "DELETE  FROM  通达信板块列表 WHERE "
+//						 				+ " 板块ID =" + " '" + oldbkcode.trim() + "'" 
+//						 				;
+//	   			try {
+//					int autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
+//				} catch (MysqlDataTruncation e) {e.printStackTrace();
+//				} catch (SQLException e) {e.printStackTrace();				}
+//	   			
+//	   		//还要删除该板块在 股票概念对应表/股票行业对应表/股票风格对应表/产业链子版块列表  中的股票和板块的对应信息
+//	    		sqldeletetstat = "DELETE  FROM  股票通达信概念板块对应表"
+//						+ " WHERE 板块代码=" + "'"  + oldbkcode.trim() + "'"
+//						;
+//				try {
+//					int autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
+//				} catch (MysqlDataTruncation e3) {e3.printStackTrace();
+//				} catch (SQLException e) {e.printStackTrace();}
+//				
+//				sqldeletetstat = "DELETE  FROM  股票通达信行业板块对应表"
+//						+ " WHERE 板块代码=" + "'"  + oldbkcode.trim() + "'"
+//						;
+//				try {
+//					int autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
+//				} catch (MysqlDataTruncation e2) {e2.printStackTrace();
+//				} catch (SQLException e) {e.printStackTrace();}
+//				
+//				sqldeletetstat = "DELETE  FROM 股票通达信风格板块对应表"
+//						+ " WHERE 板块代码=" + "'"  + oldbkcode.trim() + "'"
+//						;
+//				try {
+//					int autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
+//				} catch (MysqlDataTruncation e1) {e1.printStackTrace();
+//				} catch (SQLException e) {e.printStackTrace();	}
+//
+//			 }
+//		 }
+//		 differencebankuaiold = null;
 		 curallshbk = null;
 		return 1;
 	}
@@ -1526,21 +1510,14 @@ public class BanKuaiDbOperation
 		Set<String> curallszbk = new HashSet<> ();
 		for(BkChanYeLianTreeNode tmpnode : requiredbk)
 			curallszbk.add(tmpnode.getMyOwnCode());
-				
-		//从文件中读取最新的指数
-		HashSet allinsertbk = new HashSet (); //所有最新的指数，用来和curallshbk，以判断是否有旧的指数需要被删除
-				
-				
+			
 		File file = new File(sysconfig.getTDXShenZhenShuNameFile() );
-		
-		if(!file.exists() ) {
-			 logger.debug("File not exist");
+		if(!file.exists() ) 
 			 return -1;
-		 }
-		
-		 int addednumber =0;
-		 BufferedInputStream dis = null;
-		 FileInputStream in = null;
+
+		int addednumber =0;
+		Set<String> allinsertbk = new HashSet (); //所有最新的指数，用来和curallshbk，以判断是否有旧的指数需要被删除
+		 BufferedInputStream dis = null; FileInputStream in = null;
 		 try {
 			    in = new FileInputStream(file);  
 			    dis = new BufferedInputStream(in);
@@ -1586,52 +1563,51 @@ public class BanKuaiDbOperation
 //	                Files.append("加入：" + str.trim() + " "  +  System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
 	   				allinsertbk.add(zhishucode);
                }
-               
 		 } catch (Exception e) {e.printStackTrace();return -1;
 		 } finally {
 			 try {in.close();} catch (IOException e) {e.printStackTrace();}
              try {dis.close();} catch (IOException e) {e.printStackTrace();}     
 		 }
 		 
-		 SetView<String> differencebankuaiold = Sets.difference(curallszbk, allinsertbk );
-		 if(differencebankuaiold.size() >0 ) { //说明有某些板块需要删除
-			 for(String oldbkcode : differencebankuaiold) {
-				 String sqldeletetstat = "DELETE  FROM  通达信板块列表 WHERE "
-						 				+ " 板块ID =" + " '" + oldbkcode.trim() + "'" 
-						 				;
-	   			int autoIncKeyFromApi;
-				try {
-					autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
-				} catch (MysqlDataTruncation e4) {e4.printStackTrace();
-				} catch (SQLException e) {e.printStackTrace();}
-	   			
-	   			//还要删除该板块在 股票概念对应表/股票行业对应表/股票风格对应表/产业链子版块列表  中的股票和板块的对应信息
-	    		sqldeletetstat = "DELETE  FROM  股票通达信概念板块对应表"
-						+ " WHERE 板块代码=" + "'"  + oldbkcode.trim() + "'"
-						;
-				try {
-					autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
-				} catch (MysqlDataTruncation e3) {e3.printStackTrace();
-				} catch (SQLException e) {e.printStackTrace();}
-				
-				sqldeletetstat = "DELETE  FROM  股票通达信行业板块对应表"
-						+ " WHERE 板块代码=" + "'"  + oldbkcode.trim() + "'"
-						;
-				try {
-					autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
-				} catch (MysqlDataTruncation e2) {e2.printStackTrace();
-				} catch (SQLException e) {e.printStackTrace();}
-				
-				sqldeletetstat = "DELETE  FROM 股票通达信风格板块对应表"
-						+ " WHERE 板块代码=" + "'"  + oldbkcode.trim() + "'"
-						;
-				try {
-					autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
-				} catch (MysqlDataTruncation e1) {e1.printStackTrace();
-				} catch (SQLException e) {e.printStackTrace();	}
-			 }
-		 }
-		 differencebankuaiold = null;
+//		 SetView<String> differencebankuaiold = Sets.difference(curallszbk, allinsertbk );
+//		 if(differencebankuaiold.size() >0 ) { //说明有某些板块需要删除
+//			 for(String oldbkcode : differencebankuaiold) {
+//				 String sqldeletetstat = "DELETE  FROM  通达信板块列表 WHERE "
+//						 				+ " 板块ID =" + " '" + oldbkcode.trim() + "'" 
+//						 				;
+//	   			int autoIncKeyFromApi;
+//				try {
+//					autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
+//				} catch (MysqlDataTruncation e4) {e4.printStackTrace();
+//				} catch (SQLException e) {e.printStackTrace();}
+//	   			
+//	   			//还要删除该板块在 股票概念对应表/股票行业对应表/股票风格对应表/产业链子版块列表  中的股票和板块的对应信息
+//	    		sqldeletetstat = "DELETE  FROM  股票通达信概念板块对应表"
+//						+ " WHERE 板块代码=" + "'"  + oldbkcode.trim() + "'"
+//						;
+//				try {
+//					autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
+//				} catch (MysqlDataTruncation e3) {e3.printStackTrace();
+//				} catch (SQLException e) {e.printStackTrace();}
+//				
+//				sqldeletetstat = "DELETE  FROM  股票通达信行业板块对应表"
+//						+ " WHERE 板块代码=" + "'"  + oldbkcode.trim() + "'"
+//						;
+//				try {
+//					autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
+//				} catch (MysqlDataTruncation e2) {e2.printStackTrace();
+//				} catch (SQLException e) {e.printStackTrace();}
+//				
+//				sqldeletetstat = "DELETE  FROM 股票通达信风格板块对应表"
+//						+ " WHERE 板块代码=" + "'"  + oldbkcode.trim() + "'"
+//						;
+//				try {
+//					autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletetstat);
+//				} catch (MysqlDataTruncation e1) {e1.printStackTrace();
+//				} catch (SQLException e) {e.printStackTrace();	}
+//			 }
+//		 }
+//		 differencebankuaiold = null;
 		 curallszbk = null;
 		 return -1;
 	}
@@ -4420,7 +4396,7 @@ public class BanKuaiDbOperation
 	/*
 	 * 
 	 */
-	public File refreshTDXBanKuaiVolAmoToDbBulkImport (String jiaoyisuo)
+	public File refreshTDXBanKuaiVolAmoToDbBulkImport (String jiaoyisuo, int bulkcount)
 	{
 		File tmpreportfolder = Files.createTempDir();
 		File tmprecordfile = new File(tmpreportfolder + "同步板块成交量报告.tmp");
@@ -4441,23 +4417,10 @@ public class BanKuaiDbOperation
 		
 		 Collection<BkChanYeLianTreeNode> requiredbk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getRequiredSubSetOfTheNodesByJiaoYiSuo(BkChanYeLianTreeNode.TDXBK,jiaoyisuo);
 		 for(BkChanYeLianTreeNode tmpnode :  requiredbk ) {
-			 if(tmpnode.getMyOwnCode().equalsIgnoreCase("880977"))
-				 System.out.print("text");
-			 if( (nodecount == 10  && !nodeinsertdata.isEmpty() ) || nodeinsertdata.size()>50  ) {
-//					String insertstr = "";
-//					for(String nodedata : nodeinsertdata) 
-//						insertstr = insertstr + nodedata; 
-//					String sqlinsertstat = "INSERT INTO " + cjltablename +"(代码,交易日期,开盘价,最高价,最低价,收盘价,成交量,成交额)"
-//											+ " values \r\n" 
-//											+ insertstr
-//											;
-//					sqlinsertstat = sqlinsertstat.trim().substring(0, sqlinsertstat.trim().length() - 1);
-//					try {
-//						int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
-//					} catch (SQLException e) {e.printStackTrace();}
+			 if( (nodecount == bulkcount  && !nodeinsertdata.isEmpty() ) || nodeinsertdata.size()> bulkcount * 4  ) {
 				 setNodeDataToDataBase (cjltablename, nodeinsertdata );
-					nodecount = 0; nodeinsertdata.clear();
-				}
+				 nodecount = 0; nodeinsertdata.clear();
+			 }
 			 
 			BanKuai bk = (BanKuai) tmpnode;
 			if(!bk.isImportdailytradingdata())
@@ -4507,7 +4470,7 @@ public class BanKuaiDbOperation
 	/*
 	 * 
 	 */
-	public File refreshTDXGeGuVolAmoToDbBulkImport(String jiaoyisuo)
+	public File refreshTDXGeGuVolAmoToDbBulkImport(String jiaoyisuo, int bulkcount)
 	{
 
 		File tmpreportfolder = Files.createTempDir();
@@ -4530,18 +4493,7 @@ public class BanKuaiDbOperation
 		int nodecount = 0; List<String> nodeinsertdata = new ArrayList<>();
 		
 		for(BkChanYeLianTreeNode tmpnode :allgegucode) {
-			if( (nodecount == 10 && !nodeinsertdata.isEmpty() ) || nodeinsertdata.size()>50) {
-//				String insertstr = "";
-//				for(String nodedata : nodeinsertdata) 
-//					insertstr = insertstr + nodedata; 
-//				String sqlinsertstat = "INSERT INTO " + optTable +"(代码,交易日期,开盘价,最高价,最低价,收盘价,成交量,成交额)"
-//										+ " values \r\n" 
-//										+ insertstr
-//										;
-//				sqlinsertstat = sqlinsertstat.trim().substring(0, sqlinsertstat.trim().length() - 1);
-//				try {
-//					int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
-//				} catch (SQLException e) {e.printStackTrace();}
+			if( (nodecount ==  bulkcount && !nodeinsertdata.isEmpty() ) || nodeinsertdata.size()>  bulkcount*4) {
 				setNodeDataToDataBase (optTable, nodeinsertdata );
 				nodecount = 0; nodeinsertdata.clear();
 			}

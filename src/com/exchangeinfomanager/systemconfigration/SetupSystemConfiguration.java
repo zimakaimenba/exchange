@@ -41,6 +41,9 @@ public class SetupSystemConfiguration
 	private String dzhinstalledpath;
 	private String BankuaifenxiSettingPropertiesFile;
 	private String BkfxHighlightPnlInfoSettingFile;
+	private String floatholders;
+	private String top10holders;
+	private String GuDongFxURL;
 
 	private static Logger logger = Logger.getLogger(SetupSystemConfiguration.class);
 
@@ -104,9 +107,24 @@ public class SetupSystemConfiguration
 			
 			BankuaifenxiSettingPropertiesFile = propxml.getProperty ("BankuaifenxiSettingPropertiesFile");
 			
+			floatholders = propxml.getProperty ("floatholders");
+			top10holders = propxml.getProperty ("top10holders");
 			
+			GuDongFxURL = propxml.getProperty ("GuDongFxURL");
 		} catch (Exception e) {		logger.info("property file '" + propxmlFileName + "' not found in the classpath") ;	} finally {}
 		
+	}
+	public String getGuDongFenXiURL ()
+	{
+		return this.GuDongFxURL;
+	}
+	public String getFloatHoldersFile ()
+	{
+		return this.floatholders;
+	}
+	public String getTop10HoldersFile ()
+	{
+		return this.top10holders;
 	}
 	public Charset charSet ()
 	{

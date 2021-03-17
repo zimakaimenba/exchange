@@ -46,7 +46,8 @@ public class ExportMatchedNode
 		
 		for(int i=0;i< bankuaicount; i++) {
 			BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode)bkcyltree.getModel().getChild(treeroot, i);
-			if(childnode.getType() == BkChanYeLianTreeNode.TDXBK) {
+			if(childnode.getType() == BkChanYeLianTreeNode.TDXBK ) {
+				
 				
 				if( ! ((BanKuai)childnode).isImportdailytradingdata() )
 					continue;
@@ -58,10 +59,10 @@ public class ExportMatchedNode
 						 ||  ((BanKuai)childnode).getBanKuaiLeiXing().equals(BanKuai.NOGGWITHSELFCJL) ) //仅导出有个股的板块
 					continue;
 				
-				LocalDate requirestart = CommonUtility.getSettingRangeDate(exportdate,"large");
-				childnode = svsbk.getNodeData( childnode, requirestart, exportdate,period,true);
-				if( this.cond.shouldExportYangXianBanKuai () ) //需要OHLC数据才同步K线数据，节约时间
-					svsbk.syncNodeData( childnode);
+//				LocalDate requirestart = CommonUtility.getSettingRangeDate(exportdate,"large");
+//				childnode = svsbk.getNodeData( childnode, requirestart, exportdate,period,true);
+//				if( this.cond.shouldExportYangXianBanKuai () ) //需要OHLC数据才同步K线数据，节约时间
+//					svsbk.syncNodeData( childnode);
 				
 				String checkresult = this.checkBanKuaiMatchedCurSettingConditons((BanKuai)childnode, exportdate, period);
 				
@@ -79,18 +80,16 @@ public class ExportMatchedNode
 				
 				childnode = svsbk.getAllGeGuOfBanKuai((BanKuai) childnode);
 				Collection<BkChanYeLianTreeNode> nowbkallgg = ((BanKuai)childnode).getSpecificPeriodBanKuaiGeGu(exportdate,0);
-				for (BkChanYeLianTreeNode ggstock : nowbkallgg) {
+				for (BkChanYeLianTreeNode ggstock : nowbkallgg) 
 					this.checkStockMatchedCurSettingConditions ((Stock)ggstock, checkednodesset, matchednodeset,exportdate,period);
-				}
 			}
 			
 			if(childnode.getType() == BkChanYeLianTreeNode.TDXGG  ) { //只有在导出所有板块个股的时候才会用到这里，否则个股都在前面检查了
-				if( !this.cond.shouldExportAllBanKuai() && !this.cond.shouldExportOnlyYellowSignBkStk() ) 
+				if( !this.cond.shouldExportAllBanKuai()  && !this.cond.shouldExportOnlyYellowSignBkStk() ) // 
 					continue;
 			
 				this.checkStockMatchedCurSettingConditions ((Stock)childnode, checkednodesset, matchednodeset,exportdate,period);
 			}
-			
 		}
 		
 		checkednodesset = null;
@@ -202,12 +201,22 @@ public class ExportMatchedNode
 				if( !((BanKuai)node).isExportTowWlyFile() )
 					return "UNMATCH";
 			
+			LocalDate requirestart = CommonUtility.getSettingRangeDate(exportdate,"large");
+			node = (BanKuai) svsbk.getNodeData( node, requirestart, exportdate,period,true);
+			if( this.cond.shouldExportYangXianBanKuai () ) //需要OHLC数据才同步K线数据，节约时间
+				svsbk.syncNodeData( node);
+			
 			NodeXPeriodData nodexdata = ((BanKuai)node).getNodeXPeroidData(period);
 			if(nodexdata == null) //该时间还没有数据，对板块来说就是还没有诞生
 				return "UNMATCH";
 			
 //			if(nodexdata.getIndexOfSpecificDateOHLCData(exportdate,0) == null) 
 //				return "UNMATCH";
+			if(this.cond.shouldExportOnlyGeGuNotBanKuai() && ! this.cond.shouldExportAllBanKuai() )
+				return  "WITHCHECKGEGU";
+			
+			if(this.cond.shouldExportOnlyGeGuNotBanKuai() )
+				return "UNMATCH";
 			
 			if( this.cond.shouldExportChenJiaoErZhanbiUpBanKuai() ) { //导出环比上升的板块
 					Double cjezbchangerate = nodexdata.getChenJiaoErZhanBiGrowthRateOfSuperBanKuai(exportdate, 0);
@@ -223,7 +232,7 @@ public class ExportMatchedNode
 					return "UNMATCH";
 			}
 			String checkresult = ""; 
-			if( ! this.cond.shouldExportAllBanKuai())
+			if( ! this.cond.shouldExportAllBanKuai()  )
 				checkresult = "WITHCHECKGEGU";
 			
 			Integer settindpgmaxwk = this.cond.getSettingDpMaxWk();

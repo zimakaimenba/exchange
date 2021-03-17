@@ -114,11 +114,13 @@ public class JiGouGuDongDbOperation
 		if(onlyimportwithjigougudong)
 			jigou = getJiGouList (); 
 		
+		SetupSystemConfiguration sysconf = new SetupSystemConfiguration ();
+		
 		Collection<BkChanYeLianTreeNode> allstocks = AllCurrentTdxBKAndStoksTree.getInstance().getAllBkStocksTree().getAllRequiredNodes(BkChanYeLianTreeNode.TDXGG);
 		for(BkChanYeLianTreeNode stock : allstocks) {
 			String stockcode = stock.getMyOwnCode();
-			String floatcsvfilename = stockcode + "_floatholders.csv";
-			String top10csvfilename = stockcode + "_top10holders.csv";
+			String floatcsvfilename = stockcode + sysconf.getFloatHoldersFile();
+			String top10csvfilename = stockcode + sysconf.getTop10HoldersFile();
 			File floatcsvfile = new File(csvfilepath + "/" + floatcsvfilename);
 			File top10csvfile = new File(csvfilepath + "/" + top10csvfilename);
 			if (  (!floatcsvfile.exists()  || !floatcsvfile.canRead() ) && (!top10csvfile.exists()  || !top10csvfile.canRead())   ) {  
@@ -130,6 +132,9 @@ public class JiGouGuDongDbOperation
 //			readGuDongCsvFile (stock, csvfilepath + "/" + top10csvfilename,"gudong");
 		}
 	}
+	/*
+	 * 
+	 */
 	public Stock refreshStockGuDongData (Stock stock, Boolean onlyimportwithjigougudong, Boolean forcetorefrshallgudong)
 	{
 		if( forcetorefrshallgudong)
@@ -156,6 +161,9 @@ public class JiGouGuDongDbOperation
 		
 		return stock;
 	}
+	/*
+	 * 
+	 */
 	private void deleteStockGuDong (BkChanYeLianTreeNode stock) 
 	{
 		String sqldeletestat = "DELETE  FROM 股票股东对应表"
@@ -166,6 +174,9 @@ public class JiGouGuDongDbOperation
 			int autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqldeletestat);
 		} catch (SQLException e) {e.printStackTrace();}
 	}
+	/*
+	 * 
+	 */
 	private void readGuDongCsvFile (BkChanYeLianTreeNode stock, String gdfile ,String ggtype,Set<String> jigou)
 	{
 		LocalDate[] currecorddate = getCurrentStockGuDongDateRange (stock, ggtype);
@@ -235,6 +246,9 @@ public class JiGouGuDongDbOperation
 		} catch (IOException e) {e.printStackTrace();}
 		
 	}
+	/*
+	 * 
+	 */
 	private void storeGuDongXinToDatabase(BkChanYeLianTreeNode stock, List<String[]> linevaluelist, String liutongorgudong)
 	{
 		for(String[] linevalue : linevaluelist) {
@@ -291,20 +305,35 @@ public class JiGouGuDongDbOperation
 			
 		}
 	}
+	/*
+	 * 
+	 */
 	public Stock getStockGuDong(Stock stock, String liutongorgudong, LocalDate requiredstart, LocalDate requiredend)
 	{
 		Object[][] data = null;
 		CachedRowSetImpl  rs = null;
 		LocalDate maxrecordsdate = null; LocalDate minrecordsdate = null; String sqlquerystat;
 		if(liutongorgudong.equalsIgnoreCase("LIUTONG"))				
-			sqlquerystat = "SELECT  * FROM 股票股东对应表  WHERE  代码 = " 
+			sqlquerystat = "SELECT  * ,"
+					+  "IF (机构名称 REGEXP  \r\n"  
+					+ " (SELECT \r\n"  
+					+ "   GROUP_CONCAT(DISTINCT 机构名称 SEPARATOR '|')\r\n"  
+					+ "FROM 机构股东\r\n"  
+					+ " WHERE 皇亲国戚 = TRUE OR 明星 = TRUE ), TRUE, FALSE ) AS HQGQMX\r\n"  
+					+ "FROM 股票股东对应表  WHERE  代码 = " 
 						+ "'"  + stock.getMyOwnCode().trim() + "'" 
 						+ " AND 流通股东 = TRUE"
 						+ " AND 股东日期 BETWEEN '" + requiredstart + "' AND '" + requiredend + "'"
 						+ "  ORDER BY 股东日期  DESC"
 						;
 		else 
-			sqlquerystat = "SELECT  * FROM 股票股东对应表   WHERE  代码 = " 
+			sqlquerystat = "SELECT  * FROM 股票股东对应表   "
+					+  "IF (机构名称 REGEXP  \r\n"  
+					+ " (SELECT \r\n"  
+					+ "   GROUP_CONCAT(DISTINCT 机构名称 SEPARATOR '|')\r\n"  
+					+ "FROM 机构股东\r\n"  
+					+ " WHERE 皇亲国戚 = TRUE OR 明星 = TRUE ), TRUE, FALSE ) AS HQGQMX\r\n"
+					+ "WHERE  代码 = " 
 						+ "'"  + stock.getMyOwnCode().trim() + "'" 
 						+ " AND 十大股东 = TRUE"
 						+ " AND 股东日期 BETWEEN '" + requiredstart + "' AND '" + requiredend + "'"
@@ -313,7 +342,7 @@ public class JiGouGuDongDbOperation
 			try { 
 		    	rs = connectdb.sqlQueryStatExecute(sqlquerystat);
 		    	int k = 0;
-		        int columnCount = 3;//列数
+		        int columnCount = 4;//列数
 		        
 		        rs.last();  
 		        int rows = rs.getRow();  
@@ -326,9 +355,11 @@ public class JiGouGuDongDbOperation
 		    		 String gudong = rs.getString("机构名称"); //mOST_RECENT_TIME
 		    		 Double chigushu = rs.getDouble("流通股数"); //mOST_RECENT_TIME
 		    		 LocalDate riqi = rs.getDate("股东日期").toLocalDate();
+		    		 Boolean hqgq =  rs.getBoolean("HQGQMX");
 		    		 row[0] = gudong;
 		    		 row[1] = riqi;
 		    		 row[2] = chigushu;
+		    		 row[3] = hqgq;
 		    		 data[k] = row;
 		    		 
 		    		 k++; 
@@ -351,16 +382,27 @@ public class JiGouGuDongDbOperation
 	/*
 	 * 
 	 */
-	public Integer storeJiGouToDb(String jigouname)
+	public Integer storeJiGouToDb(String jigouname, Boolean hqgq, Boolean mxjj)
 	{
-		String	sqlinsertstat = "INSERT INTO 机构股东(机构名称) VALUES ("
-					+ "'" + jigouname+ "')"
+		String	sqlinsertstat = "INSERT INTO 机构股东(机构名称, 皇亲国戚 , 明星) VALUES ("
+					+ "'" + jigouname + "',"
+					+ hqgq + ","
+					+ mxjj 
+					+ ")"
 						;
+		String sqlupdatedtstat = "UPDATE 机构股东  set" + 
+						" 皇亲国戚  = "	+ hqgq + ","
+						 + " 明星= " + mxjj 
+						 + " WHERE 机构名称= '" + jigouname + "'"
+						 ;
 		int autoIncKeyFromApi = 0;
 		try {
 			autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
-		} catch (MysqlDataTruncation e) {e.printStackTrace();
-		} catch (SQLException e) {	return null;}
+		} catch (MysqlDataTruncation e) {
+			try {
+			connectdb.sqlUpdateStatExecute(sqlupdatedtstat);
+			} catch (SQLException e1) {e1.printStackTrace();}
+		} catch (SQLException e) {return null;}
 		
 		return autoIncKeyFromApi;
 	}
@@ -429,9 +471,8 @@ public class JiGouGuDongDbOperation
 				"ON gd.`代码` = gdmaxtime.dm"
 				;
 
-		CachedRowSetImpl  rs = null;
+		CachedRowSetImpl  rs = connectdb.sqlQueryStatExecute(sqlstat);
 		try {
-			rs = connectdb.sqlQueryStatExecute(sqlstat);
 			while(rs.next() ) {
 				String stockcode = rs.getString("代码");
 				Stock node = (Stock)CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode(stockcode, BkChanYeLianTreeNode.TDXGG);

@@ -117,11 +117,8 @@ class BanKuaiListEditorPane extends JEditorPane
 			bodystr = body.text();
 			org.jsoup.select.Elements dls = body.select("dl");
 			for(org.jsoup.nodes.Element dl : dls) {
-				
-
 			    org.jsoup.nodes.Element font = new org.jsoup.nodes.Element("Font");
 			    font.attr("size", "3");
-			    
 			    dl.appendChild(font);
 			}
 		}

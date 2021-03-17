@@ -272,7 +272,7 @@ public class ImportTDXData extends JDialog {
 			
 			try {
 				long start=System.currentTimeMillis(); //获取开始时间
-				File resulttmpfilebkamo = bkdbopt.refreshTDXBanKuaiVolAmoToDbBulkImport("sh");
+				File resulttmpfilebkamo = bkdbopt.refreshTDXBanKuaiVolAmoToDbBulkImport("sh", 15);
 				long end=System.currentTimeMillis(); //获取结束时间
 				System.out.println(".......导入上海指数/板块当日成交信息结束" + LocalTime.now() + ".....导入耗费时间： "+(end-start)+"ms \r\n");
 //				List<String> lines = Files.readLines(resulttmpfilebkamo, sysconfig.charSet());
@@ -294,7 +294,7 @@ public class ImportTDXData extends JDialog {
 			
 			try {
 				long start=System.currentTimeMillis(); //获取开始时间
-				File resulttmpfilezsamo = bkdbopt.refreshTDXBanKuaiVolAmoToDbBulkImport ("sz");
+				File resulttmpfilezsamo = bkdbopt.refreshTDXBanKuaiVolAmoToDbBulkImport ("sz", 15);
 				long end=System.currentTimeMillis(); //获取结束时间
 				System.out.println("......导入深圳指数板块当日成交信息结束" + LocalTime.now() + ".....导入耗费时间： "+(end-start)+"ms \r\n");
 //				List<String> lines = Files.readLines(resulttmpfilezsamo, sysconfig.charSet());
@@ -313,7 +313,7 @@ public class ImportTDXData extends JDialog {
 			try {
 				System.out.println("------导入深证股票当日成交信息开始于" +  LocalTime.now());
 				long start=System.currentTimeMillis(); //获取开始时间
-				File resulttmpfilebkamo = bkdbopt.refreshTDXGeGuVolAmoToDbBulkImport("sz");
+				File resulttmpfilebkamo = bkdbopt.refreshTDXGeGuVolAmoToDbBulkImport("sz", 15);
 				long end=System.currentTimeMillis(); //获取结束时间
 				System.out.println("......导入深圳股票当日成交信息结束于" + LocalTime.now() + "......导入耗费时间： "+(end-start)+"ms \r\n");
 //				List<String> lines = Files.readLines(resulttmpfilebkamo, sysconfig.charSet());
@@ -330,7 +330,7 @@ public class ImportTDXData extends JDialog {
 			try {
 				System.out.println("------导入上证股票当日成交信息开始于" + LocalTime.now() );
 				long start=System.currentTimeMillis(); //获取开始时间
-				File resulttmpfilebkamo = bkdbopt.refreshTDXGeGuVolAmoToDbBulkImport("sh");
+				File resulttmpfilebkamo = bkdbopt.refreshTDXGeGuVolAmoToDbBulkImport("sh", 15);
 				long end=System.currentTimeMillis(); //获取结束时间
 				System.out.println("......导入上海股票当日成交信息结束于" + LocalTime.now() + "。.....导入耗费时间： "+(end-start)+"ms \r\n");
 //				List<String> lines = Files.readLines(resulttmpfilebkamo, sysconfig.charSet());

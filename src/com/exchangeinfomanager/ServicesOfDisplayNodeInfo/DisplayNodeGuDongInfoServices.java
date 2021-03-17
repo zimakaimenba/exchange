@@ -98,12 +98,15 @@ public class DisplayNodeGuDongInfoServices implements ServicesOfNodeJiBenMianInf
 	    		String output1 = dgObjects[i][0].toString();
 	    		String output2 = dgObjects[i][1].toString();
 	    		String output3 = dgObjects[i][2].toString();
+	    		Boolean hqgq = (Boolean) dgObjects[i][3];
 	    		   
 	    		org.jsoup.nodes.Element trdata = table.appendElement("tr");
 		    	org.jsoup.nodes.Element tmpthgdname = trdata.appendElement("th");
 		    	org.jsoup.nodes.Element tmpfontgdname = tmpthgdname.appendElement("font");
 		    	tmpfontgdname.attr("size", "3");
 		    	tmpfontgdname.attr("face", "verdana");
+		    	if(hqgq)
+		    		tmpfontgdname.attr("color", "red");
 		    	tmpfontgdname.appendText(output1);
 		    	
 		    	org.jsoup.nodes.Element tmpthgddate = trdata.appendElement("th");
