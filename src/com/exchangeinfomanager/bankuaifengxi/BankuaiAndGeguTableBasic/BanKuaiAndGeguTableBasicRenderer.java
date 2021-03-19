@@ -4,7 +4,9 @@ import java.awt.Color;
 import java.awt.Font;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.Locale;
 import java.util.Properties;
 
@@ -38,6 +40,8 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.treerelated.NodesTreeRelated;
 import com.google.common.collect.Range;
+
+import Jama.util.Maths;
 
 public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 {
@@ -346,13 +350,18 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 		LocalDate requireddate = tablemodel.getCurDisplayedDate();
 		switch (column_keyword) {
 		case "hashqgq":
-			Boolean has = ((StockOfBanKuai)node).getStock().getNodeJiBenMian().hasHqgqGuDong(requireddate);
-			if(has) defaultFont =  new Font(defaultFont.getName(), Font.BOLD,defaultFont.getSize());
-			else {
+				Boolean has = false;
 				LocalDate maxcbrq = ((StockOfBanKuai)node).getStock().getNodeJiBenMian().getLastestCaiBaoDate();
-				has = ((StockOfBanKuai)node).getStock().getNodeJiBenMian().hasHqgqGuDong(maxcbrq);
+				try {
+					long daysBetween = java.time.temporal.ChronoUnit.DAYS.between(requireddate,maxcbrq);
+					if( java.lang.Math.abs(daysBetween) >= 280 ) //有些股票机构股东数据是很久以前的，没意义
+						has = false;
+					else 
+						has = ((StockOfBanKuai)node).getStock().getNodeJiBenMian().hasHqgqGuDong(maxcbrq);
+				} catch (java.lang.NullPointerException e) {has = false;}
+				
 				if(has) defaultFont =  new Font("Hei", Font.BOLD,defaultFont.getSize());
-			}
+			
 			break;
 		}
 		

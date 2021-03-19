@@ -34,23 +34,28 @@ public class RuleOfWeeklyAverageChenJiaoErMaxWk
 		
 		NodeXPeriodData nodexdata = evanode.getNodeXPeroidData(evaperiod);
 		int dpmaxwk;
-		try {
-			dpmaxwk = nodexdata.getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(evadate,evadatedifference);
-		} catch (java.lang.NullPointerException ex) {
-//			ex.printStackTrace();
-			logger.info(evanode.getMyOwnName() + "reach the oldest data!");
+		try { dpmaxwk = nodexdata.getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(evadate,evadatedifference);
+		} catch (java.lang.NullPointerException ex) { logger.info(evanode.getMyOwnName() + "reach the oldest data!");
 			return false;
 		}
     	
-    	Integer cjemaxwk = evacond.getSettingChenJiaoErMaxWk();
-    	if(cjemaxwk == null)
-    		cjemaxwk =  10000000;
+		int lianxuxjeflnum = nodexdata.getAverageDailyCjeLianXuFangLiangPeriodNumber(evadate, evadatedifference);
+		
+    	Integer settingcjemaxwk = evacond.getSettingChenJiaoErMaxWk();
+    	if(settingcjemaxwk == null)
+    		settingcjemaxwk =  10000000;
     	
-    	if( dpmaxwk >=cjemaxwk ) {
+    	if( dpmaxwk >=settingcjemaxwk && lianxuxjeflnum <2) {
     		analysisresultforvoice = analysisresultforvoice + "周平均成交额MAXWEEK等于" + dpmaxwk + "。" ;
+    		background = Color.CYAN ;
     		return true;
     	}
-    	else 
+    	else if( dpmaxwk >=settingcjemaxwk && lianxuxjeflnum >=2) {
+    		analysisresultforvoice = analysisresultforvoice + "周平均成交额MAXWEEK等于" + dpmaxwk + "。" ;
+    		background =  new Color (0,153,153);
+    		return true;
+    	}
+    	else
     		 return false;
 	}
 	
@@ -60,7 +65,6 @@ public class RuleOfWeeklyAverageChenJiaoErMaxWk
     		@Fact("evaperiod") String evaperiod,
     		@Fact("evacond") BanKuaiGeGuMatchCondition evacond )
     {
-		background = Color.CYAN ;
 		isweeklyavergecjemaxwkmatched = true;
     }
     

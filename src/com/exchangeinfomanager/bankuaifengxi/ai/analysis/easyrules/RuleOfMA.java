@@ -81,6 +81,7 @@ public class RuleOfMA
     		@Fact("evaperiod") String evaperiod,
     		@Fact("evacond") BanKuaiGeGuMatchCondition evacond )
     {
+		analysisresult = true;
 		background = new Color(0,153,153) ;
     }
     

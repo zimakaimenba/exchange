@@ -33,21 +33,20 @@ public class RuleOfCjeZbDpMaxWk
 		NodeXPeriodData nodexdata = evanode.getNodeXPeroidData(evaperiod);
 		Integer cjedpmaxwk = nodexdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai (evadate,evadatedifference);
 		if(cjedpmaxwk!= null && cjedpmaxwk > 0 ) {
-    		int maxfazhi;
-	    	try {
-	    		maxfazhi = evacond.getSettingDpMaxWk();
+    		int settingmaxfazhi;
+	    	try { settingmaxfazhi = evacond.getSettingDpMaxWk();
 	    	} catch (java.lang.NullPointerException e) {
-	    		maxfazhi = 100000000;
+	    		settingmaxfazhi = 100000000;
 	    	}
 	    	
-	    	Integer lianxuflnum = nodexdata.getCjeDpMaxLianXuFangLiangPeriodNumber (evadate,evadatedifference, maxfazhi);
+	    	Integer lianxuflnum = nodexdata.getCjeDpMaxLianXuFangLiangPeriodNumber (evadate,evadatedifference, settingmaxfazhi);
 	    	 
-	    	if(cjedpmaxwk >= maxfazhi &&  lianxuflnum >=2 ) {//连续放量,深色显示
+	    	if(cjedpmaxwk >= settingmaxfazhi &&  lianxuflnum >=2 ) {//连续放量,深色显示
 	    		background = new Color(102,0,0) ;
 	    		analysisresultforvoice = analysisresultforvoice + "成交额占比MAXWEEK等于" + cjedpmaxwk + "周。" + "成交额占比连续达标" + lianxuflnum + "周。"; 
 	    		return true;
 	    	}
-	    	else if( cjedpmaxwk >= maxfazhi &&  lianxuflnum <2 ) {
+	    	else if( cjedpmaxwk >= settingmaxfazhi &&  lianxuflnum <2 ) {
 	    		background = new Color(255,0,0) ;
 	    		analysisresultforvoice = analysisresultforvoice + "成交额占比MAXWEEK等于" + cjedpmaxwk + "周。";
 	    		return true;
