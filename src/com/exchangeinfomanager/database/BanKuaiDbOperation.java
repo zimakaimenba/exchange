@@ -5573,7 +5573,7 @@ public class BanKuaiDbOperation
 				bkggstr = bkggstr.substring(0, bkggstr.length() -2);
 			
 			BanKuaiAndStockTree treeofstkbk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks() ;
-			Set<BkChanYeLianTreeNode> stockbanksset = new HashSet<>();
+//			Set<BkChanYeLianTreeNode> stockbanksset = new HashSet<>();
 			String sqlquerystat = 
 						"SELECT gpgn.`股票代码`,    gpgn.板块代码 板块代码, tdxbk.`板块名称` 板块名称 ,  gpgn.`股票权重`\r\n" + 
 						"FROM 股票通达信概念板块对应表 gpgn, 通达信板块列表 tdxbk  \r\n" + 

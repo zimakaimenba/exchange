@@ -499,15 +499,26 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 			requiredendday = bkdataendday;
 	
 		if(bk.getBanKuaiLeiXing().equals(BanKuai.HASGGWITHSELFCJL)) {
-			bk = this.getAllGeGuOfBanKuai (bk); 
-			bk = bkdbopt.getBanKuaiGeGuZhanBi (bk,requiredstartday,requiredendday,period);
-			bkdbopt.getTDXBanKuaiSetForBanKuaiGeGu (bk);
-			bkdbopt.getBanKuaiGeGuGzMrMcYkInfo (bk);
-			gddbopt.checkBanKuaiGeGuHasHuangQinGuoQieAndMingXin(bk, requiredendday); //查询板块个股是否有皇亲国戚
+			int bkggbefore = 0;
+			try {
+				bkggbefore = bk.getAllGeGuOfBanKuaiInHistory().size();
+			} catch (java.lang.NullPointerException e) {}
+			bk = this.getAllGeGuOfBanKuai (bk);
+			int bkggafter = 0;
+			try {
+				bkggafter = bk.getAllGeGuOfBanKuaiInHistory().size();
+			} catch (java.lang.NullPointerException e) {}
 			
+			if( bkggafter != bkggbefore ) { //说明板块个股有了变化，需要重新计算，否则无需再此计算，浪费时间,其实这里应该是计算板块的数据是否有变化，单比较难，就暂时用这个方法来避免重复计算
+				bk = bkdbopt.getBanKuaiGeGuZhanBi (bk,requiredstartday,requiredendday,period);
+				bkdbopt.getTDXBanKuaiSetForBanKuaiGeGu (bk);
+				bkdbopt.getBanKuaiGeGuGzMrMcYkInfo (bk);
+				gddbopt.checkBanKuaiGeGuHasHuangQinGuoQieAndMingXin(bk, requiredendday); //查询板块个股是否有皇亲国戚
+			}
+
 			List<BkChanYeLianTreeNode> allbkgg = bk.getAllGeGuOfBanKuaiInHistory();
-			SvsForNodeOfStock svstock = new SvsForNodeOfStock ();
 			if(allbkgg != null) {
+				SvsForNodeOfStock svstock = new SvsForNodeOfStock ();
 				for(BkChanYeLianTreeNode stockofbk : allbkgg)   
 			    	if( ((StockOfBanKuai)stockofbk).isInBanKuaiAtSpecificDate(requiredendday)  ) { 
 			    		 Stock stock = (Stock) svstock.getNodeData( ((StockOfBanKuai)stockofbk).getStock(), requiredstartday, requiredendday, period,calwholeweek);

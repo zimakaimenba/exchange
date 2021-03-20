@@ -13,6 +13,7 @@ import com.exchangeinfomanager.commonlib.Season;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.ServicesOfNodeStock;
 import com.exchangeinfomanager.nodes.Stock;
+import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.nodejibenmian.ServicesOfNodeJiBenMianInfo;
 
 public class DisplayNodeGuDongInfoServices implements ServicesOfNodeJiBenMianInfo
@@ -43,20 +44,32 @@ public class DisplayNodeGuDongInfoServices implements ServicesOfNodeJiBenMianInf
        	
        		Object[][] dgObjects = this.node.getNodeJiBenMian().getGuDongInfo();
        		if(!ArrayUtils.isNotEmpty( dgObjects )) {
-       			ServicesOfNodeStock svsstk = new SvsForNodeOfStock ();
-           		if(this.requiredstart == null) {
+       			if(this.requiredstart == null) {
            			this.requiredstart = Season.getSeasonStartDate( LocalDate.now() );
-           			this.requiredstart = Season.getLastSeasonStartDate( this.requiredstart ); // find 2 season in row
+//           			this.requiredstart = Season.getLastSeasonStartDate( this.requiredstart ); // find 2 season in row
            		}
-           		if(this.requiredend == null)	this.requiredend = Season.getSeasonEndDate( LocalDate.now() );
-    	    	svsstk.getStockGuDong(node, "LiuTong", this.requiredstart, this.requiredend);
+//           		if(this.requiredend == null)	this.requiredend = Season.getSeasonEndDate( LocalDate.now() );
+           		
+       			Boolean has = true;
+       			LocalDate maxcbrq = this.node.getNodeJiBenMian().getLastestCaiBaoDate();
+				try {
+					long daysBetween = java.time.temporal.ChronoUnit.DAYS.between(this.requiredstart,maxcbrq);
+					if( java.lang.Math.abs(daysBetween) >= 280 ) //有些股票机构股东数据是很久以前的，没意义
+						has = false;
+				} catch (java.lang.NullPointerException e) {has = false;}
+       			
+       			if(!has)
+       				return null;
+       			
+       			ServicesOfNodeStock svsstk = new SvsForNodeOfStock ();
+    	    	svsstk.getStockGuDong(node, "LiuTong",Season.getSeasonStartDate( maxcbrq ), Season.getSeasonEndDate( maxcbrq ) );
     	    	
-    	    	if(!ArrayUtils.isNotEmpty( node.getNodeJiBenMian().getGuDongInfo() )) {  // if not data, find last season data
-    	    		this.requiredstart = Season.getLastSeasonStartDate(this.requiredstart);
-    	    		requiredstart = Season.getLastSeasonStartDate(requiredstart);
-    	    		this.requiredend = Season.getLastSeasonEndDate(this.requiredend);
-    	    		svsstk.getStockGuDong(node, "LiuTong", requiredstart, this.requiredend);
-    	    	}	
+//    	    	if(!ArrayUtils.isNotEmpty( node.getNodeJiBenMian().getGuDongInfo() )) {  // if not data, find last season data
+//    	    		this.requiredstart = Season.getLastSeasonStartDate(this.requiredstart);
+//    	    		requiredstart = Season.getLastSeasonStartDate(requiredstart);
+//    	    		this.requiredend = Season.getLastSeasonEndDate(this.requiredend);
+//    	    		svsstk.getStockGuDong(node, "LiuTong", requiredstart, this.requiredend);
+//    	    	}	
 
     	    	svsstk = null;
        		}
