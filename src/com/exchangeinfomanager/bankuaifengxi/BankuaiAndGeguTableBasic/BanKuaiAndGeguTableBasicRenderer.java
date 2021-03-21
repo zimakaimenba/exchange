@@ -76,7 +76,8 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	if(column_info_valueformat != null)
         		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_info_valueformat);
         	
-        	font = rendererOperationsForColumnFont (node, "hashqgq");
+        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
+        	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
         	
         	break;
         case 1:
@@ -96,7 +97,8 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	if(column_info_valueformat != null)
         		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_info_valueformat);
 
-        	font = rendererOperationsForColumnFont (node, "hashqgq");
+        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
+        	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
         	break;
         case 2:
         	String column_bg_kw2  = prop.getProperty ("2column_background_highlight_keyword");
@@ -115,7 +117,8 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	if(column_info_valueformat != null)
         		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_info_valueformat);
         	
-        	font = rendererOperationsForColumnFont (node, "hashqgq");
+        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
+        	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
         	break;
         case 3:
         	String column_bg_kw3  = prop.getProperty ("3column_background_highlight_keyword");
@@ -134,7 +137,8 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	if(column_info_valueformat != null)
         		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_info_valueformat);
         	
-        	font = rendererOperationsForColumnFont (node, "hashqgq");
+        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
+        	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
         	break;
         case 4:
         	String column_bg_kw4  = prop.getProperty ("4column_background_highlight_keyword");
@@ -153,7 +157,8 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	if(column_info_valueformat != null)
         		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_info_valueformat);
         	
-        	font = rendererOperationsForColumnFont (node, "hashqgq");
+        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
+        	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
         	break;
         case 5:
         	String column_bg_kw5  = prop.getProperty ("5column_background_highlight_keyword");
@@ -172,7 +177,8 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	if(column_info_valueformat != null)
         		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_info_valueformat);
         	
-        	font = rendererOperationsForColumnFont (node, "hashqgq");
+        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
+        	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
         	break;
         case 6:
         	String column_bg_kw6  = prop.getProperty ("6column_background_highlight_keyword");
@@ -191,7 +197,8 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	if(column_info_valueformat != null)
         		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_info_valueformat);
         	
-        	font = rendererOperationsForColumnFont (node, "hashqgq");
+        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
+        	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
         	break;
         case 7:
         	String column_bg_kw7  = prop.getProperty ("7column_background_highlight_keyword");
@@ -210,7 +217,8 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	if(column_info_valueformat != null)
         		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_info_valueformat);
 
-        	font = rendererOperationsForColumnFont (node, "hashqgq");
+        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
+        	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
         	break;
         case 8:
         	String column_bg_kw8  = prop.getProperty ("8column_background_highlight_keyword");
@@ -229,7 +237,8 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	if(column_info_valueformat != null)
         		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_info_valueformat);
 
-        	font = rendererOperationsForColumnFont (node, "hashqgq");
+        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
+        	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
         	break;
         case 9:
         	String column_bg_kw9  = prop.getProperty ("9column_background_highlight_keyword");
@@ -248,7 +257,8 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	if(column_info_valueformat != null)
         		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_info_valueformat);
 
-        	font = rendererOperationsForColumnFont (node, "hashqgq");
+        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
+        	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
         	break;
 
         case 10:
@@ -268,7 +278,8 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	if(column_info_valueformat != null)
         		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_info_valueformat);
 
-        	font = rendererOperationsForColumnFont (node, "hashqgq");
+        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
+        	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
         	break;
 	    };
 	    
@@ -363,6 +374,20 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 				if(has) defaultFont =  new Font("Hei", Font.BOLD,defaultFont.getSize());
 			
 			break;
+		case "hasminxing":
+			has = false;
+			maxcbrq = ((StockOfBanKuai)node).getStock().getNodeJiBenMian().getLastestCaiBaoDate();
+			try {
+				long daysBetween = java.time.temporal.ChronoUnit.DAYS.between(requireddate,maxcbrq);
+				if( java.lang.Math.abs(daysBetween) >= 280 ) //有些股票机构股东数据是很久以前的，没意义
+					has = false;
+				else 
+					has = ((StockOfBanKuai)node).getStock().getNodeJiBenMian().hasMinXingGuDong(maxcbrq);
+			} catch (java.lang.NullPointerException e) {has = false;}
+			
+			if(has) defaultFont =  new Font("Hei", Font.BOLD,defaultFont.getSize());
+		
+		break;
 		}
 		
 		return defaultFont;

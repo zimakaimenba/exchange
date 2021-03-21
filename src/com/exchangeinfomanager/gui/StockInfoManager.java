@@ -2624,8 +2624,11 @@ public class StockInfoManager
 		        
                 if(col == 0) {
                 	Boolean hqgq = (Boolean) getModel().getValueAt(row, 3);
+                	Boolean mx = (Boolean) getModel().getValueAt(row, 4);
                 	if(hqgq)
                 		comp.setForeground(Color.RED);
+                	if(mx)
+                		comp.setForeground(Color.MAGENTA);
                 }else 
                 if(col == 1) 
 		        	comp.setForeground( Season.getSeasonColor( (LocalDate)value ) );
@@ -2643,7 +2646,7 @@ public class StockInfoManager
 	                	return "";
 	                
 	                try {
-	                    tip = getValueAt(rowIndex, 4).toString();
+	                    tip = getValueAt(rowIndex, 5).toString();
 	                } catch (RuntimeException e1) {}
 
 	                return tip;
@@ -2655,7 +2658,7 @@ public class StockInfoManager
 			new Object[][] {
 			},
 			new String[] {
-				"\u80A1\u4E1C\u540D\u79F0", "\u80A1\u4E1C\u65E5\u671F", "\u6301\u80A1\u6570\u91CF", "皇亲国戚","机构说明"
+				"\u80A1\u4E1C\u540D\u79F0", "\u80A1\u4E1C\u65E5\u671F", "\u6301\u80A1\u6570\u91CF", "皇亲国戚","明星基金","机构说明"
 			}
 		));
 		tablegudong.getTableHeader().getColumnModel().getColumn(0).setMaxWidth(220);
@@ -2670,6 +2673,10 @@ public class StockInfoManager
 		tablegudong.getTableHeader().getColumnModel().getColumn(4).setMinWidth(0);
 		tablegudong.getTableHeader().getColumnModel().getColumn(4).setWidth(0);
 		tablegudong.getTableHeader().getColumnModel().getColumn(4).setPreferredWidth(0);
+		tablegudong.getTableHeader().getColumnModel().getColumn(5).setMaxWidth(0);
+		tablegudong.getTableHeader().getColumnModel().getColumn(5).setMinWidth(0);
+		tablegudong.getTableHeader().getColumnModel().getColumn(5).setWidth(0);
+		tablegudong.getTableHeader().getColumnModel().getColumn(5).setPreferredWidth(0);
 		scrlpangudong.setViewportView(tablegudong);
 		panelinfo.setLayout(gl_panelinfo);
 		

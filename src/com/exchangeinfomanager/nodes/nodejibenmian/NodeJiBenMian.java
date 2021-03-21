@@ -34,6 +34,7 @@ public class NodeJiBenMian
 			private List<BkChanYeLianTreeNode> cylinfo;
 			private List<Interval> hqgqgudong;
 			private LocalDate lastestcaibaoriqi;
+			private List<Interval> minxing;
 			
 			public void setLastestCaiBaoDate (LocalDate time)
 			{
@@ -67,6 +68,40 @@ public class NodeJiBenMian
 					return false;
 				
 				for(Interval tmpinterval : hqgqgudong) {
+					DateTime newstartdt = tmpinterval.getStart();
+					DateTime newenddt = tmpinterval.getEnd();
+					
+					LocalDate requiredstartday = LocalDate.of(newstartdt.getYear(), newstartdt.getMonthOfYear(), newstartdt.getDayOfMonth()).minusDays(1);
+					LocalDate requiredendday = LocalDate.of(newenddt.getYear(), newenddt.getMonthOfYear(), newenddt.getDayOfMonth()).plusDays(1);
+					if(time.isAfter(requiredstartday) && time.isBefore(requiredendday)) {
+						has = true;
+						break;
+					}
+				}
+				
+				return has;
+			}
+			public void addGuDongMinXingInterval (LocalDate time) {
+				if(minxing == null)
+					minxing = new ArrayList<> ();
+				
+				LocalDate seasonstart = Season.getSeasonStartDate(time);
+				LocalDate seasonend = Season.getSeasonEndDate(time);
+				
+				DateTime nodestartdt= new DateTime(seasonstart.getYear(), seasonstart.getMonthValue(), seasonstart.getDayOfMonth(), 0, 0, 0, 0);
+				DateTime nodeenddt = new DateTime(seasonend.getYear(), seasonend.getMonthValue(), seasonend.getDayOfMonth(), 0, 0, 0, 0);
+				Interval nodeinterval = new Interval(nodestartdt, nodeenddt);
+				
+				if(!minxing.contains(nodeinterval))
+					minxing.add(nodeinterval);
+			}
+			public Boolean hasMinXingGuDong (LocalDate time)
+			{
+				Boolean has = false;
+				if(minxing == null)
+					return false;
+				
+				for(Interval tmpinterval : minxing) {
 					DateTime newstartdt = tmpinterval.getStart();
 					DateTime newenddt = tmpinterval.getEnd();
 					

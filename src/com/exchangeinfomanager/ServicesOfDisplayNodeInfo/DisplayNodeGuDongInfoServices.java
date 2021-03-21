@@ -112,6 +112,7 @@ public class DisplayNodeGuDongInfoServices implements ServicesOfNodeJiBenMianInf
 	    		String output2 = dgObjects[i][1].toString();
 	    		String output3 = dgObjects[i][2].toString();
 	    		Boolean hqgq = (Boolean) dgObjects[i][3];
+	    		Boolean mx = (Boolean) dgObjects[i][4];
 	    		   
 	    		org.jsoup.nodes.Element trdata = table.appendElement("tr");
 		    	org.jsoup.nodes.Element tmpthgdname = trdata.appendElement("th");
@@ -120,6 +121,8 @@ public class DisplayNodeGuDongInfoServices implements ServicesOfNodeJiBenMianInf
 		    	tmpfontgdname.attr("face", "verdana");
 		    	if(hqgq)
 		    		tmpfontgdname.attr("color", "red");
+		    	if(mx)
+		    		tmpfontgdname.attr("color", "Fuchsia");
 		    	tmpfontgdname.appendText(output1);
 		    	
 		    	org.jsoup.nodes.Element tmpthgddate = trdata.appendElement("th");

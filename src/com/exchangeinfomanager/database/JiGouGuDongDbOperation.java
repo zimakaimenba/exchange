@@ -320,8 +320,15 @@ public class JiGouGuDongDbOperation
 					" (SELECT \r\n" + 
 					" GROUP_CONCAT(DISTINCT 机构名称 SEPARATOR '|')\r\n" + 
 					"FROM 机构股东\r\n" + 
-					"WHERE 皇亲国戚 = TRUE OR 明星 = TRUE )\r\n" + 
-					", TRUE, FALSE ) AS HQGQMX\r\n" + 
+					"WHERE 皇亲国戚 = TRUE  )\r\n" + 
+					", TRUE, FALSE ) AS HQGQ ,\r\n" + 
+					"\r\n" + 
+					"IF (机构名称 REGEXP  \r\n" + 
+					" (SELECT \r\n" + 
+					" GROUP_CONCAT(DISTINCT 机构名称 SEPARATOR '|')\r\n" + 
+					"FROM 机构股东\r\n" + 
+					"WHERE 明星 = TRUE )\r\n" + 
+					", TRUE, FALSE ) AS MX\r\n" + 
 					"FROM 股票股东对应表  \r\n" + 
 					"WHERE  代码 = '"  + stock.getMyOwnCode().trim() + "' \r\n" + 
 					"AND 流通股东 = TRUE \r\n"  
@@ -351,7 +358,7 @@ public class JiGouGuDongDbOperation
 			try { 
 		    	rs = connectdb.sqlQueryStatExecute(sqlquerystat);
 		    	int k = 0;
-		        int columnCount = 5;//列数
+		        int columnCount = 6;//列数
 		        
 		        rs.last();  
 		        int rows = rs.getRow();  
@@ -364,14 +371,16 @@ public class JiGouGuDongDbOperation
 		    		 String gudong = rs.getString("机构名称"); //mOST_RECENT_TIME
 		    		 Double chigushu = rs.getDouble("流通股数"); //mOST_RECENT_TIME
 		    		 LocalDate riqi = rs.getDate("股东日期").toLocalDate();
-		    		 Boolean hqgq =  rs.getBoolean("HQGQMX");
+		    		 Boolean hqgq =  rs.getBoolean("HQGQ");
+		    		 Boolean mx =  rs.getBoolean("MX");
 		    		 String jigoushuoming = rs.getString("jigoushuom");
 		    		 
 		    		 row[0] = gudong;
 		    		 row[1] = riqi;
 		    		 row[2] = chigushu;
 		    		 row[3] = hqgq;
-		    		 row[4] = jigoushuoming;
+		    		 row[4] = mx;
+		    		 row[5] = jigoushuoming;
 		    		 data[k] = row;
 		    		 
 		    		 k++; 
@@ -466,8 +475,21 @@ public class JiGouGuDongDbOperation
 		
 		String sqlstat = "SELECT * FROM \r\n" + 
 				"(\r\n" + 
-				"SELECT *\r\n" + 
-				"FROM 股票股东对应表\r\n" + 
+				"SELECT *, \r\n" + 
+				"IF (机构名称 REGEXP  \r\n" + 
+				" (SELECT \r\n" + 
+				" GROUP_CONCAT(DISTINCT 机构名称 SEPARATOR '|')\r\n" + 
+				"FROM 机构股东\r\n" + 
+				"WHERE 皇亲国戚 = TRUE  )\r\n" + 
+				", TRUE, FALSE ) AS HQGQ ,\r\n" + 
+				"\r\n" + 
+				"IF (机构名称 REGEXP  \r\n" + 
+				" (SELECT \r\n" + 
+				" GROUP_CONCAT(DISTINCT 机构名称 SEPARATOR '|')\r\n" + 
+				"FROM 机构股东\r\n" + 
+				"WHERE 明星 = TRUE )\r\n" + 
+				", TRUE, FALSE ) AS MX\r\n"  
+				+ "FROM 股票股东对应表\r\n" + 
 				"WHERE 机构名称 REGEXP  \r\n" + 
 				" (SELECT \r\n" + 
 				"   GROUP_CONCAT(DISTINCT 机构名称 SEPARATOR '|')\r\n" + 
@@ -483,7 +505,6 @@ public class JiGouGuDongDbOperation
 				"FROM 股票股东对应表\r\n" + 
 				"WHERE 代码 IN  (" + bkggstr + ") \r\n" + 
 				"GROUP BY 股票股东对应表.`代码`)  gdmaxtime\r\n" + 
-				" \r\n" + 
 				"ON gd.`代码` = gdmaxtime.dm"
 				;
 
@@ -494,9 +515,13 @@ public class JiGouGuDongDbOperation
 				Stock node = (Stock)CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode(stockcode, BkChanYeLianTreeNode.TDXGG);
 				if(node == null) 
 					continue;
-				
+				Boolean hqgq = rs.getBoolean("HQGQ");
+				Boolean mx = rs.getBoolean("MX");
 				LocalDate gddate = rs.getDate("股东日期").toLocalDate();
-				node.getNodeJiBenMian().addGuDongHqgqInterval (gddate);
+				if(hqgq)
+					node.getNodeJiBenMian().addGuDongHqgqInterval (gddate);
+				if(mx)
+					node.getNodeJiBenMian().addGuDongMinXingInterval (gddate);
 				
 				LocalDate maxgdrq = rs.getDate("maxgdrq").toLocalDate(); //最新研报日期
 				node.getNodeJiBenMian().setLastestCaiBaoDate(maxgdrq);
