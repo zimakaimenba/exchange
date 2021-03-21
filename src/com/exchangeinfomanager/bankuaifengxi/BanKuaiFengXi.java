@@ -4050,8 +4050,8 @@ public class BanKuaiFengXi extends JDialog
 			
 			JLabel holdbackgrounddownload = JLabelFactory.createButton("",25, 25);
 			holdbackgrounddownload.setHorizontalAlignment(SwingConstants.LEFT);
-			holdbackgrounddownload.setToolTipText("后台下载数据暂停");
-			holdbackgrounddownload.setIcon(new ImageIcon(BanKuaiFengXi.class.getResource("/images/trafficsignal.png")));
+			holdbackgrounddownload.setToolTipText("后台下载数据暂停,点击重启下载。");
+			holdbackgrounddownload.setIcon(new ImageIcon(BanKuaiFengXi.class.getResource("/images/trafficlight-in-green.png")));
 			holdbackgrounddownload.addMouseListener(new MouseAdapter() {
 				@Override
 				public void mouseClicked(MouseEvent arg0) 
@@ -4060,12 +4060,12 @@ public class BanKuaiFengXi extends JDialog
 						if(holdbackgrounddownload.getToolTipText().contains("暂停")) {
 							ImageIcon icon = stockmanager.setGetNodeDataFromDbWhenSystemIdleThreadStatus(false);
 //							holdbackgrounddownload.setText("后台下载数据恢复");
-							holdbackgrounddownload.setToolTipText("后台下载数据恢复");
+							holdbackgrounddownload.setToolTipText("后台下载数据,点击暂停下载。");
 							holdbackgrounddownload.setIcon(icon);
 						} else {
 							ImageIcon icon = stockmanager.setGetNodeDataFromDbWhenSystemIdleThreadStatus(true);
 //							holdbackgrounddownload.setText("后台下载数据暂停");
-							holdbackgrounddownload.setToolTipText("后台下载数据暂停");
+							holdbackgrounddownload.setToolTipText("后台下载数据暂停,点击重启下载。");
 							holdbackgrounddownload.setIcon(icon);
 						}
 						

@@ -314,18 +314,26 @@ public class JiGouGuDongDbOperation
 		CachedRowSetImpl  rs = null;
 		LocalDate maxrecordsdate = null; LocalDate minrecordsdate = null; String sqlquerystat;
 		if(liutongorgudong.equalsIgnoreCase("LIUTONG"))				
-			sqlquerystat = "SELECT  * ,"
-					+  "IF (机构名称 REGEXP  \r\n"  
-					+ " (SELECT \r\n"  
-					+ "   GROUP_CONCAT(DISTINCT 机构名称 SEPARATOR '|')\r\n"  
-					+ "FROM 机构股东\r\n"  
-					+ " WHERE 皇亲国戚 = TRUE OR 明星 = TRUE ), TRUE, FALSE ) AS HQGQMX\r\n"  
-					+ "FROM 股票股东对应表  WHERE  代码 = " 
-						+ "'"  + stock.getMyOwnCode().trim() + "'" 
-						+ " AND 流通股东 = TRUE"
-						+ " AND 股东日期 BETWEEN '" + requiredstart + "' AND '" + requiredend + "'"
-						+ "  ORDER BY 股东日期  DESC"
-						;
+			sqlquerystat = "SELECT * , GROUP_CONCAT(机构股东.`机构名称`) jigoulist, GROUP_CONCAT(机构股东.`说明`) jigoushuom\r\n" + 
+					"FROM \r\n" + 
+					"(SELECT  * ,IF (机构名称 REGEXP  \r\n" + 
+					" (SELECT \r\n" + 
+					" GROUP_CONCAT(DISTINCT 机构名称 SEPARATOR '|')\r\n" + 
+					"FROM 机构股东\r\n" + 
+					"WHERE 皇亲国戚 = TRUE OR 明星 = TRUE )\r\n" + 
+					", TRUE, FALSE ) AS HQGQMX\r\n" + 
+					"FROM 股票股东对应表  \r\n" + 
+					"WHERE  代码 = '"  + stock.getMyOwnCode().trim() + "' \r\n" + 
+					"AND 流通股东 = TRUE \r\n"  
+					+ " AND 股东日期 BETWEEN '" + requiredstart + "' AND '" + requiredend + "'" 
+					+ ") gudong\r\n" + 
+					"\r\n" + 
+					"LEFT JOIN  机构股东\r\n" + 
+					"ON gudong.机构名称 REGEXP 机构股东.`机构名称`  \r\n" + 
+					"\r\n" + 
+					"GROUP BY gudong.机构名称, gudong.股东日期 \r\n"
+					+ "ORDER BY gudong.股东日期  DESC"
+					;
 		else 
 			sqlquerystat = "SELECT  * FROM 股票股东对应表   "
 					+  "IF (机构名称 REGEXP  \r\n"  
@@ -339,10 +347,11 @@ public class JiGouGuDongDbOperation
 						+ " AND 股东日期 BETWEEN '" + requiredstart + "' AND '" + requiredend + "'"
 						+ "  ORDER BY 股东日期  DESC"
 						;
+		
 			try { 
 		    	rs = connectdb.sqlQueryStatExecute(sqlquerystat);
 		    	int k = 0;
-		        int columnCount = 4;//列数
+		        int columnCount = 5;//列数
 		        
 		        rs.last();  
 		        int rows = rs.getRow();  
@@ -356,10 +365,13 @@ public class JiGouGuDongDbOperation
 		    		 Double chigushu = rs.getDouble("流通股数"); //mOST_RECENT_TIME
 		    		 LocalDate riqi = rs.getDate("股东日期").toLocalDate();
 		    		 Boolean hqgq =  rs.getBoolean("HQGQMX");
+		    		 String jigoushuoming = rs.getString("jigoushuom");
+		    		 
 		    		 row[0] = gudong;
 		    		 row[1] = riqi;
 		    		 row[2] = chigushu;
 		    		 row[3] = hqgq;
+		    		 row[4] = jigoushuoming;
 		    		 data[k] = row;
 		    		 
 		    		 k++; 
@@ -382,27 +394,31 @@ public class JiGouGuDongDbOperation
 	/*
 	 * 
 	 */
-	public Integer storeJiGouToDb(String jigouname, Boolean hqgq, Boolean mxjj)
+	public Integer storeJiGouToDb(String jigouname, String jigouquancheng, String jigoushuoming, Boolean hqgq, Boolean mxjj)
 	{
-		String	sqlinsertstat = "INSERT INTO 机构股东(机构名称, 皇亲国戚 , 明星) VALUES ("
+		String	sqlinsertstat = "INSERT INTO 机构股东(机构名称, 机构全称, 说明, 皇亲国戚 , 明星) VALUES ("
 					+ "'" + jigouname + "',"
+					+ "'" + jigouquancheng + "',"
+					+ "'" + jigoushuoming + "',"
 					+ hqgq + ","
 					+ mxjj 
 					+ ")"
 						;
-		String sqlupdatedtstat = "UPDATE 机构股东  set" + 
-						" 皇亲国戚  = "	+ hqgq + ","
+		String sqlupdatedtstat = "UPDATE 机构股东  set"
+						+ " 说明= '" + jigoushuoming + "',"
+						+ " 机构全称= '" + jigouquancheng + "',"
+						+ " 皇亲国戚  = "	+ hqgq + ","
 						 + " 明星= " + mxjj 
 						 + " WHERE 机构名称= '" + jigouname + "'"
 						 ;
 		int autoIncKeyFromApi = 0;
 		try {
 			autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
-		} catch (MysqlDataTruncation e) {
+		} catch (com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException e) {
 			try {
 			connectdb.sqlUpdateStatExecute(sqlupdatedtstat);
 			} catch (SQLException e1) {e1.printStackTrace();}
-		} catch (SQLException e) {return null;}
+		} catch (SQLException e) { e.printStackTrace();return null;}
 		
 		return autoIncKeyFromApi;
 	}

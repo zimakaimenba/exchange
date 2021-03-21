@@ -42,7 +42,6 @@ public class SvsForNodeOfStock implements ServicesForNode, ServicesOfNodeStock
 	{
 		this.bkdbopt = new BanKuaiDbOperation ();
 		this.jgdbopt = new JiGouGuDongDbOperation ();
-		dboptforcyltree = new CylTreeDbOperation (CreateExchangeTree.CreateTreeOfChanYeLian());
 	}
 
 	@Override
@@ -373,6 +372,9 @@ public class SvsForNodeOfStock implements ServicesForNode, ServicesOfNodeStock
 	@Override
 	public List<BkChanYeLianTreeNode> getNodeChanYeLianInfo(String nodecode) 
 	{
+		if(dboptforcyltree == null)
+			dboptforcyltree = new CylTreeDbOperation (CreateExchangeTree.CreateTreeOfChanYeLian());
+		
 		List<BkChanYeLianTreeNode> cylinfo = this.dboptforcyltree.getChanYeLianInfo (nodecode,BkChanYeLianTreeNode.TDXGG);
 		return cylinfo;
 	}
@@ -380,6 +382,9 @@ public class SvsForNodeOfStock implements ServicesForNode, ServicesOfNodeStock
 	@Override
 	public List<BkChanYeLianTreeNode> getNodeSlidingInChanYeLianInfo(String nodecode) 
 	{
+		if(dboptforcyltree == null)
+			dboptforcyltree = new CylTreeDbOperation (CreateExchangeTree.CreateTreeOfChanYeLian());
+		
 		List<BkChanYeLianTreeNode> cylsliding = this.dboptforcyltree.getSlidingInChanYeLianInfo (nodecode,BkChanYeLianTreeNode.TDXGG);
 		return cylsliding;
 	}
@@ -387,16 +392,14 @@ public class SvsForNodeOfStock implements ServicesForNode, ServicesOfNodeStock
 	@Override
 	public List<BkChanYeLianTreeNode> getNodeChildrenInChanYeLianInfo(String nodecode) 
 	{
+		if(dboptforcyltree == null)
+			dboptforcyltree = new CylTreeDbOperation (CreateExchangeTree.CreateTreeOfChanYeLian());
+		
 		List<BkChanYeLianTreeNode> cylchildren  = this.dboptforcyltree.getChildrenInChanYeLianInfo (nodecode,BkChanYeLianTreeNode.TDXGG);
 		return cylchildren;
 	}
 	public  Number[] getTDXNodeNoneFixPeriodDpMinMaxWk (Stock stock, LocalDate requiredstartday, LocalDate requiredendday)
 	{
-//		if(node.getType() == BkChanYeLianTreeNode.TDXBK )
-//			this.getBanKuai((BanKuai)node, requiredstartday, requiredendday, NodeGivenPeriodDataItem.WEEK);
-//		else if(node.getType() == BkChanYeLianTreeNode.TDXGG ||  node.getType() == BkChanYeLianTreeNode.BKGEGU)
-//			this.getStock((Stock)node, requiredstartday, requiredendday, NodeGivenPeriodDataItem.WEEK);
-		
 		NodeGivenPeriodDataItem dataresult = bkdbopt.getStockNoFixPerioidZhanBiByWeek (stock,requiredstartday,requiredendday,NodeGivenPeriodDataItem.WEEK);
 		Double zhanbi = dataresult.getNodeToDpChenJiaoErZhanbi();
 		

@@ -17,9 +17,9 @@ public class JiGouService implements ServicesForJiGou
 	}
 	
 	@Override
-	public void addJiGou(String jigouname, Boolean hqgq, Boolean mxjj) 
+	public void addJiGou(String jigouname, String jigouquancheng, String jigoushuoming, Boolean hqgq, Boolean mxjj) 
 	{
-		dbopt.storeJiGouToDb (jigouname, hqgq, mxjj);
+		dbopt.storeJiGouToDb (jigouname, jigouquancheng, jigoushuoming, hqgq, mxjj);
 		return;
 	}
 

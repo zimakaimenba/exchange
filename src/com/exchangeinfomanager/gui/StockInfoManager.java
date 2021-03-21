@@ -256,6 +256,7 @@ public class StockInfoManager
     	getnodedata = new GetNodeDataFromDbWhenSystemIdle (LocalDate.now(), NodeGivenPeriodDataItem.WEEK );
     	threadgetnodedata = new Thread(getnodedata);
     	threadgetnodedata.start();
+    	setGetNodeDataFromDbWhenSystemIdleThreadStatus (false);
  	}
 	
 	private static Logger logger = Logger.getLogger(StockInfoManager.class);
@@ -1001,14 +1002,21 @@ public class StockInfoManager
 				String gudongname = (String)((DefaultTableModel)tablegudong.getModel()).getValueAt(rowIndex, 0);
 				
 				  JTextField jfldjigou = new JTextField(25);
+				  JTextField jfldjigouquancheng = new JTextField(25);
+				  jfldjigouquancheng.setText("机构全称");
+				  JTextField jfldjigoushuoming = new JTextField(25);
+				  jfldjigoushuoming.setText("机构详细说明");
 				  jfldjigou.setText(gudongname);
 				  JCheckBox jchkhqgq = new JCheckBox("皇亲国戚"); 
 				  JCheckBox jchkmx = new JCheckBox("明星基金");
 				  
 			      JPanel myPanel = new JPanel();
+			      myPanel.setLayout(new BoxLayout(myPanel, BoxLayout.PAGE_AXIS));
 			      myPanel.add(new JLabel("定义机构:"));
 			      myPanel.add(jfldjigou);
-			      myPanel.add(Box.createVerticalStrut(15) ); // a spacer
+			      myPanel.add(jfldjigouquancheng);
+			      myPanel.add(jfldjigoushuoming);
+//			      myPanel.add(Box.createVerticalStrut(15) ); // a spacer
 			      myPanel.add(jchkhqgq);
 			      myPanel.add(jchkmx);
 
@@ -1018,7 +1026,7 @@ public class StockInfoManager
 			    	  Boolean mx = false; if(jchkmx.isSelected()) mx = true;
 			    	  
 			    	  JiGouService svsjg = new JiGouService ();
-						svsjg.addJiGou(jfldjigou.getText().replaceAll(" ", "") ,hqgq, mx );
+						svsjg.addJiGou(jfldjigou.getText().replaceAll(" ", "") , jfldjigouquancheng.getText().trim(), jfldjigoushuoming.getText().trim(), hqgq, mx );
 						svsjg = null;
 			      }
 
@@ -1599,10 +1607,13 @@ public class StockInfoManager
 	 */
 	protected void refreshGudongInfo(Stock node) 
 	{
+		LocalDate cbdate = node.getNodeJiBenMian().getLastestCaiBaoDate ();
 		ServicesOfNodeStock svsstk = node.getServicesOfNodeStock();
-   		LocalDate requiredstart = Season.getSeasonStartDate( LocalDate.now() );
+		if(cbdate == null)
+			cbdate =  LocalDate.now() ;
+   		LocalDate requiredstart = Season.getSeasonStartDate(cbdate);
    		requiredstart = Season.getLastSeasonStartDate( requiredstart ); // find 2 season in row
-			LocalDate requiredend = Season.getSeasonEndDate( LocalDate.now() );
+		LocalDate requiredend = Season.getSeasonEndDate( cbdate );
     	svsstk.getStockGuDong(node, "LiuTong", requiredstart, requiredend);
     	
     	if(!ArrayUtils.isNotEmpty( nodeshouldbedisplayed.getNodeJiBenMian().getGuDongInfo() )) {  // if not data, find last season data
@@ -2627,9 +2638,12 @@ public class StockInfoManager
 	                java.awt.Point p = e.getPoint();
 	                int rowIndex = rowAtPoint(p);
 	                int colIndex = columnAtPoint(p);
-
+	                
+	                if(colIndex != 0)
+	                	return "";
+	                
 	                try {
-	                    tip = getValueAt(rowIndex, colIndex).toString();
+	                    tip = getValueAt(rowIndex, 4).toString();
 	                } catch (RuntimeException e1) {}
 
 	                return tip;
@@ -2641,7 +2655,7 @@ public class StockInfoManager
 			new Object[][] {
 			},
 			new String[] {
-				"\u80A1\u4E1C\u540D\u79F0", "\u80A1\u4E1C\u65E5\u671F", "\u6301\u80A1\u6570\u91CF", "皇亲国戚"
+				"\u80A1\u4E1C\u540D\u79F0", "\u80A1\u4E1C\u65E5\u671F", "\u6301\u80A1\u6570\u91CF", "皇亲国戚","机构说明"
 			}
 		));
 		tablegudong.getTableHeader().getColumnModel().getColumn(0).setMaxWidth(220);
@@ -2652,6 +2666,10 @@ public class StockInfoManager
 		tablegudong.getTableHeader().getColumnModel().getColumn(3).setMinWidth(0);
 		tablegudong.getTableHeader().getColumnModel().getColumn(3).setWidth(0);
 		tablegudong.getTableHeader().getColumnModel().getColumn(3).setPreferredWidth(0);
+		tablegudong.getTableHeader().getColumnModel().getColumn(4).setMaxWidth(0);
+		tablegudong.getTableHeader().getColumnModel().getColumn(4).setMinWidth(0);
+		tablegudong.getTableHeader().getColumnModel().getColumn(4).setWidth(0);
+		tablegudong.getTableHeader().getColumnModel().getColumn(4).setPreferredWidth(0);
 		scrlpangudong.setViewportView(tablegudong);
 		panelinfo.setLayout(gl_panelinfo);
 		
