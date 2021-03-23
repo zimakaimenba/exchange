@@ -3000,8 +3000,18 @@ public class BanKuaiDbOperation
 			return bk;
 		
 		String bkggstr = "";
-		for(BkChanYeLianTreeNode stockofbk : bkshgegu) 
-				bkggstr  = bkggstr + "'" + stockofbk.getMyOwnCode() +  "', ";
+		for(BkChanYeLianTreeNode stockofbk : bkshgegu) {
+			//系统后台如果自动下载了个股的数据，再在这里做一次，浪费时间，要判断
+//			Stock stock = (Stock) CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode(stockofbk.getMyOwnCode(), BkChanYeLianTreeNode.TDXGG);
+			Stock stock = ((StockOfBanKuai)stockofbk).getStock();
+			if(stock == null) continue;
+			
+			NodeXPeriodData nodewkperioddata = stock.getNodeXPeroidData(period);
+			if(nodewkperioddata.getAmoRecordsStartDate() != null) //如果有数据，就不做了，至于数据是否完整，后面有个股自己的同步来保证。这样简单点。
+				continue;
+			
+			bkggstr  = bkggstr + "'" + stockofbk.getMyOwnCode() +  "', ";
+		}
 		bkggstr = bkggstr.substring(0, bkggstr.length() -2);
 		
 		String bkcjltable;

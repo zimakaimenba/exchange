@@ -371,7 +371,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 						has = ((StockOfBanKuai)node).getStock().getNodeJiBenMian().hasHqgqGuDong(maxcbrq);
 				} catch (java.lang.NullPointerException e) {has = false;}
 				
-				if(has) defaultFont =  new Font("Hei", Font.BOLD,defaultFont.getSize());
+				if(has) defaultFont =  new Font("Hei", Font.BOLD,defaultFont.getSize() + 1);
 			
 			break;
 		case "hasminxing":

@@ -3147,7 +3147,11 @@ public class BanKuaiFengXi extends JDialog
 	
 	private void initializeGuiOfNormal() {
 		setTitle("\u677F\u5757\u5206\u6790");
-		setBounds(100, 100, 1923, 1033);
+		
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		Double width = screenSize.getWidth();
+		Double height = screenSize.getHeight();
+		setBounds(10, 10,  width.intValue(), height.intValue());
 		getContentPane().setLayout(new BorderLayout());
 		
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -3593,7 +3597,7 @@ public class BanKuaiFengXi extends JDialog
 	{
 
 		setTitle("\u677F\u5757\u5206\u6790");
-		setBounds(100, 100, 2520, 1033);
+		setBounds(10, 10, 2520, 1033);
 		getContentPane().setLayout(new BorderLayout());
 		
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -4057,7 +4061,7 @@ public class BanKuaiFengXi extends JDialog
 				public void mouseClicked(MouseEvent arg0) 
 				{
 					if(SwingUtilities.isLeftMouseButton(arg0) ) {
-						if(holdbackgrounddownload.getToolTipText().contains("暂停")) {
+						if(holdbackgrounddownload.getToolTipText().contains("重启")) {
 							ImageIcon icon = stockmanager.setGetNodeDataFromDbWhenSystemIdleThreadStatus(false);
 //							holdbackgrounddownload.setText("后台下载数据恢复");
 							holdbackgrounddownload.setToolTipText("后台下载数据,点击暂停下载。");

@@ -2236,9 +2236,14 @@ public class StockInfoManager
 		frame.getContentPane().setForeground(Color.RED);
 		frame.setIconImage(Toolkit.getDefaultToolkit().getImage(StockInfoManager.class.getResource("/images/Adobe_Stock_Photos_256px_1124397_easyicon.net.png")));
 		frame.getContentPane().setEnabled(false);
-				
 		frame.setTitle("StockMining");
-		frame.setBounds(100, 100, 866, 921);
+		
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		Double screen_width = screenSize.getWidth();
+		Double screen_height = screenSize.getHeight();
+		Integer app_width = 866;
+		Integer app_height = 922;
+		frame.setBounds(screen_width.intValue()/2 - app_width/2, screen_height.intValue()/2 - app_height/2, app_width, app_height);
 //		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -2645,9 +2650,8 @@ public class StockInfoManager
 	                if(colIndex != 0)
 	                	return "";
 	                
-	                try {
-	                    tip = getValueAt(rowIndex, 5).toString();
-	                } catch (RuntimeException e1) {}
+	                try {  tip = getValueAt(rowIndex, 0).toString() + ":" +  getValueAt(rowIndex, 5).toString();
+	                } catch (RuntimeException e1) {tip = getValueAt(rowIndex, 0).toString();}
 
 	                return tip;
 	            }

@@ -160,7 +160,10 @@ public abstract class BanKuaiandGeGuTableBasic extends JTable  implements  BanKu
 				this.getColumnModel().getColumn(i).setWidth(columnwidth);
 			} else if(column_width != null && !column_width.equals("0") ) {
 				columnwidth = Integer.valueOf(column_width) ;
-				this.getColumnModel().getColumn(0).setPreferredWidth(columnwidth );
+				this.getColumnModel().getColumn(i).setPreferredWidth(columnwidth );
+//				this.getColumnModel().getColumn(i).setMinWidth(columnwidth);
+//				this.getColumnModel().getColumn(i).setMaxWidth(columnwidth);
+//				this.getColumnModel().getColumn(i).setWidth(columnwidth);
 			} 
 		}
 	}

@@ -107,7 +107,7 @@ public class JiGouGuDongDbOperation
 	/*
 	 * 
 	 */
-	public void refreshGuDongData(Boolean onlyimportwithjigougudong) 
+	public void refreshGuDongData(String floatholderfileformat, String topholderfileformat, Boolean onlyimportwithjigougudong) 
 	{
 		String csvfilepath = sysconfig.getGuDongInfoCsvFile();
 		Set<String> jigou = null;
@@ -119,16 +119,22 @@ public class JiGouGuDongDbOperation
 		Collection<BkChanYeLianTreeNode> allstocks = AllCurrentTdxBKAndStoksTree.getInstance().getAllBkStocksTree().getAllRequiredNodes(BkChanYeLianTreeNode.TDXGG);
 		for(BkChanYeLianTreeNode stock : allstocks) {
 			String stockcode = stock.getMyOwnCode();
-			String floatcsvfilename = stockcode + sysconf.getFloatHoldersFile();
-			String top10csvfilename = stockcode + sysconf.getTop10HoldersFile();
-			File floatcsvfile = new File(csvfilepath + "/" + floatcsvfilename);
-			File top10csvfile = new File(csvfilepath + "/" + top10csvfilename);
+			if(floatholderfileformat == null)
+				floatholderfileformat = sysconf.getFloatHoldersFile().replaceAll("XXXXXX", stockcode);
+			else
+				floatholderfileformat = floatholderfileformat.replaceAll("XXXXXX", stockcode);;
+			if(topholderfileformat == null)
+				topholderfileformat = sysconf.getTop10HoldersFile().replaceAll("XXXXXX", stockcode);
+			else
+				topholderfileformat = topholderfileformat.replaceAll("XXXXXX", stockcode);;
+			File floatcsvfile = new File(csvfilepath + "/" + floatholderfileformat);
+			File top10csvfile = new File(csvfilepath + "/" + topholderfileformat);
 			if (  (!floatcsvfile.exists()  || !floatcsvfile.canRead() ) && (!top10csvfile.exists()  || !top10csvfile.canRead())   ) {  
 					logger.info(stockcode + "股东文件不全或者读取错误。没有导入任何数据。");
 					continue;
 			}
 
-			readGuDongCsvFile (stock, csvfilepath + "/" + floatcsvfilename, "liutong", jigou);
+			readGuDongCsvFile (stock, csvfilepath + "/" + floatholderfileformat, "liutong", jigou);
 //			readGuDongCsvFile (stock, csvfilepath + "/" + top10csvfilename,"gudong");
 		}
 	}

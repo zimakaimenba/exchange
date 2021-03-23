@@ -35,15 +35,11 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 {
 	private BanKuaiDbOperation bkdbopt;
 	private CylTreeDbOperation dboptforcyltree;
-	private TreeOfChanYeLian cyltree;
 	private JiGouGuDongDbOperation gddbopt;
 
 	public SvsForNodeOfBanKuai ()
 	{
-		this.cyltree = CreateExchangeTree.CreateTreeOfChanYeLian();
-		
 		this.bkdbopt = new BanKuaiDbOperation ();
-		dboptforcyltree = new CylTreeDbOperation (this.cyltree);
 		gddbopt = new JiGouGuDongDbOperation ();
 	}
 
@@ -539,6 +535,9 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 	@Override
 	public List<BkChanYeLianTreeNode> getNodeChanYeLianInfo(String nodecode) 
 	{
+		if(dboptforcyltree == null)
+			dboptforcyltree = new CylTreeDbOperation (CreateExchangeTree.CreateTreeOfChanYeLian());
+		
 		List<BkChanYeLianTreeNode> cylinfo = this.dboptforcyltree.getChanYeLianInfo (nodecode,BkChanYeLianTreeNode.TDXBK);
 		return cylinfo;
 	}
@@ -546,6 +545,9 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 	@Override
 	public List<BkChanYeLianTreeNode> getNodeSlidingInChanYeLianInfo(String nodecode) 
 	{
+		if(dboptforcyltree == null)
+			dboptforcyltree = new CylTreeDbOperation (CreateExchangeTree.CreateTreeOfChanYeLian());
+		
 		List<BkChanYeLianTreeNode> cylsliding = this.dboptforcyltree.getSlidingInChanYeLianInfo (nodecode,BkChanYeLianTreeNode.TDXBK);
 		return cylsliding;
 	}
@@ -553,6 +555,9 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 	@Override
 	public List<BkChanYeLianTreeNode> getNodeChildrenInChanYeLianInfo(String nodecode) 
 	{
+		if(dboptforcyltree == null)
+		dboptforcyltree = new CylTreeDbOperation (CreateExchangeTree.CreateTreeOfChanYeLian());
+		
 		List<BkChanYeLianTreeNode> cylchildren  = this.dboptforcyltree.getChildrenInChanYeLianInfo (nodecode,BkChanYeLianTreeNode.TDXBK);
 		return cylchildren;
 	}

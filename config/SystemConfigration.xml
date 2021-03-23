@@ -14,5 +14,11 @@
   	<entry key="shengzhengstockcodeprefix">000/300/001/002/003</entry>
   	<entry key="shanghaizhishucodeprefix">000/880/999</entry>
   	<entry key="shengzhengzhishucodeprefix">399/159</entry>
+  	<entry key="floatholders">_floatholders.csv</entry>
+  	<entry key="top10holders">_top10holders.csv</entry>
+  	<entry key="GuDongFxURL">https://data.eastmoney.com/gdfx/</entry>
+
+  	<entry key="BankuaifenxiSettingPropertiesFile">bankuaifenxisetting.properties</entry>
+	
 </properties>
 
