@@ -3012,6 +3012,8 @@ public class BanKuaiDbOperation
 			
 			bkggstr  = bkggstr + "'" + stockofbk.getMyOwnCode() +  "', ";
 		}
+		if(bkggstr.isBlank() )
+			return bk;
 		bkggstr = bkggstr.substring(0, bkggstr.length() -2);
 		
 		String bkcjltable;
@@ -5458,14 +5460,14 @@ public class BanKuaiDbOperation
 			if(bkshgegu== null || bkshgegu.isEmpty())
 				return bk;
 			
-			String bkggstr = ""; int ggcount = 0;
+			String bkggstr = ""; //int ggcount = 0;
 			for(BkChanYeLianTreeNode stockofbk : bkshgegu) {
 				StockOfBanKuai stkbk = (StockOfBanKuai)stockofbk;
 				if(stkbk.getStock().getNodeJiBenMian().getZdgzmrmcykRecords()!= null &&  !stkbk.getStock().getNodeJiBenMian().getZdgzmrmcykRecords().isEmpty())
 		        	continue;
 				else {
 					bkggstr  = bkggstr + "'" + stockofbk.getMyOwnCode() +  "', ";
-					ggcount ++;
+//					ggcount ++;
 				}
 			}
 			bkggstr = bkggstr.substring(0, bkggstr.length() -2);

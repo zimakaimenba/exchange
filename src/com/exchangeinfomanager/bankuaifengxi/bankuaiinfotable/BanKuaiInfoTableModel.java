@@ -29,8 +29,6 @@ public class BanKuaiInfoTableModel extends BandKuaiAndGeGuTableBasicModel
 	{
 		super (prop);
 	}
-	
-	
 	/*
 	 * 
 	 */
@@ -43,8 +41,7 @@ public class BanKuaiInfoTableModel extends BandKuaiAndGeGuTableBasicModel
 		try{
 			if(entryList != null) //∞¥≥…Ωª∂Ó≈≈–Ú
 				Collections.sort(entryList, new NodeChenJiaoErComparator(showwknum,difference,curperiod) );
-		} catch (java.lang.IllegalArgumentException e) {
-//			e.printStackTrace();
+		} catch (java.lang.IllegalArgumentException e) {//			e.printStackTrace();
 		}
 	 	
 		this.fireTableDataChanged();
@@ -65,17 +62,12 @@ public class BanKuaiInfoTableModel extends BandKuaiAndGeGuTableBasicModel
 		for(BkChanYeLianTreeNode tmpnode : bankuaiwithcje) 
 			if(!this.entryList.contains(tmpnode) )
 				entryList.add(tmpnode);
-		
-//		entryList.addAll( bankuaiwithcje );
 	}
-	
-
 	public Object getValueAt(int rowIndex, int columnIndex) 
     {
 		Object value = super.getValueAt(rowIndex, columnIndex);
     	return value;
     }
-	
 	 public Class<?> getColumnClass(int columnIndex) { 
 		 Class<?> clazz = super.getColumnClass(columnIndex);
 	      

@@ -39,14 +39,13 @@ public class GetNodeDataFromDbWhenSystemIdle implements Runnable
 		 	BanKuaiAndStockTree bkcyltree = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks();
 			TDXNodes treeroot = (TDXNodes)bkcyltree.getModel().getRoot();
 			int bankuaicount = bkcyltree.getModel().getChildCount(treeroot);
-//			int globlenodeindex = bankuaicount;
 			
 			int sleepcount = 250; int mousenotmoverange = 50;
 			long idleTime = 0 ;
 		    long start = System.currentTimeMillis();
 		    Point currLocation = MouseInfo.getPointerInfo().getLocation();
 		    
-		    for(int i = 0 ;i < bankuaicount ; i++) {
+		    for(int i = bankuaicount-1 ;i >=0  ; i--) {
 		    	 while (running) {
 			            synchronized (pauseLock) {
 			                if (!running) { // may have changed while waiting to
@@ -121,7 +120,7 @@ public class GetNodeDataFromDbWhenSystemIdle implements Runnable
 		    System.out.printf(" \n Done! Gotten All Nodes Zhanbi Data.  \n");
 		    
 		    
-		    for(int i = 0 ;i < bankuaicount ; i++) {
+		    for(int i = bankuaicount-1 ;i >=0  ; i--) {
 		    	 while (running) {
 			            synchronized (pauseLock) {
 			                if (!running) { // may have changed while waiting to

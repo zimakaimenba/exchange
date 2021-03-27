@@ -292,6 +292,7 @@ public class SvsForNodeOfStock implements ServicesForNode, ServicesOfNodeStock
 			bkohlcstartday = bkamostartday;
 			bkohlcendday = bkamoendday;
 			stk = this.getNodeKXian(stk, bkohlcstartday,bkohlcendday, NodeGivenPeriodDataItem.DAY,true);
+//			this.getStockGuDong( stock, "LIUTONG", bkohlcstartday, bkohlcendday);
 			
 			if( !stock.isNodeDataAtNotCalWholeWeekMode() )
 				this.getNodeQueKouInfo(stock, bkohlcstartday, bkohlcendday, NodeGivenPeriodDataItem.DAY);
@@ -313,7 +314,8 @@ public class SvsForNodeOfStock implements ServicesForNode, ServicesOfNodeStock
 				LocalDate requiredendday = LocalDate.of(newenddt.getYear(), newenddt.getMonthOfYear(), newenddt.getDayOfMonth()).with(DayOfWeek.FRIDAY);
 				
 				this.getNodeKXian(stock, requiredstartday, requiredendday, NodeGivenPeriodDataItem.DAY, true);
-
+//				this.getStockGuDong( stock, "LIUTONG", requiredstartday, requiredendday);
+				
 				if( !stock.isNodeDataAtNotCalWholeWeekMode() )
 					this.getNodeQueKouInfo(stock, requiredstartday, requiredendday, NodeGivenPeriodDataItem.DAY);
 		}

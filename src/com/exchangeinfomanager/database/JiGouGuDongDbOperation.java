@@ -316,7 +316,7 @@ public class JiGouGuDongDbOperation
 	 */
 	public Stock getStockGuDong(Stock stock, String liutongorgudong, LocalDate requiredstart, LocalDate requiredend)
 	{
-		Object[][] data = null;
+//		Object[][] data = null;
 		CachedRowSetImpl  rs = null;
 		LocalDate maxrecordsdate = null; LocalDate minrecordsdate = null; String sqlquerystat;
 		if(liutongorgudong.equalsIgnoreCase("LIUTONG"))				
@@ -360,18 +360,11 @@ public class JiGouGuDongDbOperation
 						+ " AND 股东日期 BETWEEN '" + requiredstart + "' AND '" + requiredend + "'"
 						+ "  ORDER BY 股东日期  DESC"
 						;
-		
+			List<Object[]> data = new ArrayList<>();
 			try { 
 		    	rs = connectdb.sqlQueryStatExecute(sqlquerystat);
-		    	int k = 0;
 		        int columnCount = 6;//列数
-		        
-		        rs.last();  
-		        int rows = rs.getRow();  
-		        data = new Object[rows][];
-		        rs.first();  
-		        //while(rs.next())  //{ "日期", "操作", "说明","ID","操作账户","信息表" };
-		        for(int j=0;j<rows;j++) {   //{ "日期", "操作", "说明","ID","操作账户","信息表" };
+		        while(rs.next()) {  
 		        	Object[] row = new Object[columnCount];
 		        	
 		    		 String gudong = rs.getString("机构名称"); //mOST_RECENT_TIME
@@ -387,13 +380,10 @@ public class JiGouGuDongDbOperation
 		    		 row[3] = hqgq;
 		    		 row[4] = mx;
 		    		 row[5] = jigoushuoming;
-		    		 data[k] = row;
-		    		 
-		    		 k++; 
-			         rs.next();
+		    		 data.add( row);
 		    	}
 		        
-		        if(ArrayUtils.isNotEmpty(data))
+		        if(data.size() >= 0 )
 		        	stock.getNodeJiBenMian().setGuDongInfo (data);
 		    } catch(java.lang.NullPointerException e) {
 		    } catch (SQLException e) {e.printStackTrace();

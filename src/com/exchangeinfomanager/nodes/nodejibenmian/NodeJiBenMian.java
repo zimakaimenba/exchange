@@ -30,7 +30,7 @@ public class NodeJiBenMian
 			private String keHuCustom;
 			private String suoshujiaoyisuo;
 			private List<Object[]> zdgzmrmcykRecords;
-			private Object[][] gudonginfo;
+			private List<Object[]> gudonginfo;
 			private List<BkChanYeLianTreeNode> cylinfo;
 			private List<Interval> hqgqgudong;
 			private LocalDate lastestcaibaoriqi;
@@ -214,19 +214,13 @@ public class NodeJiBenMian
 				
 				this.zdgzmrmcykRecords.add(record);
 			}
-			public Object[][] getGuDongInfo() {
+			public List<Object[]> getGuDongInfo() {
 				return gudonginfo;
 			}
-			public void setGuDongInfo(Object[][] gdRecords) {
+			public void setGuDongInfo(List<Object[]> gdRecords) {
 				this.gudonginfo = gdRecords;
 			}
 			
-			/**
-			 * @return the zdgzmrmcykRecords
-			 */
-//			public Object[][] getZdgzMrmcZdgzYingKuiRecords() {
-//				return zdgzmrmcykRecords;
-//			}
 			public void setChanYeLianInfo(List<BkChanYeLianTreeNode> result)
 			{
 				this.cylinfo = result;

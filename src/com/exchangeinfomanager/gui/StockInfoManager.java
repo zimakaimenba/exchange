@@ -1616,7 +1616,7 @@ public class StockInfoManager
 		LocalDate requiredend = Season.getSeasonEndDate( cbdate );
     	svsstk.getStockGuDong(node, "LiuTong", requiredstart, requiredend);
     	
-    	if(!ArrayUtils.isNotEmpty( nodeshouldbedisplayed.getNodeJiBenMian().getGuDongInfo() )) {  // if not data, find last season data
+    	if( nodeshouldbedisplayed.getNodeJiBenMian().getGuDongInfo().size() ==0 ) {  // if not data, find last season data
     		requiredstart = Season.getLastSeasonStartDate(requiredstart);
     		requiredstart = Season.getLastSeasonStartDate(requiredstart);
     		requiredend = Season.getLastSeasonEndDate(requiredend);
@@ -1625,12 +1625,12 @@ public class StockInfoManager
     	svsstk = null;
     	
 		((DefaultTableModel)tablegudong.getModel()).setRowCount(0);
-		Object[][] gudongObjects = node.getNodeJiBenMian().getGuDongInfo();
+		 List<Object[]> gudongObjects = node.getNodeJiBenMian().getGuDongInfo();
 		if(gudongObjects == null)
 			return;
 		
-		for(int i=0;i<gudongObjects.length;i++) 
-			((DefaultTableModel)tablegudong.getModel()).addRow(gudongObjects[i]);
+		for(Object[] gudong : gudongObjects) 
+			((DefaultTableModel)tablegudong.getModel()).addRow(gudong);
 	}
 	/*
 	 * 

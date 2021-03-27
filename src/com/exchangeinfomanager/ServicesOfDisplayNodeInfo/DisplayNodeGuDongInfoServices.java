@@ -2,6 +2,7 @@ package com.exchangeinfomanager.ServicesOfDisplayNodeInfo;
 
 import java.awt.Color;
 import java.time.LocalDate;
+import java.util.List;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.jsoup.Jsoup;
@@ -42,15 +43,12 @@ public class DisplayNodeGuDongInfoServices implements ServicesOfNodeJiBenMianInf
        	if( node.getType() != BkChanYeLianTreeNode.TDXGG) 
        		return null;
        	
-       		Object[][] dgObjects = this.node.getNodeJiBenMian().getGuDongInfo();
-       		if(!ArrayUtils.isNotEmpty( dgObjects )) {
-       			if(this.requiredstart == null) {
+       		List<Object[]> dgObjects = this.node.getNodeJiBenMian().getGuDongInfo();
+       		if(dgObjects == null || dgObjects.size() == 0) {
+       			if(this.requiredstart == null) 
            			this.requiredstart = Season.getSeasonStartDate( LocalDate.now() );
-//           			this.requiredstart = Season.getLastSeasonStartDate( this.requiredstart ); // find 2 season in row
-           		}
-//           		if(this.requiredend == null)	this.requiredend = Season.getSeasonEndDate( LocalDate.now() );
-           		
-       			Boolean has = true;
+
+      			Boolean has = true;
        			LocalDate maxcbrq = this.node.getNodeJiBenMian().getLastestCaiBaoDate();
 				try {
 					long daysBetween = java.time.temporal.ChronoUnit.DAYS.between(this.requiredstart,maxcbrq);
@@ -63,14 +61,6 @@ public class DisplayNodeGuDongInfoServices implements ServicesOfNodeJiBenMianInf
        			
        			ServicesOfNodeStock svsstk = new SvsForNodeOfStock ();
     	    	svsstk.getStockGuDong(node, "LiuTong",Season.getSeasonStartDate( maxcbrq ), Season.getSeasonEndDate( maxcbrq ) );
-    	    	
-//    	    	if(!ArrayUtils.isNotEmpty( node.getNodeJiBenMian().getGuDongInfo() )) {  // if not data, find last season data
-//    	    		this.requiredstart = Season.getLastSeasonStartDate(this.requiredstart);
-//    	    		requiredstart = Season.getLastSeasonStartDate(requiredstart);
-//    	    		this.requiredend = Season.getLastSeasonEndDate(this.requiredend);
-//    	    		svsstk.getStockGuDong(node, "LiuTong", requiredstart, this.requiredend);
-//    	    	}	
-
     	    	svsstk = null;
        		}
         
@@ -105,14 +95,14 @@ public class DisplayNodeGuDongInfoServices implements ServicesOfNodeJiBenMianInf
 	    	fontgdnum.attr("size", "3");
 	    	fontgdnum.appendText("持股数量");
 	    	
-	    	for(int i=0;i<dgObjects.length;i++) {
+	    	for(Object[] gudong : dgObjects) {
 	    		hasinfo = true;
 	    		
-	    		String output1 = dgObjects[i][0].toString();
-	    		String output2 = dgObjects[i][1].toString();
-	    		String output3 = dgObjects[i][2].toString();
-	    		Boolean hqgq = (Boolean) dgObjects[i][3];
-	    		Boolean mx = (Boolean) dgObjects[i][4];
+	    		String output1 = gudong[0].toString();
+	    		String output2 = gudong[1].toString();
+	    		String output3 = gudong[2].toString();
+	    		Boolean hqgq = (Boolean) gudong[3];
+	    		Boolean mx = (Boolean) gudong[4];
 	    		   
 	    		org.jsoup.nodes.Element trdata = table.appendElement("tr");
 		    	org.jsoup.nodes.Element tmpthgdname = trdata.appendElement("th");
@@ -129,7 +119,7 @@ public class DisplayNodeGuDongInfoServices implements ServicesOfNodeJiBenMianInf
 		    	org.jsoup.nodes.Element tmpfontgddate = tmpthgddate.appendElement("font");
 		    	tmpfontgddate.attr("size", "2");
 		    	tmpfontgddate.attr("face", "verdana");
-		    	Color seasoncolor = Season.getSeasonColor( (LocalDate)dgObjects[i][1] );
+		    	Color seasoncolor = Season.getSeasonColor( (LocalDate)gudong[1] );
 		    	String seasonresult = String.format("#%02x%02x%02x", seasoncolor.getRed(), seasoncolor.getGreen(), seasoncolor.getBlue());
 		    	tmpfontgddate.attr("color", seasonresult);
 		    	tmpfontgddate.appendText(output2);

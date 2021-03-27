@@ -1650,16 +1650,16 @@ import com.udojava.evalex.Expression;
 					if (maresult[6] != null)
 						maformula = maformula.replace("\'250\'",  maresult[6].toString() ) ;
 					else
-						maformula = maformula.replace("\'250\'",  String.valueOf( 10000000000.0 ) ) ;
+						maformula = maformula.replace("\'250\'",  String.valueOf( -10000000000.0 ) ) ;
 				}
-			} catch (java.lang.NullPointerException e) {				e.printStackTrace();			}
+			} catch (java.lang.NullPointerException e) {e.printStackTrace();	}
 			
 			try {
 		    if(maformula.contains(">\'120\'") || maformula.contains(">=\'120\'") || maformula.contains("<\'120\'") || maformula.contains("<=\'120\'")) {
 		    	if (maresult[5] != null)
 		    		maformula = maformula.replace("\'120\'",  maresult[5].toString() ) ;
 		    	else
-					maformula = maformula.replace("\'120\'",  String.valueOf( 10000000000.0 ) ) ;
+					maformula = maformula.replace("\'120\'",  String.valueOf( -10000000000.0 ) ) ;
 		    }
 			} catch (java.lang.NullPointerException e) {e.printStackTrace();}
 			
@@ -1668,7 +1668,7 @@ import com.udojava.evalex.Expression;
 		    	if(maresult[4] != null)
 		    		maformula = maformula.replace("\'60\'",  maresult[4].toString() ) ;
 		    	else
-					maformula = maformula.replace("\'60\'",  String.valueOf( 10000000000.0 ) ) ;
+					maformula = maformula.replace("\'60\'",  String.valueOf( -10000000000.0 ) ) ;
 		    }
 			} catch (java.lang.NullPointerException e) {e.printStackTrace();}
 		    	
@@ -1677,7 +1677,7 @@ import com.udojava.evalex.Expression;
 		    	if(maresult[3] != null)
 		    		maformula = maformula.replace("\'30\'",  maresult[3].toString() ) ;
 		    	else
-					maformula = maformula.replace("\'30\'",  String.valueOf( 10000000000.0 ) ) ;
+					maformula = maformula.replace("\'30\'",  String.valueOf( -10000000000.0 ) ) ;
 		    }
 		    } catch (java.lang.NullPointerException e) {e.printStackTrace();}
 		    try {
@@ -1685,7 +1685,7 @@ import com.udojava.evalex.Expression;
 		    	if(maresult[2] != null)
 		    		maformula = maformula.replace("\'20\'",  maresult[2].toString() ) ;
 		    	else
-					maformula = maformula.replace("\'20\'",  String.valueOf( 10000000000.0 ) ) ;
+					maformula = maformula.replace("\'20\'",  String.valueOf( -10000000000.0 ) ) ;
 		    }
 		    } catch (java.lang.NullPointerException e) {e.printStackTrace();}
 		    try {
@@ -1693,7 +1693,7 @@ import com.udojava.evalex.Expression;
 		    	if(maresult[1] != null)
 		    		maformula = maformula.replace("\'10\'",  maresult[1].toString() ) ;
 		    	else
-					maformula = maformula.replace("\'10\'",  String.valueOf( 10000000000.0 ) ) ;
+					maformula = maformula.replace("\'10\'",  String.valueOf( -10000000000.0 ) ) ;
 		    }
 		    } catch (java.lang.NullPointerException e) {e.printStackTrace();}
 		    try {
@@ -1701,7 +1701,7 @@ import com.udojava.evalex.Expression;
 		    	if(maresult[0] != null)
 		    		maformula = maformula.replace("\'5\'",  maresult[0].toString() ) ;
 		    	else
-					maformula = maformula.replace("\'5\'",  String.valueOf( 10000000000.0 ) ) ;
+					maformula = maformula.replace("\'5\'",  String.valueOf( -10000000000.0 ) ) ;
 		    }
 		    } catch (java.lang.NullPointerException e) {e.printStackTrace();}
 		    
@@ -1712,7 +1712,7 @@ import com.udojava.evalex.Expression;
 			    	return false;
 			    else 
 			    	return true;
-		    } catch (com.udojava.evalex.Expression.ExpressionException e) {		    	e.printStackTrace();		    	return false;		    }
+		    } catch (com.udojava.evalex.Expression.ExpressionException e) {	e.printStackTrace();	return false;		    }
 		    
 		    
 		    
