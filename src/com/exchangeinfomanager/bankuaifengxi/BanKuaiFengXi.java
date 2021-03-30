@@ -581,7 +581,7 @@ public class BanKuaiFengXi extends JDialog
 		tabbedPanebk.setSelectedIndex(0);
 		tabbedPanebkzb.setSelectedIndex(0);
 		
-		selectedbk.setHasReviewedToday(true);
+		selectedbk.getShuJuJiLuInfo().setHasReviewedToday(true);
 		LocalDate curselectdate = null;
 		try{
 			curselectdate = dateChooser.getLocalDate();// dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
@@ -954,7 +954,7 @@ public class BanKuaiFengXi extends JDialog
 	 */
 	private void refreshTDXGeGuZhanBi (Stock selectstock)
 	{
-		selectstock.setHasReviewedToday(true);
+		selectstock.getShuJuJiLuInfo().setHasReviewedToday(true);
 		
 		LocalDate curselectdate = dateChooser.getLocalDate();// dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 		DaPan treeroot = (DaPan) treeofbkstk.getModel().getRoot();
@@ -1557,22 +1557,16 @@ public class BanKuaiFengXi extends JDialog
             }
         });
         menuItemcancelreviewedtoday.addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
-//            	int row = tableBkZhanBi.getSelectedRow();
-//    			int modelRow = tableBkZhanBi.convertRowIndexToModel(row);
-//    			BanKuai bk = (BanKuai) ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getNode(modelRow);
-    			
     			List<BkChanYeLianTreeNode> allgegu = ((BanKuaiGeGuTableModelFromPropertiesFile)tableGuGuZhanBiInBk.getModel()).getAllNodes();
     			if(allgegu == null  || allgegu.size() == 0)
     				return ;
     			
     			for(BkChanYeLianTreeNode tmpnode : allgegu) 
-    				((StockOfBanKuai)tmpnode).getStock().setHasReviewedToday(false);
+    				((StockOfBanKuai)tmpnode).getStock().getShuJuJiLuInfo().setHasReviewedToday(false);
     			
     			tablebkggtableset.forEach(l -> l.repaint());
-    			    			
             }
         });
         

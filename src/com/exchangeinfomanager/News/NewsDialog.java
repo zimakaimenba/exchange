@@ -410,7 +410,4 @@ public class NewsDialog <T extends News> extends JDialog
         }
     }
 
-    
-
-
 }

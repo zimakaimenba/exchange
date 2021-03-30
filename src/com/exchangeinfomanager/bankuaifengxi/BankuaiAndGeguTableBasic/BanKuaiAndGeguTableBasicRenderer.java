@@ -286,10 +286,10 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 		Stock stock = null ; Boolean reviewedtoday = false; 
 		if(node instanceof StockOfBanKuai) {
 			stock = ((StockOfBanKuai)node).getStock();
-			if(stock.wetherHasReiewedToday())
+			if(stock.getShuJuJiLuInfo().wetherHasReiewedToday())
 				reviewedtoday = true;
 		} else
-			reviewedtoday = node.wetherHasReiewedToday();
+			reviewedtoday = node.getShuJuJiLuInfo().wetherHasReiewedToday();
 		
 		LocalDate curdisplaydate = ((BandKuaiAndGeGuTableBasicModel)table.getModel()).getCurDisplayedDate();
 		Range<LocalDate> range = ((TDXNodes)node).isInDuanQiGuanZhuRange (curdisplaydate); 

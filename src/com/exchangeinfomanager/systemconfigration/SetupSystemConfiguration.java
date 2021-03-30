@@ -993,6 +993,11 @@ public class SetupSystemConfiguration
 //			return this.systeminstalledpath  + "/dailydata/tushare/shareholder";
 			return "E:/stock/stockmanager/dailydata/tushare/shareholder";
 		}
+		public String getTuShareExtraDataDownloadedFilePath() 
+		{
+//			return this.systeminstalledpath  + "/dailydata/tushare/dailyexchangedata";
+			return "E:/stock/stockmanager/dailydata/tushare/dailyexchangedata";
+		}
 
 }
 

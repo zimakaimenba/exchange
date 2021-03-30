@@ -41,28 +41,18 @@ public class Stock extends TDXNodes {
 		super(myowncode1,name);
 		super.nodetype = BkChanYeLianTreeNode.TDXGG;
 		
-		if(myowncode1.startsWith("60"))
-			setSuoShuJiaoYiSuo("sh");
-		else
-			setSuoShuJiaoYiSuo("sz");
-		
-//		suoShuTdxBanKuaiData = new HashMap<String,StockOfBanKuai> ();
-		
 		super.nodewkdata = new StockXPeriodDataForJFC (myowncode1,NodeGivenPeriodDataItem.WEEK) ;
 		super.nodedaydata = new StockXPeriodDataForJFC (myowncode1,NodeGivenPeriodDataItem.DAY) ;
 //		super.nodemonthdata = new StockNodeXPeriodData (StockGivenPeriodDataItem.MONTH) ;
 		super.nodetreerelated = new StockOfBanKuaiTreeRelated (this);
 		
 	}
-	
 	 
 	private static Logger logger = Logger.getLogger(Stock.class);
 	
 	private HashMap<String,AccountInfoBasic> chiCangAccounts; 
 	private Set<BkChanYeLianTreeNode> suoShuCurTDXBanKuai; 
 	private Set<BkChanYeLianTreeNode> suoShuCurDZHBanKuai;
-	
-	
 	
 	public void addNewChiCangAccount (AccountInfoBasic acnt)
 	{

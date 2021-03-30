@@ -195,10 +195,10 @@ public class NodeJiBenMian
 			public void setKeHuCustom(String keHuCustom) {
 				this.keHuCustom = keHuCustom;
 			}
-			public String getSuoshujiaoyisuo() {
+			public String getSuoShuJiaoYiSuo() {
 				return suoshujiaoyisuo;
 			}
-			public void setSuoshujiaoyisuo(String suoshujiaoyisuo) {
+			public void setSuoShuJiaoYiSuo(String suoshujiaoyisuo) {
 				this.suoshujiaoyisuo = suoshujiaoyisuo;
 			}
 			public List<Object[]> getZdgzmrmcykRecords() {

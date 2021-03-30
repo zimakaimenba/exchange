@@ -27,7 +27,7 @@ public abstract class TDXNodes extends BkChanYeLianTreeNode
 	
 	protected Collection<Tag> nodetags;
 	
-	private String suoshujiaoyisuo;
+//	private String suoshujiaoyisuo;
 	private LocalDate lastdayofbxfx;
 	
 	private List<Range<LocalDate>> qiangshirange;
@@ -73,18 +73,6 @@ public abstract class TDXNodes extends BkChanYeLianTreeNode
 		return zblevel;
 	}
 	
-	private Boolean hasreviewedtoday;
-	public void setHasReviewedToday (Boolean reviewedornot)
-	{
-		this.hasreviewedtoday = reviewedornot;
-	}
-	public Boolean wetherHasReiewedToday ()
-	{
-		if(this.hasreviewedtoday == null)
-			return false;
-		else
-			return this.hasreviewedtoday;
-	}
 	public void addNewDuanQiGuanZhuRange (Range<LocalDate> inter) 
 	{
 		if(dqguangzhurange == null)
@@ -158,14 +146,14 @@ public abstract class TDXNodes extends BkChanYeLianTreeNode
 		return null;
 	}
 		
-	public String getSuoShuJiaoYiSuo ()
-	{
-		return this.suoshujiaoyisuo;
-	}
-	public void setSuoShuJiaoYiSuo (String jys)
-	{
-		this.suoshujiaoyisuo = jys;
-	}
+//	public String getSuoShuJiaoYiSuo ()
+//	{
+//		return this.suoshujiaoyisuo;
+//	}
+//	public void setSuoShuJiaoYiSuo (String jys)
+//	{
+//		this.suoshujiaoyisuo = jys;
+//	}
 	public NodeXPeriodData getNodeXPeroidData (String period)
 	{
 		if(period.equals(NodeGivenPeriodDataItem.WEEK))

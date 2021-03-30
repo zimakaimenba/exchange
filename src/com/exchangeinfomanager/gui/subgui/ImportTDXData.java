@@ -105,14 +105,12 @@ public class ImportTDXData extends JDialog {
 			chbxdaorutdxsysbk.setSelected(false);
 			cbximporttdxgeguinfo.setSelected(false);
 			chbxdaorutdxsysbkvol.setSelected(false);
-			cbxImportShGeGuVol.setSelected(false);
 			cbxImportSzGeGuVol.setSelected(false);
 			ckbxnetease.setSelected(false);
 			
 			chbxdaorutdxsysbk.setEnabled(false);
 			cbximporttdxgeguinfo.setEnabled(false);
 			chbxdaorutdxsysbkvol.setEnabled(false);
-			cbxImportShGeGuVol.setEnabled(false);
 			cbxImportSzGeGuVol.setEnabled(false);
 			ckbxnetease.setEnabled(false);
 			
@@ -156,6 +154,8 @@ public class ImportTDXData extends JDialog {
 
 	private void partThatCanImportDuringWork ()
 	{
+//		bkdbopt.refreshExtraStockDataFromTushare ();
+		
 		//同步自定义板块
 		if(chbxdaorutdxzdybk.isSelected() && chbxdaorutdxzdybk.isEnabled() && this.zdybkckbxs != null) { 
 			System.out.println("------导入自定义板块开始于" + LocalTime.now() );
@@ -322,10 +322,6 @@ public class ImportTDXData extends JDialog {
 //				lines = null;
 			} catch (java.lang.NullPointerException e) {}
 			
-			cbxImportSzGeGuVol.setEnabled(false);
-			
-		}                                     
-		if(cbxImportShGeGuVol.isSelected() && cbxImportShGeGuVol.isEnabled() ) {
 			try {
 				System.out.println("------导入上证股票当日成交信息开始于" + LocalTime.now() );
 				long start=System.currentTimeMillis(); //获取开始时间
@@ -339,8 +335,10 @@ public class ImportTDXData extends JDialog {
 //				lines = null;
 			} catch (java.lang.NullPointerException e) {}
 			
-			cbxImportShGeGuVol.setEnabled(false);
-		}
+			bkdbopt.refreshExtraStockDataFromTushare ();
+			cbxImportSzGeGuVol.setEnabled(false);
+			
+		}                                     
 		
 		//用户同步完个股和板块成交量后，要update一下板块的类型，以便后用
 		if(chbxdaorutdxsysbkvol.isSelected()  || chbxdaorutdxsysbk.isSelected()  ) {
@@ -550,7 +548,6 @@ public class ImportTDXData extends JDialog {
 					chbxdaorutdxsysbk.setEnabled(false);
 					cbximporttdxgeguinfo.setEnabled(false);
 					chbxdaorutdxsysbkvol.setEnabled(false);
-					cbxImportShGeGuVol.setEnabled(false);
 					cbxImportSzGeGuVol.setEnabled(false);
 					ckbxnetease.setEnabled(false);
 					chbxdaorutdxzdybk.setEnabled(false);
@@ -564,7 +561,6 @@ public class ImportTDXData extends JDialog {
 					chbxdaorutdxsysbk.setEnabled(true);
 					cbximporttdxgeguinfo.setEnabled(true);
 					chbxdaorutdxsysbkvol.setEnabled(true);
-					cbxImportShGeGuVol.setEnabled(true);
 					cbxImportSzGeGuVol.setEnabled(true);
 					ckbxnetease.setEnabled(true);
 					chbxdaorutdxzdybk.setEnabled(true);
@@ -586,14 +582,12 @@ public class ImportTDXData extends JDialog {
 						chbxdaorutdxsysbk.setSelected(false);
 						cbximporttdxgeguinfo.setSelected(false);
 						chbxdaorutdxsysbkvol.setSelected(false);
-						cbxImportShGeGuVol.setSelected(false);
 						cbxImportSzGeGuVol.setSelected(false);
 						ckbxnetease.setSelected(false);
 						
 						chbxdaorutdxsysbk.setEnabled(true);
 						cbximporttdxgeguinfo.setEnabled(true);
 						chbxdaorutdxsysbkvol.setEnabled(true);
-						cbxImportShGeGuVol.setEnabled(true);
 						cbxImportSzGeGuVol.setEnabled(true);
 						ckbxnetease.setEnabled(true);
 						
@@ -649,7 +643,6 @@ public class ImportTDXData extends JDialog {
 					cbximporttdxgeguinfo.setSelected(true);
 					chbxdaorutdxsysbkvol.setSelected(true);
 					cbxImportSzGeGuVol.setSelected(true);
-					cbxImportShGeGuVol.setSelected(true);
 					chbxdaorutdxzdybk.setSelected(true);
 					
 					ckbxbuquanshuju.setEnabled(false);
@@ -684,7 +677,6 @@ public class ImportTDXData extends JDialog {
 					chbxdaorutdxsysbk.setSelected(false);
 					chbxdaorutdxsysbkvol.setSelected(false);
 					cbxImportSzGeGuVol.setSelected(false);
-					cbxImportShGeGuVol.setSelected(false);
 					ckbxnetease.setSelected(false);
 					chbxdaorutdxzdybk.setSelected(false);
 					chckbximportdzhbk.setSelected(false);
@@ -745,7 +737,6 @@ public class ImportTDXData extends JDialog {
 	private JCheckBox cbximporttdxgeguinfo;
 	private JProgressBar progressBar_1;
 	private JCheckBox cbxImportSzGeGuVol;
-	private JCheckBox cbxImportShGeGuVol;
 	private JCheckBox chbxselectall;
 	private JButton btnchecksync;
 	private JCheckBox ckbxnetease;
@@ -792,11 +783,7 @@ public class ImportTDXData extends JDialog {
 		
 		progressBar_1 = new JProgressBar();
 		
-		cbxImportSzGeGuVol = new JCheckBox("*\u5BFC\u5165\u6DF1\u5733\u4E2A\u80A1\u6210\u4EA4\u91CF\u6210\u4EA4\u989D\u4FE1\u606F");
-		
-		cbxImportShGeGuVol = new JCheckBox("*\u5BFC\u5165\u6CAA\u5E02\u4E2A\u80A1\u6210\u4EA4\u91CF\u6210\u4EA4\u989D\u4FE1\u606F");
-		
-		JProgressBar progressBar_3 = new JProgressBar();
+		cbxImportSzGeGuVol = new JCheckBox("*\u5BFC\u5165\u4E2A\u80A1\u6210\u4EA4\u91CF\u6210\u4EA4\u989D\u4FE1\u606F");
 		
 		JProgressBar progressBar_4 = new JProgressBar();
 		
@@ -898,12 +885,6 @@ public class ImportTDXData extends JDialog {
 					.addContainerGap())
 				.addGroup(gl_contentPanel.createSequentialGroup()
 					.addGap(7)
-					.addComponent(cbxImportShGeGuVol)
-					.addGap(14)
-					.addComponent(progressBar_3, GroupLayout.DEFAULT_SIZE, 517, Short.MAX_VALUE)
-					.addContainerGap())
-				.addGroup(gl_contentPanel.createSequentialGroup()
-					.addGap(7)
 					.addComponent(ckbxnetease)
 					.addGap(8)
 					.addComponent(cbximportoptions, 0, 451, Short.MAX_VALUE)
@@ -942,14 +923,14 @@ public class ImportTDXData extends JDialog {
 						.addComponent(chkbximportgudong))
 					.addGap(184))
 				.addGroup(gl_contentPanel.createSequentialGroup()
-					.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING, false)
-						.addGroup(Alignment.LEADING, gl_contentPanel.createSequentialGroup()
+					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING, false)
+						.addGroup(gl_contentPanel.createSequentialGroup()
 							.addGap(7)
-							.addComponent(scrollPane))
-						.addGroup(Alignment.LEADING, gl_contentPanel.createSequentialGroup()
+							.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+						.addGroup(gl_contentPanel.createSequentialGroup()
 							.addContainerGap()
 							.addComponent(separator, GroupLayout.PREFERRED_SIZE, 692, GroupLayout.PREFERRED_SIZE)))
-					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+					.addContainerGap(45, Short.MAX_VALUE))
 		);
 		gl_contentPanel.setVerticalGroup(
 			gl_contentPanel.createParallelGroup(Alignment.LEADING)
@@ -990,14 +971,7 @@ public class ImportTDXData extends JDialog {
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
 						.addComponent(cbxImportSzGeGuVol)
 						.addComponent(progressBar_4, GroupLayout.PREFERRED_SIZE, 36, GroupLayout.PREFERRED_SIZE))
-					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_contentPanel.createSequentialGroup()
-							.addGap(15)
-							.addComponent(cbxImportShGeGuVol))
-						.addGroup(gl_contentPanel.createSequentialGroup()
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(progressBar_3, GroupLayout.PREFERRED_SIZE, 32, GroupLayout.PREFERRED_SIZE)))
-					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGap(40)
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
 						.addComponent(ckbxnetease)
 						.addComponent(cbximportoptions, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
