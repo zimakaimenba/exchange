@@ -249,7 +249,7 @@ public class BanKuai extends TDXNodes
 		
 		List<BkChanYeLianTreeNode> gegubyjys = new ArrayList<> ();
 		for(BkChanYeLianTreeNode tmpgg : this.stockofbklist )
-			if( ((StockOfBanKuai)tmpgg).getStock().getSuoShuJiaoYiSuo().equalsIgnoreCase(jiaoyisuo)    )
+			if( ((StockOfBanKuai)tmpgg).getStock().getNodeJiBenMian().getSuoShuJiaoYiSuo().equalsIgnoreCase(jiaoyisuo)    )
 				gegubyjys.add(tmpgg);
 		
 		return gegubyjys;

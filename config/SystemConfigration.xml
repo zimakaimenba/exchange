@@ -9,13 +9,13 @@
   	<entry key="zhanbifengxizhouqi">10</entry>
   	<entry key="privatemode">false</entry>
   	<entry key="License">e2W9VnZ/4FH+0wGz1zyiPg==:FdaFL8t2wQhKxcwOgkERyucw6YVc19QYz+Uqp956PRo=</entry>
-  	<entry key="pythoninterper">C:/Users/Administrator.WIN7U-20140921O/Anaconda3</entry>
+  	<entry key="pythoninterper">C:/Users/Administrator.WIN7U-20140921O/Anaconda3/python</entry>
   	<entry key="shanghaistockcodeprefix">600/688/603/601/605</entry>
   	<entry key="shengzhengstockcodeprefix">000/300/001/002/003</entry>
   	<entry key="shanghaizhishucodeprefix">000/880/999</entry>
   	<entry key="shengzhengzhishucodeprefix">399/159</entry>
-  	<entry key="floatholders">_floatholders.csv</entry>
-  	<entry key="top10holders">_top10holders.csv</entry>
+  	<entry key="floatholders">XXXXXX_floatholders.csv</entry>
+  	<entry key="top10holders">XXXXXX_top10holders.csv</entry>
   	<entry key="GuDongFxURL">https://data.eastmoney.com/gdfx/</entry>
 
   	<entry key="BankuaifenxiSettingPropertiesFile">bankuaifenxisetting.properties</entry>

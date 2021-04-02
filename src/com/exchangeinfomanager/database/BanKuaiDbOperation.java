@@ -4130,7 +4130,7 @@ public class BanKuaiDbOperation
 	/*
 	 * 
 	 */
-	public Set<LocalDate> getNodeDataBaseStoredDataTimeSet (TDXNodes node)
+	public Set<LocalDate> getNodeDataBaseStoredDataTimeSet (TDXNodes node, LocalDate start, LocalDate end)
 	{
 		String cjltable;
 		if(node.getType() == BkChanYeLianTreeNode.TDXBK) 
@@ -4138,9 +4138,14 @@ public class BanKuaiDbOperation
 		else 
 			cjltable = this.getStockJiaoYiLiangBiaoName( (Stock)node);
 		
+		if(start == null)
+			start = LocalDate.parse("1990-01-01");
+		if(end == null)
+			end = LocalDate.parse("9990-01-01");
 		String sqlquerystat = "SELECT  交易日期"
 				+ " FROM " + cjltable + "  WHERE  代码 = " 
 					+ "'"  + node.getMyOwnCode() + "'" 
+					+ " AND  交易日期  BETWEEN '" + start + "'  AND '" + end + "'"
 					;
 		CachedRowSetImpl	rs = connectdb.sqlQueryStatExecute(sqlquerystat);
 		Set<LocalDate> nodetimeset = new HashSet();
@@ -4161,7 +4166,38 @@ public class BanKuaiDbOperation
 		 }
 		
 		return nodetimeset;
+	}
+	/*
+	 * 
+	 */
+	public Set<LocalDate> getNodeTuShareExtraDataTimeSet(Stock node,LocalDate start, LocalDate end) 
+	{
+		String cjltable = this.getStockJiaoYiLiangBiaoName( (Stock)node);
+		String sqlquerystat = "SELECT  交易日期"
+				+ " FROM " + cjltable + "  WHERE  代码 = " 
+					+ "'"  + node.getMyOwnCode() + "'" 
+					+ " AND 自由流通换手率 IS not NULL "
+					+ " AND 交易日期 BETWEEN '" +  start + "'  AND '" + end + "'" 
+					;
+		CachedRowSetImpl	rs = connectdb.sqlQueryStatExecute(sqlquerystat);
+		Set<LocalDate> nodetimeset = new HashSet();
+		try { 				
+
+		    	while(rs.next()) {
+		    		java.sql.Date recordsdate = rs.getDate("交易日期"); 
+		    		nodetimeset.add(recordsdate.toLocalDate() );
+		    	}
+		 } catch(java.lang.NullPointerException e) { 	e.printStackTrace();
+		 } catch (SQLException e) {e.printStackTrace();
+		 } catch(Exception e){	e.printStackTrace();
+		 } finally {
+		    	if(rs != null)
+				try {
+					rs.close(); rs = null;
+				} catch (SQLException e) {	e.printStackTrace();	}
+		 }
 		
+		return nodetimeset;
 	}
 	/*
 	 * 
@@ -4433,7 +4469,7 @@ public class BanKuaiDbOperation
 		 Collection<BkChanYeLianTreeNode> requiredbk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getRequiredSubSetOfTheNodesByJiaoYiSuo(BkChanYeLianTreeNode.TDXBK,jiaoyisuo);
 		 for(BkChanYeLianTreeNode tmpnode :  requiredbk ) {
 			 if( (nodecount == bulkcount  && !nodeinsertdata.isEmpty() ) || nodeinsertdata.size()> bulkcount * 4  ) {
-				 setNodeDataToDataBase (cjltablename, nodeinsertdata );
+				 setNodeDataToDataBase (cjltablename, nodeinsertdata,BkChanYeLianTreeNode.TDXBK );
 				 nodecount = 0; nodeinsertdata.clear();
 			 }
 			 
@@ -4459,22 +4495,32 @@ public class BanKuaiDbOperation
 				nodecount ++;
 		}
 		 
-		 setNodeDataToDataBase (cjltablename, nodeinsertdata );
+		 setNodeDataToDataBase (cjltablename, nodeinsertdata,BkChanYeLianTreeNode.TDXBK );
 		
 		return tmprecordfile;
 	}
 	/*
 	 * 
 	 */
-	private void setNodeDataToDataBase (String optable, List<String> inserteddata) 
+	private void setNodeDataToDataBase (String optable, List<String> inserteddata, int datatype) 
 	{
+		if(inserteddata.isEmpty())
+			return;
+		
 		String insertstr = "";
 		for(String nodedata : inserteddata) 
-			insertstr = insertstr + nodedata; 
-		String sqlinsertstat = "INSERT INTO " + optable +"(代码,交易日期,开盘价,最高价,最低价,收盘价,成交量,成交额)"
-								+ " values \r\n" 
-								+ insertstr
-								;
+			insertstr = insertstr + nodedata;
+		String sqlinsertstat = null;
+		if(datatype == BkChanYeLianTreeNode.TDXBK)
+			sqlinsertstat = "INSERT INTO " + optable +"(代码,交易日期,开盘价,最高价,最低价,收盘价,成交量,成交额)"
+									+ " values \r\n" 
+									+ insertstr
+									;
+		else if(datatype == BkChanYeLianTreeNode.TDXGG)
+			sqlinsertstat = "INSERT INTO " + optable +"(代码,交易日期,成交量,成交额)"
+									+ " values \r\n" 
+									+ insertstr
+									;
 		sqlinsertstat = sqlinsertstat.trim().substring(0, sqlinsertstat.trim().length() - 1);
 		try {
 			int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
@@ -4485,49 +4531,22 @@ public class BanKuaiDbOperation
 	/*
 	 * 
 	 */
-	public void refreshExtraStockDataFromTushare ()
+	public void refreshExtraStockDataFromTushare (LocalDate start, LocalDate end)
 	{
-		File tmpreportfolder = Files.createTempDir();
-		File tmprecordfile = new File(tmpreportfolder + "导入TUSHARE股票额外数据信息.tmp");
-			
-//		try {
-//			FileUtils.cleanDirectory(new File(sysconfig.getTuShareExtraDataDownloadedFilePath () ) );
-//		} catch (IOException e1) {e1.printStackTrace();}
-		
-		LocalDate mintime = null;LocalDate maxtime = null; //use stock 60000 as the benchmark for exta data
-		String sqlquerystat = "SELECT MIN(交易日期) minjytime , MAX(交易日期) maxjytime \r\n" + 
-				"FROM 通达信上交所股票每日交易信息\r\n" + 
-				"WHERE \r\n" + 
-				"  自由流通换手率 IS NOT NULL AND 自由流通股本  IS  NOT NULL "
-				;
-		CachedRowSetImpl rsdm = connectdb.sqlQueryStatExecute(sqlquerystat);
-		try { 	
-	    	while(rsdm.next()) {
-		    		 try {  mintime = rsdm.getDate("minjytime").toLocalDate();
-		    		 } catch (java.lang.NullPointerException ex) {}
-		    		 try {  maxtime = rsdm.getDate("maxjytime").toLocalDate();
-		    		 } catch (java.lang.NullPointerException ex) {}
-		    	}
-		    } catch(java.lang.NullPointerException e) {	e.printStackTrace();
-		    } catch (SQLException e) {	e.printStackTrace();
-		    } catch(Exception e){	e.printStackTrace();
-		    } finally {
-		    	if(rsdm != null)
-				try {rsdm.close();rsdm = null;
-				} catch (SQLException e) {	e.printStackTrace();}
-		    }
-		
 		LocalDate ldlastestdbrecordsdate = null;
-		   if(maxtime == null)
-			   ldlastestdbrecordsdate =  LocalDate.parse("2015-01-01"); //当前数据的起点
+		   if(start == null)
+			   ldlastestdbrecordsdate =  LocalDate.parse("2019-12-29"); //当前数据的起点
 		   else
-			   ldlastestdbrecordsdate = maxtime.plusDays(1); //从最新数据的后一天开始导入数据
-		
-		
-		while(ldlastestdbrecordsdate.isBefore( LocalDate.now().plusDays(1) )) {
-			if( (ldlastestdbrecordsdate.equals(DayOfWeek.SUNDAY) || ldlastestdbrecordsdate.equals(DayOfWeek.SATURDAY))
-					 && (LocalDate.now().equals(DayOfWeek.SUNDAY) || LocalDate.now().equals(DayOfWeek.SATURDAY))  ) //开始导入数据日期一直到今天是周末，肯定不需要导入
-			 continue;
+			   ldlastestdbrecordsdate = start; //从最新数据的后一天开始导入数据
+		   
+		   if(end == null)
+			   end = LocalDate.now().plusDays(1);
+		   
+		while(ldlastestdbrecordsdate.isBefore( end.plusDays(1) )) {
+			if( ldlastestdbrecordsdate.getDayOfWeek() == DayOfWeek.SUNDAY || ldlastestdbrecordsdate.getDayOfWeek() == DayOfWeek.SATURDAY  ) { //开始导入数据日期一直到今天是周末，肯定不需要导入
+				ldlastestdbrecordsdate = ldlastestdbrecordsdate.plusDays(1);
+				continue;
+			}
 			
 			String savedfilename = sysconfig.getTuShareExtraDataDownloadedFilePath () + "/" + ldlastestdbrecordsdate.toString().replaceAll("-", "") + "dailyexchangedata.csv";
 			File savedfile = new File (savedfilename);
@@ -4540,7 +4559,7 @@ public class BanKuaiDbOperation
 					FileReader filereader = new FileReader(savedfile);
 					CSVReader csvReader = new CSVReader(filereader);
 		    ){ 
-				int titlesign = -1;//标记网易CSV文件的第一行 
+				int titlesign = -1;//标记CSV文件的第一行 
 				Integer turnover_rate_f_index = null; Integer free_share_index = null; Integer stockcode_index = null; Integer pe_index = null;Integer pe_ttm_index = null; Integer pb_index = null;
 				List<String[]> records = csvReader.readAll();
 				for (String[] nextRecord : records) {
@@ -4580,34 +4599,32 @@ public class BanKuaiDbOperation
 		            		Double pe = null;Double pe_ttm = null; Double pb = null;
 		            		if(turnover_rate_f_index != null) {
 		            			String turnover_rate_f_str = nextRecord[turnover_rate_f_index];
-		            			turnover_rate_f = Double.parseDouble(turnover_rate_f_str);
+		            			if(!Strings.isNullOrEmpty(turnover_rate_f_str))
+		            				turnover_rate_f = Double.parseDouble(turnover_rate_f_str);
 		            		}
-		            		if(free_share_index != null) {
-		            			String free_share_str = nextRecord[free_share_index];
-		            			free_share = Double.parseDouble(free_share_str) * 10000;
-		            		}
-		            		if(pe_index != null) {
-		            			String pe_str = nextRecord[pe_index];
-		            			if(!Strings.isNullOrEmpty(pe_str))
-		            				pe = Double.parseDouble(pe_str) ;
-		            		}
-		            		if(pe_ttm_index != null) {
-		            			String pe_ttm_str = nextRecord[pe_ttm_index];
-		            			if(!Strings.isNullOrEmpty(pe_ttm_str))
-		            				pe_ttm = Double.parseDouble(pe_ttm_str);
-		            		}
-		            		if(pb_index != null) {
-		            			String pb_str = nextRecord[pb_index];
-		            			if(!Strings.isNullOrEmpty(pb_str))
-		            				pb = Double.parseDouble(pb_str);
-		            		}
+//		            		if(free_share_index != null) {
+//		            			String free_share_str = nextRecord[free_share_index];
+//		            			if(!Strings.isNullOrEmpty(free_share_str))
+//		            				free_share = Double.parseDouble(free_share_str) * 10000;
+//		            		}
+//		            		if(pe_index != null) {
+//		            			String pe_str = nextRecord[pe_index];
+//		            			if(!Strings.isNullOrEmpty(pe_str))
+//		            				pe = Double.parseDouble(pe_str) ;
+//		            		}
+//		            		if(pe_ttm_index != null) {
+//		            			String pe_ttm_str = nextRecord[pe_ttm_index];
+//		            			if(!Strings.isNullOrEmpty(pe_ttm_str))
+//		            				pe_ttm = Double.parseDouble(pe_ttm_str);
+//		            		}
+//		            		if(pb_index != null) {
+//		            			String pb_str = nextRecord[pb_index];
+//		            			if(!Strings.isNullOrEmpty(pb_str))
+//		            				pb = Double.parseDouble(pb_str);
+//		            		}
 		            		
 			                String sqlupdate = "Update " + optTable + " SET " +
-			                					" 自由流通换手率=" + turnover_rate_f + "," +
-			                					" 自由流通股本=" + free_share +  "," +
-			                					" 市盈率=" + pe +  "," +
-			                					" 市盈率TTM=" + pe_ttm +  "," + 
-			                					" 市净率=" + pb    +
+			                					"     自由流通换手率=" + turnover_rate_f + 
 			                					" WHERE 交易日期 = '" + ldlastestdbrecordsdate + "'" + 
 			                					" AND 代码= '" + stockcode + "'"
 			                					;
@@ -4617,15 +4634,54 @@ public class BanKuaiDbOperation
 							} catch (SQLException e) {e.printStackTrace();}
 
 		            	}
-		            		
 		        }
 			} catch (IOException e) {e.printStackTrace();}
-			
-			ldlastestdbrecordsdate = ldlastestdbrecordsdate.plusDays(1);
+			  
+			ldlastestdbrecordsdate = ldlastestdbrecordsdate.plusDays(1); 
+			savedfile = null;
 		}
 
 		return ;
-	
+	}
+	/*
+	 * 
+	 */
+	public void refreshExtraStockDataFromTushare ()
+	{
+		File tmpreportfolder = Files.createTempDir();
+		File tmprecordfile = new File(tmpreportfolder + "导入TUSHARE股票额外数据信息.tmp");
+		
+		LocalDate mintime = null;LocalDate maxtime = null; //use stock 60000 as the benchmark for exta data
+		String sqlquerystat = "SELECT MIN(交易日期) minjytime , MAX(交易日期) maxjytime \r\n" + 
+				"FROM 通达信上交所股票每日交易信息\r\n" + 
+				"WHERE \r\n" + 
+				"  自由流通换手率 IS NOT NULL  "
+				;
+		CachedRowSetImpl rsdm = connectdb.sqlQueryStatExecute(sqlquerystat);
+		try { 	
+	    	while(rsdm.next()) {
+		    		 try {  mintime = rsdm.getDate("minjytime").toLocalDate();
+		    		 } catch (java.lang.NullPointerException ex) {}
+		    		 try {  maxtime = rsdm.getDate("maxjytime").toLocalDate();
+		    		 } catch (java.lang.NullPointerException ex) {}
+		    	}
+		    } catch(java.lang.NullPointerException e) {	e.printStackTrace();
+		    } catch (SQLException e) {	e.printStackTrace();
+		    } catch(Exception e){	e.printStackTrace();
+		    } finally {
+		    	if(rsdm != null)
+				try {rsdm.close();rsdm = null;
+				} catch (SQLException e) {	e.printStackTrace();}
+		    }
+		
+		LocalDate ldlastestdbrecordsdate = null;
+		   if(maxtime == null)
+			   ldlastestdbrecordsdate =  LocalDate.parse("2019-12-29"); //当前数据的起点
+		   else
+			   ldlastestdbrecordsdate = maxtime.plusDays(1); //从最新数据的后一天开始导入数据
+		   
+		   this.refreshExtraStockDataFromTushare (ldlastestdbrecordsdate, null);
+		   return ;
 	}
 	/*
 	 * 
@@ -4653,7 +4709,7 @@ public class BanKuaiDbOperation
 		
 		for(BkChanYeLianTreeNode tmpnode :allgegucode) {
 			if( (nodecount ==  bulkcount && !nodeinsertdata.isEmpty() ) || nodeinsertdata.size()>  bulkcount*4) {
-				setNodeDataToDataBase (optTable, nodeinsertdata );
+				setNodeDataToDataBase (optTable, nodeinsertdata, BkChanYeLianTreeNode.TDXGG  );
 				nodecount = 0; nodeinsertdata.clear();
 			}
 			
@@ -4690,7 +4746,7 @@ public class BanKuaiDbOperation
 			
 		}
 		
-		setNodeDataToDataBase (optTable, nodeinsertdata );
+		setNodeDataToDataBase (optTable, nodeinsertdata , BkChanYeLianTreeNode.TDXGG);
 		
 		return tmprecordfile;
 	}
@@ -4742,18 +4798,28 @@ public class BanKuaiDbOperation
                     			String beforparsedate = tmplinelist.get(0);
                     			DateTimeFormatter formatter = DateTimeFormatter.ofPattern(datarule);
                     			curlinedate =  LocalDate.parse(beforparsedate,formatter) ;
-                    			if( curlinedate.isAfter(lastestdbrecordsdate)) { // ('John', 123, 'Lloyds Office'), 
-                        			String sqlinsertstat = "(" 
-                    						+ "'" + tmpbkcode.trim() + "'" + ","
-                    						+ "'" +  curlinedate + "'" + ","
-                    						+ "'" +  open + "'" + "," 
-                    						+ "'" +  high + "'" + "," 
-                    						+ "'" +  low + "'" + "," 
-                    						+ "'" +  close + "'" + "," 
-                    						+ "'" +  vol + "'" + "," 
-                    						+ "'" +  amo + "'"  
-                    						+ "), \r\n"
-                    						;
+                    			if( curlinedate.isAfter(lastestdbrecordsdate)) { // ('John', 123, 'Lloyds Office'),
+                    				String sqlinsertstat = null;
+                    				if(tmpnode.getType() == BkChanYeLianTreeNode.TDXBK)
+	                        			sqlinsertstat = "(" 
+	                    						+ "'" + tmpbkcode.trim() + "'" + ","
+	                    						+ "'" +  curlinedate + "'" + ","
+	                    						+ "'" +  open + "'" + "," 
+	                    						+ "'" +  high + "'" + "," 
+	                    						+ "'" +  low + "'" + "," 
+	                    						+ "'" +  close + "'" + "," 
+	                    						+ "'" +  vol + "'" + "," 
+	                    						+ "'" +  amo + "'"  
+	                    						+ "), \r\n"
+	                    						;
+                    				else if(tmpnode.getType() == BkChanYeLianTreeNode.TDXGG)
+                    					sqlinsertstat = "(" 
+	                    						+ "'" + tmpbkcode.trim() + "'" + ","
+	                    						+ "'" +  curlinedate + "'" + ","
+	                    						+ "'" +  vol + "'" + "," 
+	                    						+ "'" +  amo + "'"  
+	                    						+ "), \r\n"
+	                    						;
                         			nodeinsertdata.add(sqlinsertstat);
                     				lineimportcount ++;
                         		} else if(curlinedate.compareTo(lastestdbrecordsdate) == 0) {
@@ -6524,8 +6590,8 @@ public class BanKuaiDbOperation
 				   ldlastestdbrecordsdate = ldlastestdbrecordsdate.plusDays(1); //从最新数据的后一天开始导入数据
 			   
 			   
-				 if( (ldlastestdbrecordsdate.equals(DayOfWeek.SUNDAY) || ldlastestdbrecordsdate.equals(DayOfWeek.SATURDAY))
-						 && (LocalDate.now().equals(DayOfWeek.SUNDAY) || LocalDate.now().equals(DayOfWeek.SATURDAY))  ) //开始导入数据日期一直到今天是周末，肯定不需要导入
+				 if( ( ldlastestdbrecordsdate.getDayOfWeek() == DayOfWeek.SUNDAY || ldlastestdbrecordsdate.getDayOfWeek() == DayOfWeek.SATURDAY  )
+						 && ( LocalDate.now().getDayOfWeek() == DayOfWeek.SUNDAY || LocalDate.now().getDayOfWeek() == DayOfWeek.SATURDAY   )  ) //开始导入数据日期一直到今天是周末，肯定不需要导入
 					 continue;
 				    
 				    //获取网易文件
@@ -7953,7 +8019,6 @@ public class BanKuaiDbOperation
 		    }
 			return nodeset;
 		}
-		
 
 }
 

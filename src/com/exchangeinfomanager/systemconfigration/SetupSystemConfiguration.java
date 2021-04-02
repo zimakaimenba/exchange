@@ -729,10 +729,8 @@ public class SetupSystemConfiguration
 		}
 		public String getPythonScriptsPath() 
 		{
-			if(this.systeminstalledpath.contains(" ")) {
-				return "\"" + this.systeminstalledpath + "thirdparty/python/execscripts/" ;
-			} else 
-				return this.systeminstalledpath + "thirdparty/python/execscripts/";
+//			return this.systeminstalledpath + "thirdparty/python/execscripts/";
+			return "E:/stock/stockmanager/thirdparty/python/execscripts/";
 		}
 		public String getPythonScriptsExecExportsPath ()
 		{

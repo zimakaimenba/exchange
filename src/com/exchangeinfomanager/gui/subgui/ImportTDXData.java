@@ -11,17 +11,19 @@ import javax.swing.border.EmptyBorder;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 
-import com.exchangeinfomanager.commonlib.CommonUtility;
+import com.exchangeinfomanager.Trees.CreateExchangeTree;
 import com.exchangeinfomanager.commonlib.SystemAudioPlayed;
 import com.exchangeinfomanager.commonlib.UserSelectingForMultiSameCodeNode;
 import com.exchangeinfomanager.commonlib.WrapLayout;
+import com.exchangeinfomanager.commonlib.JLocalDataChooser.JLocalDateChooser;
 import com.exchangeinfomanager.database.BanKuaiDZHDbOperation;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.JiGouGuDongDbOperation;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.systemconfigration.SetupSystemConfiguration;
 import com.exchangeinfomanager.zhidingyibankuai.TDXZhiDingYiBanKuaiServices;
-import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
 import com.google.common.io.Files;
@@ -54,8 +56,10 @@ import javax.swing.JTextArea;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.text.Collator;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -65,10 +69,16 @@ import javax.swing.JComboBox;
 import javax.swing.JCheckBox;
 import java.awt.Color;
 
-
+import javax.script.ScriptContext;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+import javax.script.SimpleScriptContext;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JSeparator;
-import javax.swing.SwingConstants;
+
+import org.python.util.PythonInterpreter;
+import org.python.core.*;
 
 public class ImportTDXData extends JDialog {
 	
@@ -154,8 +164,6 @@ public class ImportTDXData extends JDialog {
 
 	private void partThatCanImportDuringWork ()
 	{
-//		bkdbopt.refreshExtraStockDataFromTushare ();
-		
 		//同步自定义板块
 		if(chbxdaorutdxzdybk.isSelected() && chbxdaorutdxzdybk.isEnabled() && this.zdybkckbxs != null) { 
 			System.out.println("------导入自定义板块开始于" + LocalTime.now() );
@@ -255,7 +263,6 @@ public class ImportTDXData extends JDialog {
 			}
 		}
 		
-
 		//同步通达信板块成交量成交额
 		if(chbxdaorutdxsysbkvol.isSelected() &&  chbxdaorutdxsysbkvol.isEnabled() ) {
 			try {
@@ -310,19 +317,6 @@ public class ImportTDXData extends JDialog {
 		//同步个股成交量
 		if(cbxImportSzGeGuVol.isSelected() && cbxImportSzGeGuVol.isEnabled() ) {
 			try {
-				System.out.println("------导入深证股票当日成交信息开始于" +  LocalTime.now());
-				long start=System.currentTimeMillis(); //获取开始时间
-				File resulttmpfilebkamo = bkdbopt.refreshTDXGeGuVolAmoToDbBulkImport("sz", 15);
-				long end=System.currentTimeMillis(); //获取结束时间
-				System.out.println("......导入深圳股票当日成交信息结束于" + LocalTime.now() + "......导入耗费时间： "+(end-start)+"ms \r\n");
-//				List<String> lines = Files.readLines(resulttmpfilebkamo, sysconfig.charSet());
-//				for (String line : lines) {
-//		        	tfldresult.append(line+"\n");
-//		        }
-//				lines = null;
-			} catch (java.lang.NullPointerException e) {}
-			
-			try {
 				System.out.println("------导入上证股票当日成交信息开始于" + LocalTime.now() );
 				long start=System.currentTimeMillis(); //获取开始时间
 				File resulttmpfilebkamo = bkdbopt.refreshTDXGeGuVolAmoToDbBulkImport("sh", 15);
@@ -335,9 +329,22 @@ public class ImportTDXData extends JDialog {
 //				lines = null;
 			} catch (java.lang.NullPointerException e) {}
 			
-			bkdbopt.refreshExtraStockDataFromTushare ();
-			cbxImportSzGeGuVol.setEnabled(false);
+			this.executePythonScriptForExtraData ("EXTRADATAFROMTUSHARE"); //先让后台python script下载当日的extra data
 			
+			try {
+				System.out.println("------导入深证股票当日成交信息开始于" +  LocalTime.now());
+				long start=System.currentTimeMillis(); //获取开始时间
+				File resulttmpfilebkamo = bkdbopt.refreshTDXGeGuVolAmoToDbBulkImport("sz", 15);
+				long end=System.currentTimeMillis(); //获取结束时间
+				System.out.println("......导入深圳股票当日成交信息结束于" + LocalTime.now() + "......导入耗费时间： "+(end-start)+"ms \r\n");
+//				List<String> lines = Files.readLines(resulttmpfilebkamo, sysconfig.charSet());
+//				for (String line : lines) {
+//		        	tfldresult.append(line+"\n");
+//		        }
+//				lines = null;
+			} catch (java.lang.NullPointerException e) {}
+			
+			cbxImportSzGeGuVol.setEnabled(false);
 		}                                     
 		
 		//用户同步完个股和板块成交量后，要update一下板块的类型，以便后用
@@ -349,6 +356,13 @@ public class ImportTDXData extends JDialog {
 			System.out.println("......更新板块类型结束于" + LocalTime.now() + ".....导入耗费时间： "+(end-start)+"ms \r\n");
 		}
 		
+		if(cbxImportSzGeGuVol.isSelected()  )  {
+			System.out.println("------导入TUSHARE EXTRA交易数据开始于" + LocalTime.now() );
+			long start=System.currentTimeMillis(); //获取开始时间
+			bkdbopt.refreshExtraStockDataFromTushare (); //估计当日python EXTRA 数据已经下载完成，这里更新extra数据
+			long end=System.currentTimeMillis(); //获取结束时间
+			System.out.println("......导入TUSHARE EXTRA交易数据结束于" + LocalTime.now() + ".....导入耗费时间： "+(end-start)+"ms \r\n");
+		}
 		
 		//导入网易的股票的数据,主要是换手率/市值等数据，
 		if(ckbxnetease.isSelected() && ckbxnetease.isEnabled()) { 
@@ -363,7 +377,7 @@ public class ImportTDXData extends JDialog {
 			ckbxnetease.setEnabled(false);
 		}
 		
-		if(ckbxbuquanshuju.isSelected() && !Strings.isNullOrEmpty( txfldbqsjnodecode.getText() ) ) {
+		if(ckbxbuquanshuju.isSelected()  ) {
 			System.out.println("------补全股票数据开始" + LocalTime.now() );
 			long start=System.currentTimeMillis(); //获取开始时间
 			checkNodeTimeLineInDbWithInDataFile ( txfldbqsjnodecode.getText()  );
@@ -371,6 +385,20 @@ public class ImportTDXData extends JDialog {
 			System.out.println("......补全股票数据结束" + LocalTime.now()  + ".....导入耗费时间： "+(end-start)+"ms \r\n");
 		}
 		
+		if(chckbqtushareextra.isSelected() ) {
+			LocalDate startdate = dctushareextastart.getLocalDate();
+			LocalDate enddate = dctushareextaend.getLocalDate();
+			if(startdate != null) {
+				if(enddate == null)
+					enddate = LocalDate.now();
+				System.out.println("------补全TUSHARE股票Extra数据开始" + LocalTime.now() );
+				long start=System.currentTimeMillis(); //获取开始时间
+				checkNodeTuShareExtraDataInDbWithInDataFile ( startdate, enddate );
+				long end=System.currentTimeMillis(); //获取结束时间
+				System.out.println("......补全TUSHARE股票Extra数据结束" + LocalTime.now()  + ".....导入耗费时间： "+(end-start)+"ms \r\n");
+			}
+		}
+
 		if(chckbximportdzhbk.isSelected() ) {
 			System.out.println("------导入大智慧板块信息开始" + LocalTime.now() );
 			long start=System.currentTimeMillis(); //获取开始时间
@@ -403,7 +431,87 @@ public class ImportTDXData extends JDialog {
 		}
 
 	}
-	
+	/*
+	 * 
+	 */
+	public void executePythonScriptForExtraData(String scriptkeywords)  
+	{
+//		try {
+//			Process p = Runtime.getRuntime().exec("C:/Users/Administrator.WIN7U-20140921O/Anaconda3/python E:/stock/stockmanager/thirdparty/python/execsrc/importdailyextradatafromtushare.py");
+//		} catch (IOException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
+		String pyscriptname = null;
+		scriptkeywords = scriptkeywords.toUpperCase();
+		switch (scriptkeywords) {
+		case "EXTRADATAFROMTUSHARE":
+			pyscriptname = this.sysconfig.getPythonScriptsPath () + "importdailyextradatafromtushare.py";//"E:/stock/stockmanager/thirdparty/python/execscripts/importdailyextradatafromtushare.py"; //
+			break;
+		case "SHAREHOLDER" :
+			pyscriptname = this.sysconfig.getPythonScriptsPath () + "importshareholder.py";// "E:/stock/stockmanager/thirdparty/python/execscripts/importshareholder.py";
+			break;
+		}
+		String pythoninterpreter = this.sysconfig.getPythonInterpreter();
+		ProcessBuilder processBuilder = new ProcessBuilder(pythoninterpreter,pyscriptname );
+	    processBuilder.redirectErrorStream(true);
+
+	    try {
+			Process process = processBuilder.start();
+		} catch (IOException e1) {e1.printStackTrace();		}
+	}
+	/*
+	 * 
+	 */
+	private void checkNodeTuShareExtraDataInDbWithInDataFile(LocalDate startdate, LocalDate enddate) 
+	{
+		List<LocalDate> differencetimelist = getNodeTuShareExtraDataTimeDifferenceInDBWithSpecificTimeRange(startdate, enddate);
+
+		if(differencetimelist.size() > 0)
+			lblbqsjshijianduan.setText("将补全时间段从" + differencetimelist.get(0).toString() + "-" + differencetimelist.get(differencetimelist.size() -1 ) + "约" + String.valueOf(differencetimelist.size() ) + "个数据！");
+		else {
+			lblbqsjshijianduan.setText("数据完整，无需补全。");
+			return;
+		}
+		
+		List<Interval> timeintersection = new ArrayList<> ();
+		LocalDate intervalstart = differencetimelist.get(0);
+		LocalDate intervalmiddle = differencetimelist.get(0);
+		for(int i=1;i<differencetimelist.size();i++) {
+			LocalDate tmpdate = differencetimelist.get(i);
+			
+			long daynumber = java.time.temporal.ChronoUnit.DAYS.between(intervalmiddle,tmpdate);
+			if(  daynumber == 1.0 ) {
+				intervalmiddle = tmpdate;
+				continue;
+			} else {
+				DateTime startdt= new DateTime(intervalstart.getYear(), intervalstart.getMonthValue(), intervalstart.getDayOfMonth(), 0, 0, 0, 0);
+				DateTime enddt = new DateTime(intervalmiddle.getYear(), intervalmiddle.getMonthValue(), intervalmiddle.getDayOfMonth(), 0, 0, 0, 0);
+				Interval nodeinterval = new Interval(startdt, enddt);
+				timeintersection.add(nodeinterval);
+				
+				intervalstart = tmpdate;
+				intervalmiddle = tmpdate;
+			}
+		}
+		//last leg will be configed here 
+		DateTime startdt= new DateTime(intervalstart.getYear(), intervalstart.getMonthValue(), intervalstart.getDayOfMonth(), 0, 0, 0, 0);
+		DateTime enddt = new DateTime(intervalmiddle.getYear(), intervalmiddle.getMonthValue(), intervalmiddle.getDayOfMonth(), 0, 0, 0, 0);
+		Interval nodeinterval = new Interval(startdt, enddt);
+		timeintersection.add(nodeinterval);
+
+		for(Interval requirediterval : timeintersection) {
+			java.time.LocalDate neededstart = java.time.LocalDate.of(requirediterval.getStart().toLocalDate().getYear(), 
+					requirediterval.getStart().toLocalDate().getMonthOfYear(),
+					requirediterval.getStart().toLocalDate().getDayOfMonth());
+			java.time.LocalDate neededend = java.time.LocalDate.of(requirediterval.getEnd().toLocalDate().getYear(), 
+					requirediterval.getEnd().toLocalDate().getMonthOfYear(),
+					requirediterval.getEnd().toLocalDate().getDayOfMonth());
+		
+			bkdbopt.refreshExtraStockDataFromTushare (neededstart,neededend ); //开始要减少一天，保证最早数据被导入，代码的需要
+		}
+	}
+
 	/*
 	 * 
 	 */
@@ -443,10 +551,30 @@ public class ImportTDXData extends JDialog {
 	 */
 	private List<LocalDate> getNodeTimeDifferenceInDBWithDataFile (TDXNodes node)
 	{
-		Set<LocalDate> nodetimesetindb = bkdbopt.getNodeDataBaseStoredDataTimeSet (node);
+		Set<LocalDate> nodetimesetindb = bkdbopt.getNodeDataBaseStoredDataTimeSet (node, null, null);
 		Set<LocalDate> nodetimesetinfile = bkdbopt.getNodeExportFileDataTimeSet (node);
 		
 		SetView<LocalDate> differencetime= Sets.difference(nodetimesetinfile,nodetimesetindb  );
+		List<LocalDate> differencetimelist = new ArrayList<> (differencetime);
+		Collections.sort(differencetimelist);
+		
+		return differencetimelist;
+	}
+	private List<LocalDate> getNodeTuShareExtraDataTimeDifferenceInDBWithSpecificTimeRange (LocalDate start, LocalDate end)
+	{
+		BkChanYeLianTreeNode node = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode("999999", BkChanYeLianTreeNode.TDXBK);
+		Set<LocalDate> nodetimesetindb = bkdbopt.getNodeDataBaseStoredDataTimeSet ((TDXNodes) node,start, end); //计算有多少个交易日
+//		for (Iterator<LocalDate> i = nodetimesetindb.iterator(); i.hasNext();) { 
+//			LocalDate element = i.next();
+//			if(element.isBefore(start) || element.isAfter(end)) {
+//		        i.remove();
+//		    }
+//		}
+		
+		BkChanYeLianTreeNode node2 = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode("600000", BkChanYeLianTreeNode.TDXGG);
+		Set<LocalDate> nodetimesetinfile = bkdbopt.getNodeTuShareExtraDataTimeSet ((Stock) node2, start, end);
+		
+		SetView<LocalDate> differencetime= Sets.difference(nodetimesetindb, nodetimesetinfile  );
 		List<LocalDate> differencetimelist = new ArrayList<> (differencetime);
 		Collections.sort(differencetimelist);
 		
@@ -510,9 +638,6 @@ public class ImportTDXData extends JDialog {
 			bkdbopt.setVolAmoRecordsFromTDXExportFileToDatabase (node,neededstart.minus(1,ChronoUnit.DAYS),neededend.plus(1, ChronoUnit.DAYS),null); //开始要减少一天，保证最早数据被导入，代码的需要
 		}
 	}
-	
-	
-
 
 	private void createEvents() 
 	{
@@ -752,6 +877,9 @@ public class ImportTDXData extends JDialog {
 	private JCheckBox chkbximportgudong;
 	private JTextField tfldfloatholder;
 	private JTextField tfldtopholder;
+	private JLocalDateChooser dctushareextastart;
+	private JLocalDateChooser dctushareextaend;
+	private JCheckBox chckbqtushareextra;
 	
 	private void initializeGui() 
 	{
@@ -805,7 +933,7 @@ public class ImportTDXData extends JDialog {
 		
 		JSeparator separator = new JSeparator();
 		
-		ckbxbuquanshuju = new JCheckBox("\u8865\u5168\u6570\u636E:");
+		ckbxbuquanshuju = new JCheckBox("\u8865\u5168\u57FA\u672C\u6570\u636E:");
 		
 		
 		txfldbqsjnodecode = new JTextField();
@@ -841,6 +969,14 @@ public class ImportTDXData extends JDialog {
 		
 		tfldtopholder = new JTextField();
 		tfldtopholder.setColumns(10);
+		
+		chckbqtushareextra = new JCheckBox("\u8865\u5168TUSHARE\u989D\u5916\u6570\u636E");
+		
+		JLabel lblNewLabel_3 = new JLabel("\u9009\u62E9\u8865\u5168\u65F6\u95F4\u6BB5");
+		
+		dctushareextastart = new JLocalDateChooser();
+		dctushareextaend = new JLocalDateChooser();
+		
 		GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
 		gl_contentPanel.setHorizontalGroup(
 			gl_contentPanel.createParallelGroup(Alignment.LEADING)
@@ -881,8 +1017,8 @@ public class ImportTDXData extends JDialog {
 					.addGap(7)
 					.addComponent(cbxImportSzGeGuVol)
 					.addGap(10)
-					.addComponent(progressBar_4, GroupLayout.DEFAULT_SIZE, 521, Short.MAX_VALUE)
-					.addContainerGap())
+					.addComponent(progressBar_4, GroupLayout.PREFERRED_SIZE, 508, GroupLayout.PREFERRED_SIZE)
+					.addContainerGap(47, Short.MAX_VALUE))
 				.addGroup(gl_contentPanel.createSequentialGroup()
 					.addGap(7)
 					.addComponent(ckbxnetease)
@@ -892,18 +1028,6 @@ public class ImportTDXData extends JDialog {
 				.addGroup(gl_contentPanel.createSequentialGroup()
 					.addGap(7)
 					.addComponent(chkbxforenotimportatwork))
-				.addGroup(gl_contentPanel.createSequentialGroup()
-					.addGap(15)
-					.addComponent(ckbxbuquanshuju)
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addComponent(lblNewLabel)
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addComponent(txfldbqsjnodecode, GroupLayout.PREFERRED_SIZE, 139, GroupLayout.PREFERRED_SIZE)
-					.addGap(18)
-					.addComponent(lblNewLabel_6)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(lblbqsjshijianduan)
-					.addContainerGap(259, Short.MAX_VALUE))
 				.addGroup(gl_contentPanel.createSequentialGroup()
 					.addContainerGap()
 					.addComponent(chckbximportdzhbk)
@@ -923,14 +1047,36 @@ public class ImportTDXData extends JDialog {
 						.addComponent(chkbximportgudong))
 					.addGap(184))
 				.addGroup(gl_contentPanel.createSequentialGroup()
-					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING, false)
-						.addGroup(gl_contentPanel.createSequentialGroup()
+					.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING, false)
+						.addGroup(Alignment.LEADING, gl_contentPanel.createSequentialGroup()
 							.addGap(7)
-							.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-						.addGroup(gl_contentPanel.createSequentialGroup()
+							.addComponent(scrollPane))
+						.addGroup(Alignment.LEADING, gl_contentPanel.createSequentialGroup()
 							.addContainerGap()
 							.addComponent(separator, GroupLayout.PREFERRED_SIZE, 692, GroupLayout.PREFERRED_SIZE)))
 					.addContainerGap(45, Short.MAX_VALUE))
+				.addGroup(gl_contentPanel.createSequentialGroup()
+					.addGap(15)
+					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_contentPanel.createSequentialGroup()
+							.addComponent(chckbqtushareextra)
+							.addGap(18)
+							.addComponent(lblNewLabel_3)
+							.addGap(18)
+							.addComponent(dctushareextastart)
+							.addGap(28)
+							.addComponent(dctushareextaend))
+						.addGroup(gl_contentPanel.createSequentialGroup()
+							.addComponent(ckbxbuquanshuju)
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(lblNewLabel)
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(txfldbqsjnodecode, GroupLayout.PREFERRED_SIZE, 139, GroupLayout.PREFERRED_SIZE)
+							.addGap(18)
+							.addComponent(lblNewLabel_6)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(lblbqsjshijianduan)))
+					.addContainerGap(276, Short.MAX_VALUE))
 		);
 		gl_contentPanel.setVerticalGroup(
 			gl_contentPanel.createParallelGroup(Alignment.LEADING)
@@ -994,7 +1140,13 @@ public class ImportTDXData extends JDialog {
 						.addComponent(txfldbqsjnodecode, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(lblNewLabel_6)
 						.addComponent(lblbqsjshijianduan))
-					.addGap(30)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
+						.addComponent(chckbqtushareextra)
+						.addComponent(lblNewLabel_3)
+						.addComponent(dctushareextastart)
+						.addComponent(dctushareextaend))
+					.addGap(6)
 					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 140, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(chkbxforenotimportatwork))
