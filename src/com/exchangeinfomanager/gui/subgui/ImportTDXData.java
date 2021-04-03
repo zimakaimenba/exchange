@@ -356,9 +356,10 @@ public class ImportTDXData extends JDialog {
 			System.out.println("......更新板块类型结束于" + LocalTime.now() + ".....导入耗费时间： "+(end-start)+"ms \r\n");
 		}
 		
-		if(cbxImportSzGeGuVol.isSelected()  )  {
+		if(chckbximporttushareextradata.isSelected()  )  {
 			System.out.println("------导入TUSHARE EXTRA交易数据开始于" + LocalTime.now() );
 			long start=System.currentTimeMillis(); //获取开始时间
+			try {Thread.sleep(30);} catch (InterruptedException e) {e.printStackTrace();}
 			bkdbopt.refreshExtraStockDataFromTushare (); //估计当日python EXTRA 数据已经下载完成，这里更新extra数据
 			long end=System.currentTimeMillis(); //获取结束时间
 			System.out.println("......导入TUSHARE EXTRA交易数据结束于" + LocalTime.now() + ".....导入耗费时间： "+(end-start)+"ms \r\n");
@@ -429,7 +430,6 @@ public class ImportTDXData extends JDialog {
 			long end=System.currentTimeMillis(); //获取结束时间
 			System.out.println("......导入股东信息结束" + LocalTime.now()  + ".....导入耗费时间： "+(end-start)+"ms \r\n");
 		}
-
 	}
 	/*
 	 * 
@@ -511,7 +511,6 @@ public class ImportTDXData extends JDialog {
 			bkdbopt.refreshExtraStockDataFromTushare (neededstart,neededend ); //开始要减少一天，保证最早数据被导入，代码的需要
 		}
 	}
-
 	/*
 	 * 
 	 */
@@ -769,7 +768,7 @@ public class ImportTDXData extends JDialog {
 					chbxdaorutdxsysbkvol.setSelected(true);
 					cbxImportSzGeGuVol.setSelected(true);
 					chbxdaorutdxzdybk.setSelected(true);
-					
+					chckbximporttushareextradata.setSelected(true);
 					ckbxbuquanshuju.setEnabled(false);
 					ckbxbuquanshuju.setSelected(false);
 					
@@ -807,6 +806,7 @@ public class ImportTDXData extends JDialog {
 					chckbximportdzhbk.setSelected(false);
 					ckbxbuquanshuju.setEnabled(true);
 					ckbxbuquanshuju.setSelected(false);
+					chckbximporttushareextradata.setSelected(false);
 				}
 			}
 		});
@@ -865,7 +865,6 @@ public class ImportTDXData extends JDialog {
 	private JCheckBox chbxselectall;
 	private JButton btnchecksync;
 	private JCheckBox ckbxnetease;
-	private JComboBox cbximportoptions;
 	private JLabel lblstatus;
 	private JTextField tfldoutzdyfile;
 	private JCheckBox cbximportzdyfromout;
@@ -880,6 +879,7 @@ public class ImportTDXData extends JDialog {
 	private JLocalDateChooser dctushareextastart;
 	private JLocalDateChooser dctushareextaend;
 	private JCheckBox chckbqtushareextra;
+	private JCheckBox chckbximporttushareextradata;
 	
 	private void initializeGui() 
 	{
@@ -916,10 +916,6 @@ public class ImportTDXData extends JDialog {
 		JProgressBar progressBar_4 = new JProgressBar();
 		
 		ckbxnetease = new JCheckBox("\u5BFC\u5165\u7F51\u6613\u8D22\u7ECF\u6BCF\u65E5\u4EA4\u6613\u4FE1\u606F\uFF08\u6362\u624B\u7387/\u5E02\u503C\u7B49\uFF09");
-		
-		cbximportoptions = new JComboBox();
-		cbximportoptions.setEnabled(false);
-		cbximportoptions.setModel(new DefaultComboBoxModel(new String[] {"\u5982\u679C\u7F51\u6613\u6570\u636E\u83B7\u53D6\u5931\u8D25\uFF0C\u5219\u4ECE\u5176\u4ED6\u6570\u636E\u6E90\u83B7\u53D6\u6570\u636E", "\u5982\u679C\u7F51\u6613\u6570\u636E\u83B7\u53D6\u5931\u8D25\uFF0C\u76F4\u63A5\u5BFC\u5165\u4E1C\u65B9\u8D22\u5BCC\u6BCF\u65E5\u81EA\u4E0B\u8F7D\u6570\u636E"}));
 		
 		cbximportzdyfromout = new JCheckBox("\u76F4\u63A5\u4ECE\u6587\u4EF6\u5BFC\u5165\u81EA\u5B9A\u4E49\u677F\u5757");
 		
@@ -977,6 +973,8 @@ public class ImportTDXData extends JDialog {
 		dctushareextastart = new JLocalDateChooser();
 		dctushareextaend = new JLocalDateChooser();
 		
+		chckbximporttushareextradata = new JCheckBox("\u5BFC\u5165TUSHARE EXTRA\u6BCF\u65E5\u4EA4\u6613\u4FE1\u606F(\u6362\u624B\u7387/\u81EA\u7531\u6D41\u901A\u6362\u624B\u7387/\u5E02\u503C) ");
+		
 		GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
 		gl_contentPanel.setHorizontalGroup(
 			gl_contentPanel.createParallelGroup(Alignment.LEADING)
@@ -1018,13 +1016,11 @@ public class ImportTDXData extends JDialog {
 					.addComponent(cbxImportSzGeGuVol)
 					.addGap(10)
 					.addComponent(progressBar_4, GroupLayout.PREFERRED_SIZE, 508, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap(47, Short.MAX_VALUE))
+					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 				.addGroup(gl_contentPanel.createSequentialGroup()
 					.addGap(7)
 					.addComponent(ckbxnetease)
-					.addGap(8)
-					.addComponent(cbximportoptions, 0, 451, Short.MAX_VALUE)
-					.addContainerGap())
+					.addContainerGap(428, Short.MAX_VALUE))
 				.addGroup(gl_contentPanel.createSequentialGroup()
 					.addGap(7)
 					.addComponent(chkbxforenotimportatwork))
@@ -1047,13 +1043,8 @@ public class ImportTDXData extends JDialog {
 						.addComponent(chkbximportgudong))
 					.addGap(184))
 				.addGroup(gl_contentPanel.createSequentialGroup()
-					.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING, false)
-						.addGroup(Alignment.LEADING, gl_contentPanel.createSequentialGroup()
-							.addGap(7)
-							.addComponent(scrollPane))
-						.addGroup(Alignment.LEADING, gl_contentPanel.createSequentialGroup()
-							.addContainerGap()
-							.addComponent(separator, GroupLayout.PREFERRED_SIZE, 692, GroupLayout.PREFERRED_SIZE)))
+					.addContainerGap()
+					.addComponent(separator, GroupLayout.PREFERRED_SIZE, 692, GroupLayout.PREFERRED_SIZE)
 					.addContainerGap(45, Short.MAX_VALUE))
 				.addGroup(gl_contentPanel.createSequentialGroup()
 					.addGap(15)
@@ -1063,9 +1054,9 @@ public class ImportTDXData extends JDialog {
 							.addGap(18)
 							.addComponent(lblNewLabel_3)
 							.addGap(18)
-							.addComponent(dctushareextastart)
+							.addComponent(dctushareextastart, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 							.addGap(28)
-							.addComponent(dctushareextaend))
+							.addComponent(dctushareextaend, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 						.addGroup(gl_contentPanel.createSequentialGroup()
 							.addComponent(ckbxbuquanshuju)
 							.addPreferredGap(ComponentPlacement.UNRELATED)
@@ -1077,6 +1068,14 @@ public class ImportTDXData extends JDialog {
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(lblbqsjshijianduan)))
 					.addContainerGap(276, Short.MAX_VALUE))
+				.addGroup(gl_contentPanel.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(chckbximporttushareextradata)
+					.addContainerGap(638, Short.MAX_VALUE))
+				.addGroup(gl_contentPanel.createSequentialGroup()
+					.addGap(7)
+					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 677, GroupLayout.PREFERRED_SIZE)
+					.addContainerGap(63, Short.MAX_VALUE))
 		);
 		gl_contentPanel.setVerticalGroup(
 			gl_contentPanel.createParallelGroup(Alignment.LEADING)
@@ -1117,10 +1116,10 @@ public class ImportTDXData extends JDialog {
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
 						.addComponent(cbxImportSzGeGuVol)
 						.addComponent(progressBar_4, GroupLayout.PREFERRED_SIZE, 36, GroupLayout.PREFERRED_SIZE))
-					.addGap(40)
-					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-						.addComponent(ckbxnetease)
-						.addComponent(cbximportoptions, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addGap(18)
+					.addComponent(chckbximporttushareextradata)
+					.addGap(12)
+					.addComponent(ckbxnetease)
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(chckbximportdzhbk)
 					.addPreferredGap(ComponentPlacement.UNRELATED)
@@ -1144,8 +1143,8 @@ public class ImportTDXData extends JDialog {
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
 						.addComponent(chckbqtushareextra)
 						.addComponent(lblNewLabel_3)
-						.addComponent(dctushareextastart)
-						.addComponent(dctushareextaend))
+						.addComponent(dctushareextastart, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(dctushareextaend, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 					.addGap(6)
 					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 140, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.RELATED)

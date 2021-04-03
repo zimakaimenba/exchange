@@ -37,6 +37,8 @@ public interface  NodeGivenPeriodDataItem
 	public void setExchangeDaysNumber(Integer exchangedaysnumber) ;
 	public Double getHuanShouLv() ;
 	public void setHuanShouLv(Double huanshoulv) ;
+	public Double getHuanShouLvFree() ;
+	public void setHuanShouLvFree(Double huanshoulv) ;
 	public Double getZongShiZhi() ;
 	public void setZongShiZhi(Double zongshizhi) ;
 	public Double getLiuTongShiZhi() ;

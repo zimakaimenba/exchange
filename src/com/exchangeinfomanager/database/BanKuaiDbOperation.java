@@ -2868,7 +2868,7 @@ public class BanKuaiDbOperation
 				+ "t.StartOfWeekDate AS StartOfWeekDate, t.EndOfWeekDate AS EndOfWeekDate, \r\n" +
 				 "M.板块周交易额 as 板块周交易额, SUM(T.AMO) AS 大盘周交易额 ,  M.板块周交易额/SUM(T.AMO) AS CJE占比, \r\n" +
 				"M.板块周交易量 as 板块周交易量, SUM(T.VOL) AS 大盘周交易量 ,  M.板块周交易量/SUM(T.VOL) AS VOL占比, \r\n" +
-				"M.板块周换手率 as 板块周换手率, "
+				"M.板块周换手率 as 板块周换手率, M.板块周自由流通换手率 AS 板块周自由流通换手率, \r\n"
 				+ "M.总市值/M.SHIZHIJILUTIAOSHU   as 周平均总市值, "
 				+ "M.总流通市值/M.SHIZHIJILUTIAOSHU   as 周平均流通市值, "
 				+ "M.JILUTIAOSHU , M.SHIZHIJILUTIAOSHU  , "
@@ -2901,6 +2901,7 @@ public class BanKuaiDbOperation
 						+ " sum( " + bkcjltable + ".`成交额`) AS 板块周交易额 , \r\n"
 						+ " sum( " + bkcjltable + ".`成交量`) /100 AS 板块周交易量,  \r\n"
 						+ " sum( " + bkcjltable + ".`换手率`) AS 板块周换手率 , \r\n"
+						+ " sum( " + bkcjltable + ".`自由流通换手率`) AS 板块周自由流通换手率 , \r\n"
 						+ " sum( " + bkcjltable + ".`总市值`) AS 总市值 , \r\n"
 						+ " sum( " + bkcjltable + ".`流通市值`) AS 总流通市值, \r\n"
 						+ "  COUNT(1) as JILUTIAOSHU ,\r\n"
@@ -2919,12 +2920,9 @@ public class BanKuaiDbOperation
 				" GROUP BY YEARWEEK(t.workday,2)"
 				;
 				
-	
-		CachedRowSetImpl rs = null;
+		CachedRowSetImpl rs = connectdb.sqlQueryStatExecute(sqlquerystat);
 		Boolean hasfengxiresult = false;
 		try {
-			//交易数据
-			rs = connectdb.sqlQueryStatExecute(sqlquerystat);
 			while(rs.next()) {
 				java.sql.Date startdayofweek = rs.getDate("StartOfWeekDate");
 				java.sql.Date lastdayofweek = rs.getDate("EndOfWeekDate");
@@ -3032,10 +3030,10 @@ public class BanKuaiDbOperation
 						+ "t.StartOfWeekDate AS StartOfWeekDate, t.EndOfWeekDate AS EndOfWeekDate, \r\n" +
 						 "M.板块周交易额 as 板块周交易额, SUM(T.AMO) AS 大盘周交易额 ,  M.板块周交易额/SUM(T.AMO) AS CJE占比, \r\n" +
 						"M.板块周交易量 as 板块周交易量, SUM(T.VOL) AS 大盘周交易量 ,  M.板块周交易量/SUM(T.VOL) AS VOL占比, \r\n" +
-						"M.板块周换手率 as 板块周换手率, "
+						"M.板块周换手率 as 板块周换手率, M.板块周自由流通换手率 AS 板块周自由流通换手率, \r\n"
 						+ "M.总市值/M.SHIZHIJILUTIAOSHU   as 周平均总市值, "
-						+ "M.总流通市值/M.SHIZHIJILUTIAOSHU   as 周平均流通市值, "
-						+ "M.JILUTIAOSHU , M.SHIZHIJILUTIAOSHU  , "
+						+ "M.总流通市值/M.SHIZHIJILUTIAOSHU   as 周平均流通市值, \r\n"
+						+ "M.JILUTIAOSHU , M.SHIZHIJILUTIAOSHU  , \r\n"
 						+ "M.周最大涨跌幅,M.周最小涨跌幅   ,M.涨停,M.跌停        \r\n" +
 						 
 						"FROM\r\n" + 
@@ -3065,6 +3063,7 @@ public class BanKuaiDbOperation
 								+ " sum( " + bkcjltable + ".`成交额`) AS 板块周交易额 , \r\n"
 								+ " sum( " + bkcjltable + ".`成交量`) /100 AS 板块周交易量,  \r\n"
 								+ " sum( " + bkcjltable + ".`换手率`) AS 板块周换手率 , \r\n"
+								+ " sum( " + bkcjltable + ".`自由流通换手率`) AS 板块周自由流通换手率 , \r\n"
 								+ " sum( " + bkcjltable + ".`总市值`) AS 总市值 , \r\n"
 								+ " sum( " + bkcjltable + ".`流通市值`) AS 总流通市值, \r\n"
 								+ "  COUNT(1) as JILUTIAOSHU ,\r\n"
@@ -3102,6 +3101,7 @@ public class BanKuaiDbOperation
 				double dapancjl = rs.getDouble("大盘周交易量") ;
 				double cjlzb = rs.getDouble("VOL占比") ;
 				double huanshoulv = rs.getDouble("板块周换手率") ;
+				double huanshoulvfree = rs.getDouble("板块周自由流通换手率");
 				double pingjunzongshizhi = rs.getDouble("周平均总市值") ;
 				double pingjunliutongshizhi = rs.getDouble("周平均流通市值") ;
 				double periodhighestzhangdiefu = rs.getDouble("周最大涨跌幅") ;
@@ -3130,6 +3130,7 @@ public class BanKuaiDbOperation
 				stockperiodrecord.setZhangTingNumber(zhangtingnum);
 				stockperiodrecord.setDieTingNumber(dietingnum);
 				stockperiodrecord.setHuanShouLv(huanshoulv);
+				stockperiodrecord.setHuanShouLvFree(huanshoulvfree);
 				stockperiodrecord.setLiuTongShiZhi(pingjunliutongshizhi);
 				stockperiodrecord.setZongShiZhi(pingjunzongshizhi);
 				
@@ -3956,20 +3957,11 @@ public class BanKuaiDbOperation
 			 this.getTDXNodesWeeklyKXianZouShiForJFC(bk, lastdaydate.with(DayOfWeek.FRIDAY), nodenewohlc);
 			 
 				
-		}catch(java.lang.NullPointerException e){ 
-			e.printStackTrace();
-//			logger.debug( "数据库连接为NULL!");
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}catch(Exception e){
-			e.printStackTrace();
+		} catch(java.lang.NullPointerException e){e.printStackTrace();
+		} catch (SQLException e) {e.printStackTrace();
+		} catch(Exception e){e.printStackTrace();
 		} finally {
-			try {
-				if(rsfx != null)
-					rsfx.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
+			try {if(rsfx != null) rsfx.close();} catch (SQLException e) {e.printStackTrace();}
 			rsfx = null;
 			searchtable = null;
 			nodenewohlc = null;
@@ -4010,19 +4002,11 @@ public class BanKuaiDbOperation
 				Integer zhangfu = rsfx.getInt("ZHANGTING");
 				bkwkdate.addZhangDieTingTongJiJieGuo(actiondate.with(DayOfWeek.FRIDAY), zhangfu, diefu, false);
 			}
-		} catch(java.lang.NullPointerException e){ 
-			e.printStackTrace();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}catch(Exception e){
-			e.printStackTrace();
+		} catch(java.lang.NullPointerException e){ e.printStackTrace();
+		} catch (SQLException e) {e.printStackTrace();
+		} catch(Exception e){e.printStackTrace();
 		} finally {
-			try {
-				if(rsfx != null)
-					rsfx.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
+			try {if(rsfx != null)rsfx.close();} catch (SQLException e) {e.printStackTrace();}
 			rsfx = null;
 			sql = null;
 		}
@@ -4058,19 +4042,11 @@ public class BanKuaiDbOperation
 				Integer zhangfu = rsfx.getInt("ZHANGTING");
 				bkwkdate.addZhangDieTingTongJiJieGuo(actiondate.with(DayOfWeek.FRIDAY), zhangfu, diefu, false);
 			}
-		} catch(java.lang.NullPointerException e){ 
-			e.printStackTrace();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}catch(Exception e){
-			e.printStackTrace();
+		} catch(java.lang.NullPointerException e){ e.printStackTrace();
+		} catch (SQLException e) {e.printStackTrace();
+		}catch(Exception e){e.printStackTrace();
 		} finally {
-			try {
-				if(rsfx != null)
-					rsfx.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
+			try {if(rsfx != null)rsfx.close();} catch (SQLException e) {e.printStackTrace();	}
 			rsfx = null;
 			sql = null;
 		}
@@ -4108,19 +4084,11 @@ public class BanKuaiDbOperation
 				Integer zhangfu = rsfx.getInt("ZHANGTING");
 				bkwkdate.addZhangDieTingTongJiJieGuo(actiondate.with(DayOfWeek.FRIDAY), zhangfu, diefu, false);
 			}
-		} catch(java.lang.NullPointerException e){ 
-			e.printStackTrace();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}catch(Exception e){
-			e.printStackTrace();
+		} catch(java.lang.NullPointerException e){ e.printStackTrace();
+		} catch (SQLException e) {e.printStackTrace();
+		} catch(Exception e){e.printStackTrace();
 		} finally {
-			try {
-				if(rsfx != null)
-					rsfx.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
+			try {if(rsfx != null)rsfx.close();} catch (SQLException e) {e.printStackTrace();}
 			rsfx = null;
 			sql = null;
 		}
@@ -4159,10 +4127,7 @@ public class BanKuaiDbOperation
 		 } catch (SQLException e) {e.printStackTrace();
 		 } catch(Exception e){	e.printStackTrace();
 		 } finally {
-		    	if(rs != null)
-				try {
-					rs.close(); rs = null;
-				} catch (SQLException e) {	e.printStackTrace();	}
+		    	if(rs != null)	try {rs.close(); rs = null;} catch (SQLException e) {	e.printStackTrace();	}
 		 }
 		
 		return nodetimeset;
@@ -4191,10 +4156,7 @@ public class BanKuaiDbOperation
 		 } catch (SQLException e) {e.printStackTrace();
 		 } catch(Exception e){	e.printStackTrace();
 		 } finally {
-		    	if(rs != null)
-				try {
-					rs.close(); rs = null;
-				} catch (SQLException e) {	e.printStackTrace();	}
+		    	if(rs != null)	try {rs.close(); rs = null;} catch (SQLException e) {	e.printStackTrace();	}
 		 }
 		
 		return nodetimeset;
@@ -4231,10 +4193,7 @@ public class BanKuaiDbOperation
 		    } catch (SQLException e) {e.printStackTrace();
 		    } catch(Exception e){	e.printStackTrace();
 		    } finally {
-		    	if(rs != null)
-				try {
-					rs.close(); rs = null;
-				} catch (SQLException e) {	e.printStackTrace();	}
+		    	if(rs != null) try {rs.close(); rs = null;} catch (SQLException e) {	e.printStackTrace();	}
 		    }
 		
 		DateTime requiredstartdt= new DateTime(loldestdbrecordsdate.getYear(), loldestdbrecordsdate.getMonthValue(), loldestdbrecordsdate.getDayOfMonth(), 0, 0, 0, 0);
@@ -4361,9 +4320,7 @@ public class BanKuaiDbOperation
         } catch (FileNotFoundException e) {e.printStackTrace();  
         } catch (IOException e) { e.printStackTrace();  
         } finally {  
-            try {  
-                if (rf != null)  rf.close();   rf = null;
-            } catch (IOException e) {  e.printStackTrace();  }  
+            try {      if (rf != null)  rf.close();   rf = null;} catch (IOException e) {  e.printStackTrace();  }  
         }
         
         if(startdate != null  && enddate != null) {
@@ -4435,15 +4392,9 @@ public class BanKuaiDbOperation
 		    } catch (SQLException e) {	e.printStackTrace();
 		    } catch(Exception e){	e.printStackTrace();
 		    } finally {
-		    	if(rsdm != null)
-				try {rsdm.close();rsdm = null;
-				} catch (SQLException e) {	e.printStackTrace();}
+		    	if(rsdm != null)  try {rsdm.close();rsdm = null;} catch (SQLException e) {	e.printStackTrace();}
 		    }
-
 	}
-	/*
-	 * 
-	 */
 	/*
 	 * 
 	 */
@@ -4561,6 +4512,7 @@ public class BanKuaiDbOperation
 		    ){ 
 				int titlesign = -1;//标记CSV文件的第一行 
 				Integer turnover_rate_f_index = null; Integer free_share_index = null; Integer stockcode_index = null; Integer pe_index = null;Integer pe_ttm_index = null; Integer pb_index = null;
+				Integer turnover_rate_index = null; Integer total_mv_index = null; Integer circ_mv_index = null;
 				List<String[]> records = csvReader.readAll();
 				for (String[] nextRecord : records) {
 		            	if(-1 == titlesign) {
@@ -4569,6 +4521,8 @@ public class BanKuaiDbOperation
 		            				stockcode_index = i;
 		            			else if(nextRecord[i].equalsIgnoreCase("turnover_rate_f")  )
 		            				turnover_rate_f_index = i;
+		            			else if(nextRecord[i].equalsIgnoreCase("turnover_rate")  )
+		            				turnover_rate_index = i;
 		            			else if(nextRecord[i].equalsIgnoreCase("free_share")  )
 		            				free_share_index = i;
 		            			else if(nextRecord[i].equalsIgnoreCase("pe")  )
@@ -4577,6 +4531,10 @@ public class BanKuaiDbOperation
 		            				pe_ttm_index = i;
 		            			else if(nextRecord[i].equalsIgnoreCase("pb")  )
 		            				pb_index = i;
+		            			else if(nextRecord[i].equalsIgnoreCase("total_mv")  )
+		            				total_mv_index = i;
+		            			else if(nextRecord[i].equalsIgnoreCase("circ_mv")  )
+		            				circ_mv_index = i;
 		            		}
 		            		
 		            		titlesign ++;
@@ -4595,12 +4553,27 @@ public class BanKuaiDbOperation
 		            		else if(stock.getNodeJiBenMian().getSuoShuJiaoYiSuo().equalsIgnoreCase("SH") )
 		            			optTable = "通达信上交所股票每日交易信息";
 		            		
-		            		Double turnover_rate_f = null; Double free_share = null;
-		            		Double pe = null;Double pe_ttm = null; Double pb = null;
+		            		Double turnover_rate_f = null; Double turnover_rate = null; Double free_share = null;
+		            		Double pe = null;Double pe_ttm = null; Double pb = null; Double total_mv = null; Double circ_mv = null;
 		            		if(turnover_rate_f_index != null) {
 		            			String turnover_rate_f_str = nextRecord[turnover_rate_f_index];
 		            			if(!Strings.isNullOrEmpty(turnover_rate_f_str))
 		            				turnover_rate_f = Double.parseDouble(turnover_rate_f_str);
+		            		}
+		            		if(turnover_rate_index != null) {
+		            			String turnover_rate_str = nextRecord[turnover_rate_index];
+		            			if(!Strings.isNullOrEmpty(turnover_rate_str))
+		            				turnover_rate = Double.parseDouble(turnover_rate_str);
+		            		}
+		            		if(total_mv_index != null) {
+		            			String total_mv_str = nextRecord[total_mv_index];
+		            			if(!Strings.isNullOrEmpty(total_mv_str))
+		            				total_mv = Double.parseDouble(total_mv_str) * 10000;
+		            		}
+		            		if(circ_mv_index != null) {
+		            			String circ_mv_str = nextRecord[circ_mv_index];
+		            			if(!Strings.isNullOrEmpty(circ_mv_str))
+		            				circ_mv = Double.parseDouble(circ_mv_str) * 10000;
 		            		}
 //		            		if(free_share_index != null) {
 //		            			String free_share_str = nextRecord[free_share_index];
@@ -6560,30 +6533,6 @@ public class BanKuaiDbOperation
 				
 				
 				LocalDate ldlastestdbrecordsdate = stock.getShuJuJiLuInfo().getNeteasejlmaxdate();
-//				CachedRowSetImpl  rs = null;
-//				try { 	
-//					//找出每日交易的起点终点
-//					String sqlquerystat = "SELECT  MAX(交易日期) 	MOST_RECENT_TIME FROM  " + stockdatatable + 
-//											" WHERE  代码 = '" + stockcode + "' AND 换手率 IS NOT NULL AND 总市值 IS  NOT NULL AND 流通市值 IS  NOT NULL"
-//											;
-//				    rs = connectdb.sqlQueryStatExecute(sqlquerystat);
-//				    while(rs.next()) {
-////				    		logger.debug(rs.getMetaData().getColumnCount());
-//				    		 java.sql.Date lastestdbrecordsdate = rs.getDate("MOST_RECENT_TIME"); //mOST_RECENT_TIME 
-//				    		 try {
-//				    			 ldlastestdbrecordsdate = lastestdbrecordsdate.toLocalDate();
-//				    		 } catch (java.lang.NullPointerException e) {
-//				    			 logger.info(stockcode + "似乎没有数据，请检查！");
-//				    			 Files.append(stockcode + "在数据库中似乎没有数据，请检查！" +  System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
-//				    		 }
-//				    }
-//				} catch(java.lang.NullPointerException e) { e.printStackTrace();
-//				} catch (SQLException e) {e.printStackTrace();
-//				}catch(Exception e){e.printStackTrace();
-//				} finally {
-//			    	if(rs != null)	try {rs.close();rs = null;} catch (SQLException e) {e.printStackTrace();}
-//				}
-				
 			   if(ldlastestdbrecordsdate == null)
 				   ldlastestdbrecordsdate =  LocalDate.parse("2013-03-04"); //当前数据的起点
 			   else

@@ -169,5 +169,16 @@ public class NodeGivenPeriodDataItemForTA4J  extends BaseBar implements NodeGive
 	
 	private Integer zhangtingnumber;
 	private Integer dietingnumber;
+
+	@Override
+	public Double getHuanShouLvFree() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public void setHuanShouLvFree(Double huanshoulv) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

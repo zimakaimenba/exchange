@@ -321,6 +321,10 @@ public abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 			        	Double hsl = ((StockNodesXPeriodData)nodexdatawk).getSpecificTimeHuanShouLv(showwknum, 0);
 				    	value = hsl;
 				    	break;
+		       case "huanshoulvfree": //周日平均成交额MAXWK
+		        	Double hslf = ((StockNodesXPeriodData)nodexdatawk).getSpecificTimeHuanShouLvFree(showwknum, 0);
+			    	value = hslf;
+			    	break;
 		       case "chenjiaoer" :
 			      	 Double curcje  = nodexdatawk.getChengJiaoEr(showwknum, 0) / 100000000;
 			   	     value = curcje;
@@ -406,7 +410,6 @@ public abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 	  public void setDisplayMatchCondition(BanKuaiGeGuMatchCondition expc) 
 	  {
 			this.matchcond = expc;
-			
 	  }
 	  public BanKuaiGeGuMatchCondition getDisplayMatchCondition ()
 	  {

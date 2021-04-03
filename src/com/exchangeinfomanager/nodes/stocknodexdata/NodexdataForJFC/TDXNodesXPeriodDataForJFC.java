@@ -137,10 +137,9 @@ import com.udojava.evalex.Expression;
 			TemporalField fieldUS = WeekFields.of(Locale.US).dayOfWeek();
 			LocalDate mondayday = startdate.with(fieldUS, 2);
 			return mondayday;
-		} else if(super.getNodeperiodtype() == NodeGivenPeriodDataItem.DAY) {
+		} else if(super.getNodeperiodtype() == NodeGivenPeriodDataItem.DAY) 
 			return startdate;
-		}
-		
+
 		return null;
 	}
 	public LocalDate getAmoRecordsEndDate ()
@@ -167,93 +166,25 @@ import com.udojava.evalex.Expression;
 	public void resetAllData ()
 	{
 		super.resetAllData();
-		try {
-			nodeohlc.clear(); 
-		}  catch (java.lang.NullPointerException e) {
-		
-		}
-		try {
-			nodeamo.clear(); 
-		}   catch (java.lang.NullPointerException e) {
-			
-		}
-		try {
-			nodevol.clear(); 
-		}   catch (java.lang.NullPointerException e) {
-			
-		}
+		try {nodeohlc.clear();}  catch (java.lang.NullPointerException e) {}
+		try {nodeamo.clear(); }   catch (java.lang.NullPointerException e) {}
+		try {nodevol.clear();}   catch (java.lang.NullPointerException e) {}
 
 		//均线
-		try {
-			nodeohlcma5.clear();
-		}  catch (java.lang.NullPointerException e) {
-			
-		}
-		try {
-			nodeohlcma10.clear();
-		}  catch (java.lang.NullPointerException e) {
-			
-		}
-		try {
-			nodeohlcma20.clear();
-		}  catch (java.lang.NullPointerException e) {
-			
-		}
-		try {
-			nodeohlcma30.clear();
-		}  catch (java.lang.NullPointerException e) {
-			
-		}
-		try {
-			nodeohlcma60.clear();
-		}  catch (java.lang.NullPointerException e) {
-			
-		}
-		try {
-			nodeohlcma120.clear();
-		}  catch (java.lang.NullPointerException e) {
-			
-		}
-		try {
-			nodeohlcma250.clear();
-		}  catch (java.lang.NullPointerException e) {
-			
-		}
-		try {
-			nodeamoma5.clear();
-		}  catch (java.lang.NullPointerException e) {
-			
-		}
-		try {
-			nodeamoma10.clear();
-		}  catch (java.lang.NullPointerException e) {
-			
-		}
-		try {
-			nodeamoma20.clear();
-		}  catch (java.lang.NullPointerException e) {
-			
-		}
-		try {
-			nodeamoma30.clear();
-		}  catch (java.lang.NullPointerException e) {
-			
-		}
-		try {
-			nodeamoma60.clear();
-		}  catch (java.lang.NullPointerException e) {
-			
-		}
-		try {
-			nodeamoma120.clear();
-		}  catch (java.lang.NullPointerException e) {
-			
-		}
-		try {
-			nodeamoma250.clear();
-		}  catch (java.lang.NullPointerException e) {
-			
-		}
+		try {nodeohlcma5.clear();}  catch (java.lang.NullPointerException e) {}
+		try {nodeohlcma10.clear();}  catch (java.lang.NullPointerException e) {}
+		try {nodeohlcma20.clear();}  catch (java.lang.NullPointerException e) {}
+		try {nodeohlcma30.clear();}  catch (java.lang.NullPointerException e) {}
+		try {nodeohlcma60.clear();}  catch (java.lang.NullPointerException e) {}
+		try {nodeohlcma120.clear();}  catch (java.lang.NullPointerException e) {}
+		try {nodeohlcma250.clear();}  catch (java.lang.NullPointerException e) {}
+		try {nodeamoma5.clear();}  catch (java.lang.NullPointerException e) {}
+		try {nodeamoma10.clear();}  catch (java.lang.NullPointerException e) {}
+		try {nodeamoma20.clear();}  catch (java.lang.NullPointerException e) {}
+		try {nodeamoma30.clear();}  catch (java.lang.NullPointerException e) {}
+		try {nodeamoma60.clear();}  catch (java.lang.NullPointerException e) {}
+		try {nodeamoma120.clear();}  catch (java.lang.NullPointerException e) {}
+		try {nodeamoma250.clear();}  catch (java.lang.NullPointerException e) {}
 	}
 	/*
 	 * 
@@ -1774,79 +1705,24 @@ import com.udojava.evalex.Expression;
 		String stravecjegrowingrate = null;
 		String close = null;String open = null;String high = null;String low = null;
 		
-		try {
-			stravecjegrowingrate = avecjegrowingrate.toString();
-		} catch (java.lang.NullPointerException e) {
-			stravecjegrowingrate = String.valueOf("0");
-		}
-		
-		try {
-			strcurcje = curcje.toString();
-		} catch (java.lang.NullPointerException e) {
-			strcurcje = String.valueOf("0");
-		}
-		try {
-			stravecje = avecje.toString();
-		} catch (java.lang.NullPointerException e) {
-			stravecje = String.valueOf("0");
-		}
-		try {
-			strcjemaxwk = cjemaxwk.toString();
-		} catch (java.lang.NullPointerException e) {
-			strcjemaxwk = String.valueOf("0");
-		}
-		try {
-			strcjechangerate = cjechangerate.toString();
-					
-		} catch (java.lang.NullPointerException e) {
-			strcjechangerate = String.valueOf("0");
-		}
-		try {
-			strcurcjl = curcjl.toString();
-		} catch (java.lang.NullPointerException e) {
-			strcurcjl = String.valueOf("0");
-		}
-		try {
-			stravecjl = avecjl.toString();
-		} catch (java.lang.NullPointerException e) {
-			stravecjl = String.valueOf("0");
-		}
-		try {
-			strcjlmaxwk =  cjlmaxwk.toString();
-		} catch (java.lang.NullPointerException e) {
-			strcjlmaxwk = String.valueOf("0");
-		}
+		try { stravecjegrowingrate = avecjegrowingrate.toString();} catch (java.lang.NullPointerException e) {stravecjegrowingrate = String.valueOf("0");}
+		try {strcurcje = curcje.toString();} catch (java.lang.NullPointerException e) {strcurcje = String.valueOf("0");}
+		try {stravecje = avecje.toString();} catch (java.lang.NullPointerException e) {stravecje = String.valueOf("0");}
+		try {strcjemaxwk = cjemaxwk.toString();} catch (java.lang.NullPointerException e) {strcjemaxwk = String.valueOf("0");}
+		try {strcjechangerate = cjechangerate.toString();} catch (java.lang.NullPointerException e) {strcjechangerate = String.valueOf("0");}
+		try {strcurcjl = curcjl.toString();} catch (java.lang.NullPointerException e) {strcurcjl = String.valueOf("0");}
+		try {stravecjl = avecjl.toString();} catch (java.lang.NullPointerException e) {stravecjl = String.valueOf("0");}
+		try {strcjlmaxwk =  cjlmaxwk.toString();} catch (java.lang.NullPointerException e) {strcjlmaxwk = String.valueOf("0");}
 //		try {
 //			strcjlchangerate =  cjlchangerate.toString();
 //		} catch (java.lang.NullPointerException e) {
 //			strcjlchangerate = String.valueOf("0");
 //		}
-		try {
-			strzhangfu =  zhangfu.toString();
-		} catch (java.lang.NullPointerException e) {
-			strzhangfu = String.valueOf("0");
-		}
-		
-		try {
-			close = curclose.toString();
-		} catch (java.lang.NullPointerException e) {
-			close = String.valueOf("0");
-		}
-		try {
-			open = curclose.toString();
-		} catch (java.lang.NullPointerException e) {
-			open = String.valueOf("0");
-		}
-		try {
-			high = curclose.toString();
-		} catch (java.lang.NullPointerException e) {
-			high = String.valueOf("0");
-		}
-		try {
-			low = curclose.toString();
-		} catch (java.lang.NullPointerException e) {
-			low = String.valueOf("0");
-		}
+		try {strzhangfu =  zhangfu.toString();} catch (java.lang.NullPointerException e) {strzhangfu = String.valueOf("0");}
+		try {close = curclose.toString();} catch (java.lang.NullPointerException e) {close = String.valueOf("0");}
+		try {open = curclose.toString();} catch (java.lang.NullPointerException e) {open = String.valueOf("0");}
+		try {high = curclose.toString();} catch (java.lang.NullPointerException e) {high = String.valueOf("0");}
+		try {low = curclose.toString();} catch (java.lang.NullPointerException e) {low = String.valueOf("0");}
 		
 		String[] curcsvline = {  strcurcje ,
 		 stravecje ,

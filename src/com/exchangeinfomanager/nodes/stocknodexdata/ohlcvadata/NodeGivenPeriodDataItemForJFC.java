@@ -95,12 +95,6 @@ public class NodeGivenPeriodDataItemForJFC extends OHLCItem implements NodeGiven
 	public void setExchangeDaysNumber(Integer exchangedaysnumber) {
 		this.exchangedaysnumber = exchangedaysnumber;
 	}
-	public Double getHuanShouLv() {
-		return huanshoulv;
-	}
-	public void setHuanShouLv(Double huanshoulv) {
-		this.huanshoulv = huanshoulv;
-	}
 	public Double getZongShiZhi() {
 		return zongshizhi;
 	}
@@ -166,15 +160,29 @@ public class NodeGivenPeriodDataItemForJFC extends OHLCItem implements NodeGiven
 	
 	
 	private Double huanshoulv;
+	private Double huanshoulvfree;
 	private Double zongshizhi;
 	private Double liutongshizhi;
 	private Double periodhighestzhangdiefu;
 	private Double periodlowestzhangdiefu;
-	
 	private Integer hasfengxijieguo; //有加入关注，分析结果等等
-	
-	
 	private Integer zhangtingnumber;
 	private Integer dietingnumber;
+
+	@Override
+	public Double getHuanShouLvFree() {
+		return this.huanshoulvfree;
+	}
+	@Override
+	public void setHuanShouLvFree(Double huanshoulvfree1) {
+		this.huanshoulvfree = huanshoulvfree1;
+		
+	}
+	public Double getHuanShouLv() {
+		return huanshoulv;
+	}
+	public void setHuanShouLv(Double huanshoulv) {
+		this.huanshoulv = huanshoulv;
+	}
 
 }

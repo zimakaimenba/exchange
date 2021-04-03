@@ -1,5 +1,6 @@
 package com.exchangeinfomanager.nodes.stocknodexdata;
 
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -143,6 +144,27 @@ public interface NodeXPeriodData
 			 
 			 "周平均成交额增长率"
 		};
+	
+	public static  Object [] ouputcontrol = {
+			new DecimalFormat("%#0.0000"),1,1,new DecimalFormat("%#0.000"),
+			new DecimalFormat("%#0.0000"),1,1,new DecimalFormat("%#0.000"),
+			1,1,1,1,
+			1,1,
+			new DecimalFormat("#0.000"),new DecimalFormat("#0.000"),1,new DecimalFormat("#0.000"),
+			new DecimalFormat("#0.000"),new DecimalFormat("#0.000"),1,
+			null,null,null,null,null,
+			new DecimalFormat("#0.000")
+	};
 
+	public static  String [] ouputcolor = {
+			"#17202A","#17202A","#17202A","#17202A",
+			"#512E5F","#512E5F","#512E5F","#512E5F",
+			"#F39C12","#F39C12","#F39C12","#F39C12",
+			"#1B2631","#1B2631",
+			"#AF7AC5","#AF7AC5","#AF7AC5","#AF7AC5",
+			"#641E16","#641E16","#641E16",
+			"#1B2631","#1B2631","#1B2631","#1B2631","#1B2631",
+			"#AF7AC5"
+	};
 	
 }

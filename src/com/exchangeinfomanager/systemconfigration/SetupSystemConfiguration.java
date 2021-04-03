@@ -727,11 +727,6 @@ public class SetupSystemConfiguration
 		{
 			return pythoninterpreter;
 		}
-		public String getPythonScriptsPath() 
-		{
-//			return this.systeminstalledpath + "thirdparty/python/execscripts/";
-			return "E:/stock/stockmanager/thirdparty/python/execscripts/";
-		}
 		public String getPythonScriptsExecExportsPath ()
 		{
 			String path = this.systeminstalledpath + "dailydata/python/execexports/";
@@ -893,12 +888,6 @@ public class SetupSystemConfiguration
 			String path = "C:\\Program Files\\FreeMind\\Freemind.bat"; //D:\\tools\\HeidiSQL\\heidisql.exe
 			return path;
 		}
-		/*
-		 * private List<String> shanghaistockcodeprefixlist;
-	private List<String> shengzhengstockcodeprefixlist;
-	private List<String> shanghaizhishucodeprefixlist;
-	private List<String> shengzhengzhishucodeprefixlist;
-		 */
 		public Boolean isShangHaiStock (String nodecode)
 		{
 			String nodecodeprefix = nodecode.substring(0, 3);
@@ -906,10 +895,6 @@ public class SetupSystemConfiguration
 				return true;
 			else 
 				return false;
-//			if(nodecode.startsWith("600") || nodecode.startsWith("688") ||  nodecode.startsWith("603") || nodecode.startsWith("601") )
-//				return true;
-//			else
-//				return false;
 		}
 		public Boolean isShangHaiZhiShu (String nodecode)
 		{
@@ -918,11 +903,6 @@ public class SetupSystemConfiguration
 				return true;
 			else 
 				return false;
-			
-//			if(nodecode.startsWith("000") || nodecode.startsWith("880") || nodecode.startsWith("999")  )
-//				return true;
-//			else
-//				return false;
 		}
 		public Boolean isShenZhengStock (String nodecode)
 		{
@@ -931,11 +911,6 @@ public class SetupSystemConfiguration
 				return true;
 			else 
 				return false;
-			
-//			if(nodecode.startsWith("000") || nodecode.startsWith("300") || nodecode.startsWith("001") || nodecode.startsWith("002") || nodecode.startsWith("003"))
-//				return true;
-//			else
-//				return false;
 		}
 		public Boolean isShenZhengZhiShu (String nodecode)
 		{
@@ -944,11 +919,6 @@ public class SetupSystemConfiguration
 				return true;
 			else 
 				return false;
-			
-//			if(nodecode.startsWith("399") || nodecode.startsWith("159") )
-//				return true;
-//			else
-//				return false;
 		}
 		/*
 		 * 最核心的几个指数
@@ -995,6 +965,11 @@ public class SetupSystemConfiguration
 		{
 //			return this.systeminstalledpath  + "/dailydata/tushare/dailyexchangedata";
 			return "E:/stock/stockmanager/dailydata/tushare/dailyexchangedata";
+		}
+		public String getPythonScriptsPath() 
+		{
+//			return this.systeminstalledpath + "thirdparty/python/execscripts/";
+			return "E:/stock/stockmanager/thirdparty/python/execscripts/";
 		}
 
 }

@@ -329,6 +329,9 @@ public class SvsForNodeOfStock implements ServicesForNode, ServicesOfNodeStock
 		if(nodestart == null)
 		return null;
 		
+		requiredstartday = requiredstartday.with(DayOfWeek.MONDAY);
+		requiredendday = requiredendday.with(DayOfWeek.FRIDAY);
+		
 		List<Interval> result = new ArrayList<Interval> ();
 		
 		DateTime nodestartdt= new DateTime(nodestart.getYear(), nodestart.getMonthValue(), nodestart.getDayOfMonth(), 0, 0, 0, 0);
