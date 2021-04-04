@@ -34,7 +34,7 @@ public interface StockNodesXPeriodData
 							"周平均流通市值",
 							};
 	public static  Object [] ouputcontrol = {
-			new DecimalFormat("%.3f"),new DecimalFormat("%.3f"),
+			1,1,
 			new DecimalFormat("#0.000")
 			};
 	public static  String [] ouputcolor = {

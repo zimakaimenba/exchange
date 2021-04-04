@@ -913,7 +913,7 @@ class ExportTask extends SwingWorker<Integer, String>
 		//写入板块分析文件
 		for(BkChanYeLianTreeNode node : outputnodeslist) {
 			 String outputstock;
-			 String cjs = ((TDXNodes)node).getSuoShuJiaoYiSuo();
+			 String cjs = ((TDXNodes)node).getNodeJiBenMian().getSuoShuJiaoYiSuo();
 			 if(cjs.trim().toLowerCase().equals("sh"))
 				outputstock= "1" + node.getMyOwnCode().trim();
 			else

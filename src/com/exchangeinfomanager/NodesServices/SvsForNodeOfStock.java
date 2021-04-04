@@ -98,12 +98,12 @@ public class SvsForNodeOfStock implements ServicesForNode, ServicesOfNodeStock
 				DateTime newstartdt = tmpinterval.getStart();
 				DateTime newenddt = tmpinterval.getEnd();
 				
-				requiredstartday = LocalDate.of(newstartdt.getYear(), newstartdt.getMonthOfYear(), newstartdt.getDayOfMonth());
-				requiredendday = LocalDate.of(newenddt.getYear(), newenddt.getMonthOfYear(), newenddt.getDayOfMonth());
+				LocalDate tmprequiredstartday = LocalDate.of(newstartdt.getYear(), newstartdt.getMonthOfYear(), newstartdt.getDayOfMonth());
+				LocalDate tmprequiredendday = LocalDate.of(newenddt.getYear(), newenddt.getMonthOfYear(), newenddt.getDayOfMonth());
 				
-				stock = bkdbopt.getStockZhanBi (stock,requiredstartday,requiredendday,period);
-//				bkdbopt.getStockFengXiJieGuo(stock, requiredstartday,requiredendday, period);
-				this.getNodeGzMrMcYkInfo(stock, requiredstartday,requiredendday, period);
+				stock = bkdbopt.getStockZhanBi (stock,tmprequiredstartday,tmprequiredendday,period);
+//				bkdbopt.getStockFengXiJieGuo(stock, tmprequiredstartday,tmprequiredendday, period);
+				this.getNodeGzMrMcYkInfo(stock, tmprequiredstartday,tmprequiredendday, period);
 		}
 		
 //		((TDXNodesXPeriodExternalData)nodedayperioddata).getKLearnResult ();

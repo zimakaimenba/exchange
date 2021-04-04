@@ -2934,6 +2934,7 @@ public class BanKuaiDbOperation
 				double dapancjl = rs.getDouble("大盘周交易量") ;
 				double cjlzb = rs.getDouble("VOL占比") ;
 				double huanshoulv = rs.getDouble("板块周换手率") ;
+				double huanshoulvfree = rs.getDouble("板块周自由流通换手率") ;
 				double pingjunzongshizhi = rs.getDouble("周平均总市值") ;
 				double pingjunliutongshizhi = rs.getDouble("周平均流通市值") ;
 				double periodhighestzhangdiefu = rs.getDouble("周最大涨跌幅") ;
@@ -2962,6 +2963,7 @@ public class BanKuaiDbOperation
 				stockperiodrecord.setZhangTingNumber(zhangtingnum);
 				stockperiodrecord.setDieTingNumber(dietingnum);
 				stockperiodrecord.setHuanShouLv(huanshoulv);
+				stockperiodrecord.setHuanShouLvFree(huanshoulvfree);
 				stockperiodrecord.setLiuTongShiZhi(pingjunliutongshizhi);
 				stockperiodrecord.setZongShiZhi(pingjunzongshizhi);
 				
