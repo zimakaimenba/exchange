@@ -12,6 +12,7 @@ import org.joda.time.DateTime;
 import org.joda.time.Interval;
 
 import com.exchangeinfomanager.Trees.CreateExchangeTree;
+import com.exchangeinfomanager.commonlib.ExecutePythonScripts;
 import com.exchangeinfomanager.commonlib.SystemAudioPlayed;
 import com.exchangeinfomanager.commonlib.UserSelectingForMultiSameCodeNode;
 import com.exchangeinfomanager.commonlib.WrapLayout;
@@ -329,7 +330,7 @@ public class ImportTDXData extends JDialog {
 //				lines = null;
 			} catch (java.lang.NullPointerException e) {}
 			
-			this.executePythonScriptForExtraData ("EXTRADATAFROMTUSHARE"); //先让后台python script下载当日的extra data
+			ExecutePythonScripts.executePythonScriptForExtraData ("EXTRADATAFROMTUSHARE", null); //先让后台python script下载当日的extra data
 			
 			try {
 				System.out.println("------导入深证股票当日成交信息开始于" +  LocalTime.now());
@@ -358,8 +359,21 @@ public class ImportTDXData extends JDialog {
 		
 		if(chckbximporttushareextradata.isSelected()  )  {
 			System.out.println("------导入TUSHARE EXTRA交易数据开始于" + LocalTime.now() );
+			
+			int trycount =0;
+			while(trycount <=3) {
+				String savedfilename = sysconfig.getTuShareExtraDataDownloadedFilePath () + "/" + LocalDate.now().toString().replaceAll("-", "") + "dailyexchangedata.csv";
+				File savedfile = new File (savedfilename);
+				if(!savedfile.exists()) {
+					ExecutePythonScripts.executePythonScriptForExtraData ("EXTRADATAFROMTUSHARE", null); //先让后台python script下载当日的extra data
+					try {Thread.sleep(1000 * 90);} catch (InterruptedException e) {e.printStackTrace();}
+					trycount ++;
+				} else
+					break;
+			}
+			
 			long start=System.currentTimeMillis(); //获取开始时间
-			try {Thread.sleep(30);} catch (InterruptedException e) {e.printStackTrace();}
+			try {Thread.sleep(1000 * 10);} catch (InterruptedException e) {e.printStackTrace();}
 			bkdbopt.refreshExtraStockDataFromTushare (); //估计当日python EXTRA 数据已经下载完成，这里更新extra数据
 			long end=System.currentTimeMillis(); //获取结束时间
 			System.out.println("......导入TUSHARE EXTRA交易数据结束于" + LocalTime.now() + ".....导入耗费时间： "+(end-start)+"ms \r\n");
@@ -434,45 +448,38 @@ public class ImportTDXData extends JDialog {
 	/*
 	 * 
 	 */
-	public void executePythonScriptForExtraData(String scriptkeywords)  
-	{
-//		try {
-//			Process p = Runtime.getRuntime().exec("C:/Users/Administrator.WIN7U-20140921O/Anaconda3/python E:/stock/stockmanager/thirdparty/python/execsrc/importdailyextradatafromtushare.py");
-//		} catch (IOException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
+//	public void executePythonScriptForExtraData(String scriptkeywords)  
+//	{
+////		try {
+////			Process p = Runtime.getRuntime().exec("C:/Users/Administrator.WIN7U-20140921O/Anaconda3/python E:/stock/stockmanager/thirdparty/python/execsrc/importdailyextradatafromtushare.py");
+////		} catch (IOException e1) {
+////			// TODO Auto-generated catch block
+////			e1.printStackTrace();
+////		}
+//		String pyscriptname = null;
+//		scriptkeywords = scriptkeywords.toUpperCase();
+//		switch (scriptkeywords) {
+//		case "EXTRADATAFROMTUSHARE":
+//			pyscriptname = this.sysconfig.getPythonScriptsPath () + "importdailyextradatafromtushare.py";//"E:/stock/stockmanager/thirdparty/python/execscripts/importdailyextradatafromtushare.py"; //
+//			break;
+//		case "SHAREHOLDER" :
+//			pyscriptname = this.sysconfig.getPythonScriptsPath () + "importshareholder.py";// "E:/stock/stockmanager/thirdparty/python/execscripts/importshareholder.py";
+//			break;
 //		}
-		String pyscriptname = null;
-		scriptkeywords = scriptkeywords.toUpperCase();
-		switch (scriptkeywords) {
-		case "EXTRADATAFROMTUSHARE":
-			pyscriptname = this.sysconfig.getPythonScriptsPath () + "importdailyextradatafromtushare.py";//"E:/stock/stockmanager/thirdparty/python/execscripts/importdailyextradatafromtushare.py"; //
-			break;
-		case "SHAREHOLDER" :
-			pyscriptname = this.sysconfig.getPythonScriptsPath () + "importshareholder.py";// "E:/stock/stockmanager/thirdparty/python/execscripts/importshareholder.py";
-			break;
-		}
-		String pythoninterpreter = this.sysconfig.getPythonInterpreter();
-		ProcessBuilder processBuilder = new ProcessBuilder(pythoninterpreter,pyscriptname );
-	    processBuilder.redirectErrorStream(true);
-
-	    try {
-			Process process = processBuilder.start();
-		} catch (IOException e1) {e1.printStackTrace();		}
-	}
+//		String pythoninterpreter = this.sysconfig.getPythonInterpreter();
+//		ProcessBuilder processBuilder = new ProcessBuilder(pythoninterpreter,pyscriptname );
+//	    processBuilder.redirectErrorStream(true);
+//
+//	    try {
+//			Process process = processBuilder.start();
+//		} catch (IOException e1) {e1.printStackTrace();	}
+//	}
 	/*
 	 * 
 	 */
 	private void checkNodeTuShareExtraDataInDbWithInDataFile(LocalDate startdate, LocalDate enddate) 
 	{
 		List<LocalDate> differencetimelist = getNodeTuShareExtraDataTimeDifferenceInDBWithSpecificTimeRange(startdate, enddate);
-
-		if(differencetimelist.size() > 0)
-			lblbqsjshijianduan.setText("将补全时间段从" + differencetimelist.get(0).toString() + "-" + differencetimelist.get(differencetimelist.size() -1 ) + "约" + String.valueOf(differencetimelist.size() ) + "个数据！");
-		else {
-			lblbqsjshijianduan.setText("数据完整，无需补全。");
-			return;
-		}
 		
 		List<Interval> timeintersection = new ArrayList<> ();
 		LocalDate intervalstart = differencetimelist.get(0);

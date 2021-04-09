@@ -20,11 +20,13 @@ import org.apache.log4j.Logger;
 
 import com.exchangeinfomanager.Trees.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.Trees.CreateExchangeTree;
+import com.exchangeinfomanager.commonlib.ExecutePythonScripts;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.systemconfigration.SetupSystemConfiguration;
+import com.google.common.base.Splitter;
 import com.mysql.jdbc.MysqlDataTruncation;
 import com.opencsv.CSVReader;
 import com.sun.rowset.CachedRowSetImpl;
@@ -152,18 +154,38 @@ public class JiGouGuDongDbOperation
 		if(onlyimportwithjigougudong)
 			jigou = getJiGouList ();
 		
-		String stockcode = stock.getMyOwnCode();
-		String floatcsvfilename = stockcode + "_floatholders.csv";
-		String top10csvfilename = stockcode + "_top10holders.csv";
-		File floatcsvfile = new File(csvfilepath + "/" + floatcsvfilename);
-		File top10csvfile = new File(csvfilepath + "/" + top10csvfilename);
+		Boolean execresult = false; String floatcsvfilename = null; String top10csvfilename = null;
+		List<String> result = ExecutePythonScripts.executePythonScriptForExtraData("FORCETOREFRESHSHAREHOLDER", stock);
+		for(String resultline : result) {
+			if(resultline.toLowerCase().contains("got all data"))
+				execresult = true;
+			else if(resultline.toLowerCase().contains("floatcsvfilename")) {
+//				List<String> tmpbkinfo = Splitter.on("").omitEmptyStrings().splitToList(line); //内蒙板块|880232|3|1|0|32
+				floatcsvfilename = resultline.toLowerCase().replaceAll("floatcsvfilename", "");
+			} else if(resultline.toLowerCase().contains("top10csvfilename")) {
+				resultline.toLowerCase().replaceAll("top10csvfilename", "");
+				top10csvfilename = resultline.toLowerCase().replaceAll("top10csvfilename", "");
+			}
+		}
+		if(!execresult)
+			return stock;
+		
+		floatcsvfilename = floatcsvfilename.substring(1, floatcsvfilename.length()-1);
+		top10csvfilename = top10csvfilename.substring(1, top10csvfilename.length()-1);
+		File floatcsvfile = new File(floatcsvfilename);
+		File top10csvfile = new File(top10csvfilename);
+//		String stockcode = stock.getMyOwnCode();
+//		String floatcsvfilename = stockcode + "_floatholders.csv";
+//		String top10csvfilename = stockcode + "_top10holders.csv";
+//		File floatcsvfile = new File(csvfilepath + "/" + floatcsvfilename);
+//		File top10csvfile = new File(csvfilepath + "/" + top10csvfilename);
 		if (  (!floatcsvfile.exists()  || !floatcsvfile.canRead() ) && (!top10csvfile.exists()  || !top10csvfile.canRead())   ) {  
-				logger.info(stockcode + "股东文件不全或者读取错误。没有导入任何数据。");
+				logger.info(stock.getMyOwnCode() + "股东文件不全或者读取错误。没有导入任何数据。");
 				return stock;
 		}
 
-		readGuDongCsvFile (stock, csvfilepath + "/" + floatcsvfilename, "liutong", jigou);
-//		readGuDongCsvFile (stock, csvfilepath + "/" + top10csvfilename,"gudong");
+		readGuDongCsvFile (stock,  floatcsvfilename, "liutong", jigou);
+//		readGuDongCsvFile (stock,   top10csvfilename,"gudong");
 		
 		return stock;
 	}
@@ -206,7 +228,6 @@ public class JiGouGuDongDbOperation
 			int linenumber = 1; Boolean foundjigou = false;
 			List<String[]> gdlinevalueforoneseason = new ArrayList<>();
 			LocalDate curseasondate = null;
-//			while ( (linevalue = floatcsvreader.readNext() )!=null ) {
 			List<String[]> records = floatcsvreader.readAll();
 			for (String[] linevalue : records) {
 				LocalDate curlinedate;
@@ -248,9 +269,10 @@ public class JiGouGuDongDbOperation
 				foundjigou = false;
 				linenumber ++;
 			}
+			storeGuDongXinToDatabase (stock, gdlinevalueforoneseason, ggtype);
 			records = null;
 		} catch (IOException e) {e.printStackTrace();}
-		
+		return;
 	}
 	/*
 	 * 
@@ -453,6 +475,71 @@ public class JiGouGuDongDbOperation
 	    }
 	    
 	 return nodeset;
+	}
+	/*
+	 * 
+	 */
+	public void checkStockHasHuangQinGuoQieAndMingXin (Stock stock)
+	{
+		String sqlstat = "SELECT * FROM \r\n" + 
+				"(\r\n" + 
+				"SELECT *, \r\n" + 
+				"IF (机构名称 REGEXP  \r\n" + 
+				" (SELECT \r\n" + 
+				" GROUP_CONCAT(DISTINCT 机构名称 SEPARATOR '|')\r\n" + 
+				"FROM 机构股东\r\n" + 
+				"WHERE 皇亲国戚 = TRUE  )\r\n" + 
+				", TRUE, FALSE ) AS HQGQ ,\r\n" + 
+				"\r\n" + 
+				"IF (机构名称 REGEXP  \r\n" + 
+				" (SELECT \r\n" + 
+				" GROUP_CONCAT(DISTINCT 机构名称 SEPARATOR '|')\r\n" + 
+				"FROM 机构股东\r\n" + 
+				"WHERE 明星 = TRUE )\r\n" + 
+				", TRUE, FALSE ) AS MX\r\n"  
+				+ "FROM 股票股东对应表\r\n" + 
+				"WHERE 机构名称 REGEXP  \r\n" + 
+				" (SELECT \r\n" + 
+				"   GROUP_CONCAT(DISTINCT 机构名称 SEPARATOR '|')\r\n" + 
+				"FROM 机构股东\r\n" + 
+				"WHERE 皇亲国戚 = TRUE OR 明星 = TRUE )\r\n" + 
+				"AND 代码 =  '" + stock.getMyOwnCode() + "' \r\n" + 
+				"GROUP BY 股票股东对应表.`代码`, 股票股东对应表.`股东日期` \r\n" + 
+				"ORDER  BY 股票股东对应表.`股东日期` DESC \r\n" + 
+				") gd\r\n" + 
+				"LEFT  JOIN \r\n" + 
+				"(\r\n" + 
+				"SELECT 股票股东对应表.`代码` dm,  MAX( 股票股东对应表.`股东日期`)  maxgdrq \r\n" + 
+				"FROM 股票股东对应表\r\n" + 
+				"WHERE 代码 =  '" + stock.getMyOwnCode() + "' \r\n" + 
+				"GROUP BY 股票股东对应表.`代码`)  gdmaxtime\r\n" + 
+				"ON gd.`代码` = gdmaxtime.dm"
+				;
+
+		CachedRowSetImpl  rs = connectdb.sqlQueryStatExecute(sqlstat);
+		try {
+			while(rs.next() ) {
+				Boolean hqgq = rs.getBoolean("HQGQ");
+				Boolean mx = rs.getBoolean("MX");
+				LocalDate gddate = rs.getDate("股东日期").toLocalDate();
+				if(hqgq)
+					stock.getNodeJiBenMian().addGuDongHqgqInterval (gddate);
+				if(mx)
+					stock.getNodeJiBenMian().addGuDongMinXingInterval (gddate);
+				
+				LocalDate maxgdrq = rs.getDate("maxgdrq").toLocalDate(); //最新研报日期
+				stock.getNodeJiBenMian().setLastestCaiBaoDate(maxgdrq);
+			}
+		} catch(java.lang.NullPointerException e) {
+	    } catch(Exception e){e.printStackTrace();
+	    } finally {
+	    	if(rs != null)
+			try { rs.close();rs = null;
+			} catch (SQLException e) {e.printStackTrace();}
+	    }
+		
+		return;
+	
 	}
 	/*
 	 * 

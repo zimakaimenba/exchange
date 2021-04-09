@@ -700,7 +700,7 @@ public class StockInfoManager
 				        case "state":
 				          switch ((StateValue) eventexport.getNewValue()) {
 				          case DONE:
-				        	setGetNodeDataFromDbWhenSystemIdleThreadStatus(true);
+				        	setGetNodeDataFromDbWhenSystemIdleThreadStatus(false);
 				      		 break;
 				          case STARTED:
 				          case PENDING:
@@ -1033,6 +1033,7 @@ public class StockInfoManager
 			      return;
 			}	
 		});
+		
 		mntmRefreshgudong.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent arg0)
 			{
@@ -1237,12 +1238,22 @@ public class StockInfoManager
 			}
 		});
 		
-		btnSlack.addMouseListener(new MouseAdapter() 
+		btnRrfhGuDong.addMouseListener(new MouseAdapter() 
 		{
 			@Override
 			public void mousePressed(MouseEvent arg0) 
 			{
-				bkdbopt.refreshTDXDrawLineInfo (null);
+				BkChanYeLianTreeNode node = cBxstockcode.getUserInputNode();
+				if(node.getType() != BkChanYeLianTreeNode.TDXGG)
+					return;
+				
+				((Stock)node).getNodeJiBenMian().setGuDongInfo(null);
+				ServicesOfNodeStock svsjg = ((Stock)node).getServicesOfNodeStock();
+				svsjg.refreshStockGuDong( (Stock)node, true, true );
+				svsjg = null;
+				
+				refreshGudongInfo ( (Stock)node );
+ 				return;
 			}
 		});
 		
@@ -1250,11 +1261,8 @@ public class StockInfoManager
 		
 		btnCaiwufengxi.addMouseListener(new MouseAdapter() 
 		{
-			
-		
 			public void mousePressed(MouseEvent e) 
 			{
-
 			}
 		});
 		
@@ -2052,7 +2060,7 @@ public class StockInfoManager
 			btnRongzirongquan.setEnabled(true);
 			btnXueqiu.setEnabled(true);
 			btnhudongyi.setEnabled(true);
-			btnSlack.setEnabled(true);
+			btnRrfhGuDong.setEnabled(true);
 			btnEnableChklsts.setEnabled(true);
 			btnXueQiu.setEnabled(true);
 			btnSearch.setEnabled(true);
@@ -2169,7 +2177,7 @@ public class StockInfoManager
 	private JButton btnexportcsv;
 	private JButton btnCaiwufengxi;
 	private JStockComboBox cBxstockcode;
-	private JButton btnSlack;
+	private JButton btnRrfhGuDong;
 	private JMenuItem mntmopenlcldbfile;
 	private JTable tblzhongdiangz;
 	private CheckBoxTree checklisttree = null;
@@ -2739,11 +2747,11 @@ public class StockInfoManager
 		btnhudongyi.setToolTipText("\u5173\u952E\u8BCD\u7BA1\u7406");
 		btnhudongyi.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/tags (1).png")));
 		
-		btnSlack = new JButton("");
+		btnRrfhGuDong = new JButton("");
 		
-		btnSlack.setToolTipText("Slack");
-		btnSlack.setEnabled(false);
-		btnSlack.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/social_round_slack_24px_1196575_easyicon.net.png")));
+		btnRrfhGuDong.setToolTipText("Slack");
+		btnRrfhGuDong.setEnabled(false);
+		btnRrfhGuDong.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/social_round_slack_24px_1196575_easyicon.net.png")));
 		
 		btnEnableChklsts = new JButton("");
 		
@@ -2789,7 +2797,7 @@ public class StockInfoManager
 							.addPreferredGap(ComponentPlacement.UNRELATED)
 							.addComponent(btnexportcsv, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(btnSlack, GroupLayout.PREFERRED_SIZE, 36, GroupLayout.PREFERRED_SIZE)
+							.addComponent(btnRrfhGuDong, GroupLayout.PREFERRED_SIZE, 36, GroupLayout.PREFERRED_SIZE)
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(btnXueQiu, GroupLayout.PREFERRED_SIZE, 36, GroupLayout.PREFERRED_SIZE)
 							.addGap(100))))
@@ -2809,7 +2817,7 @@ public class StockInfoManager
 							.addComponent(btnSearchCode, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 31, Short.MAX_VALUE))
 						.addGroup(gl_panel_2.createParallelGroup(Alignment.TRAILING, false)
 							.addComponent(btnXueQiu, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-							.addComponent(btnSlack, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+							.addComponent(btnRrfhGuDong, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_panel_2.createParallelGroup(Alignment.TRAILING)
 						.addComponent(btnCaiwufengxi, GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)

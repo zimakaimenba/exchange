@@ -50,10 +50,15 @@ public class SvsForNodeOfStock implements ServicesForNode, ServicesOfNodeStock
 		node = bkdbopt.getStockBasicInfo (node);
 		return node;
 	}
-
+	public BkChanYeLianTreeNode checkStockHasHuangQinGuoQieAndMingXin(Stock node, LocalDate requiredstart, LocalDate requiredend)
+	{
+		this.jgdbopt.checkStockHasHuangQinGuoQieAndMingXin (node);
+		return node;
+	}
 	public BkChanYeLianTreeNode getStockGuDong(Stock node, String gudongtype ,LocalDate requiredstart, LocalDate requiredend)
 	{
 		node = this.jgdbopt.getStockGuDong (node, gudongtype, requiredstart, requiredend);
+		this.checkStockHasHuangQinGuoQieAndMingXin (node,  requiredstart, requiredend);
 		return node;
 	} 
 	@Override
@@ -287,13 +292,13 @@ public class SvsForNodeOfStock implements ServicesForNode, ServicesOfNodeStock
 			return ;
 		
 		this.getNodeSuoShuBanKuaiList(stock); //先取得板块信息，可以用来在TABLE过滤
+		this.getStockGuDong( stock, "LIUTONG", bkamostartday, bkamoendday);
 		
 		if(bkohlcstartday == null) {
 			bkohlcstartday = bkamostartday;
 			bkohlcendday = bkamoendday;
 			stk = this.getNodeKXian(stk, bkohlcstartday,bkohlcendday, NodeGivenPeriodDataItem.DAY,true);
-//			this.getStockGuDong( stock, "LIUTONG", bkohlcstartday, bkohlcendday);
-			
+						
 			if( !stock.isNodeDataAtNotCalWholeWeekMode() )
 				this.getNodeQueKouInfo(stock, bkohlcstartday, bkohlcendday, NodeGivenPeriodDataItem.DAY);
 			
