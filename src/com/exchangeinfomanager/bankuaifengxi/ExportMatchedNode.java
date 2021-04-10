@@ -80,8 +80,9 @@ public class ExportMatchedNode
 				
 				childnode = svsbk.getAllGeGuOfBanKuai((BanKuai) childnode);
 				Collection<BkChanYeLianTreeNode> nowbkallgg = ((BanKuai)childnode).getSpecificPeriodBanKuaiGeGu(exportdate,0);
-				for (BkChanYeLianTreeNode ggstock : nowbkallgg) 
-					this.checkStockMatchedCurSettingConditions ((Stock)ggstock, checkednodesset, matchednodeset,exportdate,period);
+				if(nowbkallgg != null)
+					for (BkChanYeLianTreeNode ggstock : nowbkallgg) 
+						this.checkStockMatchedCurSettingConditions ((Stock)ggstock, checkednodesset, matchednodeset,exportdate,period);
 			}
 			
 			if(childnode.getType() == BkChanYeLianTreeNode.TDXGG  ) { //只有在导出所有板块个股的时候才会用到这里，否则个股都在前面检查了

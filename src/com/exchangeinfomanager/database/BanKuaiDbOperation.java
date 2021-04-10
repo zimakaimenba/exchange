@@ -4599,7 +4599,8 @@ public class BanKuaiDbOperation
 //		            		}
 		            		
 			                String sqlupdate = "Update " + optTable + " SET " +
-			                					"     自由流通换手率=" + turnover_rate_f + 
+			                					"  自由流通换手率=" + turnover_rate_f +
+			                					"  , 换手率=" + turnover_rate +
 			                					" WHERE 交易日期 = '" + ldlastestdbrecordsdate + "'" + 
 			                					" AND 代码= '" + stockcode + "'"
 			                					;
@@ -6487,19 +6488,19 @@ public class BanKuaiDbOperation
 				optTable = "通达信深交所股票每日交易信息";
 			else if(jiaoyisuo.equalsIgnoreCase("SH") )
 				optTable = "通达信上交所股票每日交易信息";
-			CachedRowSetImpl  rsdm = null;
+			
+			String sqlquerystat = "SELECT * FROM \r\n" + 
+					"(SELECT 股票代码  FROM A股\r\n" + 
+					"WHERE 所属交易所 = '" + jiaoyisuo + "' ) agu\r\n" + 
+					"\r\n" + 
+					"LEFT JOIN \r\n" + 
+					"( SELECT 代码, MIN(交易日期) minjytime , MAX(交易日期) maxjytime FROM " + optTable + "\r\n" + 
+					" WHERE  换手率 IS NOT NULL AND 总市值 IS  NOT NULL AND 流通市值 IS  NOT NULL" +
+					" GROUP BY 代码) shjyt\r\n" + 
+					" ON agu.股票代码 =  shjyt.`代码`\r\n"
+					;
+			CachedRowSetImpl  rsdm = connectdb.sqlQueryStatExecute(sqlquerystat);
 			try { 	
-				String sqlquerystat = "SELECT * FROM \r\n" + 
-						"(SELECT 股票代码  FROM A股\r\n" + 
-						"WHERE 所属交易所 = '" + jiaoyisuo + "' ) agu\r\n" + 
-						"\r\n" + 
-						"LEFT JOIN \r\n" + 
-						"( SELECT 代码, MIN(交易日期) minjytime , MAX(交易日期) maxjytime FROM " + optTable + "\r\n" + 
-						" WHERE  换手率 IS NOT NULL AND 总市值 IS  NOT NULL AND 流通市值 IS  NOT NULL" +
-						" GROUP BY 代码) shjyt\r\n" + 
-						" ON agu.股票代码 =  shjyt.`代码`\r\n"
-						;
-		    	rsdm = connectdb.sqlQueryStatExecute(sqlquerystat);
 		    	while(rsdm.next()) {
 			    		 String ggcode = rsdm.getString("股票代码"); //mOST_RECENT_TIME
 			    		 Stock stock = (Stock) CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode(ggcode, BkChanYeLianTreeNode.TDXGG);
@@ -6532,8 +6533,6 @@ public class BanKuaiDbOperation
 				else 
 					formatedstockcode = "1" + stockcode;
 				
-				
-				
 				LocalDate ldlastestdbrecordsdate = stock.getShuJuJiLuInfo().getNeteasejlmaxdate();
 			   if(ldlastestdbrecordsdate == null)
 				   ldlastestdbrecordsdate =  LocalDate.parse("2013-03-04"); //当前数据的起点
@@ -6541,9 +6540,9 @@ public class BanKuaiDbOperation
 				   ldlastestdbrecordsdate = ldlastestdbrecordsdate.plusDays(1); //从最新数据的后一天开始导入数据
 			   
 			   
-				 if( ( ldlastestdbrecordsdate.getDayOfWeek() == DayOfWeek.SUNDAY || ldlastestdbrecordsdate.getDayOfWeek() == DayOfWeek.SATURDAY  )
-						 && ( LocalDate.now().getDayOfWeek() == DayOfWeek.SUNDAY || LocalDate.now().getDayOfWeek() == DayOfWeek.SATURDAY   )  ) //开始导入数据日期一直到今天是周末，肯定不需要导入
-					 continue;
+//				 if( ( ldlastestdbrecordsdate.getDayOfWeek() == DayOfWeek.SUNDAY || ldlastestdbrecordsdate.getDayOfWeek() == DayOfWeek.SATURDAY  )
+//						 && ( LocalDate.now().getDayOfWeek() == DayOfWeek.SUNDAY || LocalDate.now().getDayOfWeek() == DayOfWeek.SATURDAY   )  ) //开始导入数据日期一直到今天是周末，肯定不需要导入
+//					 continue;
 				    
 				    //获取网易文件
 				    URL URLink; //https://blog.csdn.net/NarutoInspire/article/details/72716724
