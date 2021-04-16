@@ -1037,6 +1037,9 @@ public class StockInfoManager
 		mntmRefreshgudong.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent arg0)
 			{
+				Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
+				frame.setCursor(hourglassCursor);
+				
 				BkChanYeLianTreeNode node = cBxstockcode.getUserInputNode();
 				if(node.getType() != BkChanYeLianTreeNode.TDXGG)
 					return;
@@ -1047,6 +1050,10 @@ public class StockInfoManager
 				svsjg = null;
 				
 				refreshGudongInfo ( (Stock)node );
+				
+				hourglassCursor = null;
+				Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
+				frame.setCursor(hourglassCursor2);
 				
  				return;
 			}	
@@ -1243,6 +1250,9 @@ public class StockInfoManager
 			@Override
 			public void mousePressed(MouseEvent arg0) 
 			{
+				Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
+				frame.setCursor(hourglassCursor);
+				
 				BkChanYeLianTreeNode node = cBxstockcode.getUserInputNode();
 				if(node.getType() != BkChanYeLianTreeNode.TDXGG)
 					return;
@@ -1253,6 +1263,10 @@ public class StockInfoManager
 				svsjg = null;
 				
 				refreshGudongInfo ( (Stock)node );
+				
+				hourglassCursor = null;
+				Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
+				frame.setCursor(hourglassCursor2);
  				return;
 			}
 		});
@@ -1682,7 +1696,6 @@ public class StockInfoManager
 			ggfx.toFront();
 			
 //			SystemAudioPlayed.playSound();
-			
 			hourglassCursor = null;
 			Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
 			this.frame.setCursor(hourglassCursor2);

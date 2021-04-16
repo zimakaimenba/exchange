@@ -4601,6 +4601,8 @@ public class BanKuaiDbOperation
 			                String sqlupdate = "Update " + optTable + " SET " +
 			                					"  自由流通换手率=" + turnover_rate_f +
 			                					"  , 换手率=" + turnover_rate +
+			                					"  , 总市值=" + total_mv +
+			                					"  , 流通市值= " + circ_mv +
 			                					" WHERE 交易日期 = '" + ldlastestdbrecordsdate + "'" + 
 			                					" AND 代码= '" + stockcode + "'"
 			                					;
@@ -6495,7 +6497,7 @@ public class BanKuaiDbOperation
 					"\r\n" + 
 					"LEFT JOIN \r\n" + 
 					"( SELECT 代码, MIN(交易日期) minjytime , MAX(交易日期) maxjytime FROM " + optTable + "\r\n" + 
-					" WHERE  换手率 IS NOT NULL AND 总市值 IS  NOT NULL AND 流通市值 IS  NOT NULL" +
+					" WHERE  涨跌幅 IS NOT NULL " +
 					" GROUP BY 代码) shjyt\r\n" + 
 					" ON agu.股票代码 =  shjyt.`代码`\r\n"
 					;
@@ -6517,9 +6519,7 @@ public class BanKuaiDbOperation
 			    } catch (SQLException e) {	e.printStackTrace();
 			    } catch(Exception e){	e.printStackTrace();
 			    } finally {
-			    	if(rsdm != null)
-					try {rsdm.close();rsdm = null;
-					} catch (SQLException e) {	e.printStackTrace();}
+			    	if(rsdm != null)	try {rsdm.close();rsdm = null;	} catch (SQLException e) {	e.printStackTrace();}
 			    }
 
 			//下载需要的时间段的数据
@@ -6572,7 +6572,7 @@ public class BanKuaiDbOperation
 						
 						FileUtils.copyURLToFile(URLink, savedfile,10000,10000); //http://commons.apache.org/proper/commons-io/javadocs/api-2.4/org/apache/commons/io/FileUtils.html#copyURLToFile(java.net.URL,%20java.io.File)
 					} catch (java.net.SocketTimeoutException e)  {logger.info("获取" + stockcode + "网易数据超时！");
-					} catch ( IOException e) {
+					} catch ( IOException e) { e.printStackTrace();
 					} finally {URLink = null;
 					}
 					//导入数据到数据库
@@ -6646,20 +6646,20 @@ public class BanKuaiDbOperation
 					            			String liutongshizhi_str = nextRecord[ltsz_index]; if(!Strings.isNullOrEmpty(liutongshizhi_str)) liutongshizhi = Double.parseDouble(liutongshizhi_str);
 					            		}
 						                
-						                String sqlupdateorinsert = "INSERT INTO " + optTable + "(涨跌幅,换手率,流通市值,总市值) VALUES("
-						                							+ zhangdiefu + "," 
-						                							+ huanshoulv + ","
-						                							+ liutongshizhi + ","
-						                							+ zongshizhi
-						                							+ ") ON DUPLICATE KEY UPDATE" 
-						                							+ "交易日期 = '" + lactiondate + "'," 
-						                							+ "代码= '" + stockcode + "'"
-						                							;	
+//						                String sqlupdateorinsert = "INSERT INTO " + optTable + "(涨跌幅,换手率,流通市值,总市值) VALUES("
+//						                							+ zhangdiefu + "," 
+//						                							+ huanshoulv + ","
+//						                							+ liutongshizhi + ","
+//						                							+ zongshizhi
+//						                							+ ") ON DUPLICATE KEY UPDATE" 
+//						                							+ "交易日期 = '" + lactiondate + "'," 
+//						                							+ "代码= '" + stockcode + "'"
+//						                							;	
 						                String sqlupdate = "Update " + optTable + " SET " +
-						                					" 涨跌幅=" + zhangdiefu + "," +
-						                					" 换手率=" + huanshoulv + "," +
-						                					" 流通市值= " + liutongshizhi + "," +
-						                					" 总市值= " + zongshizhi +
+						                					" 涨跌幅=" + zhangdiefu + 
+//						                					" ,换手率=" + huanshoulv + 
+//						                					" ,流通市值= " + liutongshizhi + 
+//						                					" ,总市值= " + zongshizhi +
 						                					" WHERE 交易日期 = '" + lactiondate + "'" + 
 						                					" AND 代码= '" + stockcode + "'"
 						                					;

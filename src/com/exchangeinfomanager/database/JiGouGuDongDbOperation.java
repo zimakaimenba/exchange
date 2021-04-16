@@ -167,8 +167,10 @@ public class JiGouGuDongDbOperation
 				top10csvfilename = resultline.toLowerCase().replaceAll("top10csvfilename", "");
 			}
 		}
-		if(!execresult)
+		if(!execresult) {
+			System.out.println("Refresh GuDong info failed. Error Info: " + result);
 			return stock;
+		}
 		
 		floatcsvfilename = floatcsvfilename.substring(1, floatcsvfilename.length()-1);
 		top10csvfilename = top10csvfilename.substring(1, top10csvfilename.length()-1);
@@ -207,12 +209,13 @@ public class JiGouGuDongDbOperation
 	 */
 	private void readGuDongCsvFile (BkChanYeLianTreeNode stock, String gdfile ,String ggtype,Set<String> jigou)
 	{
+		System.out.print("Get Gudong info from" + gdfile);
 		LocalDate[] currecorddate = getCurrentStockGuDongDateRange (stock, ggtype);
 		if(currecorddate[0] == null)
 			currecorddate[0] = LocalDate.parse("3990-01-01");
 		if(currecorddate[1] == null)
 			currecorddate[1] = LocalDate.parse("3990-12-01");
-		CSVReader floatcsvreader = null;
+		CSVReader floatcsvreader = null; 
 		try {
 			floatcsvreader=new CSVReader(
 				    new InputStreamReader(new FileInputStream(gdfile), "UTF-8"), 
@@ -271,7 +274,9 @@ public class JiGouGuDongDbOperation
 			}
 			storeGuDongXinToDatabase (stock, gdlinevalueforoneseason, ggtype);
 			records = null;
-		} catch (IOException e) {e.printStackTrace();}
+		} catch (IOException e) {e.printStackTrace();
+		} finally {	try { floatcsvreader.close();	} catch (IOException e) {e.printStackTrace(); }		}
+		
 		return;
 	}
 	/*
