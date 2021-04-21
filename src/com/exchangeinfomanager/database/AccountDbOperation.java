@@ -732,14 +732,13 @@ public class AccountDbOperation
 		String sqlquerystat = "SELECT *  FROM " + actiontable 
 				+ " WHERE ID=" + databaseid 
 				;
-		//logger.dubug(sqlquerystat);
 		
 		BuyStockNumberPrice stocknumberpricepanel = null;
 		String shuoming = null;
 		CachedRowSetImpl rs = connectdb.sqlQueryStatExecute(sqlquerystat);
 		try {
 			rs.first();
-			Date actionday = rs.getDate("日期");
+			LocalDateTime actionday = rs.getTimestamp("日期").toLocalDateTime();
 			String stockcode = rs.getString("股票代码").trim();
 			int gushu = rs.getInt("买卖股数");
 			double chengben = rs.getDouble("买卖金额");
@@ -747,7 +746,7 @@ public class AccountDbOperation
 			String actionacnt = rs.getString("买卖账号").trim();
 
 			stocknumberpricepanel = new BuyStockNumberPrice(stockcode,null,maimaisign);
-			stocknumberpricepanel.setActionDay(actionday.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+			stocknumberpricepanel.setActionDay(actionday);
 			stocknumberpricepanel.setJiaoYiGuShu(gushu);
 			stocknumberpricepanel.setJiaoYiJiaGe(chengben/gushu);
 			stocknumberpricepanel.setJiaoyiZhanghu(actionacnt);

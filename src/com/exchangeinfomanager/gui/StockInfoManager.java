@@ -1083,11 +1083,11 @@ public class StockInfoManager
 			{
 				int rowIndex = tblzhongdiangz.getSelectedRow();
 				String actiontype = (String)((DefaultTableModel)tblzhongdiangz.getModel()).getValueAt(rowIndex, 1);
- 				String actiondate = (String)((DefaultTableModel)tblzhongdiangz.getModel()).getValueAt(rowIndex, 0);
- 				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
- 				LocalDateTime ldactiondate = LocalDateTime.parse(actiondate, formatter);
- 				
-				if(actiontype.contains("挂单") && !ldactiondate.toLocalDate().isEqual(LocalDate.now() )  ) {    
+// 				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+// 				LocalDateTime ldactiondate = LocalDateTime.parse(actiondate, formatter);
+				
+				java.sql.Date actiondate = (java.sql.Date)((DefaultTableModel)tblzhongdiangz.getModel()).getValueAt(rowIndex, 0);
+				if(actiontype.contains("挂单") && !actiondate.toLocalDate().isEqual(LocalDate.now() )  ) {    
 					JOptionPane.showMessageDialog(null,"只有今日挂单可以转为成交，历史挂单不可以转为成交！");
 					return ;
 				} else if( !actiontype.contains("挂单") ) {
@@ -2147,10 +2147,8 @@ public class StockInfoManager
 				List<Object[]> sellbuyObjects = (nodeshouldbedisplayed).getNodeJiBenMian().getZdgzmrmcykRecords();
 				if(sellbuyObjects == null)
 					return;
-				for(int i=0;i<sellbuyObjects.size();i++) {
+				for(int i=0;i<sellbuyObjects.size();i++) 
 					((DefaultTableModel)tblzhongdiangz.getModel()).addRow(sellbuyObjects.get(i));
-				}
-
 	}
 	
 	private void setTableNewInfoToDB(Object[] tableData) 

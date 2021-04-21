@@ -76,7 +76,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	if(column_info_valueformat != null)
         		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_info_valueformat);
         	
-        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
+//        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
         	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
         	
         	break;
@@ -97,7 +97,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	if(column_info_valueformat != null)
         		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_info_valueformat);
 
-        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
+//        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
         	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
         	break;
         case 2:
@@ -117,7 +117,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	if(column_info_valueformat != null)
         		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_info_valueformat);
         	
-        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
+//        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
         	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
         	break;
         case 3:
@@ -137,7 +137,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	if(column_info_valueformat != null)
         		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_info_valueformat);
         	
-        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
+//        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
         	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
         	break;
         case 4:
@@ -157,7 +157,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	if(column_info_valueformat != null)
         		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_info_valueformat);
         	
-        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
+//        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
         	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
         	break;
         case 5:
@@ -177,7 +177,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	if(column_info_valueformat != null)
         		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_info_valueformat);
         	
-        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
+//        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
         	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
         	break;
         case 6:
@@ -197,7 +197,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	if(column_info_valueformat != null)
         		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_info_valueformat);
         	
-        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
+//        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
         	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
         	break;
         case 7:
@@ -217,7 +217,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	if(column_info_valueformat != null)
         		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_info_valueformat);
 
-        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
+//        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
         	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
         	break;
         case 8:
@@ -237,7 +237,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	if(column_info_valueformat != null)
         		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_info_valueformat);
 
-        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
+//        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
         	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
         	break;
         case 9:
@@ -257,7 +257,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	if(column_info_valueformat != null)
         		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_info_valueformat);
 
-        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
+//        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
         	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
         	break;
 
@@ -278,7 +278,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	if(column_info_valueformat != null)
         		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_info_valueformat);
 
-        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
+//        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
         	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
         	break;
 	    };
