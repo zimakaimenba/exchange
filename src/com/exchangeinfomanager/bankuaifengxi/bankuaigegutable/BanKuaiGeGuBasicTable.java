@@ -194,7 +194,7 @@ public abstract class BanKuaiGeGuBasicTable extends BanKuaiandGeGuTableBasic
 	
 		stockofbankuai.setBkLongTou(!stockofbankuai.isBkLongTou());
 
-		BanKuai bk = ((BanKuaiGeGuBasicTableModel)this.getModel()).getCurDispalyBandKuai();
+		BanKuai bk = (BanKuai)((BanKuaiGeGuBasicTableModel)this.getModel()).getCurDispalyBandKuai();
 		bkdbopt.setBanKuaiLongTou (bk,stockofbankuai.getMyOwnCode(),stockofbankuai.isBkLongTou());
 	}
 

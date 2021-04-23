@@ -24,10 +24,7 @@ import com.exchangeinfomanager.nodes.BanKuai;
 
 public class BanKuaiGeGuExternalInfoTableFromPropertiesFile extends BanKuaiGeGuBasicTable //implements BanKuaiGeGuMatchConditionListener
 {
-	
-
 	private String systeminstalledpath;
-//	private Properties prop;
 	private BanKuaiGeGuBasicTableRenderer renderer;
 
 	public BanKuaiGeGuExternalInfoTableFromPropertiesFile (StockInfoManager stockmanager1, String propfile)
@@ -91,7 +88,7 @@ public class BanKuaiGeGuExternalInfoTableFromPropertiesFile extends BanKuaiGeGuB
 		int modelRow = this.convertRowIndexToModel(row);
 		
 //		BkChanYeLianTreeNode curselectedbknode = (BkChanYeLianTreeNode) treechanyelian.getLastSelectedPathComponent();
-		BanKuai bkcode = ((BanKuaiGeGuBasicTableModel)this.getModel()).getCurDispalyBandKuai();
+		BanKuai bkcode = (BanKuai)((BanKuaiGeGuBasicTableModel)this.getModel()).getCurDispalyBandKuai();
 		String stockcode = ((BanKuaiGeGuBasicTableModel)(this.getModel())).getNodeCode(modelRow);
 		int weight = ((BanKuaiGeGuExternalInfoTableModelFromPropertiesFile)(this.getModel())).getStockCurWeight (modelRow);
 		

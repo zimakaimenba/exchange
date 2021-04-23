@@ -760,6 +760,35 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 		return (avecjecur - avecjelast) / avecjelast;
 	}
 
+	@Override
+	public Double getChenJiaoLiangChangeGrowthRateOfSuperBanKuaiOnDailyAverage(TDXNodes superbk, LocalDate requireddate,
+			int difference) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Double getChengJiaoLiangDailyAverageDifferenceWithLastPeriod(LocalDate requireddate, int difference) 
+	{
+		String recordsperiod = getNodeperiodtype();
+		
+		NodeXPeriodData shanghaiperiodrecords = shanghai.getNodeXPeroidData(recordsperiod);
+		Double shdiff = shanghaiperiodrecords.getChengJiaoLiangDailyAverageDifferenceWithLastPeriod(requireddate,difference);
+		
+		NodeXPeriodData shenzhenperiodrecords = shenzhen.getNodeXPeroidData(recordsperiod);
+		Double szcurrecord = shenzhenperiodrecords.getChengJiaoLiangDailyAverageDifferenceWithLastPeriod(requireddate,difference);
+		
+		if(shdiff == null)
+			return null;
+		try {
+			double result = shdiff + szcurrecord; 
+			return result;
+		} catch ( java.lang.NullPointerException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
 
 }
 

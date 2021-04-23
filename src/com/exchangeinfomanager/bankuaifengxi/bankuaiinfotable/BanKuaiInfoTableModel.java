@@ -11,6 +11,7 @@ import javax.swing.table.DefaultTableModel;
 
 import org.apache.log4j.Logger;
 
+import com.exchangeinfomanager.Trees.CreateExchangeTree;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchCondition;
 import com.exchangeinfomanager.bankuaifengxi.BankuaiAndGeguTableBasic.BandKuaiAndGeGuTableBasicModel;
 import com.exchangeinfomanager.bankuaifengxi.bankuaigegutable.NodeChenJiaoErComparator;
@@ -37,7 +38,8 @@ public class BanKuaiInfoTableModel extends BandKuaiAndGeGuTableBasicModel
 		super.showwknum = curselectdate;
 		super.difference = difference2;
 		super.curperiod = period;
-
+		super.curbk = (DaPan)CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getModel().getRoot();
+		
 		try{
 			if(entryList != null) //∞¥≥…Ωª∂Ó≈≈–Ú
 				Collections.sort(entryList, new NodeChenJiaoErComparator(showwknum,difference,curperiod) );

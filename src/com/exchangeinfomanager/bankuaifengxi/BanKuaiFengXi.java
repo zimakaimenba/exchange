@@ -486,7 +486,7 @@ public class BanKuaiFengXi extends JDialog
 				showReminderMessage (bkfxremind.getBankuairemind() );
 		
 		((BanKuaiGeGuBasicTableModel)tableTempGeGu.getModel()).setInterSectionBanKuai(selectedbk); //为临时个股突出和当前板块交集个股做准备
-		BanKuai tmpbk = ((BanKuaiGeGuBasicTableModel)tableTempGeGu.getModel()).getCurDispalyBandKuai();
+		BanKuai tmpbk = (BanKuai)((BanKuaiGeGuBasicTableModel)tableTempGeGu.getModel()).getCurDispalyBandKuai();
 		if(tmpbk != null) {
 			((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).setInterSectionBanKuai(tmpbk); //也突出和临时板块有交集的板块
 		} else
@@ -1588,7 +1588,7 @@ public class BanKuaiFengXi extends JDialog
         		BanKuai bk = null;
         		String selecttitle = tabbedPanegegu.getTitleAt( tabbedPanegegu.getSelectedIndex() );
         		if(selecttitle.contains("临时")) {
-        			bk = ((BanKuaiGeGuBasicTableModel)tableTempGeGu.getModel()).getCurDispalyBandKuai();
+        			bk = (BanKuai)((BanKuaiGeGuBasicTableModel)tableTempGeGu.getModel()).getCurDispalyBandKuai();
         		} else {
         			int row = tableBkZhanBi.getSelectedRow();
         			int modelRow = tableBkZhanBi.convertRowIndexToModel(row);
@@ -2480,7 +2480,7 @@ public class BanKuaiFengXi extends JDialog
 				tempbankuai = new BanKuai ("TEMPBANKUAI","TEMPBANKUAI");
 				tempbankuai.setBanKuaiLeiXing (BanKuai.HASGGWITHSELFCJL);
 			} else
-				tempbankuai = ((BanKuaiGeGuBasicTableModel)tableTempGeGu.getModel()).getCurDispalyBandKuai();
+				tempbankuai = (BanKuai)((BanKuaiGeGuBasicTableModel)tableTempGeGu.getModel()).getCurDispalyBandKuai();
 		} else {
 			tempbankuai = new BanKuai ("TEMPBANKUAI","TEMPBANKUAI");
 			tempbankuai.setBanKuaiLeiXing (BanKuai.HASGGWITHSELFCJL);
@@ -2534,7 +2534,7 @@ public class BanKuaiFengXi extends JDialog
 		
 		((BanKuaiGeGuTableModelFromPropertiesFile)tableTempGeGu.getModel()).refresh(tempbankuai, curselectdate,globeperiod); 
 		
-		BanKuai curmainbk = ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).getCurDispalyBandKuai(); //突出和当前主板块的交集个股
+		BanKuai curmainbk = (BanKuai)((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).getCurDispalyBandKuai(); //突出和当前主板块的交集个股
 		if(curmainbk != null) {
 			((BanKuaiGeGuBasicTableModel)tableTempGeGu.getModel()).setInterSectionBanKuai(curmainbk); 
 			((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).setInterSectionBanKuai(tempbankuai);

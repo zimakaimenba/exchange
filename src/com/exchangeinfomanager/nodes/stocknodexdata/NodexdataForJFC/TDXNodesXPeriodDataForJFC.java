@@ -921,6 +921,46 @@ import com.udojava.evalex.Expression;
 				return null;
 		}
 	 @Override
+	 public Double getChengJiaoLiangDailyAverageDifferenceWithLastPeriod (LocalDate requireddate,int difference)
+	 {
+
+			if(nodeohlc == null)
+				return null;
+			
+			RegularTimePeriod curperiod = super.getJFreeChartFormateTimePeriodForAMO(requireddate,difference) ;
+			if(curperiod == null)
+				return null;
+			
+			TimeSeriesDataItem curcjlrecord = nodevol.getDataItem( curperiod );
+			if( curcjlrecord == null) 
+				return null;
+			
+			Integer curexchangedaynum = super.getExchangeDaysNumberForthePeriod(requireddate,difference);
+			int index = nodevol.getIndex(curperiod);
+			try{
+				TimeSeriesDataItem lastcjlrecord = nodevol.getDataItem( index -1 );
+				if(lastcjlrecord == null) 
+					return null;
+				
+				RegularTimePeriod lastp = lastcjlrecord.getPeriod();
+				Date end = lastp.getEnd();
+				LocalDate lastdate = end.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+				Integer lastexchangedaynum = super.getExchangeDaysNumberForthePeriod(lastdate,difference);
+				
+				double curcje = curcjlrecord.getValue().doubleValue() ;
+				Double curcjeave = curcje/ curexchangedaynum;
+				double lastcje = lastcjlrecord.getValue().doubleValue();
+				Double lastcjeave = lastcje / lastexchangedaynum;
+				
+				double result = curcjeave - lastcjeave;
+				return result;
+			}	catch (java.lang.IndexOutOfBoundsException ex) {
+				return 100.0;
+			}
+
+		
+	 }
+	 @Override
 		public Double getChenJiaoLiangDifferenceWithLastPeriod(LocalDate requireddate, int difference) 
 		{
 			if(nodeohlc == null)
@@ -1060,6 +1100,53 @@ import com.udojava.evalex.Expression;
 			Double cjechange = curcje - lastcje; //个股成交量的变化
 			
 			return cjechange/bkcjediff;
+		}
+		/*
+		 * 计算成交额日平均变化贡献率，即基于日平均成交额，板块成交额的变化占整个上级板块成交额增长量的比率，
+		 */
+		public Double getChenJiaoLiangChangeGrowthRateOfSuperBanKuaiOnDailyAverage (TDXNodes superbk, LocalDate requireddate,int difference) 
+		{	
+			RegularTimePeriod curperiod = super.getJFreeChartFormateTimePeriodForAMO(requireddate,difference) ;
+			if(curperiod == null)
+				return null;
+			
+			TimeSeriesDataItem curcjlrecord = this.nodevol.getDataItem( curperiod );
+			if( curcjlrecord == null) 
+				return null;
+			
+//			Double curavecje = this.getAverageDailyChengJiaoErOfWeek(requireddate, difference);
+//			if( curavecje == null) 
+//				return null;
+			
+			//判断上级板块(大盘或者板块)是否缩量,所以了没有比较的意义，直接返回-100；
+			String nodept = getNodeperiodtype();
+			NodeXPeriodData bkxdata = superbk.getNodeXPeroidData(nodept);
+			Double bkcjediff = bkxdata.getChengJiaoLiangDailyAverageDifferenceWithLastPeriod(requireddate,difference);
+			if(bkcjediff == null )
+				return null;
+			if(  bkcjediff < 0   ) {//板块缩量，
+				return -100.0;
+			}
+			
+			TimeSeriesDataItem lastcjlrecord = null;
+			int index = this.nodevol.getIndex( curperiod );
+			try{
+				lastcjlrecord = nodevol.getDataItem( index - 1);
+			}	catch (java.lang.IndexOutOfBoundsException ex) {
+				logger.debug("index = 0，可能是新股第一周，可能是数据记录最早记录周，无法判断");
+				Boolean reachfirstday = super.isLocalDateReachFristDayInHistory (requireddate,difference); 
+				if(reachfirstday != null && reachfirstday == true)
+					return null;
+			}
+			if(this.isNodeDataFuPaiAfterTingPai(superbk,requireddate,0)) { //说明是停牌后复牌了，或者新股
+				try {
+					Double curggcje = this.getAverageDailyChengJiaoLiangOfWeek(requireddate, difference); //新板块所有成交量都应该计算入
+					return curggcje/bkcjediff;
+				} catch (java.lang.ArrayIndexOutOfBoundsException e) {	e.printStackTrace();}
+			}
+			
+			Double nodeavediff = this.getChengJiaoLiangDailyAverageDifferenceWithLastPeriod(requireddate,difference);
+			return nodeavediff/bkcjediff;
 		}
 //		@Override
 //		public Integer getCjlLianXuFangLiangPeriodNumber(LocalDate requireddate, int difference) 

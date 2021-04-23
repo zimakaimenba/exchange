@@ -21,7 +21,7 @@ import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.HanYuPinYing;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
-
+import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.StockNodesXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
@@ -40,7 +40,7 @@ public abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 	private static Logger logger = Logger.getLogger(BandKuaiAndGeGuTableBasicModel.class);
 	
 	protected String[] jtableTitleStrings ;
-	protected BanKuai curbk;
+	protected TDXNodes curbk;
 	protected List<BkChanYeLianTreeNode> entryList;
 	protected LocalDate showwknum;
 	protected int difference;
@@ -237,7 +237,10 @@ public abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 		     	  Double cjechangegrowthrate = nodexdatawk.getChenJiaoErChangeGrowthRateOfSuperBanKuaiOnDailyAverage(this.curbk,showwknum,0);// fxrecord.getGgbkcjegrowthzhanbi();
 		     	  value = cjechangegrowthrate;
 		     	  break;
-		     	  
+		       case "bankuaichengjiaolianggongxian":
+			     	  Double cjlchangegrowthrate = nodexdatawk.getChenJiaoLiangChangeGrowthRateOfSuperBanKuaiOnDailyAverage(this.curbk,showwknum,0);// fxrecord.getGgbkcjegrowthzhanbi();
+			     	  value = cjlchangegrowthrate;
+			     	  break;	  
 		       case "cjezbgrowrate":
 		     	  Double cjedpgrowthrate = nodexdatawk.getChenJiaoErZhanBiGrowthRateOfSuperBanKuai(showwknum,0);//.getGgdpzhanbigrowthrate();
 		     	  value = cjedpgrowthrate;
@@ -308,7 +311,7 @@ public abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 		       	  value = paiming;
 		     	  break;
 		       case "quanzhonginbankuai" :
-		     	  Integer stockweight =  curbk.getGeGuSuoShuBanKuaiWeight( node.getMyOwnCode() );
+		     	  Integer stockweight =  ((BanKuai)curbk).getGeGuSuoShuBanKuaiWeight( node.getMyOwnCode() );
 			        	try {
 			        		value = (Integer)stockweight;
 			        	} catch (java.lang.NullPointerException e) {value = null;}

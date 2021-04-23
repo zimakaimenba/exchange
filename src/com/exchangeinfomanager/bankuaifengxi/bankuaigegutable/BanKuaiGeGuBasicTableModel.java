@@ -21,7 +21,7 @@ import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.HanYuPinYing;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
-
+import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.StockNodesXPeriodData;
 import com.google.common.base.Strings;
@@ -125,7 +125,7 @@ public abstract class BanKuaiGeGuBasicTableModel extends BandKuaiAndGeGuTableBas
 	/*
 	 * 
 	 */
-	public BanKuai getCurDispalyBandKuai ()
+	public TDXNodes getCurDispalyBandKuai ()
 	{
 		return this.curbk;
 	}
@@ -140,59 +140,10 @@ public abstract class BanKuaiGeGuBasicTableModel extends BandKuaiAndGeGuTableBas
 	{
 		this.intersectionbankuai = bk;
 	}
-//	    public String getStockCode (int row) 
-//	    {
-//	    	return (String)this.getValueAt(row,0);
-//	    }
-//	    public String getStockName (int row) 
-//	    {
-//	    	return (String)this.getValueAt(row,1);
-//	    } 
 	    public String getStockWeight (int row) 
 	    {
 	    	return (String)this.getValueAt(row,2);
 	    } 
-//	    public StockOfBanKuai getStock (int row)
-//	    {
-//	    	return (StockOfBanKuai) this.entryList.get(row);
-//	    }
-//	    public List<BkChanYeLianTreeNode> getAllStocks ()
-//	    {
-//	    	return this.entryList;
-//	    }
-//	    public StockOfBanKuai getStock (String stockcode)
-//	    {
-//	    	int index = this.getStockRowIndex (stockcode);
-//	    	StockOfBanKuai sob = this.getStock(index);
-//	    	return sob;
-//	    }
-//	    public Integer getStockRowIndex (String neededfindstring) //可以查找code也可以查找name
-//	    {
-//	    		int index = -1;
-//	    		HanYuPinYing hypy = new HanYuPinYing ();
-//	    		
-//	    		for(int i=0;i<this.getRowCount();i++) {
-//	    			String stockcode = (String)this.getValueAt(i, 0);
-//	    			String stockname = (String)this.getValueAt(i,1); 
-//	    			if(stockcode.trim().equals(neededfindstring) ) {
-//	    				index = i;
-//	    				break;
-//	    			}
-//	    			
-//	    			if(stockname == null)
-//	    				continue;
-//	    			
-//	    			Boolean compresult = hypy.compareTwoStrings (stockname, neededfindstring.trim() );
-//			   		if(compresult) {
-//			   			index = i;
-//			   			break;
-//			   		}
-//	    		}
-//	   		
-//	    		hypy = null;
-//	    		return index;
-//	    }
-	    
 	    public void setCurrentHighlightKeyWords (Collection<Tag> keywords)
 		{
 			this.tags = keywords;
