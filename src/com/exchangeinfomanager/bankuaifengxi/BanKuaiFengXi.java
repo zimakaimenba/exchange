@@ -567,9 +567,10 @@ public class BanKuaiFengXi extends JDialog
 		//板块成交额占比显示大盘的周平均成交额，以便和板块的周平均成交额对比
 		panelbkwkcjezhanbi.setDisplayBarOfSpecificBanKuaiCjeCjlInsteadOfSelfCjeCjl (dapan); 
 		//板块自身占比
-		for(BarChartPanelDataChangedListener tmplistener : barchartpanelbankuaidatachangelisteners) {
+		for(BarChartPanelDataChangedListener tmplistener : barchartpanelbankuaidatachangelisteners) 
 				tmplistener.updatedDate(dapan, CommonUtility.getSettingRangeDate(curselectdate,"basic"),curselectdate,globeperiod);
-		}
+		
+		return;
 	}
 	/*
 	 * 
@@ -620,9 +621,10 @@ public class BanKuaiFengXi extends JDialog
 		DaPan treeroot = (DaPan) treeofbkstk.getModel().getRoot();
 		panelbkwkcjezhanbi.setDisplayBarOfSpecificBanKuaiCjeCjlInsteadOfSelfCjeCjl (treeroot); 
 		//板块自身占比
-		for(BarChartPanelDataChangedListener tmplistener : barchartpanelbankuaidatachangelisteners) {
+		for(BarChartPanelDataChangedListener tmplistener : barchartpanelbankuaidatachangelisteners) 
 			tmplistener.updatedDate(selectedbk, CommonUtility.getSettingRangeDate(curselectdate,"basic"),curselectdate,globeperiod);
-		}
+		
+		return;
 	}
 	/*
 	 * 用户选择一个板块的column后的相应操作
@@ -631,6 +633,7 @@ public class BanKuaiFengXi extends JDialog
 	{
  		LocalDate selectdate = LocalDate.parse(selectedinfo);
 		chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(selectdate));
+		barchartpanelbankuaidatachangelisteners.forEach(l -> l.setAnnotations( LocalDate.parse(selectedinfo) ) );
 		
 		//当周所有新闻
 		DaPan dp = (DaPan) treeofbkstk.getSpecificNodeByHypyOrCode("000000", BkChanYeLianTreeNode.DAPAN);
@@ -1510,9 +1513,11 @@ public class BanKuaiFengXi extends JDialog
             	if( menuItemnonshowselectbkinfo.getText().contains("X") ) {
             		menuItemnonshowselectbkinfo.setText("选择同时计算该周分析数据");
             		panelbkwkcjezhanbi.setAllowDrawAnnoation(false);
+            		pnlbkwkcjlzhanbi.setAllowDrawAnnoation(false);
             	} else {
             		menuItemnonshowselectbkinfo.setText("X选择同时计算该周分析数据");
             		panelbkwkcjezhanbi.setAllowDrawAnnoation(true);
+            		pnlbkwkcjlzhanbi.setAllowDrawAnnoation(true);
             	}
             }
         });
@@ -1826,8 +1831,6 @@ public class BanKuaiFengXi extends JDialog
 				Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
 				setCursor(hourglassCursor);
 
-//				int modelRow = tableBkZhanBi.convertRowIndexToModel(rowbk);
-//				BanKuai bkcur = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getBanKuai(modelRow);
 				TDXNodes bkcur = panelbkwkcjezhanbi.getCurDisplayedNode ();
 
                 if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.SELECTED_PROPERTY)) {
@@ -1855,14 +1858,6 @@ public class BanKuaiFengXi extends JDialog
 		
 		panelggdpcjlwkzhanbi.addPropertyChangeListener(new PropertyChangeListener() {
 			public void propertyChange(PropertyChangeEvent evt) {
-				
-//				StockOfBanKuai selectstock = null;
-//				int stockrow = tableGuGuZhanBiInBk.getSelectedRow();
-//				if(stockrow != -1) {
-//					int modelRow = tableGuGuZhanBiInBk.convertRowIndexToModel(stockrow);
-//					selectstock = ((BanKuaiGeGuTableModel)tableGuGuZhanBiInBk.getModel()).getStock(modelRow);
-//				}
-				
 				Stock selectstock = (Stock) panelggdpcjlwkzhanbi.getCurDisplayedNode ();
 
                 if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.SELECTED_PROPERTY)) {
@@ -2292,6 +2287,31 @@ public class BanKuaiFengXi extends JDialog
 				
 				int modelRow = tableBkZhanBi.convertRowIndexToModel(row);
 				BanKuai selectedbk = (BanKuai) ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getNode(modelRow);
+				unifiedOperationsAfterUserSelectABanKuai (selectedbk);
+				
+				hourglassCursor = null;
+				Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
+				setCursor(hourglassCursor2);
+//				Toolkit.getDefaultToolkit().beep();
+				SystemAudioPlayed.playSound();
+
+			}
+		});
+		
+		tableselectedwkbkzb.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) 
+			{
+				int row = tableselectedwkbkzb.getSelectedRow();
+				if(row <0) {
+					JOptionPane.showMessageDialog(null,"请选择一个板块！","Warning",JOptionPane.WARNING_MESSAGE);
+					return;
+				}
+				Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
+				setCursor(hourglassCursor);
+				
+				int modelRow = tableselectedwkbkzb.convertRowIndexToModel(row);
+				BanKuai selectedbk = (BanKuai) ((BanKuaiInfoTableModel)tableselectedwkbkzb.getModel()).getNode(modelRow);
 				unifiedOperationsAfterUserSelectABanKuai (selectedbk);
 				
 				hourglassCursor = null;

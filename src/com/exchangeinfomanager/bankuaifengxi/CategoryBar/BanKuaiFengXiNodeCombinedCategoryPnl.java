@@ -446,6 +446,15 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 			}
 		});
 	}
+	@Override
+	public void setAnnotations(LocalDate columnkey) 
+	{
+		if(cjecjlzbpnldown.isAllowDrawAnnoation()) {
+			cjecjlzbpnldown.setAnnotations( columnkey  );
+			cjecjlpnlup.setAnnotations( columnkey  );
+		}
+		
+	}
 
 
 }

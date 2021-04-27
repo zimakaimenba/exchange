@@ -10,6 +10,7 @@ import org.jeasy.rules.annotation.Priority;
 import org.jeasy.rules.annotation.Rule;
 
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchCondition;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC.StockXPeriodDataForJFC;
@@ -28,6 +29,9 @@ public class RuleOfHuanShouLv
     		@Fact("evacond") BanKuaiGeGuMatchCondition evacond ) 
 	{
 		if(evacond == null)
+			return false;
+		
+		if(evanode.getType() != BkChanYeLianTreeNode.TDXGG)
 			return false;
 		
 		Double shouldhsl = evacond.getSettingHuanShouLv();
