@@ -432,6 +432,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         NodeXPeriodData nodexdata = node.getNodeXPeroidData(period);
     	Double lwzhangdiefu = nodexdata.getSpecificOHLCZhangDieFu (requireddate,-1);
     	Double zhangdiefu = nodexdata.getSpecificOHLCZhangDieFu (requireddate,0);
+    	
 		switch (column_keyword) {
 		case "hashqgq":
 			Boolean has = ((StockOfBanKuai)node).getStock().getNodeJiBenMian().hasHqgqGuDong(requireddate);

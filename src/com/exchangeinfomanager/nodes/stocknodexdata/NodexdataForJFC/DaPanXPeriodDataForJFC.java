@@ -789,6 +789,12 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 		}
 	}
 
+//	@Override
+//	public Boolean checkMAsRelationShip(String maformula, LocalDate requireddate, int difference) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
+
 
 }
 

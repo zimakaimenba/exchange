@@ -33,8 +33,8 @@ public class RuleOfMA
 			@Fact("evaperiod") String evaperiod,
     		@Fact("evacond") BanKuaiGeGuMatchCondition evacond ) 
 	{
-		if(evanode.getType() == BkChanYeLianTreeNode.TDXBK)
-			return true;
+		if(evanode.getType() != BkChanYeLianTreeNode.TDXBK && evanode.getType() != BkChanYeLianTreeNode.TDXGG)
+			return false;
 		
 		NodeXPeriodData nodexdataday = evanode.getNodeXPeroidData(NodeGivenPeriodDataItem.DAY);
 		DayOfWeek dayOfWeek = evadate.getDayOfWeek();
@@ -48,7 +48,7 @@ public class RuleOfMA
 		
 		if (dailyma != null) {
 			//用周K线的CLOSE
-			StockXPeriodDataForJFC nodexdata = (StockXPeriodDataForJFC)evanode.getNodeXPeroidData(evaperiod);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
+			TDXNodesXPeriodDataForJFC nodexdata = (TDXNodesXPeriodDataForJFC)evanode.getNodeXPeroidData(evaperiod);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
 			OHLCItem ohlcdata = ((TDXNodesXPeriodDataForJFC)nodexdata).getSpecificDateOHLCData (evadate,0);
 		    Double close = ohlcdata.getCloseValue();
 
@@ -67,9 +67,8 @@ public class RuleOfMA
 		String displayma = evacond.getSettingMaFormula();
     	if (!Strings.isNullOrEmpty(displayma)) {
 		    Boolean checkresult = nodexdataday.checkCloseComparingToMAFormula(displayma,evadate,0);
-		    if( checkresult != null && checkresult) {
+		    if( checkresult != null && checkresult) 
 		    	return true;
-		    }
     	}
     	
     	return false;

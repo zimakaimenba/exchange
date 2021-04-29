@@ -484,6 +484,11 @@ public class StockOfBanKuaiXPeriodDataForJFC implements NodeXPeriodData
 		// TODO Auto-generated method stub
 		return null;
 	}
+//	@Override
+//	public Boolean checkMAsRelationShip(String maformula, LocalDate requireddate, int difference) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
 	
 
 	

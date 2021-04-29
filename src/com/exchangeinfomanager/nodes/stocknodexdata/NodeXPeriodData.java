@@ -101,6 +101,7 @@ public interface NodeXPeriodData
 	public Double[] getNodeOhlcMA (LocalDate  requireddate,int difference);
 	public Double[] getNodeOhlcSMA (LocalDate  requireddate,int difference);
 	public Boolean checkCloseComparingToMAFormula (String maformula, LocalDate requireddate, int difference);
+//	public Boolean checkMAsRelationShip(String maformula, LocalDate requireddate, int difference);
 	
 	public Multimap<LocalDate, LocalDate> isMacdButtomDivergenceInSpecificMonthRange (LocalDate  requireddate,int difference, int monthrange);
 	public Multimap<LocalDate, LocalDate> isMacdTopDivergenceInSpecificMonthRange (LocalDate  requireddate,int difference, int monthrange);

@@ -1656,76 +1656,80 @@ import com.udojava.evalex.Expression;
 		 }
 		 
 		 return null;
-			
 	 }
-	 private Boolean checkCloseComparingToMAsettings (Double close,Double[] maresult,String maformula)
+	 private Boolean checkCloseComparingToMAsettings (Double close,Double[] maresult,String maformula1)
 	 {
-			 if(maformula == null)
+			 if(maformula1 == null)
 				 return false;
-		 
+			String maformula = maformula1.toUpperCase();
 			try{
-				if(maformula.contains(">\'250\'") || maformula.contains(">=\'250\'") || maformula.contains("<\'250\'") || maformula.contains("<=\'250\'") ) {
+				if(maformula.contains("\'MA250\'")  ) {
 					if (maresult[6] != null)
-						maformula = maformula.replace("\'250\'",  maresult[6].toString() ) ;
+						maformula = maformula.replace("\'MA250\'",  maresult[6].toString() ) ;
 					else
-						maformula = maformula.replace("\'250\'",  String.valueOf( -10000000000.0 ) ) ;
+						maformula = maformula.replace("\'MA250\'",  String.valueOf( -10000000000.0 ) ) ;
 				}
 			} catch (java.lang.NullPointerException e) {e.printStackTrace();	}
 			
 			try {
-		    if(maformula.contains(">\'120\'") || maformula.contains(">=\'120\'") || maformula.contains("<\'120\'") || maformula.contains("<=\'120\'")) {
+		    if(maformula.contains("\'MA120\'") ) {
 		    	if (maresult[5] != null)
-		    		maformula = maformula.replace("\'120\'",  maresult[5].toString() ) ;
+		    		maformula = maformula.replace("\'MA120\'",  maresult[5].toString() ) ;
 		    	else
-					maformula = maformula.replace("\'120\'",  String.valueOf( -10000000000.0 ) ) ;
+					maformula = maformula.replace("\'MA120\'",  String.valueOf( -10000000000.0 ) ) ;
 		    }
 			} catch (java.lang.NullPointerException e) {e.printStackTrace();}
 			
 			try {
-		    if(maformula.contains(">\'60\'") || maformula.contains(">=\'60\'") || maformula.contains("<\'60\'") || maformula.contains("<=\'60\'") ) {
+		    if(maformula.contains("\'MA60\'")  ) {
 		    	if(maresult[4] != null)
-		    		maformula = maformula.replace("\'60\'",  maresult[4].toString() ) ;
+		    		maformula = maformula.replace("\'MA60\'",  maresult[4].toString() ) ;
 		    	else
-					maformula = maformula.replace("\'60\'",  String.valueOf( -10000000000.0 ) ) ;
+					maformula = maformula.replace("\'MA60\'",  String.valueOf( -10000000000.0 ) ) ;
 		    }
 			} catch (java.lang.NullPointerException e) {e.printStackTrace();}
 		    	
 		    try {
-		    if(maformula.contains(">\'30\'") || maformula.contains(">=\'30\'") || maformula.contains("<\'30\'") || maformula.contains("<=\'30\'") ) {
+		    if(maformula.contains("\'MA30\'") ) {
 		    	if(maresult[3] != null)
-		    		maformula = maformula.replace("\'30\'",  maresult[3].toString() ) ;
+		    		maformula = maformula.replace("\'MA30\'",  maresult[3].toString() ) ;
 		    	else
-					maformula = maformula.replace("\'30\'",  String.valueOf( -10000000000.0 ) ) ;
+					maformula = maformula.replace("\'MA30\'",  String.valueOf( -10000000000.0 ) ) ;
 		    }
 		    } catch (java.lang.NullPointerException e) {e.printStackTrace();}
 		    try {
-		    if(maformula.contains(">\'20\'") || maformula.contains(">=\'20\'") || maformula.contains("<\'20\'") || maformula.contains("<=\'20\'") ) {
+		    if(maformula.contains("\'MA20\'")  ) {
 		    	if(maresult[2] != null)
-		    		maformula = maformula.replace("\'20\'",  maresult[2].toString() ) ;
+		    		maformula = maformula.replace("\'MA20\'",  maresult[2].toString() ) ;
 		    	else
-					maformula = maformula.replace("\'20\'",  String.valueOf( -10000000000.0 ) ) ;
+					maformula = maformula.replace("\'MA20\'",  String.valueOf( -10000000000.0 ) ) ;
 		    }
 		    } catch (java.lang.NullPointerException e) {e.printStackTrace();}
 		    try {
-		    if(maformula.contains(">\'10\'") || maformula.contains(">=\'10\'") || maformula.contains("<\'10\'") || maformula.contains("<=\'10\'")) {
+		    if(maformula.contains("\'MA10\'")  ) {
 		    	if(maresult[1] != null)
-		    		maformula = maformula.replace("\'10\'",  maresult[1].toString() ) ;
+		    		maformula = maformula.replace("\'MA10\'",  maresult[1].toString() ) ;
 		    	else
-					maformula = maformula.replace("\'10\'",  String.valueOf( -10000000000.0 ) ) ;
+					maformula = maformula.replace("\'MA10\'",  String.valueOf( -10000000000.0 ) ) ;
 		    }
 		    } catch (java.lang.NullPointerException e) {e.printStackTrace();}
 		    try {
-		    if(maformula.contains(">\'5\'") || maformula.contains(">=\'5\'") || maformula.contains("<\'5\'") || maformula.contains("<=\'5\'") ) {
+		    if(maformula.contains("\'MA5\'") ) {
 		    	if(maresult[0] != null)
-		    		maformula = maformula.replace("\'5\'",  maresult[0].toString() ) ;
+		    		maformula = maformula.replace("\'MA5\'",  maresult[0].toString() ) ;
 		    	else
-					maformula = maformula.replace("\'5\'",  String.valueOf( -10000000000.0 ) ) ;
+					maformula = maformula.replace("\'MA5\'",  String.valueOf( -10000000000.0 ) ) ;
 		    }
 		    } catch (java.lang.NullPointerException e) {e.printStackTrace();}
 		    
 		    try{
-		    	BigDecimal result1 = new Expression(maformula).with("x",String.valueOf(close) ).eval(); //https://github.com/uklimaschewski/EvalEx
-		    	String sesultstr = result1.toString();
+		    	BigDecimal result = null; 
+		    	if(close != null)
+		    		result = new Expression(maformula).with("C",String.valueOf(close) ).eval(); //https://github.com/uklimaschewski/EvalEx
+		    	else
+		    		result = new Expression(maformula).eval(); //https://github.com/uklimaschewski/EvalEx
+		    	
+		    	String sesultstr = result.toString();
 			    if(sesultstr.equals("0"))
 			    	return false;
 			    else 
@@ -1750,6 +1754,35 @@ import com.udojava.evalex.Expression;
 	      
 
 		}
+	 /*
+	  * 
+	  */
+//	 public Boolean checkMAsRelationShip (String maformula, LocalDate requireddate, int difference)
+//	 {
+//		 DayOfWeek dayOfWeek = requireddate.getDayOfWeek();
+//		 int dayOfWeekIntValue = dayOfWeek.getValue();
+//		 OHLCItem ohlcdata = null;
+//		 for(int i = 0;i < dayOfWeekIntValue;i++) { //日线有可能当日是停牌的，如果停牌，就找到本周有数据的最新天
+//			 	ohlcdata = this.getSpecificDateOHLCData (requireddate,0-i);
+//		    	if(ohlcdata != null) {
+//		    		LocalDate expectdate = requireddate.plus(0-i,ChronoUnit.DAYS);
+//					expectdate = super.adjustDate(expectdate);
+//					requireddate = expectdate;
+//		    		break;
+//		    	}
+//		 }
+//		    
+//		 if (ohlcdata != null) {
+//		    	Double close = (Double)ohlcdata.getCloseValue();
+//		    	Double[] maresult = this.getNodeOhlcMA(requireddate, 0);
+//			    Boolean result = checkCloseComparingToMAsettings (null, maresult,maformula);
+//			    if( result != null )
+//			    	return result;
+//		 }
+//		 
+//		 return null;
+//	 }
+	 
 	 /*
 	  * 
 	  */
