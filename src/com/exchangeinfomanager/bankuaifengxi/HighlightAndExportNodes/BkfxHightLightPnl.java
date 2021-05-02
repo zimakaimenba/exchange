@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.bankuaifengxi;
+package com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -47,6 +47,8 @@ import org.apache.commons.lang3.SerializationUtils;
 
 import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
 import com.exchangeinfomanager.Trees.CreateExchangeTree;
+import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi;
+import com.exchangeinfomanager.bankuaifengxi.NodeChenJiaoErComparator;
 import com.exchangeinfomanager.bankuaifengxi.bankuaiinfotable.BanKuaiInfoTableModel;
 import com.exchangeinfomanager.bankuaifengxi.xmlhandlerforbkfx.ServicesForBkfxEbkOutPutFileDirectRead;
 import com.exchangeinfomanager.commonlib.SerialUtils;
@@ -685,7 +687,8 @@ public class BkfxHightLightPnl extends JPanel {
 		
 		try {
 			BanKuaiGeGuMatchCondition expcCloned =  (BanKuaiGeGuMatchCondition) this.globeexpc.clone();
-			ExtraExportConditions extraexportcondition = new ExtraExportConditions (expcCloned);
+//			ExtraExportConditions extraexportcondition = new ExtraExportConditions (expcCloned);
+			ExtraExportConditionsPnl extraexportcondition = new ExtraExportConditionsPnl (expcCloned);
 			int extraresult = JOptionPane.showConfirmDialog(null,extraexportcondition , "附加导出条件:", JOptionPane.OK_CANCEL_OPTION);
 			if(extraresult == JOptionPane.OK_OPTION) { //其他导出条件 
 				

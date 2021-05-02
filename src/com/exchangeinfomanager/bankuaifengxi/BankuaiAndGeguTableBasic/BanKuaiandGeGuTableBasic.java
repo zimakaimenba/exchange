@@ -22,8 +22,8 @@ import javax.swing.table.TableColumn;
 
 import com.exchangeinfomanager.News.News;
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiGuanLi;
-import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchCondition;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchConditionListener;
+import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiGeGuMatchCondition;
 import com.exchangeinfomanager.bankuaifengxi.bankuaigegutable.BanKuaiGeGuBasicTableModel;
 import com.exchangeinfomanager.bankuaifengxi.bankuaiinfotable.BanKuaiInfoTableModel;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;

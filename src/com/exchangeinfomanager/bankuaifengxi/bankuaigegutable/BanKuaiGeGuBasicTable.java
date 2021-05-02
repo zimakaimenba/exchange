@@ -27,9 +27,9 @@ import org.apache.log4j.Logger;
 
 import com.exchangeinfomanager.TagManagment.JDialogForTagSearchMatrixPanelForAddSysNewsToNode;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.NewsPnl2.TDXNodsInforPnl;
-import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchCondition;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchConditionListener;
 import com.exchangeinfomanager.bankuaifengxi.BankuaiAndGeguTableBasic.BanKuaiandGeGuTableBasic;
+import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiGeGuMatchCondition;
 import com.exchangeinfomanager.bankuaifengxi.ai.WeeklyFenXiWizard;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.StockCalendarAndNewDbOperation;

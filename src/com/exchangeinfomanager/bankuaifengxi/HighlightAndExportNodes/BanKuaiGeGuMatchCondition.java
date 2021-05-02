@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.bankuaifengxi;
+package com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 
+import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchConditionListener;
 import com.google.common.base.Splitter;
 
 public class BanKuaiGeGuMatchCondition implements Cloneable
@@ -127,6 +128,15 @@ public class BanKuaiGeGuMatchCondition implements Cloneable
 		private Double settingzszmax;
 		private Double settingzszmin;
 		
+		private String exportcondformula;
+		public void setExportConditionFormula (String formula)
+		{
+			this.exportcondformula = formula;
+		}
+		public String getExportConditionFormula ()
+		{
+			return this.exportcondformula ;
+		} 
 		/*
 		 * 
 		 */

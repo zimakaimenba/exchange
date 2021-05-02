@@ -16,7 +16,7 @@ import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 
-import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchCondition;
+import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiGeGuMatchCondition;
 import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;

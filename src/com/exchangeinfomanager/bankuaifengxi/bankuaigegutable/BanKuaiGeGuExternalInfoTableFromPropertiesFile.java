@@ -17,7 +17,7 @@ import javax.swing.table.TableRowSorter;
 
 import org.jsoup.Jsoup;
 
-import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchCondition;
+import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiGeGuMatchCondition;
 import com.exchangeinfomanager.commonlib.JTableToolTipHeader;
 import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.nodes.BanKuai;

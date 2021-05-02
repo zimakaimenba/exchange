@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
 
 import com.exchangeinfomanager.Tag.Tag;
 import com.exchangeinfomanager.TagServices.TagsServiceForNodes;
-import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchCondition;
+import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiGeGuMatchCondition;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 

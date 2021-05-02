@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.bankuaifengxi;
+package com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -211,8 +211,6 @@ public class ExportMatchedNode
 			if(nodexdata == null) //该时间还没有数据，对板块来说就是还没有诞生
 				return "UNMATCH";
 			
-//			if(nodexdata.getIndexOfSpecificDateOHLCData(exportdate,0) == null) 
-//				return "UNMATCH";
 			if(this.cond.shouldExportOnlyGeGuNotBanKuai() && ! this.cond.shouldExportAllBanKuai() )
 				return  "WITHCHECKGEGU";
 			

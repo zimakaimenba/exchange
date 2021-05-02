@@ -79,6 +79,8 @@ import com.exchangeinfomanager.bankuaifengxi.CandleStick.BanKuaiFengXiCandlestic
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartCjePnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartPnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiNodeCombinedCategoryPnl;
+import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiGeGuMatchCondition;
+import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BkfxHightLightPnl;
 import com.exchangeinfomanager.bankuaifengxi.PieChart.BanKuaiFengXiPieChartCjePnl;
 
 import com.exchangeinfomanager.bankuaifengxi.PieChart.BanKuaiFengXiPieChartPnl;
@@ -227,12 +229,12 @@ public class BanKuaiFengXi extends JDialog
 			initializeGuiOfNormal ();
 		initializeKuaiJieZhishuPnl ();
 			
-		createEvents ();
-		setUpChartDataListeners ();
-
-		initializePaoMaDeng ();
+//		createEvents ();
+//		setUpChartDataListeners ();
+//
+//		initializePaoMaDeng ();
 		
-		adjustDate ( LocalDate.now());
+//		adjustDate ( LocalDate.now());
 	}
 	
 	private static Logger logger = Logger.getLogger(BanKuaiFengXi.class);
