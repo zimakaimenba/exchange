@@ -131,7 +131,7 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 		
 		Double min = zhanbisetting.getExtremeZhanbiMin ();
 		Double max = zhanbisetting.getExtremeZhanbiMax ();
-		ServicesForNode svs = node.getServicesForNode();
+		ServicesForNode svs = node.getServicesForNode(true);
 		svs.setNodeCjeExtremeUpDownZhanbiLevel (node,min,max);
 		svs = null;
 		

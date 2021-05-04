@@ -54,7 +54,7 @@ public class DaPan extends TDXNodes
 	}
 
 	@Override
-	public ServicesForNode getServicesForNode() {
+	public ServicesForNode getServicesForNode(Boolean getornot) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -181,14 +181,14 @@ public class BanKuaiShuXingSheZhi extends JPanel
 	protected void applaySetttingToDb() 
 	{
 		
-		ServicesForNodeBanKuai svsbk = ((BanKuai)settingnode).getBanKuaiService ();
+		ServicesForNodeBanKuai svsbk = ((BanKuai)settingnode).getBanKuaiService (true);
 		svsbk.updateBanKuaiBasicOperationsSettings(settingnode,!cbxnotimport.isSelected(),
 					!cbxnotgephi.isSelected(),!cbxnotbkfx.isSelected(),
 					!cbxnotshowincyltree.isSelected(),
 					!chkbxnotexportwklyfile.isSelected(),
 					!chbxnotimportgegu.isSelected()
 					);
-
+		((BanKuai)settingnode).getBanKuaiService (false);
 //		((BanKuai)settingnode).setImportdailytradingdata(!cbxnotimport.isSelected());
 //		((BanKuai)settingnode).setExporttogehpi(!cbxnotgephi.isSelected());
 //		((BanKuai)settingnode).setShowinbkfxgui(!cbxnotbkfx.isSelected());

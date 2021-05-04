@@ -39,9 +39,11 @@ import org.ta4j.core.num.PrecisionNum;
 import com.exchangeinfomanager.Trees.CreateExchangeTree;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.commonlib.FormatDoubleToShort;
+import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.DaPan;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
+import com.exchangeinfomanager.nodes.stocknodexdata.StockNodesXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.TDXNodesXPeriodExternalData;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItemForJFC;
@@ -1659,71 +1661,132 @@ import com.udojava.evalex.Expression;
 	 }
 	 private Boolean checkCloseComparingToMAsettings (Double close,Double[] maresult,String maformula1)
 	 {
-			 if(maformula1 == null)
+			 if(maformula1 == null || maformula1.isEmpty())
 				 return false;
 			String maformula = maformula1.toUpperCase();
+//			try{
+//				if(maformula.contains("\'MA250\'")  ) {
+//					if (maresult[6] != null)
+//						maformula = maformula.replace("\'MA250\'",  maresult[6].toString() ) ;
+//					else
+//						maformula = maformula.replace("\'MA250\'",  String.valueOf( -10000000000.0 ) ) ;
+//				}
+//			} catch (java.lang.NullPointerException e) {e.printStackTrace();	}
+//			
+//			try {
+//		    if(maformula.contains("\'MA120\'") ) {
+//		    	if (maresult[5] != null)
+//		    		maformula = maformula.replace("\'MA120\'",  maresult[5].toString() ) ;
+//		    	else
+//					maformula = maformula.replace("\'MA120\'",  String.valueOf( -10000000000.0 ) ) ;
+//		    }
+//			} catch (java.lang.NullPointerException e) {e.printStackTrace();}
+//			
+//			try {
+//		    if(maformula.contains("\'MA60\'")  ) {
+//		    	if(maresult[4] != null)
+//		    		maformula = maformula.replace("\'MA60\'",  maresult[4].toString() ) ;
+//		    	else
+//					maformula = maformula.replace("\'MA60\'",  String.valueOf( -10000000000.0 ) ) ;
+//		    }
+//			} catch (java.lang.NullPointerException e) {e.printStackTrace();}
+//		    	
+//		    try {
+//		    if(maformula.contains("\'MA30\'") ) {
+//		    	if(maresult[3] != null)
+//		    		maformula = maformula.replace("\'MA30\'",  maresult[3].toString() ) ;
+//		    	else
+//					maformula = maformula.replace("\'MA30\'",  String.valueOf( -10000000000.0 ) ) ;
+//		    }
+//		    } catch (java.lang.NullPointerException e) {e.printStackTrace();}
+//		    try {
+//		    if(maformula.contains("\'MA20\'")  ) {
+//		    	if(maresult[2] != null)
+//		    		maformula = maformula.replace("\'MA20\'",  maresult[2].toString() ) ;
+//		    	else
+//					maformula = maformula.replace("\'MA20\'",  String.valueOf( -10000000000.0 ) ) ;
+//		    }
+//		    } catch (java.lang.NullPointerException e) {e.printStackTrace();}
+//		    try {
+//		    if(maformula.contains("\'MA10\'")  ) {
+//		    	if(maresult[1] != null)
+//		    		maformula = maformula.replace("\'MA10\'",  maresult[1].toString() ) ;
+//		    	else
+//					maformula = maformula.replace("\'MA10\'",  String.valueOf( -10000000000.0 ) ) ;
+//		    }
+//		    } catch (java.lang.NullPointerException e) {e.printStackTrace();}
+//		    try {
+//		    if(maformula.contains("\'MA5\'") ) {
+//		    	if(maresult[0] != null)
+//		    		maformula = maformula.replace("\'MA5\'",  maresult[0].toString() ) ;
+//		    	else
+//					maformula = maformula.replace("\'MA5\'",  String.valueOf( -10000000000.0 ) ) ;
+//		    }
+//		    } catch (java.lang.NullPointerException e) {e.printStackTrace();}
 			try{
-				if(maformula.contains("\'MA250\'")  ) {
+				if(maformula.contains("MA250")  ) {
 					if (maresult[6] != null)
-						maformula = maformula.replace("\'MA250\'",  maresult[6].toString() ) ;
+						maformula = maformula.replace("MA250",  maresult[6].toString() ) ;
 					else
-						maformula = maformula.replace("\'MA250\'",  String.valueOf( -10000000000.0 ) ) ;
+						maformula = maformula.replace("MA250",  String.valueOf( -10000000000.0 ) ) ;
 				}
 			} catch (java.lang.NullPointerException e) {e.printStackTrace();	}
 			
 			try {
-		    if(maformula.contains("\'MA120\'") ) {
+		    if(maformula.contains("MA120") ) {
 		    	if (maresult[5] != null)
-		    		maformula = maformula.replace("\'MA120\'",  maresult[5].toString() ) ;
+		    		maformula = maformula.replace("MA120",  maresult[5].toString() ) ;
 		    	else
-					maformula = maformula.replace("\'MA120\'",  String.valueOf( -10000000000.0 ) ) ;
+					maformula = maformula.replace("MA120",  String.valueOf( -10000000000.0 ) ) ;
 		    }
 			} catch (java.lang.NullPointerException e) {e.printStackTrace();}
 			
 			try {
-		    if(maformula.contains("\'MA60\'")  ) {
+		    if(maformula.contains("MA60")  ) {
 		    	if(maresult[4] != null)
-		    		maformula = maformula.replace("\'MA60\'",  maresult[4].toString() ) ;
+		    		maformula = maformula.replace("MA60",  maresult[4].toString() ) ;
 		    	else
-					maformula = maformula.replace("\'MA60\'",  String.valueOf( -10000000000.0 ) ) ;
+					maformula = maformula.replace("MA60",  String.valueOf( -10000000000.0 ) ) ;
 		    }
 			} catch (java.lang.NullPointerException e) {e.printStackTrace();}
 		    	
 		    try {
-		    if(maformula.contains("\'MA30\'") ) {
+		    if(maformula.contains("MA30") ) {
 		    	if(maresult[3] != null)
-		    		maformula = maformula.replace("\'MA30\'",  maresult[3].toString() ) ;
+		    		maformula = maformula.replace("MA30",  maresult[3].toString() ) ;
 		    	else
-					maformula = maformula.replace("\'MA30\'",  String.valueOf( -10000000000.0 ) ) ;
+					maformula = maformula.replace("MA30",  String.valueOf( -10000000000.0 ) ) ;
 		    }
 		    } catch (java.lang.NullPointerException e) {e.printStackTrace();}
 		    try {
-		    if(maformula.contains("\'MA20\'")  ) {
+		    if(maformula.contains("MA20")  ) {
 		    	if(maresult[2] != null)
-		    		maformula = maformula.replace("\'MA20\'",  maresult[2].toString() ) ;
+		    		maformula = maformula.replace("MA20",  maresult[2].toString() ) ;
 		    	else
-					maformula = maformula.replace("\'MA20\'",  String.valueOf( -10000000000.0 ) ) ;
+					maformula = maformula.replace("MA20",  String.valueOf( -10000000000.0 ) ) ;
 		    }
 		    } catch (java.lang.NullPointerException e) {e.printStackTrace();}
 		    try {
-		    if(maformula.contains("\'MA10\'")  ) {
+		    if(maformula.contains("MA10")  ) {
 		    	if(maresult[1] != null)
-		    		maformula = maformula.replace("\'MA10\'",  maresult[1].toString() ) ;
+		    		maformula = maformula.replace("MA10",  maresult[1].toString() ) ;
 		    	else
-					maformula = maformula.replace("\'MA10\'",  String.valueOf( -10000000000.0 ) ) ;
+					maformula = maformula.replace("MA10",  String.valueOf( -10000000000.0 ) ) ;
 		    }
 		    } catch (java.lang.NullPointerException e) {e.printStackTrace();}
 		    try {
-		    if(maformula.contains("\'MA5\'") ) {
+		    if(maformula.contains("MA5") ) {
 		    	if(maresult[0] != null)
-		    		maformula = maformula.replace("\'MA5\'",  maresult[0].toString() ) ;
+		    		maformula = maformula.replace("MA5",  maresult[0].toString() ) ;
 		    	else
-					maformula = maformula.replace("\'MA5\'",  String.valueOf( -10000000000.0 ) ) ;
+					maformula = maformula.replace("MA5",  String.valueOf( -10000000000.0 ) ) ;
 		    }
 		    } catch (java.lang.NullPointerException e) {e.printStackTrace();}
 		    
 		    try{
 		    	BigDecimal result = null; 
+		    	if(maformula.contains("CLOSE"))
+		    		maformula = maformula.replace("CLOSE", "C");
 		    	if(close != null)
 		    		result = new Expression(maformula).with("C",String.valueOf(close) ).eval(); //https://github.com/uklimaschewski/EvalEx
 		    	else
@@ -1782,7 +1845,57 @@ import com.udojava.evalex.Expression;
 //		 
 //		 return null;
 //	 }
-	 
+	 public Object getNodeDataByKeyWord( String keyword, LocalDate date,  String... maformula)
+	 {
+		 Object value = null;
+		 value = super.getNodeDataByKeyWord (keyword,date);
+		 if(value != null)
+			 return value;
+		 
+		 switch(keyword) {
+		 case "ChenJiaoEr" :
+		      	 Double curcje  = this.getChengJiaoEr(date, 0) ;
+		   	     value = curcje;
+		   	     break;
+		 case "AverageChenJiaoEr" :
+			 Double avecje = this.getAverageDailyChengJiaoErOfWeek (date, 0);
+	   	     value = avecje;
+	   	     break;
+		 case "AverageChenJiaoErMaxWeek" :
+			 Integer cjemaxwk =  this.getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(date,0);//显示成交额是多少周最大,成交额多少周最小没有意义，因为如果不是完整周成交量就是会很小
+	   	     value = cjemaxwk;
+	   	     break;
+		 case "ChenJiaoLiang" :
+			 Double curcjl = this.getChengJiaoLiang(date, 0);
+	   	     value = curcjl;
+	   	     break;
+		 case "AverageChenJiaoLiang" :
+			 Double avecjl = this.getAverageDailyChengJiaoLiangOfWeek (date, 0);
+	   	     value = avecjl;
+	   	     break;
+		 case "AverageChenJiaoLiangMaxWeek" :
+			 Integer cjlmaxwk = this.getAverageDailyChenJiaoLiangMaxWeekOfSuperBanKuai(date,0);//显示cjl是多少周最大
+	   	     value = cjlmaxwk;
+	   	     break;
+		 case "ZhangDieFu" :
+			 Double zhangfu = this.getSpecificOHLCZhangDieFu (date,0);
+      		 value = zhangfu;
+	   	     break; 
+		 case "CLOSEVSMA":
+			 Boolean maresult = this.checkCloseComparingToMAFormula (maformula[0],date, 0);
+			 value = maresult;
+			 break;
+		 case "GuJiaCLOSE":
+			 Integer indexofcur = this.getIndexOfSpecificDateOHLCData(date, 0);
+			 if(indexofcur == null)	return null;
+			 
+			 OHLCItem curohlc = (OHLCItem) this.getOHLCData().getDataItem(indexofcur.intValue());
+			 Double curclose = curohlc.getCloseValue();
+			 value = curclose;
+			 break;
+		 }
+		 return value;
+	 }
 	 /*
 	  * 
 	  */
@@ -1805,8 +1918,7 @@ import com.udojava.evalex.Expression;
 		if(indexofcur == null)
 			return null;
 		
-		OHLCItem curohlc;
-		curohlc = (OHLCItem) this.getOHLCData().getDataItem(indexofcur.intValue());
+		OHLCItem curohlc = (OHLCItem) this.getOHLCData().getDataItem(indexofcur.intValue());
 		Double curclose = curohlc.getCloseValue();
 		Double curopen = curohlc.getOpenValue();
 		Double curhigh = curohlc.getHighValue();
@@ -1938,13 +2050,13 @@ import com.udojava.evalex.Expression;
 						 fontavecjechangerate.appendText(htmlstring);
 						 fontavecjechangerate.attr("color", "#AF7AC5 ");
 					 }
-				 } catch (java.lang.NullPointerException e) {    }
+				 } catch (java.lang.NullPointerException e) {}
 				 
 				 
 				 Integer cjemaxwk = null;
 			     try{
 			    		cjemaxwk = this.getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(requireddate,0);//显示成交额是多少周最大,成交额多少周最小没有意义，因为如果不是完整周成交量就是会很小
-			     } catch (java.lang.NullPointerException e) {    }
+			     } catch (java.lang.NullPointerException e) {}
 				 if(cjemaxwk>0) {
 					 org.jsoup.nodes.Element licjemaxwk = dl.appendElement("li");
 					 org.jsoup.nodes.Element fontcjemaxwk = licjemaxwk.appendElement("font");

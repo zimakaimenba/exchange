@@ -108,8 +108,8 @@ public class BanKuaiGeGuMatchCondition implements Cloneable
 		boolean exportAllBanKuai;
 		boolean exportBankuaiInConfig;
 		boolean exportOnlyCurrentBanKuai;
-		boolean exportCjeZhanbiUp;
-		boolean exportYangXianBanKuai;
+//		boolean exportCjeZhanbiUp;
+//		boolean exportYangXianBanKuai;
 		boolean exportOnlyBankuaiNotGeGu;
 		boolean exportOnlyGeGuOntBanKuai;
 		boolean exportOnlyCurrentGeGu;
@@ -338,20 +338,20 @@ public class BanKuaiGeGuMatchCondition implements Cloneable
 //				maformula = maformula.replace(">", "x>");
 //				maformula = maformula.replace("<", "x<");
 				maformula = maformula.toUpperCase();
-				if(maformula.contains("250") )
-					maformula = maformula.replace("MA250", "\'MA250\'"  ) ;
-			    if(maformula.contains("120") )
-			    	maformula = maformula.replace("MA120", "\'MA120\'" ) ;
-			    if(maformula.contains("60")) 
-			    	maformula = maformula.replace("MA60", "\'MA60\'"   ) ;
-			    if(maformula.contains("30")  ) 
-			    	maformula = maformula.replace("MA30", "\'MA30\'"  ) ;
-			    if(maformula.contains("20") ) 
-			    	maformula = maformula.replace("MA20", "\'MA20\'"  ) ;
-			    if(maformula.contains("10")) 
-			    	maformula = maformula.replace("MA10", "\'MA10\'"  ) ;
-			    if(maformula.contains("5") ) 
-			    	maformula = maformula.replace("MA5","\'MA5\'"   ) ;
+//				if(maformula.contains("250") )
+//					maformula = maformula.replace("MA250", "\'MA250\'"  ) ;
+//			    if(maformula.contains("120") )
+//			    	maformula = maformula.replace("MA120", "\'MA120\'" ) ;
+//			    if(maformula.contains("60")) 
+//			    	maformula = maformula.replace("MA60", "\'MA60\'"   ) ;
+//			    if(maformula.contains("30")  ) 
+//			    	maformula = maformula.replace("MA30", "\'MA30\'"  ) ;
+//			    if(maformula.contains("20") ) 
+//			    	maformula = maformula.replace("MA20", "\'MA20\'"  ) ;
+//			    if(maformula.contains("10")) 
+//			    	maformula = maformula.replace("MA10", "\'MA10\'"  ) ;
+//			    if(maformula.contains("5") ) 
+//			    	maformula = maformula.replace("MA5","\'MA5\'"   ) ;
 			}
 			this.settingMaFormula =  maformula;
 			
@@ -380,19 +380,19 @@ public class BanKuaiGeGuMatchCondition implements Cloneable
 			this.exportOnlyCurrentBanKuai = exportOnlyCurrentBanKuai;
 		}
 		
-		public boolean shouldExportChenJiaoErZhanbiUpBanKuai () {
-			return exportCjeZhanbiUp;
-		}
-		public void setExportChenJiaoErZhanbiUpBanKuai (boolean exportCjeZhanbiUp) {
-			this.exportCjeZhanbiUp = exportCjeZhanbiUp;
-		}
+//		public boolean shouldExportChenJiaoErZhanbiUpBanKuai () {
+//			return exportCjeZhanbiUp;
+//		}
+//		public void setExportChenJiaoErZhanbiUpBanKuai (boolean exportCjeZhanbiUp) {
+//			this.exportCjeZhanbiUp = exportCjeZhanbiUp;
+//		}
 		
-		public boolean shouldExportYangXianBanKuai () {
-			return exportYangXianBanKuai;
-		}
-		public void setExportYangXianBanKuai(boolean exportYangXianBanKuai) {
-			this.exportYangXianBanKuai = exportYangXianBanKuai;
-		}
+//		public boolean shouldExportYangXianBanKuai () {
+//			return exportYangXianBanKuai;
+//		}
+//		public void setExportYangXianBanKuai(boolean exportYangXianBanKuai) {
+//			this.exportYangXianBanKuai = exportYangXianBanKuai;
+//		}
 		
 		public boolean shouldExportOnlyBankuaiNotGeGu() {
 			return exportOnlyBankuaiNotGeGu;

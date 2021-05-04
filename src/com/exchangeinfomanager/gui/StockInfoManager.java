@@ -366,7 +366,7 @@ public class StockInfoManager
 				 displayStockJibenmianInfotoGui (); //显示基本信息
 				 
 				 if(nodeshouldbedisplayed.getType() == BkChanYeLianTreeNode.TDXBK) {
-					 ServicesForNode svsnode =  ((BanKuai)nodeshouldbedisplayed).getServicesForNode();
+					 ServicesForNode svsnode =  ((BanKuai)nodeshouldbedisplayed).getServicesForNode(true);
 					 svsnode.getNodeGzMrMcYkInfo((TDXNodes)nodeshouldbedisplayed, null,null, NodeGivenPeriodDataItem.WEEK);
 					 svsnode = null;
 					 displaySellBuyZdgzInfoToGui ();
@@ -381,7 +381,7 @@ public class StockInfoManager
 					if(!systemconfig.getPrivateModeSetting()) { //隐私模式不显示持仓信息
 						displayAccountTableToGui ();
 						
-						ServicesForNode svsnode = ((Stock)nodeshouldbedisplayed).getServicesForNode();
+						ServicesForNode svsnode = ((Stock)nodeshouldbedisplayed).getServicesForNode(true);
 						svsnode.getNodeGzMrMcYkInfo((TDXNodes)nodeshouldbedisplayed, null,null, NodeGivenPeriodDataItem.WEEK);
 						svsnode = null;
 						displaySellBuyZdgzInfoToGui ();
@@ -1045,7 +1045,7 @@ public class StockInfoManager
 					return;
 				
 				((Stock)node).getNodeJiBenMian().setGuDongInfo(null);
-				ServicesOfNodeStock svsjg = ((Stock)node).getServicesOfNodeStock();
+				ServicesOfNodeStock svsjg = ((Stock)node).getServicesOfNodeStock(true);
 				svsjg.refreshStockGuDong( (Stock)node, true, true );
 				svsjg = null;
 				
@@ -1258,7 +1258,7 @@ public class StockInfoManager
 					return;
 				
 				((Stock)node).getNodeJiBenMian().setGuDongInfo(null);
-				ServicesOfNodeStock svsjg = ((Stock)node).getServicesOfNodeStock();
+				ServicesOfNodeStock svsjg = ((Stock)node).getServicesOfNodeStock(true);
 				svsjg.refreshStockGuDong( (Stock)node, true, true );
 				svsjg = null;
 				
@@ -1630,7 +1630,7 @@ public class StockInfoManager
 	protected void refreshGudongInfo(Stock node) 
 	{
 		LocalDate cbdate = node.getNodeJiBenMian().getLastestCaiBaoDate ();
-		ServicesOfNodeStock svsstk = node.getServicesOfNodeStock();
+		ServicesOfNodeStock svsstk = node.getServicesOfNodeStock(true);
 		if(cbdate == null)
 			cbdate =  LocalDate.now() ;
    		LocalDate requiredstart = Season.getSeasonStartDate(cbdate);
@@ -1998,7 +1998,7 @@ public class StockInfoManager
 	
 	private void displayStockJibenmianInfotoGui() 
 	{
-		ServicesForNode svsnode = ((TDXNodes)nodeshouldbedisplayed).getServicesForNode();
+		ServicesForNode svsnode = ((TDXNodes)nodeshouldbedisplayed).getServicesForNode(true);
 		svsnode.getNodeJiBenMian(nodeshouldbedisplayed);
 		svsnode = null;
 		  

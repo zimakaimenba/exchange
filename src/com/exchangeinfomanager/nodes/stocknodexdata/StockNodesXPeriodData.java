@@ -9,6 +9,7 @@ import org.jfree.data.time.TimeSeriesDataItem;
 
 public interface StockNodesXPeriodData 
 {
+	public Object getNodeDataByKeyWord( String keyword, LocalDate date, String... maformula);
 	public Double getSpecificTimeHuanShouLv (LocalDate requireddate,int difference);
 	public Double getSpecificTimeHuanShouLvFree (LocalDate requireddate,int difference);
 	public Double getSpecificTimeZongShiZhi (LocalDate requireddate,int difference);
@@ -31,13 +32,15 @@ public interface StockNodesXPeriodData
 	public static String[] NODEXDATACSVDATAHEADLINE = {
 							"换手率",
 							"自由流通换手率",
-							"周平均流通市值",
+							"流通市值",
+							"总市值",
 							};
 	public static  Object [] ouputcontrol = {
 			1,1,
-			new DecimalFormat("#0.000")
+			new DecimalFormat("#0.000"),
+			new DecimalFormat("#0.000"),
 			};
 	public static  String [] ouputcolor = {
-			"#17202A","#17202A","#17202A"
+			"#17202A","#17202A","#17202A","#17202A"
 	};
 }

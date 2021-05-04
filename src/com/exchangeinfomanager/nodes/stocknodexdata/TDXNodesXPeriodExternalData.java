@@ -1,5 +1,6 @@
 package com.exchangeinfomanager.nodes.stocknodexdata;
 
+import java.sql.SQLException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -8,10 +9,12 @@ import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalField;
 import java.time.temporal.WeekFields;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import org.apache.commons.math3.ml.clustering.CentroidCluster;
 import org.apache.commons.math3.ml.clustering.DoublePoint;
@@ -27,9 +30,15 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.ta4j.core.Bar;
 
+import com.exchangeinfomanager.Tag.Tag;
+import com.exchangeinfomanager.TagServices.TagsServiceForNodes;
 import com.exchangeinfomanager.bankuaifengxi.QueKou;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.commonlib.FormatDoubleToShort;
+import com.exchangeinfomanager.nodes.BanKuai;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.Stock;
+import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 
@@ -122,58 +131,17 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 	 */
 	public void resetAllData ()
 	{
-		try {
-			nodeamozhanbi.clear(); 
-		} catch (java.lang.NullPointerException e) {
-			
-		}
-		try {
-			nodevolzhanbi.clear(); 
-		} catch (java.lang.NullPointerException e) {
-			
-		}
-		try {
-			nodefxjg.clear();
-		} catch (java.lang.NullPointerException e) {
-			
-		}
-		try {
-			nodeexchangedaysnumber.clear();
-		}  catch (java.lang.NullPointerException e) {
-			
-		}
-		try {
-			nodeqktjopenup.clear();
-		} catch (java.lang.NullPointerException e) {
-			
-		}
-		try {	
-			nodeqktjhuibuup.clear();
-		} catch (java.lang.NullPointerException e) {
-			
-		}
-		try {
-			nodeqktjopendown.clear();
-		} catch (java.lang.NullPointerException e) {
-					
-		}
-		try {
-			nodeqktjhuibudown.clear();
-		} catch (java.lang.NullPointerException e) {
-					
-		}
-		try {
-			qklist.clear();
-		} catch (java.lang.NullPointerException e) {
-		}
-		try {	
-			nodezhangtingnum.clear();
-		} catch (java.lang.NullPointerException e) {
-		}
-		try {
-			nodedietingnum.clear();
-		} catch (java.lang.NullPointerException e) {
-		}
+		try {nodeamozhanbi.clear();} catch (java.lang.NullPointerException e) {}
+		try {nodevolzhanbi.clear();} catch (java.lang.NullPointerException e) {}
+		try {nodefxjg.clear();} catch (java.lang.NullPointerException e) {}
+		try {nodeexchangedaysnumber.clear();}  catch (java.lang.NullPointerException e) {}
+		try {nodeqktjopenup.clear();} catch (java.lang.NullPointerException e) {}
+		try {nodeqktjhuibuup.clear();} catch (java.lang.NullPointerException e) {}
+		try {nodeqktjopendown.clear();} catch (java.lang.NullPointerException e) {}
+		try {nodeqktjhuibudown.clear();} catch (java.lang.NullPointerException e) {}
+		try {qklist.clear();} catch (java.lang.NullPointerException e) {}
+		try {	nodezhangtingnum.clear();} catch (java.lang.NullPointerException e) {}
+		try {nodedietingnum.clear();} catch (java.lang.NullPointerException e) {}
 		
 		firstdayinhistory = null;
 	}
@@ -879,14 +847,73 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 			else
 				return curcjlrecord.getValue().doubleValue();
 		}
+		/*
+		 * 
+		 */
+		public Object getNodeDataByKeyWord( String keyword, LocalDate date, String... maformula) 
+		{
+			  Object value = null;
+			  switch (keyword) {
+			  case "ChengJiaoErZhanBi":
+		    	   Double cjezhanbi = this.getChenJiaoErZhanBi(date, 0);
+        		   value = cjezhanbi;
+		    	   break;
+			  case "CjeZbDpMaxWk":
+	    	   	  Integer cjedpmaxwk = null;
+		          try{
+		        	   cjedpmaxwk = this.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(date,0);
+		        	   value = cjedpmaxwk;
+		                break;
+		          } catch (java.lang.NullPointerException e) {  value = null;}
+		          break;
+			  case "CjeZbDpMinWk":
+	    	   	  Integer cjedpminwk = null;
+		          try{
+	              		cjedpminwk = this.getChenJiaoErZhanBiMinWeekOfSuperBanKuai(date, 0);
+	              		value = 0 - cjedpminwk;
+	              		break;
+		          } catch (java.lang.NullPointerException e) {  value = null;}
+		          break;
+			  case "CjeZbGrowRate":
+		     	  Double cjedpgrowthrate = this.getChenJiaoErZhanBiGrowthRateOfSuperBanKuai(date,0);
+		     	  value = cjedpgrowthrate;
+		     	  break; 
+		     	  
+			  case "ChengJiaoLiangZhanBi":
+		    	   Double cjlzhanbi = this.getChenJiaoLiangZhanBi(date, 0);
+        		   value = cjlzhanbi;
+		    	   break;	
+			  case "CjlZbDpMaxWk":
+		    	   Integer cjldpmaxwk = null;
+				   try{
+				    	  cjldpmaxwk = this.getChenJiaoLiangZhanBiMaxWeekOfSuperBanKuai(date,0);
+				          value = cjldpmaxwk;
+			       } catch (java.lang.NullPointerException e) {value = null;}
+			       break;
+			  case "CjlZbDpMinWk":
+	    	   	  Integer cjldpminwk = null;
+		          try{
+	              		cjldpminwk = this.getChenJiaoLiangZhanBiMinWeekOfSuperBanKuai(date, 0);
+	              		value = 0 - cjldpminwk;
+	              		break;
+		          } catch (java.lang.NullPointerException e) {  value = null;}
+		          break;	  
+			  case "CjlZbGrowRate":
+		     	  Double cjldpgrowthrate = this.getChenJiaoLiangZhanBiGrowthRateOfSuperBanKuai(date,0);//.getGgdpzhanbigrowthrate();
+		     	  value = cjldpgrowthrate;
+		     	  break;
+			  }
+		
+			return value;
+		}
 		 /*
 		  * 
 		  */
 		 public String[] getNodeXDataCsvData (TDXNodes superbk, LocalDate requireddate, int difference)
 		 {
 					Double curcjezhanbidata = this.getChenJiaoErZhanBi(requireddate, 0);  //Õ¼±È
-					Integer cjemaxweek = this.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(requireddate,0);//nodefx.getGgbkzhanbimaxweek();
-					Integer cjeminweek = this.getChenJiaoErZhanBiMinWeekOfSuperBanKuai(requireddate,0);
+					Integer cjezbmaxweek = this.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(requireddate,0);//nodefx.getGgbkzhanbimaxweek();
+					Integer cjezbminweek = this.getChenJiaoErZhanBiMinWeekOfSuperBanKuai(requireddate,0);
 					Double cjezbgrowthrate = this.getChenJiaoErZhanBiGrowthRateOfSuperBanKuai(requireddate, 0);
 					
 					Double cjlzhanbidata = this.getChenJiaoLiangZhanBi(requireddate, 0);
@@ -910,13 +937,13 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 					}
 					String strcjemaxweek = null;
 					try {
-						strcjemaxweek = cjemaxweek.toString();
+						strcjemaxweek = cjezbmaxweek.toString();
 					} catch (java.lang.NullPointerException e) {
 						strcjemaxweek = String.valueOf("0");
 					}
 					String strcjeminweek = null;
 					try {
-						strcjeminweek = cjeminweek.toString();
+						strcjeminweek = cjezbminweek.toString();
 					} catch (java.lang.NullPointerException e) {
 						strcjeminweek = String.valueOf("0");
 					}

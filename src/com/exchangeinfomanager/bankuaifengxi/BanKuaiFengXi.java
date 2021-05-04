@@ -229,12 +229,12 @@ public class BanKuaiFengXi extends JDialog
 			initializeGuiOfNormal ();
 		initializeKuaiJieZhishuPnl ();
 			
-//		createEvents ();
-//		setUpChartDataListeners ();
-//
-//		initializePaoMaDeng ();
+		createEvents ();
+		setUpChartDataListeners ();
+
+		initializePaoMaDeng ();
 		
-//		adjustDate ( LocalDate.now());
+		adjustDate ( LocalDate.now());
 	}
 	
 	private static Logger logger = Logger.getLogger(BanKuaiFengXi.class);
@@ -592,7 +592,7 @@ public class BanKuaiFengXi extends JDialog
 			JOptionPane.showMessageDialog(null,"日期有误!","Warning",JOptionPane.WARNING_MESSAGE);
 			return;
 		}
-		ServicesForNodeBanKuai svsbk = (ServicesForNodeBanKuai) selectedbk.getBanKuaiService ();
+		ServicesForNodeBanKuai svsbk = (ServicesForNodeBanKuai) selectedbk.getBanKuaiService (true);
 		//一次性同步板块数据以及所属个股数据
 		try {
 			svsbk.syncBanKuaiAndItsStocksForSpecificTime(selectedbk, CommonUtility.getSettingRangeDate(curselectdate,"large"), curselectdate,
@@ -2462,7 +2462,7 @@ public class BanKuaiFengXi extends JDialog
 			if(bk == null)
 				return;
 			
-				ServicesForNodeBanKuai svsbk = bk.getBanKuaiService();
+				ServicesForNodeBanKuai svsbk = bk.getBanKuaiService(true);
 				bk = svsbk.getAllGeGuOfBanKuai (bk); 
 				List<BkChanYeLianTreeNode> allbkgg = bk.getAllGeGuOfBanKuaiInHistory();
 				List<String> listNames = allbkgg.stream().map(u -> u.getMyOwnCode()).collect(Collectors.toList());

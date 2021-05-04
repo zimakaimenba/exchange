@@ -199,13 +199,29 @@ public class Stock extends TDXNodes {
 			return false;
 	}
 	
-	public ServicesForNode getServicesForNode ()
+	public ServicesForNode getServicesForNode (Boolean getornot)
 	{
-		return new SvsForNodeOfStock ();
+		if(!getornot) {
+			this.svsnode = null;
+			return null;
+		}
+		if(this.svsnode == null)
+			return new SvsForNodeOfStock ();
+		else
+			return this.svsnode;
 	}
-	public ServicesOfNodeStock getServicesOfNodeStock ()
+	private ServicesForNode svsnode;
+	public ServicesOfNodeStock getServicesOfNodeStock (Boolean getornot)
 	{
-		return new SvsForNodeOfStock ();
+		if(!getornot) {
+			this.svsofnodestock= null;
+			return null;
+		}
+		if(this.svsofnodestock == null)
+			return new SvsForNodeOfStock ();
+		else
+			 return this.svsofnodestock;
 	}
+	private ServicesOfNodeStock svsofnodestock;
 }
 

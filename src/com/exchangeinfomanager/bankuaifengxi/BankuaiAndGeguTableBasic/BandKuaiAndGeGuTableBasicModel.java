@@ -26,7 +26,7 @@ import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.StockNodesXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 
-public abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel 
+public  abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel 
 {
 	protected Properties prop;
 
@@ -58,6 +58,9 @@ public abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 	}
 	protected void createTableTitleStrings ()
 	{
+		if(prop == null)
+			return;
+		
 		String[] jtableTitleStrings = new String[11];
 		for(int i=0;i<=10;i++) {
 			String column_name  = prop.getProperty (String.valueOf(i) + "column_name");
@@ -170,43 +173,32 @@ public abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 	    		return index;
 	    }
 
-
-	protected Object getColomnValue(String column_keyword, int rowIndex) 
+	protected Object getNodeValueByKeyWord(BkChanYeLianTreeNode node, String keyword, LocalDate showdate, String period,String... maformula) 
 	{
-		if(column_keyword == null)
-			return null;
-		 column_keyword = column_keyword.trim();
-		
 		  Object value = null;
 		  
-		  BkChanYeLianTreeNode node = entryList.get(rowIndex);
-		  NodeXPeriodData nodexdatawk = null; NodeXPeriodData nodexdataday = null;
-		  if( node.getType() == BkChanYeLianTreeNode.BKGEGU ) {
-			  Stock stock = ((StockOfBanKuai)node).getStock();
-			  nodexdatawk = stock.getNodeXPeroidData(curperiod);
-			  nodexdataday = stock.getNodeXPeroidData(NodeGivenPeriodDataItem.DAY);
-		  } else if ( node.getType() == BkChanYeLianTreeNode.TDXBK || node.getType() == BkChanYeLianTreeNode.DZHBK ) {
-			  nodexdatawk = ((BanKuai) node).getNodeXPeroidData (curperiod);
-			  nodexdataday = ((BanKuai) node).getNodeXPeroidData(NodeGivenPeriodDataItem.DAY);
-		  }
-		    
-		  switch (column_keyword) {
-		  case "keywords":
-			  TagsServiceForNodes tagsservicesfornode = new TagsServiceForNodes (node);
-		      Collection<Tag> nodetags = null;
-			  try { nodetags = tagsservicesfornode.getTags();
-			  } catch (SQLException e) {e.printStackTrace();}
-			  tagsservicesfornode = null;
-				
-		      String tagslist = " ";
-		      for (Iterator<Tag> it = nodetags.iterator(); it.hasNext(); ) {
-		    		Tag t = it.next();
-		    		tagslist = tagslist + t.getName() + "  ";
-		      }
-		      value = tagslist;
-			  break;
+		  NodeXPeriodData nodexdatawk =  ((TDXNodes)node).getNodeXPeroidData(period);
+		  value = nodexdatawk.getNodeDataByKeyWord(keyword,showdate,maformula[0]);
+		  if(value != null)
+			  return value;
 			  
-		  		case "suoshubankuai" :
+		  switch (keyword) {
+			  case "Tags":
+				  TagsServiceForNodes tagsservicesfornode = new TagsServiceForNodes (node);
+			      Collection<Tag> nodetags = null;
+				  try { nodetags = tagsservicesfornode.getTags();
+				  } catch (SQLException e) {e.printStackTrace();}
+				  tagsservicesfornode = null;
+					
+			      String tagslist = " ";
+			      for (Iterator<Tag> it = nodetags.iterator(); it.hasNext(); ) {
+			    		Tag t = it.next();
+			    		tagslist = tagslist + t.getName() + "  ";
+			      }
+			      value = tagslist;
+			     break;
+			  
+		  		case "SuoShuBanKuai" :
 		  			if (node.getType() == BkChanYeLianTreeNode.TDXBK) {
 		  				value = node.getMyOwnCode() + node.getMyOwnName();
 		  			} else 
@@ -222,136 +214,66 @@ public abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 		  				
 		  				value = bankuailist;
 		  			}
-		  			break;
-		       case "nodecode":
-		     	  String stockcode = node.getMyOwnCode();
-		     	  value = stockcode;
-		     	  break;
-		     	  
-		       case "nodename":
-		     	  String thisbkname = node.getMyOwnName();
-		       	  value = thisbkname;
-		     	  break;
-		     	  
-		       case "bankuaichengjiaoergongxian":
-		     	  Double cjechangegrowthrate = nodexdatawk.getChenJiaoErChangeGrowthRateOfSuperBanKuaiOnDailyAverage(this.curbk,showwknum,0);// fxrecord.getGgbkcjegrowthzhanbi();
-		     	  value = cjechangegrowthrate;
-		     	  break;
-		       case "bankuaichengjiaolianggongxian":
-			     	  Double cjlchangegrowthrate = nodexdatawk.getChenJiaoLiangChangeGrowthRateOfSuperBanKuaiOnDailyAverage(this.curbk,showwknum,0);// fxrecord.getGgbkcjegrowthzhanbi();
-			     	  value = cjlchangegrowthrate;
-			     	  break;	  
-		       case "cjezbgrowrate":
-		     	  Double cjedpgrowthrate = nodexdatawk.getChenJiaoErZhanBiGrowthRateOfSuperBanKuai(showwknum,0);//.getGgdpzhanbigrowthrate();
-		     	  value = cjedpgrowthrate;
-		     	  break;
-		       case "cjlzbgrowrate":
-			     	  Double cjldpgrowthrate = nodexdatawk.getChenJiaoLiangZhanBiGrowthRateOfSuperBanKuai(showwknum,0);//.getGgdpzhanbigrowthrate();
-			     	  value = cjldpgrowthrate;
+		  			 break;
+		       case "NodeCode":
+			     	  String stockcode = node.getMyOwnCode();
+			     	  value = stockcode;
 			     	  break;
-		       case "chengjiaoerzhanbi":
-		    	   Double cjezhanbi = nodexdatawk.getChenJiaoErZhanBi(showwknum, 0);
-           		   value = cjezhanbi;
-		    	   break;
-		       case "chengjiaoliangzhanbi":
-		    	   Double cjlzhanbi = nodexdatawk.getChenJiaoLiangZhanBi(showwknum, 0);
-           		   value = cjlzhanbi;
-		    	   break;
-		       case "CjeZbDpMaxWk":
-		    	   	  Integer cjedpmaxwk = null;
-			          try{
-			        	   cjedpmaxwk = nodexdatawk.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(showwknum,0);//.getGgdpzhanbimaxweek();
-			          		if(cjedpmaxwk > 0) {
-			              		value = cjedpmaxwk;
-			              		break;
-			              	} else	if(cjedpmaxwk == 0) {
-			              		Integer cjedpminwk = nodexdatawk.getChenJiaoErZhanBiMinWeekOfSuperBanKuai(showwknum, 0);
-			              		value = 0 - cjedpminwk;
-			              		break;
-			              	}
-			          } catch (java.lang.NullPointerException e) {  value = null;}
-			          break;
-		       case "CjlZbDpMaxWk":
-		    	   Integer cjldpmaxwk = null;
-				      try{
-				    	  		cjldpmaxwk = nodexdatawk.getChenJiaoLiangZhanBiMaxWeekOfSuperBanKuai(showwknum,0);
-				          		if(cjldpmaxwk > 0) {
-				              		value = cjldpmaxwk;
-				              		break;
-				              	} else	if(cjldpmaxwk == 0) {
-				              		Integer cjldpminwk = nodexdatawk.getChenJiaoErZhanBiMinWeekOfSuperBanKuai(showwknum, 0);
-				              		value = 0 - cjldpminwk;
-				              		break;
-				              	}
-				       } catch (java.lang.NullPointerException e) {value = cjldpmaxwk;}
-				       break;
-		       case "NCjeZbDpMinWk":
-		     	  Integer nCjeZbDpMinWk = nodexdatawk.getChenJiaoErZhanBiMinestWeekOfSuperBanKuaiInSpecificPeriod(showwknum,0,15);
-		       	  value = nCjeZbDpMinWk;
-		       	  break;
-		       case "averagecjemaxwk" :
-		    	   try {
-		    		   Integer averagecjemaxwk = nodexdatawk.getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(showwknum,0);
-				       	  if(averagecjemaxwk != null && averagecjemaxwk > 0) 
-				       		value = averagecjemaxwk;
-				          else value = 0;
-		    	   } catch (Exception e) { value = null;  }
-		       	  break;
-		       case "averagecjlmaxwk" :
-		    	   Integer averagecjlmaxwk = null;
-		    	   try {
-		    		   averagecjlmaxwk = nodexdatawk.getAverageDailyChenJiaoLiangMaxWeekOfSuperBanKuai(showwknum,0);
-				       	  if(averagecjlmaxwk != null && averagecjlmaxwk > 0) 
-				       		value = averagecjlmaxwk;
-				          else value = 0;
-		    	   } catch (Exception e) {value = averagecjlmaxwk; }
-		       	  break;
+		       case "NodeName":
+			     	  String thisbkname = node.getMyOwnName();
+			       	  value = thisbkname;
+			       	   break;
+		       case "BanKuaiChengJiaoErGongXian":
+			     	  Double cjechangegrowthrate = nodexdatawk.getChenJiaoErChangeGrowthRateOfSuperBanKuaiOnDailyAverage(this.curbk,showdate,0);// fxrecord.getGgbkcjegrowthzhanbi();
+			     	  value = cjechangegrowthrate;
+			     	 break;
+		       case "BanKuaiChengJiaoLiangGongXian":
+			     	  Double cjlchangegrowthrate = nodexdatawk.getChenJiaoLiangChangeGrowthRateOfSuperBanKuaiOnDailyAverage(this.curbk,showdate,0);// fxrecord.getGgbkcjegrowthzhanbi();
+			     	  value = cjlchangegrowthrate;
+			     	  break;	
 		       case "highlevelpanxurank" :
-		     	  Integer paiming = this.entryList.indexOf(node) + 1;
-		       	  value = paiming;
-		     	  break;
+			     	  Integer paiming = this.entryList.indexOf(node) + 1;
+			       	  value = paiming;
+			       	 break;  	  
+		       case "NCjeZbDpMinWk":
+			     	  Integer nCjeZbDpMinWk = nodexdatawk.getChenJiaoErZhanBiMinestWeekOfSuperBanKuaiInSpecificPeriod(showdate,0,15);
+			       	  value = nCjeZbDpMinWk;
+			       	 break;
 		       case "quanzhonginbankuai" :
-		     	  Integer stockweight =  ((BanKuai)curbk).getGeGuSuoShuBanKuaiWeight( node.getMyOwnCode() );
-			        	try {
-			        		value = (Integer)stockweight;
-			        	} catch (java.lang.NullPointerException e) {value = null;}
-		     	  break;
-		       case "CjeLianXuZhang": //周日平均成交额MAXWK
-			        	Integer cjemaxwk = nodexdatawk.getAverageDailyCjeLianXuFangLiangPeriodNumber(showwknum,0);//.getGgbkcjemaxweek(); 
-			        	value = cjemaxwk;
-			        	break;
-		       case "huanshoulv": //周日平均成交额MAXWK
-			        	Double hsl = ((StockNodesXPeriodData)nodexdatawk).getSpecificTimeHuanShouLv(showwknum, 0);
-				    	value = hsl;
-				    	break;
-		       case "huanshoulvfree": //周日平均成交额MAXWK
-		        	Double hslf = ((StockNodesXPeriodData)nodexdatawk).getSpecificTimeHuanShouLvFree(showwknum, 0);
-			    	value = hslf;
-			    	break;
-		       case "chenjiaoer" :
-			      	 Double curcje  = nodexdatawk.getChengJiaoEr(showwknum, 0) / 100000000;
-			   	     value = curcje;
-			   	     break;
-		       case "chenjiaoliang" :
-			      	 Double curcjl  = nodexdatawk.getChengJiaoLiang(showwknum, 0) / 100000000;
-			   	     value = curcjl;
-			   	     break;
-		       case "dayujunxian" :
-		    	   	String displayma = matchcond.getSettingMaFormula();
-		    	   
-		    	   	Boolean checkresult = nodexdataday.checkCloseComparingToMAFormula(displayma,showwknum,0);
-				    if( checkresult != null && checkresult) 
-				    	value = Boolean.valueOf(checkresult);
-				    else if( checkresult != null && !checkresult)
-				    	value = Boolean.valueOf(false);
-				    
-		    	   break;
-		       case "zhangdiefu" :
-			      	 Double zhangdiefu  = nodexdatawk.getSpecificOHLCZhangDieFu(showwknum, 0)  ;
-			      	 if(zhangdiefu != null)
-			      		 value = zhangdiefu;
-			   	     break;
+			     	  Integer stockweight =  ((BanKuai)curbk).getGeGuSuoShuBanKuaiWeight( node.getMyOwnCode() );
+				        	try {
+				        		value = (Integer)stockweight;
+				        	} catch (java.lang.NullPointerException e) {value = null;}
+				      break;
+			  case "CjeLianXuZhang": //周日平均成交额MAXWK
+				        	Integer cjemaxwk = nodexdatawk.getAverageDailyCjeLianXuFangLiangPeriodNumber(showdate,0); 
+				        	value = cjemaxwk;
+				        	break;     	  
 		  }
+
+		  return value;
+	}
+	protected Object getColomnValue(String column_keyword, int rowIndex) 
+	{
+		if(column_keyword == null)
+			return null;
+		 column_keyword = column_keyword.trim();
+		
+		  Object value = null;
+		  
+		  BkChanYeLianTreeNode node = entryList.get(rowIndex);
+		  BkChanYeLianTreeNode sendnode = null;
+		  if( node.getType() == BkChanYeLianTreeNode.BKGEGU ) 
+			  sendnode = ((StockOfBanKuai)node).getStock();
+		   else if ( node.getType() == BkChanYeLianTreeNode.TDXBK || node.getType() == BkChanYeLianTreeNode.DZHBK ) 
+			  sendnode = node;
+		
+		  if(column_keyword.equals("CLOSEVSMA")) {
+			  String maformula = matchcond.getSettingMaFormula();
+			  value = getNodeValueByKeyWord(sendnode, column_keyword, this.showwknum, NodeGivenPeriodDataItem.DAY, maformula);
+		  }
+		  else 
+			  value = getNodeValueByKeyWord(sendnode, column_keyword, this.showwknum, this.curperiod,"");
 		  
 		  return value;
 	  }

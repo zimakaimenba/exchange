@@ -1534,6 +1534,11 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		// TODO Auto-generated method stub
 		
 	}
+	@Override
+	public void setAnnotations(LocalDate columnkey) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }
 /*

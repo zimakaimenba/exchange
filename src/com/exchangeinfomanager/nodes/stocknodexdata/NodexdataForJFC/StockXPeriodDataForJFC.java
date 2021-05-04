@@ -403,6 +403,36 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 		} catch (java.lang.NullPointerException e ) {return null;}
 	}
 	/*
+	 * 
+	 */
+	public Object getNodeDataByKeyWord( String keyword, LocalDate date, String... maformula)
+	 {
+		 Object value = null;
+		 value = super.getNodeDataByKeyWord (keyword,date,maformula[0]);
+		 if(value != null)
+			 return value;
+		 
+		 switch(keyword) {
+		 case "HuanShouLv" :
+		      	 Double hsl  = this.getSpecificTimeHuanShouLv(date, 0) ;
+		   	     value = hsl;
+		   	     break;
+		 case "HuanShouLvFree" :
+			 Double hslf = this.getSpecificTimeHuanShouLvFree (date, 0);
+	   	     value = hslf;
+	   	     break;
+		 case "LiuTongShiZhi" :
+			 Double ltsz = this.getSpecificTimeLiuTongShiZhi(date,0);//显示成交额是多少周最大,成交额多少周最小没有意义，因为如果不是完整周成交量就是会很小
+	   	     value = ltsz;
+	   	     break;
+		 case "ZongShiZhi" :
+			 Double zsz = this.getSpecificTimeZongShiZhi(date, 0);
+	   	     value = zsz;
+	   	     break;
+		 }
+		 return value;
+	 }
+	/*
 	 * (non-Javadoc)
 	 * @see com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC.TDXNodesXPeriodDataForJFC#getNodeXDataCsvData(com.exchangeinfomanager.nodes.TDXNodes, java.time.LocalDate, int)
 	 */
@@ -415,12 +445,14 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 		 Double hsl = this.getSpecificTimeHuanShouLv(requireddate, 0);
 		 Double hslf = this.getSpecificTimeHuanShouLvFree(requireddate, 0);
 		 Double liutongshizhi = this.getSpecificTimeLiuTongShiZhi(requireddate, 0);
+		 Double zongshizhi = this.getSpecificTimeZongShiZhi(requireddate, 0);
 		 
-		 String strhsl = null; String strhslf = null; String strliutongshizhi = null;
+		 String strhsl = null; String strhslf = null; String strliutongshizhi = null;String strzongshizhi = null;
 		 try { strhsl = hsl.toString();	 } catch (java.lang.NullPointerException e) { strhsl = String.valueOf("0"); }
 		 try { strhslf = hslf.toString();	 } catch (java.lang.NullPointerException e) { strhslf = String.valueOf("0"); }
 		 try { strliutongshizhi	 =   liutongshizhi.toString(); } catch (java.lang.NullPointerException e) {	 strliutongshizhi	= String.valueOf("0"); }
-		 String[] curcsvline = {strhsl,strhslf, strliutongshizhi };
+		 try { strzongshizhi	 =   zongshizhi.toString(); } catch (java.lang.NullPointerException e) {	 strzongshizhi	= String.valueOf("0"); }
+		 String[] curcsvline = {strhsl,strhslf, strliutongshizhi,strzongshizhi };
 		 
 		 String [] joined = ObjectArrays.concat(supcsv, curcsvline, String.class);
 			

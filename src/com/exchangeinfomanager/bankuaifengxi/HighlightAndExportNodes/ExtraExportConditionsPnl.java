@@ -2,6 +2,7 @@ package com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -31,7 +32,6 @@ public class ExtraExportConditionsPnl extends JPanel
 	private JCheckBox cbxOnlyCurBk;
 	private JCheckBox chkbxexportallbk;
 	private JCheckBox chkbxonlybkstock;
-	private JCheckBox chkbxzhbiup;
 	private JLabel lblNewLabel_2;
 	private JLabel label_2;
 	private JCheckBox chkbxexporbkallowedinsetting;
@@ -39,8 +39,6 @@ public class ExtraExportConditionsPnl extends JPanel
 	private List<JCheckBox> huchixuanzebasic; //互斥意味着其中一个选了，其他都不惜不选
 	private List<JCheckBox> huchixuanzeupdate; //有两个是不互斥的，和其他互斥
 	private List<JCheckBox> huchixuanzeaboutstock;
-	
-	private JCheckBox chkbxexportyangxianbk;
 	private JCheckBox chkbxonlyexportbk;
 	private JCheckBox chkbxonlycurstock;
 	private BanKuaiGeGuMatchCondition cond;
@@ -68,13 +66,16 @@ public class ExtraExportConditionsPnl extends JPanel
 	private JButton btncjl;
 	private JButton btncjezbgr;
 	private JButton btncjlzbgr;
+	private LocalDate curselectdate;
+	private JButton btnClearFormula;
 	/**
 	 * Create the panel.
 	 */
 	
-	public ExtraExportConditionsPnl(BanKuaiGeGuMatchCondition cond) 
+	public ExtraExportConditionsPnl(BanKuaiGeGuMatchCondition cond, LocalDate curselectdate1) 
 	{
 		this.cond  = cond;
+		this.curselectdate = curselectdate1;
 
 		initializeGui ();
 		createEvents ();
@@ -86,9 +87,6 @@ public class ExtraExportConditionsPnl extends JPanel
 		huchixuanzebasic.add(cbxOnlyCurBk);
 		huchixuanzebasic.add(chkbxexportallbk);
 		huchixuanzebasic.add(chkbxexporbkallowedinsetting);
-		
-		huchixuanzeupdate.add(chkbxzhbiup);
-		huchixuanzeupdate.add(chkbxexportyangxianbk);
 		
 		huchixuanzeaboutstock.add(chkbxonlybkstock);
 		huchixuanzeaboutstock.add(chkbxonlyexportbk);
@@ -116,15 +114,15 @@ public class ExtraExportConditionsPnl extends JPanel
 		else
 			this.cond.setExportOnlyCurrentBanKuai (false);
 		
-		if(chkbxzhbiup.isSelected() )
-			this.cond.setExportChenJiaoErZhanbiUpBanKuai(true);
-		else
-			this.cond.setExportChenJiaoErZhanbiUpBanKuai(false);
-		
-		if(chkbxexportyangxianbk.isSelected() )
-			this.cond.setExportYangXianBanKuai(true);
-		else
-			this.cond.setExportYangXianBanKuai(false);
+//		if(chkbxzhbiup.isSelected() )
+//			this.cond.setExportChenJiaoErZhanbiUpBanKuai(true);
+//		else
+//			this.cond.setExportChenJiaoErZhanbiUpBanKuai(false);
+//		
+//		if(chkbxexportyangxianbk.isSelected() )
+//			this.cond.setExportYangXianBanKuai(true);
+//		else
+//			this.cond.setExportYangXianBanKuai(false);
 		
 		if( chkbxonlyexportbk.isSelected() )
 			this.cond.setExportOnlyBankuaiNotGeGu(true);
@@ -178,89 +176,97 @@ public class ExtraExportConditionsPnl extends JPanel
 
 	private void createEvents() 
 	{
+		btnClearFormula.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				tfldexportformula.setText( "" );
+				cond.setExportConditionFormula ("");
+			}
+		});
+		
 		btncjezbgr.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				exportConditionSetting ("CHENJIAOERZHANBIGROWINGRATE","成交额占比增长率","%");
+				exportConditionSetting ("CjeZbGrowRate","成交额占比增长率","%");
 			}
 		});
 		btncjlzbgr.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				exportConditionSetting ("CHENJIAOLIANGZHANBIGROWINGRATE","成交量占比增长率","%");
+				exportConditionSetting ("CjlZbGrowRate","成交量占比增长率","%");
 			}
 		});
 		
 		btncjezb.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				exportConditionSetting ("CHENJIAOERZHANBI","成交额占比","%");
+				exportConditionSetting ("ChengJiaoErZhanBi","成交额占比","%");
 			}
 		});
 		btncjlzb.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				exportConditionSetting ("CHENJIAOLIANGZHANBI","成交量占比","%");
+				exportConditionSetting ("ChengJiaoLiangZhanBi","成交量占比","%");
 			}
 		});
 		btncje.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				exportConditionSetting ("CHENJIAOER","成交额","亿");
+				exportConditionSetting ("ChenJiaoEr","成交额","亿");
 			}
 		});
 		btngujia.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				exportConditionSetting ("GUJIA","股价","元");
+				exportConditionSetting ("GuJiaCLOSE","股价","元");
 			}
 		});
 		btnwkzhangfu.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				exportConditionSetting ("WKZHANGFU","周涨幅","%");
+				exportConditionSetting ("ZhangDieFu","周涨幅","%");
 			}
 		});
 		btnfreehsl.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				exportConditionSetting ("FREEHSL","自由流通换手率","%");
+				exportConditionSetting ("HuanShouLvFree","自由流通换手率","%");
 			}
 		});
 		btnhsl.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				exportConditionSetting ("HSL","换手率","%");
+				exportConditionSetting ("HuanShouLv","换手率","%");
 			}
 		});
 		btncjlmaxwk.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				exportConditionSetting ("DAILYCJLMAXWK","日平均成交量MAXWK","周");
+				exportConditionSetting ("AverageChenJiaoLiangMaxWeek","日平均成交量MAXWK","周");
 			}
 		});
 		btncjemaxwk.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				exportConditionSetting ("DAILYCJEMAXWK","日平均成交额MAXWK","周");
+				exportConditionSetting ("AverageChenJiaoErMaxWeek","日平均成交额MAXWK","周");
 			}
 		});
 		btncjlzbdpminwk.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				exportConditionSetting ("CJLZBDPMINWK","成交量周占比DPMINWK","周");
+				exportConditionSetting ("CjlZbDpMinWk","成交量周占比DPMINWK","周");
 			}
 		});
 		btncjlzbdpmaxwk.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				exportConditionSetting ("CJLZBDPMAXWK","成交量周占比DPMAXWK","周");
+				exportConditionSetting ("CjlZbDpMaxWk","成交量周占比DPMAXWK","周");
 			}
 		});
 		btncjezbdpminwk.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				exportConditionSetting ("CJEZBDPMINWK","成交额周占比DPMINWK","周");
+				exportConditionSetting ("CjeZbDpMinWk","成交额周占比DPMINWK","周");
 			}
 		});
 		
@@ -274,20 +280,20 @@ public class ExtraExportConditionsPnl extends JPanel
 		btnCJEZbDpMaxWk.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				exportConditionSetting ("CJEZBDPMAXWK","成交额周占比DPMAXWK","周");
+				exportConditionSetting ("CjeZbDpMaxWk","成交额周占比DPMAXWK","周");
 			}
 		});
 		
 		btnzongshizhi.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				exportConditionSetting ("ZONGSHIZHI","总市值","亿");
+				exportConditionSetting ("ZongShiZhi","总市值","亿");
 			}
 		});
 		btnliutongshizhi.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				exportConditionSetting ("LIUTONGSHIZHI","流通市值","亿");
+				exportConditionSetting ("LiuTongShiZhi","流通市值","亿");
 			}
 		});
 		
@@ -339,34 +345,6 @@ public class ExtraExportConditionsPnl extends JPanel
 				huchiOperationsForJCheckBox(huchixuanzeaboutstock,chkbxonlycurstock);
 				huchiOperationsForJCheckBox (huchixuanzebasic,chkbxonlycurstock);
 				huchiOperationsForJCheckBox (huchixuanzeupdate,chkbxonlycurstock);
-				
-				if(chkbxonlycurstock.isSelected()) {
-					chkbxexportyangxianbk.setSelected(false);
-					chkbxexportyangxianbk.setEnabled(false);
-				} else {
-					chkbxexportyangxianbk.setEnabled(true);
-				}
-			}
-		});
-
-
-		
-		chkbxexportyangxianbk.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				
-				huchiOperationsForJCheckBox (huchixuanzebasic,chkbxexportyangxianbk);
-
-			}
-		});
-		
-		chkbxzhbiup.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				
-				huchiOperationsForJCheckBox (huchixuanzebasic,chkbxzhbiup);
-
-
 			}
 		});
 
@@ -424,7 +402,8 @@ public class ExtraExportConditionsPnl extends JPanel
 	}
 	protected void exportConditionSetting(String factorkw1, String factorname, String factordanwei) 
 	{
-		ExportConditionsFactorPnl expfpnl = new ExportConditionsFactorPnl (factorkw1,factorname,factordanwei);
+//		factorkw1 = factorkw1.toUpperCase();
+		ExportConditionsFactorPnl expfpnl = new ExportConditionsFactorPnl (factorkw1,factorname,factordanwei,curselectdate);
 		int result = JOptionPane.showConfirmDialog(null, expfpnl, "条件设置", JOptionPane.OK_CANCEL_OPTION);
 	    if (result == JOptionPane.OK_OPTION) {
 	    	String setting =  expfpnl.getExportConditionFactorSetting ();
@@ -439,14 +418,6 @@ public class ExtraExportConditionsPnl extends JPanel
 	    		tfldexportformula.setText( tfldexportformula.getText() +" AND " +  "(" + setting + ")" );
 	    	
 	    	this.cond.setExportConditionFormula (tfldexportformula.getText());
-	    	
-	    	ArrayList<String> vars = new ArrayList<String>();
-            Pattern p = Pattern.compile("\'.*?\'", Pattern.CASE_INSENSITIVE);
-            String regxstring = tfldexportformula.getText();
-            Matcher m = p.matcher(regxstring);
-            while (m.find()) {
-                vars.add(m.group());
-            }
 	    }
 	}
 	/*
@@ -461,15 +432,8 @@ public class ExtraExportConditionsPnl extends JPanel
 		chkbxexportallbk = new JCheckBox("\u5BFC\u51FA\u5168\u90E8\u677F\u5757(\u677F\u5757\u5BFC\u51FA\u8BBE\u7F6E\u65E0\u6548)");
 		chkbxexportallbk.setSelected(true);
 		
-		chkbxzhbiup = new JCheckBox("\u4EC5\u5BFC\u51FA\u6210\u4EA4\u989D/\u6210\u4EA4\u91CF\u5360\u6BD4\u73AF\u6BD4\u4E0A\u5347\u7684\u677F\u5757(\u677F\u5757\u8BBE\u7F6E\u65E0\u6548)");
-		
-		chkbxzhbiup.setEnabled(false);
-		
 		chkbxexporbkallowedinsetting = new JCheckBox("\u5BFC\u51FA\u677F\u5757\u8BBE\u7F6E\u5141\u8BB8\u7684\u677F\u5757");
 		chkbxexporbkallowedinsetting.setEnabled(false);
-		
-		chkbxexportyangxianbk = new JCheckBox("\u4EC5\u5BFC\u51FA\u5468\u7EBF\u9633\u7EBF\u7684\u677F\u5757(\u677F\u5757\u8BBE\u7F6E\u65E0\u6548)");
-		chkbxexportyangxianbk.setEnabled(false);
 		
 		chkbxonlyexportbk = new JCheckBox("\u4EC5\u5BFC\u51FA\u677F\u5757\uFF0C\u4E0D\u5BFC\u51FA\u677F\u5757\u4E2A\u80A1");
 		
@@ -497,6 +461,7 @@ btnCJEZbDpMaxWk.setForeground(Color.RED);
 		
 		
 		tfldexportformula = new JTextArea();
+		tfldexportformula.setEditable(false);
 		tfldexportformula.setLineWrap(true);
 		tfldexportformula.setColumns(10);
 		
@@ -556,6 +521,11 @@ btncjezbdpminwk.setEnabled(false);
 		btncjlzbgr = new JButton("\u6210\u4EA4\u91CF\u5360\u6BD4\u589E\u957F\u7387");
 		btncjlzbgr.setEnabled(false);
 		
+		btnClearFormula = new JButton("\u6E05\u9664");
+		
+		
+		JLabel label = new JLabel("\u4EC5\u652F\u6301\u52A0\u51CF\u4E58\u9664\u8FD0\u7B97");
+		
 		GroupLayout groupLayout = new GroupLayout(this);
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
@@ -570,12 +540,6 @@ btncjezbdpminwk.setEnabled(false);
 						.addGroup(groupLayout.createSequentialGroup()
 							.addGap(7)
 							.addComponent(cbxOnlyCurBk))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addGap(7)
-							.addComponent(chkbxzhbiup))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addGap(7)
-							.addComponent(chkbxexportyangxianbk))
 						.addGroup(groupLayout.createSequentialGroup()
 							.addGap(7)
 							.addComponent(chkbxonlyexportbk))
@@ -606,21 +570,15 @@ btncjezbdpminwk.setEnabled(false);
 								.addComponent(chckbxexportyellowbkstk)))
 						.addGroup(groupLayout.createSequentialGroup()
 							.addContainerGap()
-							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-								.addGroup(groupLayout.createSequentialGroup()
-									.addComponent(btngujia)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(btnwkzhangfu)
-									.addPreferredGap(ComponentPlacement.UNRELATED)
-									.addComponent(btnhsl)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(btnfreehsl)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(btnma))
-								.addGroup(groupLayout.createSequentialGroup()
-									.addComponent(btnzongshizhi)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(btnliutongshizhi))))
+							.addComponent(btngujia)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(btnwkzhangfu)
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addComponent(btnhsl)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(btnfreehsl)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(btnma))
 						.addGroup(groupLayout.createSequentialGroup()
 							.addContainerGap()
 							.addComponent(btncje)
@@ -638,13 +596,6 @@ btncjezbdpminwk.setEnabled(false);
 							.addContainerGap()
 							.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING, false)
 								.addGroup(groupLayout.createSequentialGroup()
-									.addComponent(tfldexportformula)
-									.addPreferredGap(ComponentPlacement.UNRELATED)
-									.addComponent(btnJisuanToFormula)
-									.addPreferredGap(ComponentPlacement.UNRELATED)
-									.addComponent(txaJisuan, GroupLayout.PREFERRED_SIZE, 202, GroupLayout.PREFERRED_SIZE)
-									.addGap(10))
-								.addGroup(groupLayout.createSequentialGroup()
 									.addComponent(btncjl)
 									.addGap(18)
 									.addComponent(btncjlzb)
@@ -655,7 +606,24 @@ btncjezbdpminwk.setEnabled(false);
 									.addPreferredGap(ComponentPlacement.RELATED)
 									.addComponent(btncjlmaxwk)
 									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(btncjlzbgr)))))
+									.addComponent(btncjlzbgr))
+								.addGroup(groupLayout.createSequentialGroup()
+									.addComponent(tfldexportformula)
+									.addPreferredGap(ComponentPlacement.UNRELATED)
+									.addComponent(btnJisuanToFormula)
+									.addPreferredGap(ComponentPlacement.UNRELATED)
+									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+										.addComponent(label)
+										.addComponent(txaJisuan, GroupLayout.PREFERRED_SIZE, 202, GroupLayout.PREFERRED_SIZE))
+									.addGap(10))))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addContainerGap()
+							.addComponent(btnClearFormula))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addContainerGap()
+							.addComponent(btnzongshizhi)
+							.addGap(18)
+							.addComponent(btnliutongshizhi)))
 					.addContainerGap(13, Short.MAX_VALUE))
 		);
 		groupLayout.setVerticalGroup(
@@ -667,11 +635,7 @@ btncjezbdpminwk.setEnabled(false);
 					.addComponent(chkbxexporbkallowedinsetting)
 					.addGap(4)
 					.addComponent(cbxOnlyCurBk)
-					.addGap(4)
-					.addComponent(chkbxzhbiup)
-					.addGap(4)
-					.addComponent(chkbxexportyangxianbk)
-					.addGap(4)
+					.addGap(58)
 					.addComponent(chkbxonlyexportbk)
 					.addGap(4)
 					.addComponent(lblNewLabel_2)
@@ -708,7 +672,12 @@ btncjezbdpminwk.setEnabled(false);
 						.addComponent(btncjlzbdpminwk)
 						.addComponent(btncjlmaxwk)
 						.addComponent(btncjlzbgr))
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(btnzongshizhi)
+						.addComponent(btnliutongshizhi))
+					.addPreferredGap(ComponentPlacement.RELATED, 15, Short.MAX_VALUE)
+					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING, false)
 						.addGroup(groupLayout.createSequentialGroup()
 							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 								.addGroup(groupLayout.createSequentialGroup()
@@ -719,18 +688,17 @@ btncjezbdpminwk.setEnabled(false);
 										.addComponent(btnhsl)
 										.addComponent(btnfreehsl)
 										.addComponent(btnma))
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-										.addComponent(btnzongshizhi)
-										.addComponent(btnliutongshizhi))
-									.addPreferredGap(ComponentPlacement.UNRELATED)
+									.addGap(39)
 									.addComponent(tfldexportformula, GroupLayout.PREFERRED_SIZE, 104, GroupLayout.PREFERRED_SIZE))
 								.addGroup(groupLayout.createSequentialGroup()
 									.addGap(73)
 									.addComponent(txaJisuan, GroupLayout.PREFERRED_SIZE, 101, GroupLayout.PREFERRED_SIZE)))
-							.addGap(35))
-						.addGroup(Alignment.TRAILING, groupLayout.createSequentialGroup()
-							.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+							.addPreferredGap(ComponentPlacement.UNRELATED)
+							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+								.addComponent(btnClearFormula)
+								.addComponent(label))
+							.addGap(2))
+						.addGroup(groupLayout.createSequentialGroup()
 							.addComponent(btnJisuanToFormula)
 							.addGap(80))))
 		);

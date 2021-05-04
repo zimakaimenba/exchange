@@ -367,18 +367,36 @@ public class BanKuai extends TDXNodes
 			return this.importbkgegu;
 	}
 	
-	public ServicesForNodeBanKuai getBanKuaiService ()
+	public ServicesForNodeBanKuai getBanKuaiService (Boolean getorreset)
 	{
-		ServicesForNodeBanKuai svsbk = null;
-		if(this.getType() == BkChanYeLianTreeNode.TDXBK)
-			 svsbk = new SvsForNodeOfBanKuai ();
-		else
-			svsbk = new SvsForNodeOfDZHBanKuai ();
+		if(!getorreset) {
+			svsofnodeofbk = null;
+			return null;
+		}
 		
-		return svsbk;
+		if(svsofnodeofbk != null)
+			return svsofnodeofbk;
+		
+		if(this.getType() == BkChanYeLianTreeNode.TDXBK)
+			svsofnodeofbk = new SvsForNodeOfBanKuai ();
+		else
+			svsofnodeofbk = new SvsForNodeOfDZHBanKuai ();
+		
+		return svsofnodeofbk;
 	}
-	public ServicesForNode getServicesForNode ()
+	public ServicesForNode getServicesForNode (Boolean getorreset)
 	{
-		return new SvsForNodeOfBanKuai ();
+		if(!getorreset) {
+			svsofnode = null;
+			return null;
+		}
+		
+		if(svsofnode == null)
+			return svsofnode = new SvsForNodeOfBanKuai ();
+		else
+			return this.svsofnode;
 	}
+	
+	private SvsForNodeOfBanKuai svsofnode;
+	private ServicesForNodeBanKuai svsofnodeofbk;
 }

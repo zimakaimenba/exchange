@@ -219,6 +219,6 @@ public abstract class TDXNodes extends BkChanYeLianTreeNode
 		return this.lastdayofbxfx;
 	}
 	
-	public abstract ServicesForNode getServicesForNode ();
+	public abstract ServicesForNode getServicesForNode (Boolean getornot);
 	
 }

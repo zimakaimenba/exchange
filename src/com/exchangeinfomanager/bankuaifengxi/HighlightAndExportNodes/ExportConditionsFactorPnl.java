@@ -37,11 +37,12 @@ public class ExportConditionsFactorPnl extends JPanel {
 	private JLabel lblNewLabel_1;
 	private JCheckBox cbxjisuan;
 	private String factordanwei;
+	private JComboBox cbxperiod;
 
 	/**
 	 * Create the panel.
 	 */
-	public ExportConditionsFactorPnl(String factorkw1, String factorname, String factordanwei1) 
+	public ExportConditionsFactorPnl(String factorkw1, String factorname, String factordanwei1,LocalDate curselectdate) 
 	{
 		this.factorkw = factorkw1;
 		this.factordanwei = factordanwei1.trim();
@@ -50,23 +51,35 @@ public class ExportConditionsFactorPnl extends JPanel {
 		lblyinzi.setText(factorname);
 		lbldanwei.setText(factordanwei1);
 		lbldanwei2.setText(factordanwei1);
+		datechooser.setLocalDate(curselectdate);
+		if(this.factorkw.equals("CLOSEVSMA") ) {
+			cbxselection.setEnabled(false);
+			cbxperiod.setSelectedIndex(1);
+			tfldvalueup.setText("¿˝£∫CLOSE>MA250 && MA30>MA60 || MA5>MA10");
+			tfldvalueup.setToolTipText("¿˝£∫CLOSE>MA250 && MA30>MA60 || MA5>MA10");
+		}
 		
-
 		createEvents ();
 	}
 	
 	public String getExportConditionFactorSetting ()
 	{
+		String factor =  "" ;
 		LocalDate dc = this.datechooser.getLocalDate();
-		if(dc ==  null)
-			dc = LocalDate.now().with(DayOfWeek.FRIDAY);
-		else
-			dc = dc.with(DayOfWeek.FRIDAY);
-		
-		String factor = "'" + this.factorkw + dc.toString().replace("-", "") + "'";
+		String period = (String) cbxperiod.getSelectedItem(); 
+		if(period.contains("÷‹" )) {
+			if(dc ==  null) 	dc = LocalDate.now().with(DayOfWeek.FRIDAY);
+			else	dc = dc.with(DayOfWeek.FRIDAY);
+			factor =  this.factorkw + dc.toString().replace("-", "") + "WEEK";
+		}
+		else {
+			if(dc ==  null) 	dc = LocalDate.now();
+			factor =  this.factorkw + dc.toString().replace("-", "") + "DAY";;
+		}
+		factor = "'" + factor  + "'";
 		
 		if(cbxjisuan.isSelected())
-			return factor;
+			return factor  ;
 		
 		String operator = (String) cbxselection.getSelectedItem();
 		String result = "";
@@ -76,7 +89,6 @@ public class ExportConditionsFactorPnl extends JPanel {
 			result = result + lowvalue + "<=" +  factor + "<=" + upvalue;
 		} else {
 			String lowvalue = getRealValueByDanWei (tfldvaluelow.getText().trim() );
-			
 			result = result + " " + factor + " "+ operator + " " + lowvalue   ;
 		}
 		return result;
@@ -143,7 +155,7 @@ lblNewLabel = new JLabel("\u56E0\u5B50");
 		label = new JLabel("\u9009\u9879");
 		
 		cbxselection = new JComboBox<>();
-		cbxselection.setModel(new DefaultComboBoxModel(new String[] {"=", ">", ">=", "<", "<=", "\u533A\u95F4"}));
+		cbxselection.setModel(new DefaultComboBoxModel(new String[] {">=", ">", "=", "<", "<=", "\u533A\u95F4"}));
 		
 		label_1 = new JLabel("\u6570\u503C");
 		
@@ -153,12 +165,6 @@ lblNewLabel = new JLabel("\u56E0\u5B50");
 		lbldanwei = new JLabel("New label");
 		
 		lblNewLabel_1 = new JLabel("~");
-		
-		tfldvalueup = new JTextField();
-		tfldvalueup.setEnabled(false);
-		tfldvalueup.setColumns(10);
-		
-		lbldanwei2 = new JLabel("New label");
 		
 		label_2 = new JLabel("\u65F6\u95F4\u70B9");
 		
@@ -176,13 +182,19 @@ lblNewLabel = new JLabel("\u56E0\u5B50");
 		add(label_1, "cell 0 3,alignx left,aligny center");
 		add(tfldvaluelow, "cell 1 3,growx,aligny top");
 		add(lbldanwei, "cell 3 3,alignx left,aligny center");
-		add(lblNewLabel_1, "cell 4 3,alignx left,aligny center");
-		add(tfldvalueup, "cell 5 3,alignx left,aligny top");
-		add(lbldanwei2, "cell 6 3,alignx left,aligny center");
+		add(lblNewLabel_1, "flowx,cell 4 3,alignx left,aligny center");
 		add(label_2, "cell 0 1,alignx left,aligny top");
-		add(datechooser, "cell 1 1 3 1,alignx left,aligny top");
+		add(datechooser, "flowx,cell 1 1 4 1,alignx left,aligny top");
 		
-		if(this.factorkw.equals("CLOSEVSMA") ) 
-			cbxselection.setEnabled(false);
+		cbxperiod = new JComboBox();
+		cbxperiod.setModel(new DefaultComboBoxModel(new String[] {"\u8BA1\u7B97\u5468\u6570\u636E", "\u8BA1\u7B97\u65E5\u6570\u636E"}));
+		add(cbxperiod, "cell 4 1");
+		
+		tfldvalueup = new JTextField();
+		tfldvalueup.setEnabled(false);
+		tfldvalueup.setColumns(10);
+		add(tfldvalueup, "cell 4 3,alignx left,aligny top");
+		lbldanwei2 = new JLabel("New label");
+		add(lbldanwei2, "cell 5 3,alignx left,aligny center");
 	}
 }

@@ -33,6 +33,7 @@ import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfQueKou;
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfWeeklyAverageChenJiaoErMaxWk;
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfZongShiZhi;
 import com.exchangeinfomanager.commonlib.Season;
+import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
@@ -457,6 +458,9 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 				foreground = Color.GREEN;
 			break;
         case "quanzhonginbankuai":
+        	if(node instanceof BanKuai)
+        		break;
+        	
 	    	Integer weight = ((StockOfBanKuai)node).getBanKuai().getGeGuSuoShuBanKuaiWeight( node.getMyOwnCode() );
 	    	if(weight == null)
 	    		foreground = Color.BLACK;
@@ -626,7 +630,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         		background = cjezbdpmaxwkRule.getBackGround();
 		    else background = cjezbdpmaxwkRule.getBackGround();
         	break;
-        case "dayujunxian" :
+        case "CLOSEVSMA" :
         	if(predefinedcolor != null && !predefinedcolor.toUpperCase().equals("SYSTEM") && maRule.getAnalysisResult() )
 		    	background = Color.decode( predefinedcolor );
         	else if(predefinedcolor != null && predefinedcolor.toUpperCase().equals("SYSTEM") )
@@ -677,7 +681,6 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 	    };
 	    
 	    return background;
-		
 	}
 
 }

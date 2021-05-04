@@ -489,6 +489,11 @@ public class StockOfBanKuaiXPeriodDataForJFC implements NodeXPeriodData
 //		// TODO Auto-generated method stub
 //		return null;
 //	}
+	@Override
+	public Object getNodeDataByKeyWord(String keyword, LocalDate date, String... maformula) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 
 	

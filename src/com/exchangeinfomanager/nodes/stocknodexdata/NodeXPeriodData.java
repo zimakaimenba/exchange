@@ -109,6 +109,7 @@ public interface NodeXPeriodData
 	public String getNodeXDataInHtml(TDXNodes superbk,LocalDate requireddate, int difference);
 	
 	public String[] getNodeXDataCsvData (TDXNodes superbk, LocalDate requireddate, int difference);
+	public Object getNodeDataByKeyWord( String keyword, LocalDate requireddate, String... maformula);
 	
 	public static String[] NODEXDATACSVDATAHEADLINE = { 		 
 			"成交额占比",
@@ -145,7 +146,7 @@ public interface NodeXPeriodData
 			 "最低价",
 			 "收盘价",
 			 
-			 "周平均成交额增长率"
+			 "周日平均成交额增长率"
 		};
 	
 	public static  Object [] ouputcontrol = {

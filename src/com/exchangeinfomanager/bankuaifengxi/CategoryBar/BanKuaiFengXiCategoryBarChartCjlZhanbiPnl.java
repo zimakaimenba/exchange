@@ -130,7 +130,7 @@ public class BanKuaiFengXiCategoryBarChartCjlZhanbiPnl extends BanKuaiFengXiCate
 		JOptionPane.showMessageDialog(null, zhanbisetting,"设置占比上下限", JOptionPane.OK_CANCEL_OPTION);
 		Double min = zhanbisetting.getExtremeZhanbiMin ();
 		Double max = zhanbisetting.getExtremeZhanbiMax ();
-		ServicesForNode svs = node.getServicesForNode();
+		ServicesForNode svs = node.getServicesForNode(true);
 		svs.setNodeCjlExtremeUpDownZhanbiLevel (node,min,max);
 		svs = null;
 		

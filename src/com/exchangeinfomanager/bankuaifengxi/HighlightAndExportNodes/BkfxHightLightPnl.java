@@ -78,6 +78,7 @@ public class BkfxHightLightPnl extends JPanel {
 	private StockInfoManager stockmanager;
 	private JTextField tfldextramin;
 	private JTextField tfldextramax;
+//	private LocalDate curhighdate;
 	
 	public static final String TIMESHOULDCHANGE_PROPERTY = "timeshouldchange";
 	/**
@@ -688,7 +689,7 @@ public class BkfxHightLightPnl extends JPanel {
 		try {
 			BanKuaiGeGuMatchCondition expcCloned =  (BanKuaiGeGuMatchCondition) this.globeexpc.clone();
 //			ExtraExportConditions extraexportcondition = new ExtraExportConditions (expcCloned);
-			ExtraExportConditionsPnl extraexportcondition = new ExtraExportConditionsPnl (expcCloned);
+			ExtraExportConditionsPnl extraexportcondition = new ExtraExportConditionsPnl (expcCloned,curselectdate);
 			int extraresult = JOptionPane.showConfirmDialog(null,extraexportcondition , "附加导出条件:", JOptionPane.OK_CANCEL_OPTION);
 			if(extraresult == JOptionPane.OK_OPTION) { //其他导出条件 
 				
@@ -892,7 +893,7 @@ class ExportTask extends SwingWorker<Integer, String>
 			
 			setProgress(30);
 			try{
-				ExportMatchedNode exportaction = new ExportMatchedNode (expc);
+				ExportMatchedNode2 exportaction = new ExportMatchedNode2 (expc);
 				Set<TDXNodes> outputnodes = exportaction.checkTDXNodeMatchedCurSettingConditons(selectiondate, period);
 				for(TDXNodes tmpnode : outputnodes) {
 					if(!outputnodeslist.contains(tmpnode))
