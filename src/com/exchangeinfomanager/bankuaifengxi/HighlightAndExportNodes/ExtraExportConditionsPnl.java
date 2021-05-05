@@ -25,6 +25,7 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.JButton;
 import javax.swing.JSeparator;
 import java.awt.Color;
+import java.awt.Font;
 
 public class ExtraExportConditionsPnl extends JPanel 
 {
@@ -430,18 +431,22 @@ public class ExtraExportConditionsPnl extends JPanel
 		cbxOnlyCurBk.setEnabled(false);
 		
 		chkbxexportallbk = new JCheckBox("\u5BFC\u51FA\u5168\u90E8\u677F\u5757(\u677F\u5757\u5BFC\u51FA\u8BBE\u7F6E\u65E0\u6548)");
+		chkbxexportallbk.setEnabled(false);
 		chkbxexportallbk.setSelected(true);
 		
 		chkbxexporbkallowedinsetting = new JCheckBox("\u5BFC\u51FA\u677F\u5757\u8BBE\u7F6E\u5141\u8BB8\u7684\u677F\u5757");
 		chkbxexporbkallowedinsetting.setEnabled(false);
 		
 		chkbxonlyexportbk = new JCheckBox("\u4EC5\u5BFC\u51FA\u677F\u5757\uFF0C\u4E0D\u5BFC\u51FA\u677F\u5757\u4E2A\u80A1");
+		chkbxonlyexportbk.setEnabled(false);
 		
 		lblNewLabel_2 = new JLabel("-----------------------");
 		
 		chkbxonlybkstock = new JCheckBox("\u4EC5\u5BFC\u51FA\u677F\u5757\u7684\u4E2A\u80A1\uFF0C\u4E0D\u5BFC\u51FA\u677F\u5757");
+		chkbxonlybkstock.setSelected(true);
 		
 		chkbxonlycurstock = new JCheckBox("\u4EC5\u5BFC\u51FA\u5F53\u524D\u4E2A\u80A1");
+		chkbxonlycurstock.setEnabled(false);
 		cbxExceptSt = new JCheckBox("\u4E0D\u5BFC\u51FAST\u4E2A\u80A1");
 		cbxExceptSt.setSelected(true);
 		
@@ -461,6 +466,7 @@ btnCJEZbDpMaxWk.setForeground(Color.RED);
 		
 		
 		tfldexportformula = new JTextArea();
+		tfldexportformula.setFont(new Font("Monospaced", Font.BOLD, 16));
 		tfldexportformula.setEditable(false);
 		tfldexportformula.setLineWrap(true);
 		tfldexportformula.setColumns(10);
@@ -542,12 +548,6 @@ btncjezbdpminwk.setEnabled(false);
 							.addComponent(cbxOnlyCurBk))
 						.addGroup(groupLayout.createSequentialGroup()
 							.addGap(7)
-							.addComponent(chkbxonlyexportbk))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addGap(7)
-							.addComponent(lblNewLabel_2))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addGap(7)
 							.addComponent(chkbxonlybkstock))
 						.addGroup(groupLayout.createSequentialGroup()
 							.addGap(7)
@@ -623,7 +623,12 @@ btncjezbdpminwk.setEnabled(false);
 							.addContainerGap()
 							.addComponent(btnzongshizhi)
 							.addGap(18)
-							.addComponent(btnliutongshizhi)))
+							.addComponent(btnliutongshizhi))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addContainerGap()
+							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+								.addComponent(lblNewLabel_2)
+								.addComponent(chkbxonlyexportbk))))
 					.addContainerGap(13, Short.MAX_VALUE))
 		);
 		groupLayout.setVerticalGroup(
@@ -635,11 +640,11 @@ btncjezbdpminwk.setEnabled(false);
 					.addComponent(chkbxexporbkallowedinsetting)
 					.addGap(4)
 					.addComponent(cbxOnlyCurBk)
-					.addGap(58)
+					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(chkbxonlyexportbk)
-					.addGap(4)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(lblNewLabel_2)
-					.addGap(4)
+					.addGap(60)
 					.addComponent(chkbxonlybkstock)
 					.addGap(4)
 					.addComponent(chkbxonlycurstock)

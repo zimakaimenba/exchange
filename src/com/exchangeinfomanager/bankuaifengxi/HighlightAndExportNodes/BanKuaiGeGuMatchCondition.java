@@ -108,8 +108,6 @@ public class BanKuaiGeGuMatchCondition implements Cloneable
 		boolean exportAllBanKuai;
 		boolean exportBankuaiInConfig;
 		boolean exportOnlyCurrentBanKuai;
-//		boolean exportCjeZhanbiUp;
-//		boolean exportYangXianBanKuai;
 		boolean exportOnlyBankuaiNotGeGu;
 		boolean exportOnlyGeGuOntBanKuai;
 		boolean exportOnlyCurrentGeGu;
@@ -307,52 +305,9 @@ public class BanKuaiGeGuMatchCondition implements Cloneable
 		public String getSettingMaFormula() {
 			return settingMaFormula;
 		}
-//		public void setSettingMaFormula (String maformula) {
-//			if(maformula != null ) {
-//				maformula = maformula.replace(">", "x>");
-//				maformula = maformula.replace("<", "x<");
-//				
-//				if(maformula.contains(">250") || maformula.contains(">=250") || maformula.contains("<250") )
-//					maformula = maformula.replace("250", "\'250\'"  ) ;
-//			    if(maformula.contains(">120") || maformula.contains(">=120") || maformula.contains("<120") )
-//			    	maformula = maformula.replace("120", "\'120\'" ) ;
-//			    if(maformula.contains(">60") || maformula.contains(">=60") || maformula.contains("<60") ) 
-//			    	maformula = maformula.replace("60", "\'60\'"   ) ;
-//			    if(maformula.contains(">30") || maformula.contains(">=30") || maformula.contains("<30") ) 
-//			    	maformula = maformula.replace("30", "\'30\'"  ) ;
-//			    if(maformula.contains(">20") || maformula.contains(">=20") || maformula.contains("<20") ) 
-//			    	maformula = maformula.replace("20", "\'20\'"  ) ;
-//			    if(maformula.contains(">10") || maformula.contains(">=10") || maformula.contains("<10") ) 
-//			    	maformula = maformula.replace("10", "\'10\'"  ) ;
-//			    if(maformula.contains(">5") || maformula.contains(">=5") || maformula.contains("<5") ) 
-//			    	maformula = maformula.replace("5","\'5\'"   ) ;
-//			}
-//			this.settingMaFormula =  maformula;
-//			
-//			bkfxhighlightvaluesoftableslisteners.forEach(l -> l.BanKuaiGeGuMatchConditionValuesChanges( this ) );
-//			
-//			return;
-//		}
 		public void setSettingMaFormula (String maformula) {
-			if(maformula != null ) {
-//				maformula = maformula.replace(">", "x>");
-//				maformula = maformula.replace("<", "x<");
+			if(maformula != null ) 
 				maformula = maformula.toUpperCase();
-//				if(maformula.contains("250") )
-//					maformula = maformula.replace("MA250", "\'MA250\'"  ) ;
-//			    if(maformula.contains("120") )
-//			    	maformula = maformula.replace("MA120", "\'MA120\'" ) ;
-//			    if(maformula.contains("60")) 
-//			    	maformula = maformula.replace("MA60", "\'MA60\'"   ) ;
-//			    if(maformula.contains("30")  ) 
-//			    	maformula = maformula.replace("MA30", "\'MA30\'"  ) ;
-//			    if(maformula.contains("20") ) 
-//			    	maformula = maformula.replace("MA20", "\'MA20\'"  ) ;
-//			    if(maformula.contains("10")) 
-//			    	maformula = maformula.replace("MA10", "\'MA10\'"  ) ;
-//			    if(maformula.contains("5") ) 
-//			    	maformula = maformula.replace("MA5","\'MA5\'"   ) ;
-			}
 			this.settingMaFormula =  maformula;
 			
 			bkfxhighlightvaluesoftableslisteners.forEach(l -> l.BanKuaiGeGuMatchConditionValuesChanges( this ) );
@@ -532,9 +487,9 @@ public class BanKuaiGeGuMatchCondition implements Cloneable
 			return this.settinglastwkcjezbmaxkwk ;
 		}
 		private Integer settinglastwkcjemaxkwk;
-		private Boolean shouldExportDpCjeZbGrowingRate;
-		private Double exportDpCjeZbGrowingRatemin;
-		private Double exportDpCjeZbGrowingRatemax;
+//		private Boolean shouldExportDpCjeZbGrowingRate;
+//		private Double exportDpCjeZbGrowingRatemin;
+//		private Double exportDpCjeZbGrowingRatemax;
 		public void setLastWkCjemaxkwk (Integer maxwk) 
 		{
 			this.settinglastwkcjemaxkwk = maxwk;
@@ -565,27 +520,27 @@ public class BanKuaiGeGuMatchCondition implements Cloneable
 	        return super.clone();
 	    }
 
-		public void setExportDpCjeZbGrowingRate(Boolean b) 
-		{
-			this.shouldExportDpCjeZbGrowingRate = b;
-		}
-		public Boolean shouldExportDpCjeZbGrowingRate ()
-		{
-			return this.shouldExportDpCjeZbGrowingRate;
-		}
-
-		public void setExportDpCjeZbGrowingRateQuJian(Double min, Double max) 
-		{
-			this.exportDpCjeZbGrowingRatemin = min;
-			this.exportDpCjeZbGrowingRatemax = max;
-		}
-		public Double getExportDpCjeZbGrowingRateQuJianMin ()
-		{
-			return this.exportDpCjeZbGrowingRatemin;
-		}
-		public Double getExportDpCjeZbGrowingRateQuJianMax ()
-		{
-			return this.exportDpCjeZbGrowingRatemax;
-		}
+//		public void setExportDpCjeZbGrowingRate(Boolean b) 
+//		{
+//			this.shouldExportDpCjeZbGrowingRate = b;
+//		}
+//		public Boolean shouldExportDpCjeZbGrowingRate ()
+//		{
+//			return this.shouldExportDpCjeZbGrowingRate;
+//		}
+//
+//		public void setExportDpCjeZbGrowingRateQuJian(Double min, Double max) 
+//		{
+//			this.exportDpCjeZbGrowingRatemin = min;
+//			this.exportDpCjeZbGrowingRatemax = max;
+//		}
+//		public Double getExportDpCjeZbGrowingRateQuJianMin ()
+//		{
+//			return this.exportDpCjeZbGrowingRatemin;
+//		}
+//		public Double getExportDpCjeZbGrowingRateQuJianMax ()
+//		{
+//			return this.exportDpCjeZbGrowingRatemax;
+//		}
 
 }

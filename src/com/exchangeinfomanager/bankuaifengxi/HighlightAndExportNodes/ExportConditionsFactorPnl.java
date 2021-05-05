@@ -81,7 +81,12 @@ public class ExportConditionsFactorPnl extends JPanel {
 		if(cbxjisuan.isSelected())
 			return factor  ;
 		
-		String operator = (String) cbxselection.getSelectedItem();
+		String operator = "";
+		if(this.factorkw.contains("VSMA"))
+			operator = "=";
+		else
+			operator = (String) cbxselection.getSelectedItem();
+		
 		String result = "";
 		if(operator.equals("Çø¼ä")) {
 			String lowvalue = getRealValueByDanWei( tfldvaluelow.getText().trim() );
