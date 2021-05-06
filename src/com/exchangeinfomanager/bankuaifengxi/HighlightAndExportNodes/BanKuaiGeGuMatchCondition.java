@@ -12,8 +12,8 @@ import com.google.common.base.Splitter;
 public class BanKuaiGeGuMatchCondition implements Cloneable
 {
 	private Set<BanKuaiGeGuMatchConditionListener> bkfxhighlightvaluesoftableslisteners;
-	private String systeminstalledpath;
-	private Properties prop;
+//	private String systeminstalledpath;
+//	private Properties prop;
 
 
 	public BanKuaiGeGuMatchCondition() 
@@ -134,6 +134,15 @@ public class BanKuaiGeGuMatchCondition implements Cloneable
 		public String getExportConditionFormula ()
 		{
 			return this.exportcondformula ;
+		}
+		private String predefinedexportcondformula;
+		public void setPredefinedExportConditionFormula (String formula)
+		{
+			this.predefinedexportcondformula = formula;
+		}
+		public String getPredefinedExportConditionFormula ()
+		{
+			return this.predefinedexportcondformula ;
 		} 
 		/*
 		 * 
@@ -176,7 +185,7 @@ public class BanKuaiGeGuMatchCondition implements Cloneable
 //			outputfilehead = outputfilehead + "»»ÊÖÂÊ±ØÐë>=" + this.getSettingHsl() + "¡£";
 //			outputfilehead = outputfilehead  +"]";
 			
-			return outputfilehead;
+			return outputfilehead + this.getExportConditionFormula();
 		}
 		public Double getSettingZongShiZhiMax() 
 		{

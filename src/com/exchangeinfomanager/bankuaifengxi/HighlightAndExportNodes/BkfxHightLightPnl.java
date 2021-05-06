@@ -93,9 +93,17 @@ public class BkfxHightLightPnl extends JPanel {
 		
 		createMainBorardGui ();
 		createSecondBorardGui ();
+		setupPredefinedExportFormula ();
 	}
 	
 	
+	private void setupPredefinedExportFormula() {
+		String PreSetExportConditionFormula  = prop.getProperty ("PreSetExportConditionFormula");
+		if(PreSetExportConditionFormula != null)
+			this.globeexpc.setPredefinedExportConditionFormula (PreSetExportConditionFormula);
+	}
+
+
 	private void createMainBorardGui() 
 	{
 		String HightLightMainBoradItemCount  = prop.getProperty ("HightLightMainBoradItemCount");
@@ -700,7 +708,8 @@ public class BkfxHightLightPnl extends JPanel {
 				exportcond.add(expcCloned);
 				
 				btnaddexportcond.setText(String.valueOf(exportcond.size() ));
-				btnaddexportcond.setToolTipText("<html>导出条件设置(鼠标右键删除设置)<br></html>");
+				String tooltips = btnaddexportcond.getToolTipText() + "<html>" + expcCloned.getConditionsDescriptions() + "<br></html>";
+				btnaddexportcond.setToolTipText(tooltips);
 			}
 		} catch (CloneNotSupportedException e) {e.printStackTrace();}
 

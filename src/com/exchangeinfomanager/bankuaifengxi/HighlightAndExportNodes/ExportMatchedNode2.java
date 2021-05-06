@@ -117,6 +117,8 @@ public class ExportMatchedNode2
 				
 				if(!this.cond.shouldExportST() && childnode.getMyOwnName() != null && childnode.getMyOwnName().toUpperCase().contains("ST"))
 					continue;
+				if(childnode.getMyOwnName()!= null &&  childnode.getMyOwnName().contains("退"))
+					continue;
 				
 				if( this.cond.shouldExportOnlyYellowSignBkStk() ) // 
 					continue;
@@ -163,12 +165,12 @@ public class ExportMatchedNode2
 		} catch (java.lang.NullPointerException e) {	e.printStackTrace();}
 		
 		String formula = this.cond.getExportConditionFormula();
-		if(formula.contains("CLOSEVSMA") || formula.contains("ZhangDieFu") ) 
+		if(formula.contains("CLOSEVSMA") || formula.contains("ZhangDieFu") || formula.contains("DAY")) 
 			svsnode.getNodeKXian( node, requirestart, exportdate, NodeGivenPeriodDataItem.DAY,true);
 		
 		List<String> exportfactors = Splitter.on("AND").omitEmptyStrings().splitToList(formula);
 		for(String factor : exportfactors) {
-			String factoreq = factor;
+			String factoreq = factor.replaceAll(" ", "");
 			
 			ArrayList<String> vars = new ArrayList<String>();
             Pattern p = Pattern.compile("\'.*?\'", Pattern.CASE_INSENSITIVE);
@@ -200,16 +202,18 @@ public class ExportMatchedNode2
                 	else	checkresult = false;
                 }
                 else factoreq = factoreq.replace(var, sltvalue);
-               
-                if(!factoreq.contains("CLOSEVSMA") ) 
-	            	try{
-	    		    	BigDecimal result = null; 
-	    		    	result = new Expression(factoreq).eval(); //https://github.com/uklimaschewski/EvalEx
-	    		    	String sesultstr = result.toString();
-	    			    if(sesultstr.equals("0"))   	checkresult = false;
-	    			    else   	checkresult = true;
-	    		    } catch (com.udojava.evalex.Expression.ExpressionException e) {	e.printStackTrace();	return false;}
             }
+            
+            if(!factoreq.contains("CLOSEVSMA") ) 
+            	try{
+    		    	BigDecimal result = null; 
+    		    	result = new Expression(factoreq).eval(); //https://github.com/uklimaschewski/EvalEx
+    		    	String sesultstr = result.toString();
+    			    if(sesultstr.equals("0"))   	checkresult = false;
+    			    else   	checkresult = true;
+    		    } catch (com.udojava.evalex.Expression.ExpressionException e) {
+    		    	System.out.println(node.getMyOwnCode() + node.getMyOwnName() + "计算出错，计算公式:" + factor + "。编译结果:"+ factoreq + "\n"); 
+    		    	return false;}
             
             if(checkresult == false) 
             	break;

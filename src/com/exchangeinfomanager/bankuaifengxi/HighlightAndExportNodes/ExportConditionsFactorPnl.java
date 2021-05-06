@@ -91,7 +91,7 @@ public class ExportConditionsFactorPnl extends JPanel {
 		if(operator.equals("Çø¼ä")) {
 			String lowvalue = getRealValueByDanWei( tfldvaluelow.getText().trim() );
 			String upvalue=  getRealValueByDanWei (tfldvalueup.getText().trim() );
-			result = result + lowvalue + "<=" +  factor + "<=" + upvalue;
+			result = result + lowvalue + "<=" +  factor +" && "+ factor + "<=" + upvalue;
 		} else {
 			String lowvalue = getRealValueByDanWei (tfldvaluelow.getText().trim() );
 			result = result + " " + factor + " "+ operator + " " + lowvalue   ;

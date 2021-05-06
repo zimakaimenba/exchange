@@ -26,6 +26,7 @@ import javax.swing.JButton;
 import javax.swing.JSeparator;
 import java.awt.Color;
 import java.awt.Font;
+import javax.swing.JScrollPane;
 
 public class ExtraExportConditionsPnl extends JPanel 
 {
@@ -69,6 +70,7 @@ public class ExtraExportConditionsPnl extends JPanel
 	private JButton btncjlzbgr;
 	private LocalDate curselectdate;
 	private JButton btnClearFormula;
+	private JButton btnimportsavedformula;
 	/**
 	 * Create the panel.
 	 */
@@ -177,6 +179,17 @@ public class ExtraExportConditionsPnl extends JPanel
 
 	private void createEvents() 
 	{
+		btnimportsavedformula.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				String predefined = cond.getPredefinedExportConditionFormula();
+				if(predefined != null) {
+					predefined = predefined.replace("XXXXXXXX", curselectdate.toString().replaceAll("-", ""));
+					tfldexportformula.setText( predefined );
+				}
+			}
+		});
+		
 		btnClearFormula.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -464,13 +477,6 @@ btnCJEZbDpMaxWk.setForeground(Color.RED);
 		btnma = new JButton("CLOSE VS. \u5747\u7EBF");
 		btnma.setForeground(Color.RED);
 		
-		
-		tfldexportformula = new JTextArea();
-		tfldexportformula.setFont(new Font("Monospaced", Font.BOLD, 16));
-		tfldexportformula.setEditable(false);
-		tfldexportformula.setLineWrap(true);
-		tfldexportformula.setColumns(10);
-		
 		lblNewLabel = new JLabel(" \u5176\u4ED6\u5BFC\u51FA\u53C2\u6570\u8BBE\u7F6E");
 		
 btncjezbdpminwk = new JButton("\u6210\u4EA4\u989D\u5360\u6BD4DPMINWK");
@@ -482,7 +488,6 @@ btncjezbdpminwk.setEnabled(false);
 		btncjlzbdpminwk.setEnabled(false);
 		
 		btnliutongshizhi = new JButton("\u6D41\u901A\u5E02\u503C");
-		btnliutongshizhi.setEnabled(false);
 		
 		JSeparator separator = new JSeparator();
 		
@@ -491,7 +496,6 @@ btncjezbdpminwk.setEnabled(false);
 		btncjemaxwk = new JButton("\u65E5\u5E73\u5747\u6210\u4EA4\u989DMAXWK");
 		
 		btncjlmaxwk = new JButton("\u65E5\u5E73\u5747\u6210\u4EA4\u91CFMAXWK");
-		btncjlmaxwk.setEnabled(false);
 		
 		btnhsl = new JButton("\u6362\u624B\u7387");
 		btnhsl.setEnabled(false);
@@ -532,6 +536,11 @@ btncjezbdpminwk.setEnabled(false);
 		
 		JLabel label = new JLabel("\u4EC5\u652F\u6301\u52A0\u51CF\u4E58\u9664\u8FD0\u7B97");
 		
+		btnimportsavedformula = new JButton("\u5BFC\u5165\u9884\u5B9A\u4E49\u516C\u5F0F");
+		
+		JScrollPane scrollPane = new JScrollPane();
+		
+		
 		GroupLayout groupLayout = new GroupLayout(this);
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
@@ -547,38 +556,8 @@ btncjezbdpminwk.setEnabled(false);
 							.addGap(7)
 							.addComponent(cbxOnlyCurBk))
 						.addGroup(groupLayout.createSequentialGroup()
-							.addGap(7)
-							.addComponent(chkbxonlybkstock))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addGap(7)
-							.addComponent(chkbxonlycurstock))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addGap(7)
-							.addComponent(cbxExceptSt))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addGap(17)
-							.addComponent(label_2))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addContainerGap()
-							.addComponent(lblNewLabel_1)
-							.addPreferredGap(ComponentPlacement.RELATED)
+							.addGap(158)
 							.addComponent(separator, GroupLayout.PREFERRED_SIZE, 1, GroupLayout.PREFERRED_SIZE))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addContainerGap()
-							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-								.addComponent(lblNewLabel)
-								.addComponent(chckbxexportyellowbkstk)))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addContainerGap()
-							.addComponent(btngujia)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(btnwkzhangfu)
-							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addComponent(btnhsl)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(btnfreehsl)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(btnma))
 						.addGroup(groupLayout.createSequentialGroup()
 							.addContainerGap()
 							.addComponent(btncje)
@@ -594,7 +573,7 @@ btncjezbdpminwk.setEnabled(false);
 							.addComponent(btncjezbgr))
 						.addGroup(groupLayout.createSequentialGroup()
 							.addContainerGap()
-							.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING, false)
+							.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
 								.addGroup(groupLayout.createSequentialGroup()
 									.addComponent(btncjl)
 									.addGap(18)
@@ -608,17 +587,20 @@ btncjezbdpminwk.setEnabled(false);
 									.addPreferredGap(ComponentPlacement.RELATED)
 									.addComponent(btncjlzbgr))
 								.addGroup(groupLayout.createSequentialGroup()
-									.addComponent(tfldexportformula)
-									.addPreferredGap(ComponentPlacement.UNRELATED)
-									.addComponent(btnJisuanToFormula)
-									.addPreferredGap(ComponentPlacement.UNRELATED)
+									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+										.addGroup(groupLayout.createSequentialGroup()
+											.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 433, Short.MAX_VALUE)
+											.addPreferredGap(ComponentPlacement.RELATED)
+											.addComponent(btnJisuanToFormula))
+										.addGroup(groupLayout.createSequentialGroup()
+											.addComponent(btnClearFormula)
+											.addGap(40)
+											.addComponent(btnimportsavedformula)))
+									.addPreferredGap(ComponentPlacement.RELATED)
 									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 										.addComponent(label)
 										.addComponent(txaJisuan, GroupLayout.PREFERRED_SIZE, 202, GroupLayout.PREFERRED_SIZE))
-									.addGap(10))))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addContainerGap()
-							.addComponent(btnClearFormula))
+									.addGap(14))))
 						.addGroup(groupLayout.createSequentialGroup()
 							.addContainerGap()
 							.addComponent(btnzongshizhi)
@@ -628,8 +610,39 @@ btncjezbdpminwk.setEnabled(false);
 							.addContainerGap()
 							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 								.addComponent(lblNewLabel_2)
-								.addComponent(chkbxonlyexportbk))))
-					.addContainerGap(13, Short.MAX_VALUE))
+								.addComponent(chkbxonlyexportbk)))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addContainerGap()
+							.addComponent(chkbxonlybkstock))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addContainerGap()
+							.addComponent(chkbxonlycurstock))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addContainerGap()
+							.addComponent(cbxExceptSt))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addContainerGap()
+							.addComponent(label_2))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addContainerGap()
+							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+								.addComponent(lblNewLabel_1)
+								.addComponent(chckbxexportyellowbkstk)))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addContainerGap()
+							.addComponent(lblNewLabel))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addContainerGap()
+							.addComponent(btngujia)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(btnwkzhangfu)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(btnhsl)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(btnfreehsl)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(btnma)))
+					.addGap(13))
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
@@ -644,23 +657,22 @@ btncjezbdpminwk.setEnabled(false);
 					.addComponent(chkbxonlyexportbk)
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(lblNewLabel_2)
-					.addGap(60)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(chkbxonlybkstock)
-					.addGap(4)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(chkbxonlycurstock)
-					.addGap(4)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(cbxExceptSt)
-					.addGap(4)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(label_2)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(chckbxexportyellowbkstk)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(lblNewLabel_1)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(separator, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(lblNewLabel_1)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(lblNewLabel)))
+					.addComponent(lblNewLabel)
+					.addGap(16)
+					.addComponent(separator, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
 						.addComponent(btncje)
@@ -681,32 +693,39 @@ btncjezbdpminwk.setEnabled(false);
 					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
 						.addComponent(btnzongshizhi)
 						.addComponent(btnliutongshizhi))
-					.addPreferredGap(ComponentPlacement.RELATED, 15, Short.MAX_VALUE)
-					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING, false)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(btngujia)
+						.addComponent(btnwkzhangfu)
+						.addComponent(btnhsl)
+						.addComponent(btnfreehsl)
+						.addComponent(btnma))
+					.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addGroup(groupLayout.createSequentialGroup()
-							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-								.addGroup(groupLayout.createSequentialGroup()
-									.addGap(11)
-									.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-										.addComponent(btngujia)
-										.addComponent(btnwkzhangfu)
-										.addComponent(btnhsl)
-										.addComponent(btnfreehsl)
-										.addComponent(btnma))
-									.addGap(39)
-									.addComponent(tfldexportformula, GroupLayout.PREFERRED_SIZE, 104, GroupLayout.PREFERRED_SIZE))
-								.addGroup(groupLayout.createSequentialGroup()
-									.addGap(73)
-									.addComponent(txaJisuan, GroupLayout.PREFERRED_SIZE, 101, GroupLayout.PREFERRED_SIZE)))
-							.addPreferredGap(ComponentPlacement.UNRELATED)
-							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-								.addComponent(btnClearFormula)
-								.addComponent(label))
-							.addGap(2))
+							.addGap(43)
+							.addComponent(btnJisuanToFormula))
 						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(btnJisuanToFormula)
-							.addGap(80))))
+							.addGap(6)
+							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+								.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 101, GroupLayout.PREFERRED_SIZE)
+								.addComponent(txaJisuan, GroupLayout.PREFERRED_SIZE, 101, GroupLayout.PREFERRED_SIZE))))
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addComponent(label)
+						.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+							.addComponent(btnimportsavedformula)
+							.addComponent(btnClearFormula)))
+					.addGap(77))
 		);
+		
+		
+		tfldexportformula = new JTextArea();
+		scrollPane.setViewportView(tfldexportformula);
+		tfldexportformula.setFont(new Font("Monospaced", Font.BOLD, 16));
+		tfldexportformula.setEditable(false);
+		tfldexportformula.setLineWrap(true);
+		tfldexportformula.setColumns(10);
 		setLayout(groupLayout);
 		
 	

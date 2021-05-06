@@ -64,6 +64,8 @@ public class ServicesForBkfxEbkOutPutFileDirectRead implements ServicesForBkfxEb
 			String filenamedate = null;
 			if(this.fileebk != null)
 				filenamedate = fileebk.getName().replaceAll("\\D+","");
+			if(filenamedate.length() >8)
+				filenamedate = filenamedate.substring(0, 8);
 			
 			localDate = LocalDate.parse(filenamedate, formatter);
 			
@@ -109,6 +111,7 @@ public class ServicesForBkfxEbkOutPutFileDirectRead implements ServicesForBkfxEb
 	private void patchParsedFileToTrees (BkChanYeLianTreeNode treeroot, LocalDate localDate, Set<String> stockinfile, Set<String> bkinfile)
 	{
 		BkChanYeLianTreeNode treeChild;
+		if(localDate == null) localDate  = LocalDate.now();
 		
 		for (Enumeration<TreeNode> child = treeroot.children(); child.hasMoreElements();) {
 			

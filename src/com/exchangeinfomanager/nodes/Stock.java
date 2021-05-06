@@ -193,7 +193,7 @@ public class Stock extends TDXNodes {
 	{
 		NodeJiBenMian tmpnodejbm = super.getNodeJiBenMian();
 		LocalDate shangshiriqi = tmpnodejbm.getShangShiRiQi();
-		if(com.exchangeinfomanager.commonlib.DayCounter.bestDaysBetweenIngoreWeekEnd(shangshiriqi, checkdate) <= 15)
+		if(com.exchangeinfomanager.commonlib.DayCounter.bestDaysBetweenIngoreWeekEnd(shangshiriqi, checkdate) <= 40)
 			return true;
 		else
 			return false;
