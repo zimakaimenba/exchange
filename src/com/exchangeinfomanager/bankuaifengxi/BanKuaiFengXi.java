@@ -384,7 +384,8 @@ public class BanKuaiFengXi extends JDialog
     	LocalDate requirestart = CommonUtility.getSettingRangeDate(curselectdate,"middle").with(DayOfWeek.MONDAY);
     	
     	DaPan dapan = (DaPan) CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode("000000", BkChanYeLianTreeNode.DAPAN);
-    	dapan.getNodeData(requirestart, curselectdate,this.globeperiod,this.globecalwholeweek);
+    	dapan.getServicesForNode(true).getNodeData(dapan, requirestart, curselectdate,this.globeperiod,this.globecalwholeweek);
+    	dapan.getServicesForNode(false);
     	
 		List<BkChanYeLianTreeNode> bkwithcje = getBanKuaiFenXiQualifiedNodes (curselectdate,this.globeperiod,this.globecalwholeweek,true);
 		List<BkChanYeLianTreeNode> dzhbk = getDZHBanKuaiFenXiQualifiedNodes (curselectdate,this.globeperiod,this.globecalwholeweek,true);
@@ -563,9 +564,9 @@ public class BanKuaiFengXi extends JDialog
 			return;
 		}
 		DaPan dapan = (DaPan) CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode("000000", BkChanYeLianTreeNode.DAPAN);
-    	dapan.getNodeData(CommonUtility.getSettingRangeDate(curselectdate,"large"), curselectdate,
+    	dapan.getServicesForNode(true).getNodeData(dapan,CommonUtility.getSettingRangeDate(curselectdate,"large"), curselectdate,
 				globeperiod,this.globecalwholeweek );
-
+    	dapan.getServicesForNode(false);
 		//板块成交额占比显示大盘的周平均成交额，以便和板块的周平均成交额对比
 		panelbkwkcjezhanbi.setDisplayBarOfSpecificBanKuaiCjeCjlInsteadOfSelfCjeCjl (dapan); 
 		//板块自身占比
@@ -1126,32 +1127,42 @@ public class BanKuaiFengXi extends JDialog
 		panelggdpcjlwkzhanbi.setProperties(this.bkfxsettingprop);
 		pnlbkwkcjlzhanbi.setProperties(this.bkfxsettingprop);
 		
-	
+		panelGgDpCjeZhanBi.setChangeNodeDisplayDateRange(false);
+		panelbkwkcjezhanbi.setChangeNodeDisplayDateRange(false);
+		panelggdpcjlwkzhanbi.setChangeNodeDisplayDateRange(false);
+		pnlbkwkcjlzhanbi.setChangeNodeDisplayDateRange(false);
+		
+		this.panelGgDpCjeZhanBi.setAllowDrawAnnoation(false);
+		this.panelGgDpCjeZhanBi.setDrawQueKouLine(false);
+		this.panelGgDpCjeZhanBi.setDrawZhangDieTingLine(false);
+		this.panelGgDpCjeZhanBi.setDrawAverageDailyCjeOfWeekLine(true);
+		this.panelGgDpCjeZhanBi.setDisplayZhanBiInLine(true);
+		
+		this.panelbkwkcjezhanbi.setAllowDrawAnnoation(false);
+		this.panelbkwkcjezhanbi.setDisplayZhanBiInLine(true);
+		
+		this.pnlbkwkcjlzhanbi.setDisplayZhanBiInLine(true);
+		
+		this.panelggdpcjlwkzhanbi.setDisplayZhanBiInLine(true);
+		
 		menuItemTempGeGuFromFile.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent evt) {
-				
 				parseTempGeGuFromFileFunciotns ();
-        		
 			}
-			
+
 		});
 		
 		menuItemTempGeGuFromTDXSw.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent evt) {
-				
 				parseTempGeGuFromTDXSwFunciotns();
-        		
 			}
-			
 		});
 		menuItemTempGeGuFromZhidingbk.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent evt) {
-				
 				parseTempGeGuFromZhiDingBanKuaiFunciotn();
-        		
 			}
 		});
 		menuItemTempGeGuClear.addActionListener(new ActionListener() {
@@ -1298,16 +1309,6 @@ public class BanKuaiFengXi extends JDialog
 			
 		});
 	
-		this.addMouseListener(new MouseAdapter() {
-			
-	        public void mouseClicked(MouseEvent evt) 
-	        {
-	        	
-	        }
-		});
-		
-		
-		
 		btnexportcsv.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
@@ -2080,8 +2081,6 @@ public class BanKuaiFengXi extends JDialog
 			    		
 			    		gettBanKuaiZhanBiRangedByGrowthRateOfPeriod (NodeGivenPeriodDataItem.WEEK);
 			    		
-			    		
-						
 			    		lastselecteddate = newdate;
 			    		bkhlpnl.setCurrentDisplayDate(lastselecteddate );
 			    		
@@ -2810,8 +2809,9 @@ public class BanKuaiFengXi extends JDialog
 					svsstk = null;
 				}
 				DaPan dapan = (DaPan) CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode("000000", BkChanYeLianTreeNode.DAPAN);
-		    	dapan.getNodeData (nodestart, nodeend, this.globeperiod, this.globecalwholeweek);
-
+		    	dapan.getServicesForNode(true).getNodeData (dapan,nodestart, nodeend, this.globeperiod, this.globecalwholeweek);
+		    	dapan.getServicesForNode(false);
+		    	
 		    	nodeinfotocsv.addNodeToCsvList(tmpnode, nodestart, nodeend);
 				
 				nodestart = null;
@@ -2920,95 +2920,159 @@ public class BanKuaiFengXi extends JDialog
 			JOptionPane.showMessageDialog(null,"不是整周分析模式，不支持更大范围显示分析结果数据!","Warning",JOptionPane.WARNING_MESSAGE);
 			return;
 		}
-	
-		//保证显示时间范围为当前日期前后有数据的48个月(3年)
+		//保证显示时间范围为当前日期前后有数据的36个月(3年)
 		LocalDate curselectdate = dateChooser.getLocalDate().with(DayOfWeek.FRIDAY);
-		LocalDate requireend = curselectdate.with(DayOfWeek.MONDAY).plus(6,ChronoUnit.MONTHS).with(DayOfWeek.FRIDAY);
-		LocalDate requirestartd = curselectdate.with(DayOfWeek.MONDAY).minus(18,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
-		DateTime requiredstartdt= new DateTime(requirestartd.getYear(), requirestartd.getMonthValue(), requirestartd.getDayOfMonth(), 0, 0, 0, 0);
-		DateTime requiredenddt = new DateTime(requireend.getYear(), requireend.getMonthValue(), requireend.getDayOfMonth(), 0, 0, 0, 0);
-		Interval requiredinterval = new Interval(requiredstartdt, requiredenddt);
+		long numberOfMonthBetweenCurrentSelectionWithNow = ChronoUnit.MONTHS.between(curselectdate, LocalDate.now() );
+		long n=0; if(numberOfMonthBetweenCurrentSelectionWithNow >=18) n=18; else n = numberOfMonthBetweenCurrentSelectionWithNow;
+		long m = 12 * 3  - n; 
+		LocalDate requireend = curselectdate.plus(n,ChronoUnit.MONTHS).with(DayOfWeek.FRIDAY);
+		LocalDate requirestartd = curselectdate.minus(m,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
 		
-		NodeXPeriodData nodexdate = node.getNodeXPeroidData(globeperiod);
-		LocalDate nodestart = nodexdate.getOHLCRecordsStartDate();
-		LocalDate nodeend = LocalDate.now();//nodexdate.getAmoRecordsEndDate();
-		DateTime nodestartdt= new DateTime(nodestart.getYear(), nodestart.getMonthValue(), nodestart.getDayOfMonth(), 0, 0, 0, 0);
-		DateTime nodeenddt = new DateTime(nodeend.getYear(), nodeend.getMonthValue(), nodeend.getDayOfMonth(), 0, 0, 0, 0);
-		Interval nodeinterval = new Interval(nodestartdt, nodeenddt);
+		LocalDate bufferdatastartday  = requirestartd.minus(2 * 36,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY); 
 		
-		Interval overlapinterval = requiredinterval.overlap(nodeinterval);
-		DateTime overlapstartdt = overlapinterval.getStart();
-		DateTime overlapenddt = overlapinterval.getEnd();
-		LocalDate overlapldstartday = LocalDate.of(overlapstartdt.getYear(), overlapstartdt.getMonthOfYear(), overlapstartdt.getDayOfMonth()).with(DayOfWeek.MONDAY);
-		LocalDate overlapldendday = LocalDate.of(overlapenddt.getYear(), overlapenddt.getMonthOfYear(), overlapenddt.getDayOfMonth()).with(DayOfWeek.FRIDAY);
-		
-		//没有3年数据，补足3年
-		long numberOfMonth = ChronoUnit.MONTHS.between(overlapldstartday, overlapldendday);
-		if(numberOfMonth <48);
-			overlapldstartday = overlapldstartday.with(DayOfWeek.MONDAY).minus( (48-numberOfMonth) ,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
-
 		//同步数据
-		BanKuai bkcur = null; 
-		SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai ();
-		if(node.getType() == BkChanYeLianTreeNode.TDXBK) {
-			node = (TDXNodes) svsbk.getNodeData(node, overlapldstartday, overlapldendday, globeperiod, globecalwholeweek);
-			svsbk.syncNodeData(node);
-		} else 
+		ServicesForNode svsnode = node.getServicesForNode(true);
+		node = (TDXNodes) svsnode.getNodeData(node, bufferdatastartday, requireend, globeperiod, globecalwholeweek);
+		svsnode.syncNodeData(node);
+		node.getServicesForNode(false);
+		
 		if(node.getType() == BkChanYeLianTreeNode.TDXGG) { 
-			SvsForNodeOfStock svsstk = new SvsForNodeOfStock	();
-			svsstk.getNodeData(node, overlapldstartday, overlapldendday, globeperiod, true);
-			svsstk.syncNodeData(node);
+			BanKuai bkcur = null;
 			//如果是个股的话，还要显示其当前所属的板块占比信息，所以要把板块的数据也找出来。
 			int row = tableBkZhanBi.getSelectedRow();
 			if(row != -1) {
 				int modelRow = tableBkZhanBi.convertRowIndexToModel(row);
 				bkcur = (BanKuai) ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getNode(modelRow);
-				bkcur = (BanKuai) svsbk.getNodeData(bkcur, overlapldstartday, overlapldendday, globeperiod, globecalwholeweek);
-				svsbk.syncNodeData(bkcur);
+				bkcur = (BanKuai) bkcur.getServicesForNode(true).getNodeData(bkcur, bufferdatastartday, requireend, globeperiod, globecalwholeweek);
+				bkcur.getServicesForNode(true).syncNodeData(bkcur);
+				bkcur.getServicesForNode(false);
 			}
-		} else if(node.getType() == BkChanYeLianTreeNode.BKGEGU ) {
-			BanKuai bk = ((StockOfBanKuai)node).getBanKuai();
-			node = (TDXNodes) svsbk.getNodeData(node, overlapldstartday, overlapldendday, globeperiod, globecalwholeweek);
-			svsbk.syncNodeData(node);
-		} 
-//		else if(node.getType() == BkChanYeLianTreeNode.DAPAN ) {
-////			node = this.allbksks.getDaPan (requirestart.plusWeeks(1),globeperiod); //同步大盘数据,否则在其他地方会出错
-//		}
-		
-		DaPan dapan = (DaPan) CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode("000000", BkChanYeLianTreeNode.DAPAN);
-    	dapan.getNodeData(overlapldstartday, overlapldendday, globeperiod, this.globecalwholeweek);
-		
-		
-		BanKuaiFengXiLargePnl largeinfo = null;
-		String guitype = "CJE";
-		if( guisource.contains("CJL") )
-			guitype = "CJL";
-		else if( guisource.contains("CJE") )
-			guitype = "CJE";
-		
-		if(node.getType() == BkChanYeLianTreeNode.DAPAN  ) {
-			largeinfo = new BanKuaiFengXiLargePnl (node, node, overlapldstartday, overlapldendday, globeperiod,guitype,this.bkfxsettingprop);
-		} else
-		if(node.getType() == BkChanYeLianTreeNode.TDXBK  ) {
-			DaPan treeroot = (DaPan) treeofbkstk.getModel().getRoot();
-			largeinfo = new BanKuaiFengXiLargePnl (treeroot, node, overlapldstartday, overlapldendday, globeperiod,guitype,this.bkfxsettingprop);
-		} else 
-		if(node.getType() == BkChanYeLianTreeNode.TDXGG || node.getType() == BkChanYeLianTreeNode.BKGEGU) { 
-			DaPan treeroot = (DaPan) treeofbkstk.getModel().getRoot();
-			largeinfo = new BanKuaiFengXiLargePnl ( treeroot , node, overlapldstartday, overlapldendday, globeperiod,guitype,this.bkfxsettingprop);
 		}
+				
+		DaPan dapan = (DaPan) CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode("000000", BkChanYeLianTreeNode.DAPAN);
+		dapan.getServicesForNode(true).getNodeData(dapan, bufferdatastartday, requireend, this.globeperiod, this.globecalwholeweek);
+		dapan.getServicesForNode(true).syncNodeData (dapan);
+		dapan.getServicesForNode(false);
 		
-		if(datekey != null)
-			largeinfo.highLightSpecificBarColumn(datekey);
-		else
-			largeinfo.highLightSpecificBarColumn(curselectdate);
-		
-		largeinfo.nodecombinedpnl.setProperties(this.bkfxsettingprop);
-		JOptionPane.showMessageDialog(null, largeinfo, node.getMyOwnCode()+node.getMyOwnName()+ "大周期分析结果", JOptionPane.OK_CANCEL_OPTION);
+				BanKuaiFengXiLargePnl largeinfo = null;
+				String guitype = "CJE";
+				if( guisource.contains("CJL") )
+					guitype = "CJL";
+				else if( guisource.contains("CJE") )
+					guitype = "CJE";
+				
+				if(node.getType() == BkChanYeLianTreeNode.DAPAN  ) {
+					largeinfo = new BanKuaiFengXiLargePnl (node, node, requirestartd, requireend, globeperiod,guitype,this.bkfxsettingprop);
+				} else
+				if(node.getType() == BkChanYeLianTreeNode.TDXBK  ) {
+					DaPan treeroot = (DaPan) treeofbkstk.getModel().getRoot();
+					largeinfo = new BanKuaiFengXiLargePnl (treeroot, node, requirestartd, requireend, globeperiod,guitype,this.bkfxsettingprop);
+				} else 
+				if(node.getType() == BkChanYeLianTreeNode.TDXGG || node.getType() == BkChanYeLianTreeNode.BKGEGU) { 
+					DaPan treeroot = (DaPan) treeofbkstk.getModel().getRoot();
+					largeinfo = new BanKuaiFengXiLargePnl ( treeroot , node, requirestartd, requireend, globeperiod,guitype,this.bkfxsettingprop);
+				}
+				
+				if(datekey != null)
+					largeinfo.highLightSpecificBarColumn(datekey);
+				else
+					largeinfo.highLightSpecificBarColumn(curselectdate);
+				
+				largeinfo.nodecombinedpnl.setProperties(this.bkfxsettingprop);
+				JOptionPane.showMessageDialog(null, largeinfo, node.getMyOwnCode()+node.getMyOwnName()+ "大周期分析结果", JOptionPane.OK_CANCEL_OPTION);
 
-		svsbk = null;
-		largeinfo = null;
-		System.gc();
+				largeinfo = null;
+				System.gc();
+
+		
+		//保证显示时间范围为当前日期前后有数据的48个月(3年)
+//		LocalDate curselectdate = dateChooser.getLocalDate().with(DayOfWeek.FRIDAY);
+//		LocalDate requireend = curselectdate.with(DayOfWeek.MONDAY).plus(6,ChronoUnit.MONTHS).with(DayOfWeek.FRIDAY);
+//		LocalDate requirestartd = curselectdate.with(DayOfWeek.MONDAY).minus(18,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
+//		DateTime requiredstartdt= new DateTime(requirestartd.getYear(), requirestartd.getMonthValue(), requirestartd.getDayOfMonth(), 0, 0, 0, 0);
+//		DateTime requiredenddt = new DateTime(requireend.getYear(), requireend.getMonthValue(), requireend.getDayOfMonth(), 0, 0, 0, 0);
+//		Interval requiredinterval = new Interval(requiredstartdt, requiredenddt);
+//		
+//		NodeXPeriodData nodexdate = node.getNodeXPeroidData(globeperiod);
+//		LocalDate nodestart = nodexdate.getOHLCRecordsStartDate();
+//		LocalDate nodeend = LocalDate.now();//nodexdate.getAmoRecordsEndDate(); //why
+//		DateTime nodestartdt= new DateTime(nodestart.getYear(), nodestart.getMonthValue(), nodestart.getDayOfMonth(), 0, 0, 0, 0);
+//		DateTime nodeenddt = new DateTime(nodeend.getYear(), nodeend.getMonthValue(), nodeend.getDayOfMonth(), 0, 0, 0, 0);
+//		Interval nodeinterval = new Interval(nodestartdt, nodeenddt);
+//		
+//		Interval overlapinterval = requiredinterval.overlap(nodeinterval);
+//		DateTime overlapstartdt = overlapinterval.getStart();
+//		DateTime overlapenddt = overlapinterval.getEnd();
+//		LocalDate overlapldstartday = LocalDate.of(overlapstartdt.getYear(), overlapstartdt.getMonthOfYear(), overlapstartdt.getDayOfMonth()).with(DayOfWeek.MONDAY);
+//		LocalDate overlapldendday = LocalDate.of(overlapenddt.getYear(), overlapenddt.getMonthOfYear(), overlapenddt.getDayOfMonth()).with(DayOfWeek.FRIDAY);
+		
+		//没有3年数据，补足3年
+//		long numberOfMonth = ChronoUnit.MONTHS.between(overlapldstartday, overlapldendday);
+//		if(numberOfMonth <48);
+//			overlapldstartday = overlapldstartday.with(DayOfWeek.MONDAY).minus( (48-numberOfMonth) ,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
+
+//		//同步数据
+//		BanKuai bkcur = null; 
+//		SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai ();
+//		if(node.getType() == BkChanYeLianTreeNode.TDXBK) {
+//			node = (TDXNodes) svsbk.getNodeData(node, overlapldstartday, overlapldendday, globeperiod, globecalwholeweek);
+//			svsbk.syncNodeData(node);
+//		} else 
+//		if(node.getType() == BkChanYeLianTreeNode.TDXGG) { 
+//			SvsForNodeOfStock svsstk = new SvsForNodeOfStock	();
+//			svsstk.getNodeData(node, overlapldstartday, overlapldendday, globeperiod, true);
+//			svsstk.syncNodeData(node);
+//			//如果是个股的话，还要显示其当前所属的板块占比信息，所以要把板块的数据也找出来。
+//			int row = tableBkZhanBi.getSelectedRow();
+//			if(row != -1) {
+//				int modelRow = tableBkZhanBi.convertRowIndexToModel(row);
+//				bkcur = (BanKuai) ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getNode(modelRow);
+//				bkcur = (BanKuai) svsbk.getNodeData(bkcur, overlapldstartday, overlapldendday, globeperiod, globecalwholeweek);
+//				svsbk.syncNodeData(bkcur);
+//			}
+//		} else if(node.getType() == BkChanYeLianTreeNode.BKGEGU ) {
+//			BanKuai bk = ((StockOfBanKuai)node).getBanKuai();
+//			node = (TDXNodes) svsbk.getNodeData(node, overlapldstartday, overlapldendday, globeperiod, globecalwholeweek);
+//			svsbk.syncNodeData(node);
+//		} 
+////		else if(node.getType() == BkChanYeLianTreeNode.DAPAN ) {
+//////			node = this.allbksks.getDaPan (requirestart.plusWeeks(1),globeperiod); //同步大盘数据,否则在其他地方会出错
+////		}
+//		
+//		DaPan dapan = (DaPan) CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode("000000", BkChanYeLianTreeNode.DAPAN);
+//    	dapan.getNodeData(overlapldstartday, overlapldendday, globeperiod, this.globecalwholeweek);
+//		
+//		
+//		BanKuaiFengXiLargePnl largeinfo = null;
+//		String guitype = "CJE";
+//		if( guisource.contains("CJL") )
+//			guitype = "CJL";
+//		else if( guisource.contains("CJE") )
+//			guitype = "CJE";
+//		
+//		if(node.getType() == BkChanYeLianTreeNode.DAPAN  ) {
+//			largeinfo = new BanKuaiFengXiLargePnl (node, node, overlapldstartday, overlapldendday, globeperiod,guitype,this.bkfxsettingprop);
+//		} else
+//		if(node.getType() == BkChanYeLianTreeNode.TDXBK  ) {
+//			DaPan treeroot = (DaPan) treeofbkstk.getModel().getRoot();
+//			largeinfo = new BanKuaiFengXiLargePnl (treeroot, node, overlapldstartday, overlapldendday, globeperiod,guitype,this.bkfxsettingprop);
+//		} else 
+//		if(node.getType() == BkChanYeLianTreeNode.TDXGG || node.getType() == BkChanYeLianTreeNode.BKGEGU) { 
+//			DaPan treeroot = (DaPan) treeofbkstk.getModel().getRoot();
+//			largeinfo = new BanKuaiFengXiLargePnl ( treeroot , node, overlapldstartday, overlapldendday, globeperiod,guitype,this.bkfxsettingprop);
+//		}
+//		
+//		if(datekey != null)
+//			largeinfo.highLightSpecificBarColumn(datekey);
+//		else
+//			largeinfo.highLightSpecificBarColumn(curselectdate);
+//		
+//		largeinfo.nodecombinedpnl.setProperties(this.bkfxsettingprop);
+//		JOptionPane.showMessageDialog(null, largeinfo, node.getMyOwnCode()+node.getMyOwnName()+ "大周期分析结果", JOptionPane.OK_CANCEL_OPTION);
+//
+//		svsbk = null;
+//		largeinfo = null;
+//		System.gc();
 	}
 	/*
 	 * 每周都要导出的条件在这里设置，一次设置节约时间
@@ -3267,8 +3331,6 @@ public class BanKuaiFengXi extends JDialog
 		
 		
 		panelggdpcjlwkzhanbi = new BanKuaiFengXiNodeCombinedCategoryPnl("CJL");
-		this.panelggdpcjlwkzhanbi.setDisplayZhanBiInLine(true);
-		
 		tabbedPanegeguzhanbi.addTab("\u4E2A\u80A1\u91CF\u5360\u6BD4", null, panelggdpcjlwkzhanbi, null);
 		
 		tabbedPanebkzb = new JTabbedPane(JTabbedPane.TOP);
@@ -3289,12 +3351,9 @@ public class BanKuaiFengXi extends JDialog
 		);
 		
 		panelbkwkcjezhanbi = new BanKuaiFengXiNodeCombinedCategoryPnl("CJE");
-		panelbkwkcjezhanbi.setAllowDrawAnnoation(false);
-		this.panelbkwkcjezhanbi.setDisplayZhanBiInLine(true);
 		tabbedPanebkzb.addTab("\u677F\u5757\u989D\u5360\u6BD4", null, panelbkwkcjezhanbi, null);
 
 		pnlbkwkcjlzhanbi = new BanKuaiFengXiNodeCombinedCategoryPnl("CJL");
-		this.pnlbkwkcjlzhanbi.setDisplayZhanBiInLine(true);
 		tabbedPanebkzb.addTab("\u677F\u5757\u91CF\u5360\u6BD4", null, pnlbkwkcjlzhanbi, null);
 		panel_2.setLayout(gl_panel_2);
 		
@@ -3611,7 +3670,6 @@ public class BanKuaiFengXi extends JDialog
 	
 	private void initializeGuiOf2560Resolution ()
 	{
-
 		setTitle("\u677F\u5757\u5206\u6790");
 		setBounds(10, 10, 2520, 1033);
 		getContentPane().setLayout(new BorderLayout());
@@ -3701,16 +3759,10 @@ public class BanKuaiFengXi extends JDialog
 		tabbedPanegeguzhanbi = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPanegeguzhanbi.setUI(new com.exchangeinfomanager.commonlib.MetalBorderlessTabbedPaneUI());
 		this.panelGgDpCjeZhanBi = new BanKuaiFengXiNodeCombinedCategoryPnl("CJE");
-		this.panelGgDpCjeZhanBi.setAllowDrawAnnoation(false);
-		this.panelGgDpCjeZhanBi.setDrawQueKouLine(false);
-		this.panelGgDpCjeZhanBi.setDrawZhangDieTingLine(false);
-		this.panelGgDpCjeZhanBi.setDrawAverageDailyCjeOfWeekLine(true);
-		this.panelGgDpCjeZhanBi.setDisplayZhanBiInLine(true);
 		tabbedPanegeguzhanbi.addTab("\u4E2A\u80A1\u989D\u5360\u6BD4", null, panelGgDpCjeZhanBi, null);
 		
 		
 		panelggdpcjlwkzhanbi = new BanKuaiFengXiNodeCombinedCategoryPnl("CJL");
-		this.panelggdpcjlwkzhanbi.setDisplayZhanBiInLine(true);
 		tabbedPanegeguzhanbi.addTab("\u4E2A\u80A1\u91CF\u5360\u6BD4", null, panelggdpcjlwkzhanbi, null);
 		
 		tabbedPanebkzb = new JTabbedPane(JTabbedPane.TOP);
@@ -3732,14 +3784,11 @@ public class BanKuaiFengXi extends JDialog
 		);
 		
 		panelbkwkcjezhanbi = new BanKuaiFengXiNodeCombinedCategoryPnl("CJE");
-		panelbkwkcjezhanbi.setAllowDrawAnnoation(false);
-		this.panelbkwkcjezhanbi.setDisplayZhanBiInLine(true);
 		tabbedPanebkzb.addTab("\u677F\u5757\u989D\u5360\u6BD4", null, panelbkwkcjezhanbi, null);
 //		panelbkwkcjezhanbi.setBorder(new TitledBorder(null, "\u677F\u5757\u6210\u4EA4\u989D\u5360\u6BD4", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 
 		
 		pnlbkwkcjlzhanbi = new BanKuaiFengXiNodeCombinedCategoryPnl("CJL");
-		this.pnlbkwkcjlzhanbi.setDisplayZhanBiInLine(true);
 		tabbedPanebkzb.addTab("\u677F\u5757\u91CF\u5360\u6BD4", null, pnlbkwkcjlzhanbi, null);
 		panel_2.setLayout(gl_panel_2);
 		
@@ -3824,11 +3873,6 @@ public class BanKuaiFengXi extends JDialog
 		sclpinfosummary.setViewportView(pnlextrainfo);
 		pnlextrainfo.setLayout(new BoxLayout(pnlextrainfo, BoxLayout.Y_AXIS));
 		
-//		editorPanenodeinfo = new DisplayBkGgInfoEditorPane();
-//		editorPanenodeinfo.setClearContentsBeforeDisplayNewInfo(true);
-//		sclpinfosummary.setViewportView(editorPanenodeinfo);
-//		editorPanenodeinfo.setEditable(false);
-		
 		JPanel panel_3 = new JPanel();
 		tabbedPanebk.addTab("\u5173\u952E\u8BCD", null, panel_3, null);
 		panel_3.setLayout(new BoxLayout(panel_3, BoxLayout.Y_AXIS));
@@ -3844,9 +3888,7 @@ public class BanKuaiFengXi extends JDialog
 		
 //		InvisibleTreeModel treeModel = (InvisibleTreeModel)this.cyldbopt.getBkChanYeLianTree().getModel();
 		cyltreecopy = CreateExchangeTree.CreateTreeOfChanYeLian();//new BanKuaiAndStockTree(treeModel,"cyltreecopy");
-		
 		scrollPane.setViewportView(cyltreecopy);
-		
 		
 		String ggzbtablepropFileName =   (new SetupSystemConfiguration()).getSystemInstalledPath() + "/config/" +  bkfxsettingprop.getProperty ("BkfxGeGuTableInfoSettingFile")  + "/";
 		String ggexternaltablepropFileName =   (new SetupSystemConfiguration()).getSystemInstalledPath() + "/config/" +  bkfxsettingprop.getProperty ("BkfxGeGuExternalTableInfoSettingFile")  + "/";

@@ -146,9 +146,7 @@ public class SvsForNodeOfStock implements ServicesForNode, ServicesOfNodeStock
 				stock = (Stock)bkdbopt.getStockDailyKXianZouShiFromCsv (((Stock)stock),requiredstartday,requiredendday,period);
 				nodedayperioddata.calNodeOhlcMA();
 				nodedayperioddata.calNodeAMOMA ();
-			} catch (java.lang.NullPointerException e) {
-				e.printStackTrace();
-			}
+			} catch (java.lang.NullPointerException e) {e.printStackTrace();}
 			return stock;
 		}
 		

@@ -150,6 +150,9 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 	 */
 	private void createEvents() 
 	{
+		nodebkcjezblargepnl.setChangeNodeDisplayDateRange(true);
+		nodecombinedpnl.setChangeNodeDisplayDateRange(true);
+		
 		tfldselectedmsg.addPropertyChangeListener(new PropertyChangeListener() {
 
             public void propertyChange(PropertyChangeEvent evt) {
@@ -248,28 +251,46 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 
 		nodebkcjezblargepnl.addPropertyChangeListener(new PropertyChangeListener() {
             public void propertyChange(PropertyChangeEvent evt) {
-                if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.SELECTED_PROPERTY)) {
-                    @SuppressWarnings("unchecked")
-                    String selectedinfo = evt.getNewValue().toString();
-            		LocalDate datekey = LocalDate.parse(selectedinfo);
+            	String evtpropertyname = evt.getPropertyName();
+            	switch (evtpropertyname) {
+            	case BanKuaiFengXiCategoryBarChartPnl.SELECTED_PROPERTY:
+            		 @SuppressWarnings("unchecked")
+                     String selectedinfo = evt.getNewValue().toString();
+             		LocalDate datekey = LocalDate.parse(selectedinfo);
 
-    				nodebkcjezblargepnl.highLightSpecificBarColumn(datekey);
-    				nodecombinedpnl.highLightSpecificBarColumn(datekey);
-    				nodekpnl.highLightSpecificBarColumn(datekey);
-    				
-    				setUserSelectedColumnMessage(nodebankuai,selectedinfo);
-                } else if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.AVERAGEDAILYCJE ) ) {
-//                	nodebkcjezblargepnl.resetLineDate ();
-//                	NodeXPeriodData dpnodexdata = nodebankuai.getNodeXPeroidData (NodeGivenPeriodDataItem.WEEK);
-//        			((BanKuaiFengXiCategoryBarChartCjePnl)nodebkcjezblargepnl).displayAverageDailyCjeOfWeekLineDataToGuiUsingLeftAxis(dpnodexdata,NodeGivenPeriodDataItem.WEEK);
-        		}
+     				nodebkcjezblargepnl.highLightSpecificBarColumn(datekey);
+     				nodecombinedpnl.highLightSpecificBarColumn(datekey);
+     				nodekpnl.highLightSpecificBarColumn(datekey);
+     				
+     				setUserSelectedColumnMessage(nodebankuai,selectedinfo);
+            		break;
+            	case BanKuaiFengXiCategoryBarChartPnl.AVERAGEDAILYCJE:
+            		break;
+            	}
+//                if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.SELECTED_PROPERTY)) {
+//                    @SuppressWarnings("unchecked")
+//                    String selectedinfo = evt.getNewValue().toString();
+//            		LocalDate datekey = LocalDate.parse(selectedinfo);
+//
+//    				nodebkcjezblargepnl.highLightSpecificBarColumn(datekey);
+//    				nodecombinedpnl.highLightSpecificBarColumn(datekey);
+//    				nodekpnl.highLightSpecificBarColumn(datekey);
+//    				
+//    				setUserSelectedColumnMessage(nodebankuai,selectedinfo);
+//                } else if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.AVERAGEDAILYCJE ) ) {
+////                	nodebkcjezblargepnl.resetLineDate ();
+////                	NodeXPeriodData dpnodexdata = nodebankuai.getNodeXPeroidData (NodeGivenPeriodDataItem.WEEK);
+////        			((BanKuaiFengXiCategoryBarChartCjePnl)nodebkcjezblargepnl).displayAverageDailyCjeOfWeekLineDataToGuiUsingLeftAxis(dpnodexdata,NodeGivenPeriodDataItem.WEEK);
+//        		}
             }
         });
 		
 		nodecombinedpnl.addPropertyChangeListener(new PropertyChangeListener() {
             public void propertyChange(PropertyChangeEvent evt) {
-                if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.SELECTED_PROPERTY)) {
-                    @SuppressWarnings("unchecked")
+            	String evtpropertyname = evt.getPropertyName();
+            	switch (evtpropertyname) {
+            	case BanKuaiFengXiCategoryBarChartPnl.SELECTED_PROPERTY:
+            		@SuppressWarnings("unchecked")
                     String selectedinfo = evt.getNewValue().toString();
             		LocalDate datekey = LocalDate.parse(selectedinfo);
             		
@@ -277,9 +298,24 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
     				nodekpnl.highLightSpecificBarColumn(datekey);
     				
     				setUserSelectedColumnMessage(displaynode,selectedinfo);
-    				
-    				
-                }
+            		break;
+	            case BanKuaiFengXiCategoryBarChartPnl.DISPLAYNODENEWRANGEDATA:
+	        		String direction = (String) evt.getNewValue();
+	        		nodebkcjezblargepnl.reDisplayNodeDataOnDirection (direction);
+	        		nodekpnl.reDisplayNodeDataOnDirection (direction);
+	    			break;
+            	}
+        	
+//            	if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.SELECTED_PROPERTY)) {
+//                    @SuppressWarnings("unchecked")
+//                    String selectedinfo = evt.getNewValue().toString();
+//            		LocalDate datekey = LocalDate.parse(selectedinfo);
+//            		
+//            		nodebkcjezblargepnl.highLightSpecificBarColumn(datekey);
+//    				nodekpnl.highLightSpecificBarColumn(datekey);
+//    				
+//    				setUserSelectedColumnMessage(displaynode,selectedinfo);
+//                }
             }
         });
 		
@@ -392,14 +428,12 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 		
 //		tfldselectedmsg.setPreferredSize(new Dimension(150, 500));
 		scrollPaneuserselctmsg.setPreferredSize(new Dimension(150, 200));
-		
 		scrollPaneuserselctmsg.setViewportView(tfldselectedmsg);
 
 		this.add(this.nodekpnl,BorderLayout.NORTH);
 		this.add(scrollPaneuserselctmsg,BorderLayout.EAST);
 		this.add(centerPanel,BorderLayout.CENTER);
 		
-//		saveImage = new BanKuaiPopUpMenuForTable(this.stockmanager,this);
 		saveImage = new JPopupMenu ();
 		addPopup(this, saveImage);
 		
@@ -407,9 +441,6 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 		saveImage.add(mntmsaveimage);
 
 		this.setComponentPopupMenu(saveImage);
-		
-		
-
 	}
 
 	private  void addPopup(Component component, final JPopupMenu popup) 

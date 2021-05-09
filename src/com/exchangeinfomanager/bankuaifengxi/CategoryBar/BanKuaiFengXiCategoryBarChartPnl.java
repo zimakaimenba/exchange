@@ -46,9 +46,12 @@ import java.awt.Color;
 
 import java.awt.Font;
 import java.awt.Paint;
-
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionAdapter;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeEvent;
@@ -99,7 +102,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 	protected JFreeChart barchart;
 	private List<Marker> categorymarkerlist;
 	protected List<Marker> valuemarkerlist;
-	
+	private boolean enableChangeDisplayDateRange; //可以鼠标改变显示范围
 	private boolean displayhuibuquekou = true;
 	private boolean displayzhangdieting = true;
 //	private Boolean displayaveragedailycje = false;
@@ -118,6 +121,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 	public static final String AVERAGEDAILYCJL = "averagedailycjlline";
 	public static final String COMPAREAVERAGEDAILYCJEWITHDAPAN = "compareaveragedailycjewithdapan";
 	public static final String COMPAREAVERAGEDAILYCJLWITHDAPAN = "compareaveragedailycjlwithdapan";
+	public static final String DISPLAYNODENEWRANGEDATA = "displaynodenewrangedata";
 
 	protected boolean selectchanged;
 
@@ -141,6 +145,14 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 	public Boolean shouldDrawQueKouLine ()
 	{
 		return this.displayhuibuquekou;
+	}
+	public void setChangeNodeDisplayDateRange (Boolean enable)
+	{
+		enableChangeDisplayDateRange = enable;
+	}
+	public Boolean couldChangeNodeDisplayDateRange ()
+	{
+		return enableChangeDisplayDateRange ;
 	}
 	/*
 	 * 
@@ -267,8 +279,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 	        pointeronemonth.setPaint(Color.BLACK);
 	        pointeronemonth.setTextAnchor(TextAnchor.CENTER);
 			this.plot.addAnnotation(pointeronemonth);
-        } catch (java.lang.NullPointerException e) {
-        }
+        } catch (java.lang.NullPointerException e) {}
 	}
 	/*
 	 * 
@@ -388,6 +399,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
     private void createEvent ()
     {
     	chartPanel.addChartMouseListener(new ChartMouseListener() {
+    		int xbeforeclick; int xafterclick;
 
     	    public void chartMouseClicked(ChartMouseEvent cme) {
 
@@ -403,6 +415,8 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
     	            pcs.firePropertyChange(evt);
     	    		
     	    	} else if (me.getClickCount() == 1) {
+//    	    		xbeforeclick = me.getX();
+    	    		
     	    		try {
     	    			Point2D po = chartPanel.translateScreenToJava2D(cme.getTrigger().getPoint());
             	        Rectangle2D plotArea = chartPanel.getScreenDataArea();
@@ -425,11 +439,60 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
     	    	}
     	    }
     	    @Override
-			public void chartMouseMoved(ChartMouseEvent arg0) {
+			public void chartMouseMoved(ChartMouseEvent cme) {
     	    	ToolTipManager.sharedInstance().setDismissDelay(60000); //让tooltips显示时间延长
+//    	    	java.awt.event.MouseEvent me = cme.getTrigger();
+//    	    	xafterclick = me.getX();
+//    	    	if(xafterclick - xbeforeclick >50 )
+//    	    		System.out.println("mouse have move oer 50");
 			}
     	});
+    	chartPanel.addMouseListener(new MouseListener() {
+    		Point  pointStart = null;
+            Point pointEnd   = null;
+			
+			@Override
+			public void mousePressed(MouseEvent e) {
+				 pointStart = e.getPoint();
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				if(!enableChangeDisplayDateRange )
+					return;
+				
+				pointEnd = e.getPoint();
+				if( ! (Math.abs(this.pointStart.x - this.pointEnd.x) > 50) || ! (Math.abs(this.pointStart.y - this.pointEnd.y) < 10)  )
+					return;
+				PropertyChangeEvent evt;
+				if(this.pointStart.x - this.pointEnd.x >0)
+					evt = new PropertyChangeEvent(this, BanKuaiFengXiCategoryBarChartPnl.DISPLAYNODENEWRANGEDATA, curdisplayednode.getMyOwnCode(), "FORWARD" );
+				else
+					evt = new PropertyChangeEvent(this, BanKuaiFengXiCategoryBarChartPnl.DISPLAYNODENEWRANGEDATA, curdisplayednode.getMyOwnCode(), "BACKWARD" );
+				pcs.firePropertyChange(evt);
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {}
+			@Override
+			public void mouseExited(MouseEvent e) {}
+			@Override
+			public void mouseClicked(MouseEvent e) {}
+    	});
+    	
+//    	chartPanel.addMouseMotionListener(new MouseMotionAdapter() {
+//             public void mouseMoved(MouseEvent e) {
+//                 pointEnd = e.getPoint();
+//             }
+//
+//             public void mouseDragged(MouseEvent e) {
+//                 pointEnd = e.getPoint();
+//                 repaint();
+//             }
+//         });
     }
+    
+    public abstract void reDisplayNodeDataOnDirection(String forwardbackward);
 //    /*
 //     * 用户可以定义显示的颜色
 //     */

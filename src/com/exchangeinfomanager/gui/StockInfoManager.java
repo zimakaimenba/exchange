@@ -2269,10 +2269,6 @@ public class StockInfoManager
 		
 		JPanel panelStatusBar = new JPanel();
 		
-
-		
-		sclpaneJtable = new JScrollPane();
-		
 		tblzhongdiangz = new JTable(){
 			    public Component prepareRenderer(TableCellRenderer renderer, int row, int col) {
 			 
@@ -2371,7 +2367,7 @@ public class StockInfoManager
 	    tblzhongdiangz.getTableHeader().getColumnModel().getColumn(5).setMinWidth(0);
 	    tblzhongdiangz.getTableHeader().getColumnModel().getColumn(5).setWidth(0);
 	    tblzhongdiangz.getTableHeader().getColumnModel().getColumn(5).setPreferredWidth(0);
-
+	    sclpaneJtable = new JScrollPane();
 		sclpaneJtable.setViewportView(tblzhongdiangz);
 
 		popupMenu = new JPopupMenu();

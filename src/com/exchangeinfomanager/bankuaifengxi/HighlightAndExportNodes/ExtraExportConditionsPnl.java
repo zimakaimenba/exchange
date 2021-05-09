@@ -2,12 +2,13 @@ package com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+import javax.swing.JTable;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -19,12 +20,19 @@ import com.exchangeinfomanager.gudong.JiGouService;
 import com.google.common.base.Strings;
 
 import net.miginfocom.swing.MigLayout;
+
+import javax.swing.BoxLayout;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JSeparator;
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import javax.swing.JScrollPane;
 
@@ -71,6 +79,7 @@ public class ExtraExportConditionsPnl extends JPanel
 	private LocalDate curselectdate;
 	private JButton btnClearFormula;
 	private JButton btnimportsavedformula;
+	private JButton btnedit;
 	/**
 	 * Create the panel.
 	 */
@@ -179,14 +188,77 @@ public class ExtraExportConditionsPnl extends JPanel
 
 	private void createEvents() 
 	{
+		btnedit.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				tfldexportformula.setEditable(true);
+			}
+		});
+		
 		btnimportsavedformula.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				String predefined = cond.getPredefinedExportConditionFormula();
-				if(predefined != null) {
-					predefined = predefined.replace("XXXXXXXX", curselectdate.toString().replaceAll("-", ""));
-					tfldexportformula.setText( predefined );
-				}
+				List<String> predefined = cond.getPredefinedExportConditionFormula();
+				if(predefined == null  || predefined.isEmpty() ) 
+					return;
+				
+				JTable tblpred = new JTable(){
+				    public Component prepareRenderer(TableCellRenderer renderer, int row, int col) {
+				 
+			        Component comp = super.prepareRenderer(renderer, row, col);
+			        Object value = getModel().getValueAt(row, col);
+			        return comp;
+			    }
+				    
+				    public String getToolTipText(MouseEvent e) {
+		                String tip = null;
+		                java.awt.Point p = e.getPoint();
+		                int rowIndex = rowAtPoint(p);
+		                int colIndex = columnAtPoint(p);
+
+		                try {
+		                    tip = getValueAt(rowIndex, colIndex).toString();
+		                } catch (RuntimeException e1) {
+		                    //catch null pointer exception if mouse is over an empty line
+		                }
+		                return tip;
+		            }
+			};
+			String[] jtableTitleStrings = { "预定义公式信息" };
+			tblpred.setRowSelectionAllowed(true) ;
+			tblpred.setModel(new DefaultTableModel(
+				new Object[][] {
+				},
+				jtableTitleStrings) {
+					
+					private static final long serialVersionUID = 1L;
+			});
+			for(String tmpformula : predefined ) {
+				String [] value = {tmpformula};
+				((DefaultTableModel)tblpred.getModel()).addRow(value);
+			}
+
+				JPanel myPanel = new JPanel();
+			      myPanel.setPreferredSize(new Dimension(600, 150));
+			      myPanel.setLayout(new FlowLayout());
+			      JScrollPane sclpaneJtable = new JScrollPane();
+				  sclpaneJtable.setViewportView(tblpred);
+			      myPanel.add(sclpaneJtable);
+
+			      int result = JOptionPane.showConfirmDialog(null, myPanel, "预定义公式", JOptionPane.OK_CANCEL_OPTION);
+			      if (result == JOptionPane.OK_OPTION) {
+			    	  int row = tblpred.getSelectedRow();
+					  if(row <0) {	JOptionPane.showMessageDialog(null,"请选择一个公式","Warning",JOptionPane.WARNING_MESSAGE);
+							return;
+					  }
+					  String sltformula = (String) ((DefaultTableModel)tblpred.getModel()).getValueAt(row, 0);
+					  sltformula = sltformula.replace("XXXXXXXX", curselectdate.with(DayOfWeek.FRIDAY).toString().replaceAll("-", ""));
+					  sltformula = sltformula.replace("YYYYYYYY", curselectdate.minusWeeks(1).with(DayOfWeek.FRIDAY).toString().replaceAll("-", ""));
+					  sltformula = sltformula.replace("ZZZZZZZZ", curselectdate.minusWeeks(2).with(DayOfWeek.FRIDAY).toString().replaceAll("-", ""));
+					  
+					  tfldexportformula.setText( sltformula );
+					  cond.setExportConditionFormula (tfldexportformula.getText());
+			      }
 			}
 		});
 		
@@ -430,7 +502,7 @@ public class ExtraExportConditionsPnl extends JPanel
 	    		tfldexportformula.setText(  "(" + setting + ")" );
 	    	else
 	    		tfldexportformula.setText( tfldexportformula.getText() +" AND " +  "(" + setting + ")" );
-	    	
+	    	String tmp = tfldexportformula.getText();
 	    	this.cond.setExportConditionFormula (tfldexportformula.getText());
 	    }
 	}
@@ -540,7 +612,7 @@ btncjezbdpminwk.setEnabled(false);
 		
 		JScrollPane scrollPane = new JScrollPane();
 		
-		
+		btnedit = new JButton("\u7F16\u8F91");
 		GroupLayout groupLayout = new GroupLayout(this);
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
@@ -589,12 +661,14 @@ btncjezbdpminwk.setEnabled(false);
 								.addGroup(groupLayout.createSequentialGroup()
 									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 										.addGroup(groupLayout.createSequentialGroup()
-											.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 433, Short.MAX_VALUE)
+											.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 465, Short.MAX_VALUE)
 											.addPreferredGap(ComponentPlacement.RELATED)
 											.addComponent(btnJisuanToFormula))
 										.addGroup(groupLayout.createSequentialGroup()
 											.addComponent(btnClearFormula)
-											.addGap(40)
+											.addPreferredGap(ComponentPlacement.RELATED)
+											.addComponent(btnedit)
+											.addPreferredGap(ComponentPlacement.RELATED)
 											.addComponent(btnimportsavedformula)))
 									.addPreferredGap(ComponentPlacement.RELATED)
 									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
@@ -715,7 +789,8 @@ btncjezbdpminwk.setEnabled(false);
 						.addComponent(label)
 						.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
 							.addComponent(btnimportsavedformula)
-							.addComponent(btnClearFormula)))
+							.addComponent(btnClearFormula)
+							.addComponent(btnedit)))
 					.addGap(77))
 		);
 		

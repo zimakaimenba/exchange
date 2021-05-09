@@ -98,9 +98,17 @@ public class BkfxHightLightPnl extends JPanel {
 	
 	
 	private void setupPredefinedExportFormula() {
-		String PreSetExportConditionFormula  = prop.getProperty ("PreSetExportConditionFormula");
-		if(PreSetExportConditionFormula != null)
-			this.globeexpc.setPredefinedExportConditionFormula (PreSetExportConditionFormula);
+		String PreSetExportConditionFormulaCount = prop.getProperty("PreSetExportConditionFormulaCount");
+		if(PreSetExportConditionFormulaCount == null  || Integer.parseInt(PreSetExportConditionFormulaCount) == 0)
+			return ;
+		List<String> formula = new ArrayList<> ();
+		for(int i=0;i<Integer.parseInt(PreSetExportConditionFormulaCount);i++) {
+			String PreSetExportConditionFormula  = prop.getProperty ("PreSetExportConditionFormula" + String.valueOf(i+1) );
+			if(PreSetExportConditionFormula != null)
+				formula.add(PreSetExportConditionFormula);
+		}
+		if(!formula.isEmpty())
+			this.globeexpc.setPredefinedExportConditionFormula (formula);
 	}
 
 

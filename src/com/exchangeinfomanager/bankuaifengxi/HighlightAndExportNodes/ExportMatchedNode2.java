@@ -127,7 +127,7 @@ public class ExportMatchedNode2
 					continue;
 				
 				Boolean result = this.checkNodesMatchedCurSettingConditions ((Stock)childnode);
-				if(result && !matchednodeset.contains(childnode))	matchednodeset.add((TDXNodes) childnode);
+				if(result != null && result && !matchednodeset.contains(childnode))	matchednodeset.add((TDXNodes) childnode);
 				if(!checkednodesset.contains(childnode.getMyOwnCode() ) )  checkednodesset.add( childnode.getMyOwnCode() );
 			}
 		}
@@ -165,7 +165,7 @@ public class ExportMatchedNode2
 		} catch (java.lang.NullPointerException e) {	e.printStackTrace();}
 		
 		String formula = this.cond.getExportConditionFormula();
-		if(formula.contains("CLOSEVSMA") || formula.contains("ZhangDieFu") || formula.contains("DAY")) 
+		if(formula != null && formula.contains("CLOSEVSMA") || formula.contains("ZhangDieFu") || formula.contains("DAY")) 
 			svsnode.getNodeKXian( node, requirestart, exportdate, NodeGivenPeriodDataItem.DAY,true);
 		
 		List<String> exportfactors = Splitter.on("AND").omitEmptyStrings().splitToList(formula);
@@ -191,9 +191,12 @@ public class ExportMatchedNode2
                 int indexofdate = var.indexOf(datestr);
             	String kw = var.substring(1, indexofdate);
             	String period = var.substring(indexofdate+8, var.length()-1);
+            	if(period.isEmpty()) period = "WEEK";
+            	
                 String sltvalue = getKeywordValue (node, kw,sltdate, period, factor);
                 if(sltvalue == null) {
-                	checkresult = false;
+                	System.out.println(node.getMyOwnCode() + node.getMyOwnName() +  factoreq + "没有获取计算结果\n");
+                	checkresult = null;
                 	break;
                 }
                 	
@@ -204,18 +207,16 @@ public class ExportMatchedNode2
                 else factoreq = factoreq.replace(var, sltvalue);
             }
             
-            if(!factoreq.contains("CLOSEVSMA") ) 
+            if(!factoreq.contains("CLOSEVSMA") && checkresult != null) 
             	try{
     		    	BigDecimal result = null; 
     		    	result = new Expression(factoreq).eval(); //https://github.com/uklimaschewski/EvalEx
     		    	String sesultstr = result.toString();
     			    if(sesultstr.equals("0"))   	checkresult = false;
     			    else   	checkresult = true;
-    		    } catch (com.udojava.evalex.Expression.ExpressionException e) {
-    		    	System.out.println(node.getMyOwnCode() + node.getMyOwnName() + "计算出错，计算公式:" + factor + "。编译结果:"+ factoreq + "\n"); 
-    		    	return false;}
+    		    } catch (com.udojava.evalex.Expression.ExpressionException e) {e.printStackTrace();return false;}
             
-            if(checkresult == false) 
+            if(checkresult == null || checkresult == false  ) 
             	break;
 		}
 		
@@ -234,8 +235,12 @@ public class ExportMatchedNode2
 			  String maformula = factor.substring(indexofeq + 1, indexofend);
 			  value =  nodexdata.getNodeDataByKeyWord( kw, selectdate,  maformula);
 		  }
-		  else 
+		  else try {
 			  value = nodexdata.getNodeDataByKeyWord(kw,selectdate,"");
+		  } catch (java.lang.NullPointerException e) {
+			  e.printStackTrace();
+			  System.out.println(node.getMyOwnCode() + node.getMyOwnName() + "Get keyword failed. keyword is" + kw + selectdate.toString() + ". FACTOR is" + factor + "PERIOD is " + curperiod);
+		  }
 		  
 		  if(value != null)
 			  return value.toString();

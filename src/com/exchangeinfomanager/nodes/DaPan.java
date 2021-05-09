@@ -24,7 +24,7 @@ public class DaPan extends TDXNodes
 //	private static Logger logger = Logger.getLogger(DaPan.class);
 	private BanKuai shanghai; //
 	private BanKuai shenzhen; //
-	
+	private SvsForNodeOfDaPan svsdp;
 	
 	public void setDaPanContents (BanKuai sh,BanKuai sz)
 	{
@@ -47,16 +47,26 @@ public class DaPan extends TDXNodes
 			return true;
 	}
 	
-	public void getNodeData (LocalDate requiredstartday, LocalDate requiredendday, String period, Boolean calwholeweek)
-	{
-		SvsForNodeOfDaPan svsdp = new SvsForNodeOfDaPan ();
-		svsdp.getNodeData("000000",requiredstartday, requiredendday,period,calwholeweek);
-	}
+//	public void getNodeData (LocalDate requiredstartday, LocalDate requiredendday, String period, Boolean calwholeweek)
+//	{
+//		
+//		svsdp.getNodeData("000000",requiredstartday, requiredendday,period,calwholeweek);
+//	}
 
 	@Override
 	public ServicesForNode getServicesForNode(Boolean getornot) {
-		// TODO Auto-generated method stub
-		return null;
+		if(!getornot) {
+			svsdp = null;
+			return null;
+		}
+			
+		if(svsdp == null) {
+			svsdp = new SvsForNodeOfDaPan ();
+			return svsdp;
+		}
+		else 
+			return svsdp;
+
 	}
 	
 }

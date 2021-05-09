@@ -220,10 +220,14 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 	@Override
 	public void propertyChange(PropertyChangeEvent evt)
 	{
+		LocalDate startdate = cjecjlpnlup.getCurrentDisplayOhlcStartDate ();
+		LocalDate enddate = cjecjlpnlup.getCurrentDisplayOhlcEndDate ();
+		
 		Object source = evt.getSource();
 		String evtpropertyname = evt.getPropertyName();
-		if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.SELECTED_PROPERTY)) {
-			
+//		String indictor = (String) evt.getNewValue();
+		switch (evtpropertyname) {
+		case BanKuaiFengXiCategoryBarChartPnl.SELECTED_PROPERTY:
 			String selectedinfo = evt.getNewValue().toString();
 			chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(LocalDate.parse(selectedinfo) ) );
     		//特别标记点击的日期，这样界面上看比较清晰
@@ -233,14 +237,11 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 			}
 			PropertyChangeEvent evtnew = new PropertyChangeEvent(source, SELECTED_PROPERTY, "", selectedinfo );
 			pcs.firePropertyChange(evtnew);
-			
-		} else if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.MOUSEDOUBLECLICK_PROPERTY)) {
-	        pcs.firePropertyChange(evt);
-		
-		} else if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.DISPLAYZHANGDIETING ) ) {
-			LocalDate startdate = cjecjlpnlup.getCurrentDisplayOhlcStartDate ();
-			LocalDate enddate = cjecjlpnlup.getCurrentDisplayOhlcEndDate ();
-			
+			break;
+		case BanKuaiFengXiCategoryBarChartPnl.MOUSEDOUBLECLICK_PROPERTY:
+			pcs.firePropertyChange(evt);
+			break;
+		case BanKuaiFengXiCategoryBarChartPnl.DISPLAYZHANGDIETING :
 			cjecjlpnlup.resetLineDate ();
 			cjecjlzbpnldown.resetLineDate();
 			cjecjlpnlup.resetDate();
@@ -251,11 +252,8 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 			
 			((BanKuaiFengXiCategoryBarChartCjePnl)cjecjlpnlup).displayZhangDieTingLineDataToGui (this.curdisplayednode.getNodeXPeroidData(period),startdate,enddate,period);
 			((BanKuaiFengXiCategoryBarChartCjeZhanbiPnl)cjecjlzbpnldown).displayZhangDieTingLineDataToGui (this.curdisplayednode.getNodeXPeroidData(period),period);
-
-		} else if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.DISPLAYQUEKOUDATA ) ) {
-			LocalDate startdate = cjecjlpnlup.getCurrentDisplayOhlcStartDate ();
-			LocalDate enddate = cjecjlpnlup.getCurrentDisplayOhlcEndDate ();
-			
+			break;
+		case BanKuaiFengXiCategoryBarChartPnl.DISPLAYQUEKOUDATA:
 			cjecjlpnlup.resetLineDate ();
 			cjecjlzbpnldown.resetLineDate();
 			cjecjlpnlup.resetDate();
@@ -266,10 +264,8 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 			
 			((BanKuaiFengXiCategoryBarChartCjePnl)cjecjlpnlup).displayQueKouLineDataToGui (this.curdisplayednode.getNodeXPeroidData(period),startdate,enddate,period);
 			((BanKuaiFengXiCategoryBarChartCjeZhanbiPnl)cjecjlzbpnldown).displayQueKouLineDataToGui (this.curdisplayednode.getNodeXPeroidData(period),period);
-		} else if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.ONLYSHOWCJEZBBARDATA ) ) {
-			LocalDate startdate = cjecjlpnlup.getCurrentDisplayOhlcStartDate ();
-			LocalDate enddate = cjecjlpnlup.getCurrentDisplayOhlcEndDate ();
-			
+			break;
+		case BanKuaiFengXiCategoryBarChartPnl.ONLYSHOWCJEZBBARDATA:
 //			cjecjlpnlup.resetLineDate ();
 			cjecjlzbpnldown.resetLineDate();
 //			cjecjlpnlup.resetDate();
@@ -277,11 +273,8 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 			
 //			((BanKuaiFengXiCategoryBarChartCjePnl)cjecjlpnlup).displayBarDataToGui (this.curdisplayednode.getNodeXPeroidData(period),startdate,enddate,period);
 			((BanKuaiFengXiCategoryBarChartCjeZhanbiPnl)cjecjlzbpnldown).displayBarDataToGui (this.curdisplayednode.getNodeXPeroidData(period),startdate,enddate,period);
-			
-		} else if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.CJEZBTOLINE ) ) {
-			LocalDate startdate = cjecjlpnlup.getCurrentDisplayOhlcStartDate ();
-			LocalDate enddate = cjecjlpnlup.getCurrentDisplayOhlcEndDate ();
-			
+			break;
+		case BanKuaiFengXiCategoryBarChartPnl.CJEZBTOLINE:
 			String indictor = (String) evt.getNewValue();
 			if(indictor.equals("notcjecjlzbtoline")) {
 //				cjecjlpnlup.setDisplayZhanBiInLine (false);
@@ -298,10 +291,8 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 					((BanKuaiFengXiCategoryBarChartCjeZhanbiPnl)cjecjlzbpnldown).dipalyCjeZBLineDataToGui (this.curdisplayednode.getNodeXPeroidData(period),period);
 				}
 			}
-		} else if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.AVERAGEDAILYCJE ) ) {
-			LocalDate startdate = cjecjlpnlup.getCurrentDisplayOhlcStartDate ();
-			LocalDate enddate = cjecjlpnlup.getCurrentDisplayOhlcEndDate ();
-			
+			break;
+		case BanKuaiFengXiCategoryBarChartPnl.AVERAGEDAILYCJE:
 			cjecjlpnlup.resetLineDate ();
 //			cjecjlzbpnldown.resetLineDate();
 			cjecjlpnlup.resetDate();
@@ -312,10 +303,8 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 			
 			((BanKuaiFengXiCategoryBarChartCjePnl)cjecjlpnlup).displayAverageDailyCjeOfWeekLineDataToGuiUsingRightAxix(this.curdisplayednode.getNodeXPeroidData(period),startdate,enddate,period);
 //			((BanKuaiFengXiCategoryBarChartCjeZhanbiPnl)cjecjlzbpnldown).dipalyCjeCjlZBLineDataToGui (this.curdisplayednode.getNodeXPeroidData(period),period);
-		} else if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.COMPAREAVERAGEDAILYCJEWITHDAPAN ) ) {
-			LocalDate startdate = cjecjlpnlup.getCurrentDisplayOhlcStartDate ();
-			LocalDate enddate = cjecjlpnlup.getCurrentDisplayOhlcEndDate ();
-			
+			break;
+		case BanKuaiFengXiCategoryBarChartPnl.COMPAREAVERAGEDAILYCJEWITHDAPAN :
 			cjecjlpnlup.resetLineDate ();
 			cjecjlpnlup.resetDate();
 			
@@ -330,10 +319,8 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 			NodeXPeriodData nodexdataOfSuperBk = shouldDisplayBarOfSuperBanKuaiCjeInsteadOfSelfCje.getNodeXPeroidData(period);
 			Double leftrangeaxix = ((BanKuaiFengXiCategoryBarChartCjePnl)cjecjlpnlup).displayAverageBarDataToGui (this.curdisplayednode.getNodeXPeroidData(period),startdate,enddate,period);
 			Double avecjeaxix = ((BanKuaiFengXiCategoryBarChartCjePnl)cjecjlpnlup).displayAverageDailyCjeOfWeekLineDataToGuiUsingRightAxix(nodexdataOfSuperBk ,startdate,enddate,period);
-		} else if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.AVERAGEDAILYCJL ) ) {
-			LocalDate startdate = cjecjlpnlup.getCurrentDisplayOhlcStartDate ();
-			LocalDate enddate = cjecjlpnlup.getCurrentDisplayOhlcEndDate ();
-			
+			break;
+		case BanKuaiFengXiCategoryBarChartPnl.AVERAGEDAILYCJL:
 			cjecjlpnlup.resetLineDate ();
 //			cjecjlzbpnldown.resetLineDate();
 			cjecjlpnlup.resetDate();
@@ -344,31 +331,27 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 			
 			((BanKuaiFengXiCategoryBarChartCjlPnl)cjecjlpnlup).displayAverageDailyCjlOfWeekLineDataToGuiUsingRightAxix(this.curdisplayednode.getNodeXPeroidData(period),startdate,enddate,period);
 //			((BanKuaiFengXiCategoryBarChartCjlZhanbiPnl)cjecjlzbpnldown).diplayCjlCjlZBLineDataToGui (this.curdisplayednode.getNodeXPeroidData(period),period);
-		} else if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.COMPAREAVERAGEDAILYCJLWITHDAPAN ) ) {
-			LocalDate startdate = cjecjlpnlup.getCurrentDisplayOhlcStartDate ();
-			LocalDate enddate = cjecjlpnlup.getCurrentDisplayOhlcEndDate ();
-			
+			break;
+		case BanKuaiFengXiCategoryBarChartPnl.COMPAREAVERAGEDAILYCJLWITHDAPAN:
 			cjecjlpnlup.resetLineDate ();
 			cjecjlpnlup.resetDate();
 			
 			((BanKuaiFengXiCategoryBarRenderer)((BanKuaiFengXiCategoryBarChartPnl)cjecjlpnlup).plot.getRenderer()).setBarDisplayedColor( "CjlAverageColumnColor" );
 //			 ((BanKuaiFengXiCategoryBarChartCjlPnl)cjecjlpnlup).setBarDisplayedColor(new Color(204,155,153) );
 			
-			TDXNodes shouldDisplayBarOfSuperBanKuaiCjeInsteadOfSelfCje = ((BanKuaiFengXiCategoryBarChartCjlPnl)cjecjlpnlup).getSettingSpecificSuperBanKuai();
-			if(shouldDisplayBarOfSuperBanKuaiCjeInsteadOfSelfCje == null) {
+			TDXNodes shouldDisplayBarOfSuperBanKuaiCjlInsteadOfSelfCjl = ((BanKuaiFengXiCategoryBarChartCjlPnl)cjecjlpnlup).getSettingSpecificSuperBanKuai();
+			if(shouldDisplayBarOfSuperBanKuaiCjlInsteadOfSelfCjl == null) {
 				DaPan treeroot = (DaPan) this.curdisplayednode.getRoot();
 				((BanKuaiFengXiCategoryBarChartCjlPnl)cjecjlpnlup).setDisplayBarOfSpecificBanKuaiCjeCjlInsteadOfSelfCjeCjl (treeroot);
-				shouldDisplayBarOfSuperBanKuaiCjeInsteadOfSelfCje = treeroot;
+				shouldDisplayBarOfSuperBanKuaiCjlInsteadOfSelfCjl = treeroot;
 			}
-			NodeXPeriodData nodexdataOfSuperBk = shouldDisplayBarOfSuperBanKuaiCjeInsteadOfSelfCje.getNodeXPeroidData(period);
-			Double leftrangeaxix = ((BanKuaiFengXiCategoryBarChartCjlPnl)cjecjlpnlup).displayAverageBarDataToGui (this.curdisplayednode.getNodeXPeroidData(period),startdate,enddate,period);
-			Double avecjeaxix = ((BanKuaiFengXiCategoryBarChartCjlPnl)cjecjlpnlup).displayAverageDailyCjlOfWeekLineDataToGuiUsingRightAxix(nodexdataOfSuperBk ,startdate,enddate,period);
-		} else if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.CJLZBTOLINE ) ) {
-			LocalDate startdate = cjecjlpnlup.getCurrentDisplayOhlcStartDate ();
-			LocalDate enddate = cjecjlpnlup.getCurrentDisplayOhlcEndDate ();
-			
-			String indictor = (String) evt.getNewValue();
-			if(indictor.equals("notcjlcjlzbtoline")) {
+			NodeXPeriodData nodexdataOfSuperBk2 = shouldDisplayBarOfSuperBanKuaiCjlInsteadOfSelfCjl.getNodeXPeroidData(period);
+			Double leftrangeaxix2 = ((BanKuaiFengXiCategoryBarChartCjlPnl)cjecjlpnlup).displayAverageBarDataToGui (this.curdisplayednode.getNodeXPeroidData(period),startdate,enddate,period);
+			Double avecjeaxix2 = ((BanKuaiFengXiCategoryBarChartCjlPnl)cjecjlpnlup).displayAverageDailyCjlOfWeekLineDataToGuiUsingRightAxix(nodexdataOfSuperBk2 ,startdate,enddate,period);
+			break;
+		case BanKuaiFengXiCategoryBarChartPnl.CJLZBTOLINE:
+			String indictor2 = (String) evt.getNewValue();
+			if(indictor2.equals("notcjlcjlzbtoline")) {
 //				cjecjlpnlup.setDisplayZhanBiInLine (false);
 				((BanKuaiFengXiCategoryBarChartCjlZhanbiPnl)cjecjlzbpnldown).setDisplayZhanBiInLine (false);
 			} else {
@@ -383,10 +366,8 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 					((BanKuaiFengXiCategoryBarChartCjlZhanbiPnl)cjecjlzbpnldown).dipalyCjlZBLineDataToGui (this.curdisplayednode.getNodeXPeroidData(period),period);
 				}
 			}
-		}  else if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.ONLYSHOWCJLZBBARDATA ) ) {
-			LocalDate startdate = cjecjlpnlup.getCurrentDisplayOhlcStartDate ();
-			LocalDate enddate = cjecjlpnlup.getCurrentDisplayOhlcEndDate ();
-			
+			break;
+		case BanKuaiFengXiCategoryBarChartPnl.ONLYSHOWCJLZBBARDATA:
 			cjecjlpnlup.resetLineDate ();
 			cjecjlzbpnldown.resetLineDate();
 			cjecjlpnlup.resetDate();
@@ -394,7 +375,195 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 			
 			((BanKuaiFengXiCategoryBarChartCjlPnl)cjecjlpnlup).displayBarDataToGui (this.curdisplayednode.getNodeXPeroidData(period),startdate,enddate,period);
 			((BanKuaiFengXiCategoryBarChartCjlZhanbiPnl)cjecjlzbpnldown).displayBarDataToGui (this.curdisplayednode.getNodeXPeroidData(period),startdate,enddate,period);
+			break;
+		case BanKuaiFengXiCategoryBarChartPnl.DISPLAYNODENEWRANGEDATA:
+			cjecjlpnlup.resetLineDate ();
+			cjecjlzbpnldown.resetLineDate();
+			cjecjlpnlup.resetDate();
+			cjecjlzbpnldown.resetDate();
+			
+			String indictor3 = (String) evt.getNewValue();
+			cjecjlpnlup.reDisplayNodeDataOnDirection (indictor3);
+			cjecjlzbpnldown.reDisplayNodeDataOnDirection(indictor3 );
+			
+			pcs.firePropertyChange(evt);
+			break;
 		}
+		
+		
+//		if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.SELECTED_PROPERTY)) {
+//			
+//			String selectedinfo = evt.getNewValue().toString();
+//			chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(LocalDate.parse(selectedinfo) ) );
+//    		//特别标记点击的日期，这样界面上看比较清晰
+//    		if(cjecjlzbpnldown.isAllowDrawAnnoation()) {
+//				cjecjlzbpnldown.setAnnotations( LocalDate.parse(selectedinfo)  );
+//				cjecjlpnlup.setAnnotations( LocalDate.parse(selectedinfo)  );
+//			}
+//			PropertyChangeEvent evtnew = new PropertyChangeEvent(source, SELECTED_PROPERTY, "", selectedinfo );
+//			pcs.firePropertyChange(evtnew);
+//			
+//		} else if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.MOUSEDOUBLECLICK_PROPERTY)) {
+//	        pcs.firePropertyChange(evt);
+//		
+//		} else if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.DISPLAYZHANGDIETING ) ) {
+//			LocalDate startdate = cjecjlpnlup.getCurrentDisplayOhlcStartDate ();
+//			LocalDate enddate = cjecjlpnlup.getCurrentDisplayOhlcEndDate ();
+//			
+//			cjecjlpnlup.resetLineDate ();
+//			cjecjlzbpnldown.resetLineDate();
+//			cjecjlpnlup.resetDate();
+//			cjecjlzbpnldown.resetDate();
+//			
+//			((BanKuaiFengXiCategoryBarChartCjePnl)cjecjlpnlup).displayBarDataToGui (this.curdisplayednode.getNodeXPeroidData(period),startdate,enddate,period);
+//			((BanKuaiFengXiCategoryBarChartCjeZhanbiPnl)cjecjlzbpnldown).displayBarDataToGui (this.curdisplayednode.getNodeXPeroidData(period),startdate,enddate,period);
+//			
+//			((BanKuaiFengXiCategoryBarChartCjePnl)cjecjlpnlup).displayZhangDieTingLineDataToGui (this.curdisplayednode.getNodeXPeroidData(period),startdate,enddate,period);
+//			((BanKuaiFengXiCategoryBarChartCjeZhanbiPnl)cjecjlzbpnldown).displayZhangDieTingLineDataToGui (this.curdisplayednode.getNodeXPeroidData(period),period);
+//
+//		} else if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.DISPLAYQUEKOUDATA ) ) {
+//			LocalDate startdate = cjecjlpnlup.getCurrentDisplayOhlcStartDate ();
+//			LocalDate enddate = cjecjlpnlup.getCurrentDisplayOhlcEndDate ();
+//			
+//			cjecjlpnlup.resetLineDate ();
+//			cjecjlzbpnldown.resetLineDate();
+//			cjecjlpnlup.resetDate();
+//			cjecjlzbpnldown.resetDate();
+//			
+//			((BanKuaiFengXiCategoryBarChartCjePnl)cjecjlpnlup).displayBarDataToGui (this.curdisplayednode.getNodeXPeroidData(period),startdate,enddate,period);
+//			((BanKuaiFengXiCategoryBarChartCjeZhanbiPnl)cjecjlzbpnldown).displayBarDataToGui (this.curdisplayednode.getNodeXPeroidData(period),startdate,enddate,period);
+//			
+//			((BanKuaiFengXiCategoryBarChartCjePnl)cjecjlpnlup).displayQueKouLineDataToGui (this.curdisplayednode.getNodeXPeroidData(period),startdate,enddate,period);
+//			((BanKuaiFengXiCategoryBarChartCjeZhanbiPnl)cjecjlzbpnldown).displayQueKouLineDataToGui (this.curdisplayednode.getNodeXPeroidData(period),period);
+//		} else if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.ONLYSHOWCJEZBBARDATA ) ) {
+//			LocalDate startdate = cjecjlpnlup.getCurrentDisplayOhlcStartDate ();
+//			LocalDate enddate = cjecjlpnlup.getCurrentDisplayOhlcEndDate ();
+//			
+////			cjecjlpnlup.resetLineDate ();
+//			cjecjlzbpnldown.resetLineDate();
+////			cjecjlpnlup.resetDate();
+//			cjecjlzbpnldown.resetDate();
+//			
+////			((BanKuaiFengXiCategoryBarChartCjePnl)cjecjlpnlup).displayBarDataToGui (this.curdisplayednode.getNodeXPeroidData(period),startdate,enddate,period);
+//			((BanKuaiFengXiCategoryBarChartCjeZhanbiPnl)cjecjlzbpnldown).displayBarDataToGui (this.curdisplayednode.getNodeXPeroidData(period),startdate,enddate,period);
+//			
+//		} else if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.CJEZBTOLINE ) ) {
+//			LocalDate startdate = cjecjlpnlup.getCurrentDisplayOhlcStartDate ();
+//			LocalDate enddate = cjecjlpnlup.getCurrentDisplayOhlcEndDate ();
+//			
+//			String indictor = (String) evt.getNewValue();
+//			if(indictor.equals("notcjecjlzbtoline")) {
+////				cjecjlpnlup.setDisplayZhanBiInLine (false);
+////				((BanKuaiFengXiCategoryBarChartCjeZhanbiPnl)cjecjlzbpnldown).setDisplayZhanBiInLine (false);
+//			} else {
+////				cjecjlpnlup.setDisplayZhanBiInLine (true);
+////				((BanKuaiFengXiCategoryBarChartCjeZhanbiPnl)cjecjlzbpnldown).setDisplayZhanBiInLine (true);
+//				
+////				cjecjlpnlup.resetLineDate ();
+//				cjecjlzbpnldown.resetLineDate();
+//				
+//				if(this.pnltype.equals("CJE")) {
+////					((BanKuaiFengXiCategoryBarChartCjePnl)cjecjlpnlup).dipalyCjeCjlZBLineDataToGui (this.curdisplayednode.getNodeXPeroidData(period),startdate,enddate,period);
+//					((BanKuaiFengXiCategoryBarChartCjeZhanbiPnl)cjecjlzbpnldown).dipalyCjeZBLineDataToGui (this.curdisplayednode.getNodeXPeroidData(period),period);
+//				}
+//			}
+//		} else if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.AVERAGEDAILYCJE ) ) {
+//			LocalDate startdate = cjecjlpnlup.getCurrentDisplayOhlcStartDate ();
+//			LocalDate enddate = cjecjlpnlup.getCurrentDisplayOhlcEndDate ();
+//			
+//			cjecjlpnlup.resetLineDate ();
+////			cjecjlzbpnldown.resetLineDate();
+//			cjecjlpnlup.resetDate();
+////			cjecjlzbpnldown.resetDate();
+//			
+//			((BanKuaiFengXiCategoryBarChartCjePnl)cjecjlpnlup).displayBarDataToGui (this.curdisplayednode.getNodeXPeroidData(period),startdate,enddate,period);
+//			((BanKuaiFengXiCategoryBarChartCjeZhanbiPnl)cjecjlzbpnldown).displayBarDataToGui (this.curdisplayednode.getNodeXPeroidData(period),startdate,enddate,period);
+//			
+//			((BanKuaiFengXiCategoryBarChartCjePnl)cjecjlpnlup).displayAverageDailyCjeOfWeekLineDataToGuiUsingRightAxix(this.curdisplayednode.getNodeXPeroidData(period),startdate,enddate,period);
+////			((BanKuaiFengXiCategoryBarChartCjeZhanbiPnl)cjecjlzbpnldown).dipalyCjeCjlZBLineDataToGui (this.curdisplayednode.getNodeXPeroidData(period),period);
+//		} else if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.COMPAREAVERAGEDAILYCJEWITHDAPAN ) ) {
+//			LocalDate startdate = cjecjlpnlup.getCurrentDisplayOhlcStartDate ();
+//			LocalDate enddate = cjecjlpnlup.getCurrentDisplayOhlcEndDate ();
+//			
+//			cjecjlpnlup.resetLineDate ();
+//			cjecjlpnlup.resetDate();
+//			
+//			 ((BanKuaiFengXiCategoryBarRenderer)((BanKuaiFengXiCategoryBarChartPnl)cjecjlpnlup).plot.getRenderer()).setBarDisplayedColor( "CjeAverageColumnColor" );
+//			
+//			TDXNodes shouldDisplayBarOfSuperBanKuaiCjeInsteadOfSelfCje = ((BanKuaiFengXiCategoryBarChartCjePnl)cjecjlpnlup).getSettingSpecificSuperBanKuai();
+//			if(shouldDisplayBarOfSuperBanKuaiCjeInsteadOfSelfCje == null) {
+//				DaPan treeroot = (DaPan) this.curdisplayednode.getRoot();
+//				((BanKuaiFengXiCategoryBarChartCjePnl)cjecjlpnlup).setDisplayBarOfSpecificBanKuaiCjeCjlInsteadOfSelfCjeCjl (treeroot);
+//				shouldDisplayBarOfSuperBanKuaiCjeInsteadOfSelfCje = treeroot;
+//			}
+//			NodeXPeriodData nodexdataOfSuperBk = shouldDisplayBarOfSuperBanKuaiCjeInsteadOfSelfCje.getNodeXPeroidData(period);
+//			Double leftrangeaxix = ((BanKuaiFengXiCategoryBarChartCjePnl)cjecjlpnlup).displayAverageBarDataToGui (this.curdisplayednode.getNodeXPeroidData(period),startdate,enddate,period);
+//			Double avecjeaxix = ((BanKuaiFengXiCategoryBarChartCjePnl)cjecjlpnlup).displayAverageDailyCjeOfWeekLineDataToGuiUsingRightAxix(nodexdataOfSuperBk ,startdate,enddate,period);
+//		} else if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.AVERAGEDAILYCJL ) ) {
+//			LocalDate startdate = cjecjlpnlup.getCurrentDisplayOhlcStartDate ();
+//			LocalDate enddate = cjecjlpnlup.getCurrentDisplayOhlcEndDate ();
+//			
+//			cjecjlpnlup.resetLineDate ();
+////			cjecjlzbpnldown.resetLineDate();
+//			cjecjlpnlup.resetDate();
+////			cjecjlzbpnldown.resetDate();
+//			
+//			((BanKuaiFengXiCategoryBarChartCjlPnl)cjecjlpnlup).displayBarDataToGui (this.curdisplayednode.getNodeXPeroidData(period),startdate,enddate,period);
+////			((BanKuaiFengXiCategoryBarChartCjeZhanbiPnl)cjecjlzbpnldown).displayBarDataToGui (this.curdisplayednode.getNodeXPeroidData(period),startdate,enddate,period);
+//			
+//			((BanKuaiFengXiCategoryBarChartCjlPnl)cjecjlpnlup).displayAverageDailyCjlOfWeekLineDataToGuiUsingRightAxix(this.curdisplayednode.getNodeXPeroidData(period),startdate,enddate,period);
+////			((BanKuaiFengXiCategoryBarChartCjlZhanbiPnl)cjecjlzbpnldown).diplayCjlCjlZBLineDataToGui (this.curdisplayednode.getNodeXPeroidData(period),period);
+//		} else if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.COMPAREAVERAGEDAILYCJLWITHDAPAN ) ) {
+//			LocalDate startdate = cjecjlpnlup.getCurrentDisplayOhlcStartDate ();
+//			LocalDate enddate = cjecjlpnlup.getCurrentDisplayOhlcEndDate ();
+//			
+//			cjecjlpnlup.resetLineDate ();
+//			cjecjlpnlup.resetDate();
+//			
+//			((BanKuaiFengXiCategoryBarRenderer)((BanKuaiFengXiCategoryBarChartPnl)cjecjlpnlup).plot.getRenderer()).setBarDisplayedColor( "CjlAverageColumnColor" );
+////			 ((BanKuaiFengXiCategoryBarChartCjlPnl)cjecjlpnlup).setBarDisplayedColor(new Color(204,155,153) );
+//			
+//			TDXNodes shouldDisplayBarOfSuperBanKuaiCjeInsteadOfSelfCje = ((BanKuaiFengXiCategoryBarChartCjlPnl)cjecjlpnlup).getSettingSpecificSuperBanKuai();
+//			if(shouldDisplayBarOfSuperBanKuaiCjeInsteadOfSelfCje == null) {
+//				DaPan treeroot = (DaPan) this.curdisplayednode.getRoot();
+//				((BanKuaiFengXiCategoryBarChartCjlPnl)cjecjlpnlup).setDisplayBarOfSpecificBanKuaiCjeCjlInsteadOfSelfCjeCjl (treeroot);
+//				shouldDisplayBarOfSuperBanKuaiCjeInsteadOfSelfCje = treeroot;
+//			}
+//			NodeXPeriodData nodexdataOfSuperBk = shouldDisplayBarOfSuperBanKuaiCjeInsteadOfSelfCje.getNodeXPeroidData(period);
+//			Double leftrangeaxix = ((BanKuaiFengXiCategoryBarChartCjlPnl)cjecjlpnlup).displayAverageBarDataToGui (this.curdisplayednode.getNodeXPeroidData(period),startdate,enddate,period);
+//			Double avecjeaxix = ((BanKuaiFengXiCategoryBarChartCjlPnl)cjecjlpnlup).displayAverageDailyCjlOfWeekLineDataToGuiUsingRightAxix(nodexdataOfSuperBk ,startdate,enddate,period);
+//		} else if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.CJLZBTOLINE ) ) {
+//			LocalDate startdate = cjecjlpnlup.getCurrentDisplayOhlcStartDate ();
+//			LocalDate enddate = cjecjlpnlup.getCurrentDisplayOhlcEndDate ();
+//			
+//			String indictor = (String) evt.getNewValue();
+//			if(indictor.equals("notcjlcjlzbtoline")) {
+////				cjecjlpnlup.setDisplayZhanBiInLine (false);
+//				((BanKuaiFengXiCategoryBarChartCjlZhanbiPnl)cjecjlzbpnldown).setDisplayZhanBiInLine (false);
+//			} else {
+////				cjecjlpnlup.setDisplayZhanBiInLine (true);
+//				((BanKuaiFengXiCategoryBarChartCjlZhanbiPnl)cjecjlzbpnldown).setDisplayZhanBiInLine (true);
+//				
+////				cjecjlpnlup.resetLineDate ();
+//				cjecjlzbpnldown.resetLineDate();
+//				
+//				if(this.pnltype.equals("CJL")) {
+////					((BanKuaiFengXiCategoryBarChartCjePnl)cjecjlpnlup).dipalyCjeCjlZBLineDataToGui (this.curdisplayednode.getNodeXPeroidData(period),startdate,enddate,period);
+//					((BanKuaiFengXiCategoryBarChartCjlZhanbiPnl)cjecjlzbpnldown).dipalyCjlZBLineDataToGui (this.curdisplayednode.getNodeXPeroidData(period),period);
+//				}
+//			}
+//		}  else if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.ONLYSHOWCJLZBBARDATA ) ) {
+//			LocalDate startdate = cjecjlpnlup.getCurrentDisplayOhlcStartDate ();
+//			LocalDate enddate = cjecjlpnlup.getCurrentDisplayOhlcEndDate ();
+//			
+//			cjecjlpnlup.resetLineDate ();
+//			cjecjlzbpnldown.resetLineDate();
+//			cjecjlpnlup.resetDate();
+//			cjecjlzbpnldown.resetDate();
+//			
+//			((BanKuaiFengXiCategoryBarChartCjlPnl)cjecjlpnlup).displayBarDataToGui (this.curdisplayednode.getNodeXPeroidData(period),startdate,enddate,period);
+//			((BanKuaiFengXiCategoryBarChartCjlZhanbiPnl)cjecjlzbpnldown).displayBarDataToGui (this.curdisplayednode.getNodeXPeroidData(period),startdate,enddate,period);
+//		}
 		
 		
 		
@@ -454,6 +623,10 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 			cjecjlpnlup.setAnnotations( columnkey  );
 		}
 		
+	}
+	public void setChangeNodeDisplayDateRange(boolean b) {
+		cjecjlzbpnldown.setChangeNodeDisplayDateRange( b  );
+		cjecjlpnlup.setChangeNodeDisplayDateRange( b  );
 	}
 
 

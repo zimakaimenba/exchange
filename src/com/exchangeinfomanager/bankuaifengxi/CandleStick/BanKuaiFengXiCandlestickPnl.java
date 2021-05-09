@@ -28,6 +28,7 @@ import java.time.Month;
 import java.time.Period;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -174,6 +175,8 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 	private List<ValueMarker> categorymarkerlist; //指数关键日期的marker
 	private JMenuItem mntmamo;
 	private JMenuItem mntmktransferdayandweek;
+	private LocalDate displaydatestarted;
+	private LocalDate displaydateended;
 
 	public TDXNodes getCurDisplayedNode ()
 	{
@@ -219,6 +222,29 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		
 		return curend;
 	}
+	public void reDisplayNodeDataOnDirection(String forwardbackward)
+	{
+		long daysBetween = java.time.temporal.ChronoUnit.DAYS.between(this.displaydatestarted,this.displaydateended);
+		forwardbackward = forwardbackward.toUpperCase();
+		switch (forwardbackward) {
+		case "FORWARD":
+			LocalDate newdisplaystart = this.displaydatestarted.minusDays(java.lang.Math.abs(daysBetween) ); //有些股票机构股东数据是很久以前的，没意义
+			LocalDate newdisplayend = this.displaydateended.minusDays(java.lang.Math.abs(daysBetween)) ;
+			this.updatedDate(this.getCurDisplayedNode(), newdisplaystart, newdisplayend, this.globeperiod);
+			break;
+		case "BACKWARD":
+			LocalDate newdisplaystart1 = this.displaydatestarted.plusDays(java.lang.Math.abs(daysBetween) ); //有些股票机构股东数据是很久以前的，没意义
+			LocalDate newdisplayend1 = this.displaydateended.plusDays(java.lang.Math.abs(daysBetween)) ;
+			
+			if(newdisplayend1.isAfter(LocalDate.now())) {
+				newdisplayend = LocalDate.now();
+				newdisplaystart1 = newdisplayend.minus(36,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
+			}
+			
+			this.updatedDate(this.getCurDisplayedNode(), newdisplaystart1, newdisplayend1, this.globeperiod);
+			break;	
+		}
+	}
 	
 	@Override
 	public void updatedDate(TDXNodes node, LocalDate startdate, LocalDate enddate,String period) 
@@ -226,6 +252,8 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		candlestickChart.setNotify(false);
 		this.resetDate();
 		
+		this.displaydatestarted = startdate; 
+		this.displaydateended = enddate;
 		this.curdisplayednode = node;
 		this.globeperiod = period;
 		if(node.getType() != BkChanYeLianTreeNode.DAPAN)
@@ -300,6 +328,8 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 			return;
 		
 		Interval result = getTimeIntervalOfNodeTimeIntervalWithRequiredTimeInterval (nodestart,nodeend, requirestart, requireend);
+		if(result == null)
+			return ;
 		DateTime overlapstartdt = result.getStart();
 		DateTime overlapenddt = result.getEnd();
 		
@@ -416,6 +446,9 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 			return;
 		
 		Interval result = getTimeIntervalOfNodeTimeIntervalWithRequiredTimeInterval (nodestart,nodeend, requirestart, requireend);
+		if(result == null )
+			return;
+		
 		DateTime overlapstartdt = result.getStart();
 		DateTime overlapenddt = result.getEnd();
 		

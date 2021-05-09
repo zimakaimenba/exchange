@@ -3831,17 +3831,13 @@ public class BanKuaiDbOperation
 			if(spcohlcdataindex != null) 
 				nodexdata.getOHLCData().remove(spcohlcdataindex.intValue());
 			
-		} catch (java.lang.ArrayIndexOutOfBoundsException e) {
-			e.printStackTrace();
-		}
+		} catch (java.lang.ArrayIndexOutOfBoundsException e) {e.printStackTrace();}
 		
 		Double weeklyopen = null;
 		try{
 			OHLCItem newohlcdata0 = (OHLCItem) nodenewohlc.getDataItem(0);
 			weeklyopen = newohlcdata0.getOpenValue();
-		} catch (java.lang.IndexOutOfBoundsException e) {
-			e.printStackTrace();
-		}
+		} catch (java.lang.IndexOutOfBoundsException e) {e.printStackTrace();}
 
 		//Close Of this week
 		OHLCItem newohlcdatalast = (OHLCItem) nodenewohlc.getDataItem(nodenewohlc.getItemCount()-1); 
@@ -3861,15 +3857,11 @@ public class BanKuaiDbOperation
 		try {
 			DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
 			 sqldate = new java.sql.Date(format.parse(friday.toString()).getTime());
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
+		} catch (ParseException e) {e.printStackTrace();}
 		try {
 			org.jfree.data.time.Week recordwk = new org.jfree.data.time.Week (sqldate);
 			nodexdata.getOHLCData().add(new OHLCItem(recordwk,weeklyopen,weeklyhigh,weeklylow,weeklyclose) );
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
+		} catch(Exception e) {e.printStackTrace();}
 
 		return tdxnode;
 	}

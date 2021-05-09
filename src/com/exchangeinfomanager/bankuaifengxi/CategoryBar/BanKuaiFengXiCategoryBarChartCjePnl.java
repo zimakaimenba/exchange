@@ -31,7 +31,7 @@ import org.jfree.ui.TextAnchor;
 import com.exchangeinfomanager.Trees.CreateExchangeTree;
 import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiGeGuMatchCondition;
 import com.exchangeinfomanager.commonlib.CommonUtility;
-
+import com.exchangeinfomanager.commonlib.Season;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.DaPan;
@@ -122,6 +122,29 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 				
 			});
 		
+	}
+	public void reDisplayNodeDataOnDirection(String forwardbackward)
+	{
+		long daysBetween = java.time.temporal.ChronoUnit.DAYS.between(super.displaydatestarted,super.displaydateended);
+		forwardbackward = forwardbackward.toUpperCase();
+		switch (forwardbackward) {
+		case "FORWARD":
+			LocalDate newdisplaystart = super.displaydatestarted.minusDays(java.lang.Math.abs(daysBetween) ); //有些股票机构股东数据是很久以前的，没意义
+			LocalDate newdisplayend = super.displaydateended.minusDays(java.lang.Math.abs(daysBetween)) ;
+			this.updatedDate(super.getCurDisplayedNode(), newdisplaystart, newdisplayend, super.globeperiod);
+			break;
+		case "BACKWARD":
+			LocalDate newdisplaystart1 = super.displaydatestarted.plusDays(java.lang.Math.abs(daysBetween) ); //有些股票机构股东数据是很久以前的，没意义
+			LocalDate newdisplayend1 = super.displaydateended.plusDays(java.lang.Math.abs(daysBetween)) ;
+			
+			if(newdisplayend1.isAfter(LocalDate.now())) {
+				newdisplayend = LocalDate.now();
+				newdisplaystart1 = newdisplayend.minus(36,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
+			}
+			
+			this.updatedDate(super.getCurDisplayedNode(), newdisplaystart1, newdisplayend1, super.globeperiod);
+			break;	
+		}
 	}
 	/*
 	 * 

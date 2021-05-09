@@ -3,6 +3,7 @@ package com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
@@ -135,12 +136,12 @@ public class BanKuaiGeGuMatchCondition implements Cloneable
 		{
 			return this.exportcondformula ;
 		}
-		private String predefinedexportcondformula;
-		public void setPredefinedExportConditionFormula (String formula)
+		private List<String> predefinedexportcondformula;
+		public void setPredefinedExportConditionFormula (List<String> formula)
 		{
 			this.predefinedexportcondformula = formula;
 		}
-		public String getPredefinedExportConditionFormula ()
+		public List<String> getPredefinedExportConditionFormula ()
 		{
 			return this.predefinedexportcondformula ;
 		} 

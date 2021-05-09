@@ -100,6 +100,9 @@ public class ExportConditionsFactorPnl extends JPanel {
 	}
 	private String getRealValueByDanWei (String value)
 	{
+		if(value == null)
+			return null;
+		
 		String realvalue = value;
 		switch (this.factordanwei) {
 		case "%": Double reald = Double.parseDouble(value) /100;

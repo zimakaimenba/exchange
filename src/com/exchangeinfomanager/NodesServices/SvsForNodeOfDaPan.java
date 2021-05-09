@@ -140,35 +140,12 @@ public class SvsForNodeOfDaPan implements ServicesForNode
 	public void syncNodeData(BkChanYeLianTreeNode bk) 
 	{
 		BanKuai shdpbankuai = (BanKuai) allbkstk.getSpecificNodeByHypyOrCode("999999",BkChanYeLianTreeNode.TDXBK);
-		LocalDate bkohlcstartday = shdpbankuai.getNodeXPeroidData(NodeGivenPeriodDataItem.DAY).getOHLCRecordsStartDate();
-		LocalDate bkohlcendday = shdpbankuai.getNodeXPeroidData(NodeGivenPeriodDataItem.DAY).getOHLCRecordsEndDate();
+		shdpbankuai.getServicesForNode(true).syncNodeData(shdpbankuai);
+		shdpbankuai.getServicesForNode(false);
 		
-		LocalDate bkamostartday = shdpbankuai.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK).getAmoRecordsStartDate();
-		LocalDate bkamoendday = shdpbankuai.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK).getAmoRecordsEndDate();
-		
-		if(bkohlcstartday == null) {
-			bkohlcstartday = bkamostartday;
-			bkohlcendday = bkamoendday;
-			this.getNodeKXian(shdpbankuai, bkohlcstartday,bkohlcendday, NodeGivenPeriodDataItem.DAY,true);
-			return;
-		}
-		
-		List<Interval> timeintervallist = getTimeIntervalOfNodeTimeIntervalWithRequiredTimeInterval
-				(bkohlcstartday,bkohlcendday,bkamostartday,bkamoendday );
-		
-		if(timeintervallist == null)
-			return ;
-		
-		for(Interval tmpinterval : timeintervallist) {
-				DateTime newstartdt = tmpinterval.getStart();
-				DateTime newenddt = tmpinterval.getEnd();
-				
-				LocalDate requiredstartday = LocalDate.of(newstartdt.getYear(), newstartdt.getMonthOfYear(), newstartdt.getDayOfMonth()).with(DayOfWeek.MONDAY);
-				LocalDate requiredendday = LocalDate.of(newenddt.getYear(), newenddt.getMonthOfYear(), newenddt.getDayOfMonth()).with(DayOfWeek.FRIDAY);
-				
-				this.getNodeKXian(shdpbankuai, requiredstartday, requiredendday, NodeGivenPeriodDataItem.DAY, true);
-		}
-		
+		BanKuai szdpbankuai = (BanKuai) allbkstk.getSpecificNodeByHypyOrCode("399001",BkChanYeLianTreeNode.TDXBK);
+		szdpbankuai.getServicesForNode(true).syncNodeData(szdpbankuai);
+		szdpbankuai.getServicesForNode(false);
 	}
 
 	@Override
