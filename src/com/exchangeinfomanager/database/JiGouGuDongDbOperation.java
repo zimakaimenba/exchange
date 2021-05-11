@@ -109,71 +109,56 @@ public class JiGouGuDongDbOperation
 	/*
 	 * 
 	 */
-	public void refreshGuDongData(String floatholderfileformat, String topholderfileformat, Boolean onlyimportwithjigougudong) 
+	public void refreshGuDongData(Boolean onlyimportwithjigougudong, Boolean forcetorefrshallgudong,String... downloededgudongdatafilenamepattern) 
 	{
-		String csvfilepath = sysconfig.getGuDongInfoCsvFile();
-		Set<String> jigou = null;
-		if(onlyimportwithjigougudong)
-			jigou = getJiGouList (); 
-		
-		SetupSystemConfiguration sysconf = new SetupSystemConfiguration ();
-		
 		Collection<BkChanYeLianTreeNode> allstocks = AllCurrentTdxBKAndStoksTree.getInstance().getAllBkStocksTree().getAllRequiredNodes(BkChanYeLianTreeNode.TDXGG);
 		for(BkChanYeLianTreeNode stock : allstocks) {
-			String stockcode = stock.getMyOwnCode();
-			if(floatholderfileformat == null)
-				floatholderfileformat = sysconf.getFloatHoldersFile().replaceAll("XXXXXX", stockcode);
-			else
-				floatholderfileformat = floatholderfileformat.replaceAll("XXXXXX", stockcode);;
-			if(topholderfileformat == null)
-				topholderfileformat = sysconf.getTop10HoldersFile().replaceAll("XXXXXX", stockcode);
-			else
-				topholderfileformat = topholderfileformat.replaceAll("XXXXXX", stockcode);;
-			File floatcsvfile = new File(csvfilepath + "/" + floatholderfileformat);
-			File top10csvfile = new File(csvfilepath + "/" + topholderfileformat);
-			if (  (!floatcsvfile.exists()  || !floatcsvfile.canRead() ) && (!top10csvfile.exists()  || !top10csvfile.canRead())   ) {  
-					logger.info(stockcode + "股东文件不全或者读取错误。没有导入任何数据。");
-					continue;
-			}
-
-			readGuDongCsvFile (stock, csvfilepath + "/" + floatholderfileformat, "liutong", jigou);
-//			readGuDongCsvFile (stock, csvfilepath + "/" + top10csvfilename,"gudong");
+			refreshStockGuDongData ((Stock)stock, onlyimportwithjigougudong, forcetorefrshallgudong, downloededgudongdatafilenamepattern[0],downloededgudongdatafilenamepattern[1]);
 		}
 	}
 	/*
 	 * 
 	 */
-	public Stock refreshStockGuDongData (Stock stock, Boolean onlyimportwithjigougudong, Boolean forcetorefrshallgudong)
+	public Stock refreshStockGuDongData (Stock stock, Boolean onlyimportwithjigougudong, Boolean forcetorefrshallgudong,String... downloededgudongdatafilenamepattern)
 	{
 		if( forcetorefrshallgudong)
 			this.deleteStockGuDong (stock);
 			
-		String csvfilepath = sysconfig.getGuDongInfoCsvFile();
 		
 		Set<String> jigou = null;
 		if(onlyimportwithjigougudong)
 			jigou = getJiGouList ();
 		
-		Boolean execresult = false; String floatcsvfilename = null; String top10csvfilename = null;
-		List<String> result = ExecutePythonScripts.executePythonScriptForExtraData("FORCETOREFRESHSHAREHOLDER", stock);
-		for(String resultline : result) {
-			if(resultline.toLowerCase().contains("got all data"))
-				execresult = true;
-			else if(resultline.toLowerCase().contains("floatcsvfilename")) {
-//				List<String> tmpbkinfo = Splitter.on("").omitEmptyStrings().splitToList(line); //内蒙板块|880232|3|1|0|32
-				floatcsvfilename = resultline.toLowerCase().replaceAll("floatcsvfilename", "");
-			} else if(resultline.toLowerCase().contains("top10csvfilename")) {
-				resultline.toLowerCase().replaceAll("top10csvfilename", "");
-				top10csvfilename = resultline.toLowerCase().replaceAll("top10csvfilename", "");
+		String floatcsvfilename = null; String top10csvfilename = null;
+		if(downloededgudongdatafilenamepattern == null || downloededgudongdatafilenamepattern.length == 0 ) {
+			Boolean execresult = false; 
+			List<String> result = ExecutePythonScripts.executePythonScriptForExtraData("FORCETOREFRESHSHAREHOLDER", stock);
+			for(String resultline : result) {
+				if(resultline.toLowerCase().contains("got all data"))
+					execresult = true;
+				else if(resultline.toLowerCase().contains("floatcsvfilename")) {
+//					List<String> tmpbkinfo = Splitter.on("").omitEmptyStrings().splitToList(line); //内蒙板块|880232|3|1|0|32
+					floatcsvfilename = resultline.toLowerCase().replaceAll("floatcsvfilename", "");
+					floatcsvfilename = floatcsvfilename.substring(1, floatcsvfilename.length()-1);
+				} else if(resultline.toLowerCase().contains("top10csvfilename")) {
+//					resultline.toLowerCase().replaceAll("top10csvfilename", "");
+					top10csvfilename = resultline.toLowerCase().replaceAll("top10csvfilename", "");
+					top10csvfilename = top10csvfilename.substring(1, top10csvfilename.length()-1);
+				}
 			}
-		}
-		if(!execresult) {
-			System.out.println("Refresh GuDong info failed. Error Info: " + result);
-			return stock;
+			if(!execresult) {
+				System.out.println("Refresh GuDong info failed. Error Info: " + result);
+				return stock;
+			}
+		} else {
+			String csvfilepath = sysconfig.getGuDongInfoCsvFile();
+			floatcsvfilename = csvfilepath +  "/" + downloededgudongdatafilenamepattern[0];
+			top10csvfilename  = csvfilepath + "/" + downloededgudongdatafilenamepattern[1];
+			
+			floatcsvfilename = floatcsvfilename.replace("XXXXXX", stock.getMyOwnCode());
+			top10csvfilename = top10csvfilename.replace("XXXXXX", stock.getMyOwnCode());
 		}
 		
-		floatcsvfilename = floatcsvfilename.substring(1, floatcsvfilename.length()-1);
-		top10csvfilename = top10csvfilename.substring(1, top10csvfilename.length()-1);
 		File floatcsvfile = new File(floatcsvfilename);
 		File top10csvfile = new File(top10csvfilename);
 //		String stockcode = stock.getMyOwnCode();
@@ -183,7 +168,7 @@ public class JiGouGuDongDbOperation
 //		File top10csvfile = new File(csvfilepath + "/" + top10csvfilename);
 		if (  (!floatcsvfile.exists()  || !floatcsvfile.canRead() ) && (!top10csvfile.exists()  || !top10csvfile.canRead())   ) {  
 				logger.info(stock.getMyOwnCode() + "股东文件不全或者读取错误。没有导入任何数据。");
-				return stock;
+				return stock;   
 		}
 
 		readGuDongCsvFile (stock,  floatcsvfilename, "liutong", jigou);
@@ -209,7 +194,7 @@ public class JiGouGuDongDbOperation
 	 */
 	private void readGuDongCsvFile (BkChanYeLianTreeNode stock, String gdfile ,String ggtype,Set<String> jigou)
 	{
-		System.out.print("Get Gudong info from" + gdfile);
+		System.out.print("Get Gudong info from " + gdfile + "\n");
 		LocalDate[] currecorddate = getCurrentStockGuDongDateRange (stock, ggtype);
 		if(currecorddate[0] == null)
 			currecorddate[0] = LocalDate.parse("3990-01-01");

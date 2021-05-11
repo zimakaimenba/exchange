@@ -73,9 +73,10 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	if(column_bg_kw0 != null)
         		background = rendererOperationsForColumnBackgroundHighLight (node,column_bg_kw0, column_bg_color0);
         	
+        	String column_kw0  = prop.getProperty ("0column_info_keyword");
         	String column_info_valueformat = prop.getProperty ("0column_info_valueformat"); 
         	if(column_info_valueformat != null)
-        		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_info_valueformat);
+        		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_kw0, column_info_valueformat);
         	
 //        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
         	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
@@ -94,9 +95,10 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	if(column_bg_kw1 != null)
         		background = rendererOperationsForColumnBackgroundHighLight (node,column_bg_kw1, column_bg_color1);
         	
+        	String column_kw1  = prop.getProperty ("1column_info_keyword");
         	column_info_valueformat = prop.getProperty ("1column_info_valueformat"); 
         	if(column_info_valueformat != null)
-        		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_info_valueformat);
+        		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_kw1,column_info_valueformat);
 
 //        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
         	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
@@ -114,9 +116,10 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	if(column_bg_kw2 != null)
         		background = rendererOperationsForColumnBackgroundHighLight (node,column_bg_kw2, column_bg_color2);
         	
+        	String column_kw2  = prop.getProperty ("2column_info_keyword");
         	column_info_valueformat = prop.getProperty ("2column_info_valueformat"); 
         	if(column_info_valueformat != null)
-        		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_info_valueformat);
+        		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_kw2,column_info_valueformat);
         	
 //        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
         	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
@@ -134,9 +137,10 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	if(column_bg_kw3 != null)
         		background = rendererOperationsForColumnBackgroundHighLight (node,column_bg_kw3, column_bg_color3);
         	
+        	String column_kw3  = prop.getProperty ("3column_info_keyword");
         	column_info_valueformat = prop.getProperty ("3column_info_valueformat"); 
         	if(column_info_valueformat != null)
-        		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_info_valueformat);
+        		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_kw3,column_info_valueformat);
         	
 //        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
         	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
@@ -154,9 +158,10 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	if(column_bg_kw4 != null)
         		background = rendererOperationsForColumnBackgroundHighLight (node,column_bg_kw4, column_bg_color4);
         	
+        	String column_kw4  = prop.getProperty ("4column_info_keyword");
         	column_info_valueformat = prop.getProperty ("4column_info_valueformat"); 
         	if(column_info_valueformat != null)
-        		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_info_valueformat);
+        		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_kw4,column_info_valueformat);
         	
 //        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
         	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
@@ -174,9 +179,10 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	if(column_bg_kw5 != null)
         		background = rendererOperationsForColumnBackgroundHighLight (node,column_bg_kw5, column_bg_color5);
         	
+        	String column_kw5  = prop.getProperty ("5column_info_keyword");
         	column_info_valueformat = prop.getProperty ("5column_info_valueformat"); 
         	if(column_info_valueformat != null)
-        		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_info_valueformat);
+        		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_kw5, column_info_valueformat);
         	
 //        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
         	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
@@ -194,9 +200,10 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	if(column_bg_kw6 != null)
         		background = rendererOperationsForColumnBackgroundHighLight (node,column_bg_kw6, column_bg_color6);
         	
+        	String column_kw6  = prop.getProperty ("6column_info_keyword");
         	column_info_valueformat = prop.getProperty ("6column_info_valueformat"); 
         	if(column_info_valueformat != null)
-        		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_info_valueformat);
+        		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_kw6,column_info_valueformat);
         	
 //        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
         	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
@@ -214,9 +221,10 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	if(column_bg_kw7 != null)
         		background = rendererOperationsForColumnBackgroundHighLight (node,column_bg_kw7, column_bg_color7);
         	
+        	String column_kw7  = prop.getProperty ("7column_info_keyword");
         	column_info_valueformat = prop.getProperty ("7column_info_valueformat"); 
         	if(column_info_valueformat != null)
-        		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_info_valueformat);
+        		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_kw7,column_info_valueformat);
 
 //        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
         	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
@@ -234,9 +242,10 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	if(column_bg_kw8 != null)
         		background = rendererOperationsForColumnBackgroundHighLight (node,column_bg_kw8, column_bg_color8);
         	
+        	String column_kw8  = prop.getProperty ("8column_info_keyword");
         	column_info_valueformat = prop.getProperty ("8column_info_valueformat"); 
         	if(column_info_valueformat != null)
-        		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_info_valueformat);
+        		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_kw8,column_info_valueformat);
 
 //        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
         	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
@@ -254,9 +263,10 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	if(column_bg_kw9 != null)
         		background = rendererOperationsForColumnBackgroundHighLight (node,column_bg_kw9, column_bg_color9);
         	
+        	String column_kw9  = prop.getProperty ("9column_info_keyword");
         	column_info_valueformat = prop.getProperty ("9column_info_valueformat"); 
         	if(column_info_valueformat != null)
-        		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_info_valueformat);
+        		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_kw9,column_info_valueformat);
 
 //        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
         	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
@@ -275,9 +285,10 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	if(column_bg_kw10 != null)
         		background = rendererOperationsForColumnBackgroundHighLight (node,column_bg_kw10, column_bg_color10);
         	
+        	String column_kw10  = prop.getProperty ("10column_info_keyword");
         	column_info_valueformat = prop.getProperty ("10column_info_valueformat"); 
         	if(column_info_valueformat != null)
-        		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_info_valueformat);
+        		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_kw10,column_info_valueformat);
 
 //        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
         	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
@@ -324,30 +335,52 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 	    return textbackgroundforegroundfont;
 	}
 	
-	private String rendererOperationsForColumnInfoFormat(TDXNodes node, Object value,	String column_info_valueformat)
+	private String rendererOperationsForColumnInfoFormat(TDXNodes node, Object value,	String column_keyword, String column_info_valueformat)
 	{
-		if(!column_info_valueformat.equalsIgnoreCase("PERCENT"))
-			return "";
-		
 		if(value == null)
 			return null;
+		String valuepect = "";
+		switch (column_keyword) {
+		case "CjeZbGrowRate":
+			if(!column_info_valueformat.equalsIgnoreCase("PERCENT"))
+				return "";
+			 //用百分比显示
+	    	try {
+	    		 double formatevalue = NumberFormat.getInstance(Locale.CHINA).parse(value.toString()).doubleValue();
+	    		 
+	    		 NumberFormat percentFormat = NumberFormat.getPercentInstance(Locale.CHINA);
+	    	     percentFormat.setMinimumFractionDigits(2);
+	        	 valuepect = percentFormat.format (formatevalue );
+	    	} catch (java.lang.NullPointerException e) {		valuepect = "";
+	    	}catch (java.lang.NumberFormatException e)  { e.printStackTrace();
+	    	} catch (ParseException e) {e.printStackTrace();}
+			break;
+		case "BanKuaiChengJiaoErGongXian":
+			if(!column_info_valueformat.equalsIgnoreCase("PERCENT"))
+				return "";
+			 //用百分比显示
+	    	try {
+	    		 double formatevalue = NumberFormat.getInstance(Locale.CHINA).parse(value.toString()).doubleValue();
+	    		 
+	    		 NumberFormat percentFormat = NumberFormat.getPercentInstance(Locale.CHINA);
+	    	     percentFormat.setMinimumFractionDigits(2);
+	        	 valuepect = percentFormat.format (formatevalue );
+	    	} catch (java.lang.NullPointerException e) {		valuepect = "";
+	    	}catch (java.lang.NumberFormatException e)  { e.printStackTrace();
+	    	} catch (ParseException e) {e.printStackTrace();}
+			break;
+		case "ChenJiaoEr":
+			if(!column_info_valueformat.equalsIgnoreCase("REDUCT"))
+				return "";
+			Double cje = Double.parseDouble(value.toString()) / 100000000;
+			double count = Math.pow(10, 2);
+	    	try {
+	    				Double output = Math.round(  (Double)cje * count) / count;
+	    				valuepect = output.toString();
+	    	} catch ( java.lang.ClassCastException e) {	e.printStackTrace(); valuepect ="";}
+			break;
+		}	
 		
-		if(value.equals("??"))
-			return (String) value;
-		
-		 //用百分比显示
-    	String valuepect = "";
-    	try {
-    		 double formatevalue = NumberFormat.getInstance(Locale.CHINA).parse(value.toString()).doubleValue();
-    		 
-    		 NumberFormat percentFormat = NumberFormat.getPercentInstance(Locale.CHINA);
-    	     percentFormat.setMinimumFractionDigits(2);
-        	 valuepect = percentFormat.format (formatevalue );
-    	} catch (java.lang.NullPointerException e) {
-    		valuepect = "";
-    	}catch (java.lang.NumberFormatException e)  { e.printStackTrace();
-    	} catch (ParseException e) {e.printStackTrace();}
-    	
     	return valuepect;
 	}
 	/*

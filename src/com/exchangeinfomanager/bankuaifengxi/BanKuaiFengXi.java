@@ -2093,13 +2093,6 @@ public class BanKuaiFengXi extends JDialog
 		    }
 		});
 
-		
-		tableGuGuZhanBiInBk.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) 
-			{
-			}
-		});
 		/*
 		 * 
 		 */

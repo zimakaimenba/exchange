@@ -16,7 +16,9 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
+import com.exchangeinfomanager.bankuaifengxi.bankuaigegutable.BanKuaiGeGuBasicTableModel;
 import com.exchangeinfomanager.gudong.JiGouService;
+import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.google.common.base.Strings;
 
 import net.miginfocom.swing.MigLayout;
@@ -29,6 +31,8 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JSeparator;
+
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -239,12 +243,33 @@ public class ExtraExportConditionsPnl extends JPanel
 			}
 
 				JPanel myPanel = new JPanel();
-			      myPanel.setPreferredSize(new Dimension(600, 150));
-			      myPanel.setLayout(new FlowLayout());
+			      myPanel.setPreferredSize(new Dimension(600, 250));
+			      myPanel.setLayout(new BorderLayout());
 			      JScrollPane sclpaneJtable = new JScrollPane();
 				  sclpaneJtable.setViewportView(tblpred);
-			      myPanel.add(sclpaneJtable);
+			      myPanel.add(sclpaneJtable,BorderLayout.CENTER);
+			      
+			      JTextArea formulainfo = new JTextArea ();
+			      formulainfo.setEnabled(false);		
+			      formulainfo.setLineWrap(true);
+			      formulainfo.setForeground(Color.BLACK);
+			      formulainfo.setFont(new Font("Monospaced", Font.BOLD, 16));
+			      JScrollPane sclpaneformula = new JScrollPane();
+			      sclpaneformula.setPreferredSize(new Dimension(600, 150));
+			      sclpaneformula.setViewportView(formulainfo);
+			      myPanel.add(sclpaneformula,BorderLayout.SOUTH);
+			      
+			      tblpred.addMouseListener(new MouseAdapter() {
+						@Override
+						public void mouseClicked(MouseEvent arg0) {
+							int row = tblpred.getSelectedRow();
+							if(row <0) return;
 
+							String sltformula = (String) ((DefaultTableModel)tblpred.getModel()).getValueAt(row, 0);
+							formulainfo.setText(sltformula);
+						}
+					});
+			      
 			      int result = JOptionPane.showConfirmDialog(null, myPanel, "预定义公式", JOptionPane.OK_CANCEL_OPTION);
 			      if (result == JOptionPane.OK_OPTION) {
 			    	  int row = tblpred.getSelectedRow();
@@ -502,7 +527,7 @@ public class ExtraExportConditionsPnl extends JPanel
 	    		tfldexportformula.setText(  "(" + setting + ")" );
 	    	else
 	    		tfldexportformula.setText( tfldexportformula.getText() +" AND " +  "(" + setting + ")" );
-	    	String tmp = tfldexportformula.getText();
+	    	
 	    	this.cond.setExportConditionFormula (tfldexportformula.getText());
 	    }
 	}

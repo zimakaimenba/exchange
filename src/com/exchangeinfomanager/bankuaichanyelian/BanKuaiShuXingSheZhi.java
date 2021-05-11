@@ -195,7 +195,7 @@ public class BanKuaiShuXingSheZhi extends JPanel
 //		((BanKuai)settingnode).setShowincyltree(!cbxnotshowincyltree.isSelected());
 //		((BanKuai)settingnode).setExportTowWlyFile(!chkbxnotexportwklyfile.isSelected());
 //		((BanKuai)settingnode).setImportBKGeGu(!chbxnotimportgegu.isSelected());
-		
+		 
 		buttonapplybksetting.setEnabled(false);
 		
 	}

@@ -306,11 +306,11 @@ public class BanKuaiDZHDbOperation
 				BanKuai dzhbk = new BanKuai(dzhbkcode,dzhbkname, "DZH");
 //				dzhbk.setSuoShuJiaoYiSuo(rs.getString("指数所属交易所"));
 //				dzhbk.setBanKuaiLeiXing( rs.getString("板块类型描述") );
-//				dzhbk.setExporttogehpi(rs.getBoolean("导出Gephi"));
+				dzhbk.setExporttogehpi(rs.getBoolean("导出Gephi"));
 				dzhbk.setImportdailytradingdata(rs.getBoolean("导入交易数据"));
-//				dzhbk.setShowinbkfxgui(rs.getBoolean("板块分析"));
-//				dzhbk.setShowincyltree(rs.getBoolean("产业链树"));
-//				dzhbk.setExportTowWlyFile(rs.getBoolean("周分析文件"));
+				dzhbk.setShowinbkfxgui(rs.getBoolean("板块分析"));
+				dzhbk.setShowincyltree(rs.getBoolean("产业链树"));
+				dzhbk.setExportTowWlyFile(rs.getBoolean("周分析文件"));
 				dzhbk.setImportBKGeGu(rs.getBoolean("导入板块个股"));
 
 				dzhbkset.add(dzhbk);
@@ -374,10 +374,10 @@ public class BanKuaiDZHDbOperation
 	{
 		String sqlupdatestat = "UPDATE 大智慧板块列表  SET " +
 							" 导入交易数据=" + importdailydata  + "," +
-//							" 导出Gephi=" + exporttogephi +  ","  +
+							" 导出Gephi=" + exporttogephi +  ","  +
 							" 板块分析=" + showinbkfx +  ","  +
-//							" 产业链树=" + showincyltree + ","  +
-//							" 周分析文件 = " + exporttowkfile + ","  +
+							" 产业链树=" + showincyltree + ","  +
+							" 周分析文件 = " + exporttowkfile + ","  +
 							" 导入板块个股 = " + importbkgg +
 							" WHERE 板块ID='" + node.getMyOwnCode() + "'"
 							;
