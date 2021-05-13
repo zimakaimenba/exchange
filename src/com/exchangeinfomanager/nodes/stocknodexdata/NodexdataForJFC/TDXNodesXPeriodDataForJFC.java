@@ -1,8 +1,11 @@
 package com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC;
 
 import java.math.BigDecimal;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -75,6 +78,9 @@ import com.udojava.evalex.Expression;
 		
 		this.nodeamoma5 = new TimeSeries(nodeperiodtype);
 		this.nodeamoma10 = new TimeSeries(nodeperiodtype);
+		
+		this.periodhighestzhangdiefu = new TimeSeries(nodeperiodtype);
+		this.periodlowestzhangdiefu = new TimeSeries(nodeperiodtype);
 	}
 	
 	private Logger logger = Logger.getLogger(TDXNodesXPeriodDataForJFC.class);
@@ -100,6 +106,9 @@ import com.udojava.evalex.Expression;
 	protected TimeSeries nodeamoma120;
 	protected TimeSeries nodeamoma250;
 	
+	private  TimeSeries periodhighestzhangdiefu; //最高涨幅
+	private  TimeSeries periodlowestzhangdiefu; //最高涨幅
+	
 	public void addNewXPeriodData (NodeGivenPeriodDataItem kdata)
 	{
 		try {
@@ -121,6 +130,17 @@ import com.udojava.evalex.Expression;
 //			logger.debug(kdata.getMyOwnCode() + kdata.getJFreeChartPeriod( super.getNodeperiodtype() ) + "锟斤拷锟斤拷锟窖撅拷锟斤拷锟节ｏ拷" + kdata.getJFreeChartPeriod( super.getNodeperiodtype() ).getStart() + "," + kdata.getJFreeChartPeriod( super.getNodeperiodtype() ).getEnd() + ")");
 		}
 		
+		try {	
+			periodhighestzhangdiefu.setNotify(false);
+			if( kdata.getPeriodHighestZhangDieFu() != null && kdata.getPeriodHighestZhangDieFu() != 0)
+				periodhighestzhangdiefu.add(kdata.getJFreeChartPeriod(super.getNodeperiodtype()),kdata.getPeriodHighestZhangDieFu(),false);
+		} catch (org.jfree.data.general.SeriesException e) {}
+		try {	
+			periodlowestzhangdiefu.setNotify(false);
+			if( kdata.getPeriodLowestZhangDieFu() != null && kdata.getPeriodLowestZhangDieFu() != 0)
+				periodlowestzhangdiefu.add(kdata.getJFreeChartPeriod(super.getNodeperiodtype()), kdata.getPeriodLowestZhangDieFu(),false);
+		} catch (org.jfree.data.general.SeriesException e) {}
+
 		super.addNewXPeriodData(kdata);
 	}
 	
@@ -187,6 +207,9 @@ import com.udojava.evalex.Expression;
 		try {nodeamoma60.clear();}  catch (java.lang.NullPointerException e) {}
 		try {nodeamoma120.clear();}  catch (java.lang.NullPointerException e) {}
 		try {nodeamoma250.clear();}  catch (java.lang.NullPointerException e) {}
+		
+		try {periodhighestzhangdiefu.clear();} catch (java.lang.NullPointerException e) {}
+		try {periodlowestzhangdiefu.clear();} catch (java.lang.NullPointerException e) {}
 	}
 	/*
 	 * 
@@ -271,42 +294,6 @@ import com.udojava.evalex.Expression;
 		int itemcount = this.nodeohlc.getItemCount();
 		String nodeperiod = this.getNodeperiodtype();
 		
-//		RegularTimePeriod curperiod = null;
-//		if(nodeperiod.equals(NodeGivenPeriodDataItem.WEEK)) { 
-////			LocalDate expectdate = requireddate.plus(difference,ChronoUnit.WEEKS);
-//			java.sql.Date lastdayofweek = java.sql.Date.valueOf(requireddate);
-//			curperiod = new org.jfree.data.time.Week (lastdayofweek);
-//		} else if(nodeperiod.equals(NodeGivenPeriodDataItem.DAY)) {
-////			LocalDate expectdate = requireddate.plus(difference,ChronoUnit.DAYS);
-//			requireddate = super.adjustDate(requireddate); //make sure always check Monday to Friday
-//			java.sql.Date lastdayofweek = java.sql.Date.valueOf(requireddate);
-//			curperiod = new org.jfree.data.time.Day (lastdayofweek);
-//		}  else if(nodeperiod.equals(NodeGivenPeriodDataItem.MONTH)) {
-//		}
-//
-//		Integer curindex = null;
-//		for(int i=0;i<itemcount;i++) {
-//			RegularTimePeriod dataitemp = this.nodeohlc.getPeriod(i);
-//			if(dataitemp.equals(curperiod) )
-//				curindex = i ;
-//		}
-//		
-//		if(curindex == null)
-//			return null;
-//
-//		try {
-//			Integer requiredindex = curindex + difference;
-////			RegularTimePeriod reqdataitemp = this.nodeohlc.getPeriod(requiredindex);
-//			OHLCItem result = (OHLCItem)this.nodeohlc.getDataItem(requiredindex );
-//			if(result != null) {
-////				RegularTimePeriod ep = result.getPeriod();
-//				return result.getPeriod();
-//			}
-//		} catch ( java.lang.IndexOutOfBoundsException e) {
-//			return null;
-//		}
-		
-		
 		RegularTimePeriod period = null;
 		if(nodeperiod.equals(NodeGivenPeriodDataItem.WEEK)) { 
 			LocalDate expectdate = requireddate.plus(difference,ChronoUnit.WEEKS);
@@ -327,17 +314,6 @@ import com.udojava.evalex.Expression;
 			if(dataitemp.equals(period) ) {
 				curindex = i;
 				return period;
-//				try {
-//					OHLCItem result = (OHLCItem)this.nodeohlc.getDataItem(curindex);
-//					if(result != null) {
-//						RegularTimePeriod ep = result.getPeriod();
-//						return result.getPeriod();
-//					}
-//				} catch ( java.lang.IndexOutOfBoundsException e) {
-//					return null;
-//				}
-				
-//				break;
 			}
 		}
 		
@@ -473,12 +449,6 @@ import com.udojava.evalex.Expression;
 			
 			double result = (highest - startclose) / startclose + this.getSpecificOHLCZhangDieFu(requiredstart, 0);
 			return result;
-			
-//			if(highest > startclose) { //
-//				double result = (highest - startclose) / startclose + this.getSpecificOHLCZhangDieFu(requiredstart, 0);
-//				return result;
-//			} else //头一天就是最高值
-//				return this.getSpecificOHLCZhangDieFu(requiredstart, 0);
 			
 		} else { //start 和 end是同一天
 			return this.getSpecificOHLCZhangDieFu(requiredstart, 0);
@@ -1664,65 +1634,6 @@ import com.udojava.evalex.Expression;
 			 if(maformula1 == null || maformula1.isEmpty())
 				 return false;
 			String maformula = maformula1.toUpperCase();
-//			try{
-//				if(maformula.contains("\'MA250\'")  ) {
-//					if (maresult[6] != null)
-//						maformula = maformula.replace("\'MA250\'",  maresult[6].toString() ) ;
-//					else
-//						maformula = maformula.replace("\'MA250\'",  String.valueOf( -10000000000.0 ) ) ;
-//				}
-//			} catch (java.lang.NullPointerException e) {e.printStackTrace();	}
-//			
-//			try {
-//		    if(maformula.contains("\'MA120\'") ) {
-//		    	if (maresult[5] != null)
-//		    		maformula = maformula.replace("\'MA120\'",  maresult[5].toString() ) ;
-//		    	else
-//					maformula = maformula.replace("\'MA120\'",  String.valueOf( -10000000000.0 ) ) ;
-//		    }
-//			} catch (java.lang.NullPointerException e) {e.printStackTrace();}
-//			
-//			try {
-//		    if(maformula.contains("\'MA60\'")  ) {
-//		    	if(maresult[4] != null)
-//		    		maformula = maformula.replace("\'MA60\'",  maresult[4].toString() ) ;
-//		    	else
-//					maformula = maformula.replace("\'MA60\'",  String.valueOf( -10000000000.0 ) ) ;
-//		    }
-//			} catch (java.lang.NullPointerException e) {e.printStackTrace();}
-//		    	
-//		    try {
-//		    if(maformula.contains("\'MA30\'") ) {
-//		    	if(maresult[3] != null)
-//		    		maformula = maformula.replace("\'MA30\'",  maresult[3].toString() ) ;
-//		    	else
-//					maformula = maformula.replace("\'MA30\'",  String.valueOf( -10000000000.0 ) ) ;
-//		    }
-//		    } catch (java.lang.NullPointerException e) {e.printStackTrace();}
-//		    try {
-//		    if(maformula.contains("\'MA20\'")  ) {
-//		    	if(maresult[2] != null)
-//		    		maformula = maformula.replace("\'MA20\'",  maresult[2].toString() ) ;
-//		    	else
-//					maformula = maformula.replace("\'MA20\'",  String.valueOf( -10000000000.0 ) ) ;
-//		    }
-//		    } catch (java.lang.NullPointerException e) {e.printStackTrace();}
-//		    try {
-//		    if(maformula.contains("\'MA10\'")  ) {
-//		    	if(maresult[1] != null)
-//		    		maformula = maformula.replace("\'MA10\'",  maresult[1].toString() ) ;
-//		    	else
-//					maformula = maformula.replace("\'MA10\'",  String.valueOf( -10000000000.0 ) ) ;
-//		    }
-//		    } catch (java.lang.NullPointerException e) {e.printStackTrace();}
-//		    try {
-//		    if(maformula.contains("\'MA5\'") ) {
-//		    	if(maresult[0] != null)
-//		    		maformula = maformula.replace("\'MA5\'",  maresult[0].toString() ) ;
-//		    	else
-//					maformula = maformula.replace("\'MA5\'",  String.valueOf( -10000000000.0 ) ) ;
-//		    }
-//		    } catch (java.lang.NullPointerException e) {e.printStackTrace();}
 			try{
 				if(maformula.contains("MA250")  ) {
 					if (maresult[6] != null)
@@ -1798,53 +1709,10 @@ import com.udojava.evalex.Expression;
 			    else 
 			    	return true;
 		    } catch (com.udojava.evalex.Expression.ExpressionException e) {	e.printStackTrace();	return false;		    }
-		    
-		    
-		    
-//			ScriptEngine engine = new ScriptEngineManager().getEngineByName("JavaScript");
-//		      Map<String, Object> vars = new HashMap<String, Object>();
-//		      vars.put("x", close);
-////		      vars.put("y", 2);
-////		      vars.put("z", 1);
-//	      try {
-//	    	  Boolean result = (Boolean)engine.eval(maformula, new SimpleBindings(vars));
-//			  return result;
-//			} catch (ScriptException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//				return null;
-//			}
-	      
-
 		}
 	 /*
 	  * 
 	  */
-//	 public Boolean checkMAsRelationShip (String maformula, LocalDate requireddate, int difference)
-//	 {
-//		 DayOfWeek dayOfWeek = requireddate.getDayOfWeek();
-//		 int dayOfWeekIntValue = dayOfWeek.getValue();
-//		 OHLCItem ohlcdata = null;
-//		 for(int i = 0;i < dayOfWeekIntValue;i++) { //日线有可能当日是停牌的，如果停牌，就找到本周有数据的最新天
-//			 	ohlcdata = this.getSpecificDateOHLCData (requireddate,0-i);
-//		    	if(ohlcdata != null) {
-//		    		LocalDate expectdate = requireddate.plus(0-i,ChronoUnit.DAYS);
-//					expectdate = super.adjustDate(expectdate);
-//					requireddate = expectdate;
-//		    		break;
-//		    	}
-//		 }
-//		    
-//		 if (ohlcdata != null) {
-//		    	Double close = (Double)ohlcdata.getCloseValue();
-//		    	Double[] maresult = this.getNodeOhlcMA(requireddate, 0);
-//			    Boolean result = checkCloseComparingToMAsettings (null, maresult,maformula);
-//			    if( result != null )
-//			    	return result;
-//		 }
-//		 
-//		 return null;
-//	 }
 	 public Object getNodeDataByKeyWord( String keyword, LocalDate date,  String... maformula)
 	 {
 		 Object value = null;
@@ -1893,6 +1761,9 @@ import com.udojava.evalex.Expression;
 			 Double curclose = curohlc.getCloseValue();
 			 value = curclose;
 			 break;
+		 case "DailyZhangDieFuRangeInWeek":
+			 Double wkhighzhangfu = this.getSpecificTimeHighestZhangDieFu(date, 0);
+			 value = wkhighzhangfu;
 		 }
 		 return value;
 	 }
@@ -2312,6 +2183,122 @@ import com.udojava.evalex.Expression;
 				return true;
 			else 
 				return false;
+		}
+		
+		public TimeSeries getPeriodHighestZhangDieFuData ()
+		{
+			return this.periodhighestzhangdiefu;
+		}
+		public TimeSeries getPeriodLowestZhangDieFuData ()
+		{
+			return this.periodlowestzhangdiefu;
+		} 
+		public void addPeriodHighestZhangDieFu (LocalDate requireddate,Double zhangfu)
+		{
+			try {	
+				periodhighestzhangdiefu.setNotify(false);
+				
+				org.jfree.data.time.Week recordwk = null;
+				try {
+					DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
+					java.sql.Date sqldate = new java.sql.Date(format.parse(requireddate.toString()).getTime());
+					recordwk = new org.jfree.data.time.Week (sqldate);
+				} catch (ParseException e) {
+					e.printStackTrace();
+					return ;
+				}
+				
+				Double curzhangfu = this.getSpecificTimeHighestZhangDieFu(requireddate, 0);
+				if(curzhangfu == null  ){
+					try{
+						periodhighestzhangdiefu.add(recordwk, zhangfu, false );
+					} catch(Exception e) {
+						e.printStackTrace();
+						return;
+					}
+					return;
+				}
+				
+				if( CommonUtility.round(curzhangfu,6) != CommonUtility.round(zhangfu,6)) {
+					try{
+						this.periodhighestzhangdiefu.delete(recordwk);
+						periodhighestzhangdiefu.add(recordwk, zhangfu, false );
+					} catch(Exception e) {
+						e.printStackTrace();
+						return;
+					}
+					return;
+				}
+			} catch (org.jfree.data.general.SeriesException e) {}
+		}
+		public void addPeriodLowestZhangDieFu (LocalDate requireddate,Double diefu)
+		{
+			try {	
+				periodlowestzhangdiefu.setNotify(false);
+				
+				org.jfree.data.time.Week recordwk = null;
+				try {
+					DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
+					java.sql.Date sqldate = new java.sql.Date(format.parse(requireddate.toString()).getTime());
+					recordwk = new org.jfree.data.time.Week (sqldate);
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+				
+				Double curzhangfu = this.getSpecificTimeLowestZhangDieFu(requireddate, 0);
+				if(curzhangfu == null  ){
+					try{
+						periodlowestzhangdiefu.add(recordwk, diefu, false );
+					} catch(Exception e) {
+						e.printStackTrace();
+						return;
+					}
+					return;
+				}
+				
+				if( CommonUtility.round(curzhangfu,6) != CommonUtility.round(diefu,6)) {
+					try{
+						this.periodlowestzhangdiefu.delete(recordwk);
+						periodlowestzhangdiefu.add(recordwk, diefu, false );
+					} catch(Exception e) {
+						e.printStackTrace();
+						return;
+					}
+					return;
+				}
+			} catch (org.jfree.data.general.SeriesException e) {}
+		}
+		
+		/*
+		 * 得到某个时期的涨跌幅  DailyZhangDieFuRangeInWeek
+		 */
+		public Double getSpecificTimeHighestZhangDieFu (LocalDate requireddate,int difference)
+		{
+			RegularTimePeriod period = getJFreeChartFormateTimePeriodForAMO(requireddate,difference);
+			if(period == null)
+				return null;
+			
+			TimeSeriesDataItem curhighzdfrecord = periodhighestzhangdiefu.getDataItem(period);
+			Double curhzdf = null ;
+			try {curhzdf = curhighzdfrecord.getValue().doubleValue();
+			} catch (Exception e) {return null;}
+			
+			return curhzdf;
+		}
+		/*
+		 * 
+		 */
+		public Double getSpecificTimeLowestZhangDieFu (LocalDate requireddate,int difference)
+		{
+			RegularTimePeriod period = getJFreeChartFormateTimePeriodForAMO(requireddate,difference);
+			if(period == null)
+				return null;
+			TimeSeriesDataItem curlowzdfrecord = periodlowestzhangdiefu.getDataItem(period);
+			Double curlzdf = null ;
+			try { curlzdf = curlowzdfrecord.getValue().doubleValue();
+			} catch (Exception e) {return null;}
+			
+			return curlzdf;
 		}
 		
 		

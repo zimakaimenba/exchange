@@ -438,8 +438,7 @@ public class BanKuaiGeGuMatchCondition implements Cloneable
 			this.exportST = exportST;
 		}
 
-		public void setSettingZhangFu(Double zhangfumin1, Double zhangfumax1) 
-		{
+		public void setSettingDailyZhangDieFu(Double zhangfumin1, Double zhangfumax1) 	{
 			if (zhangfumax1 != null)
 				this.zhangfumax = zhangfumax1/100;
 			else
@@ -452,25 +451,19 @@ public class BanKuaiGeGuMatchCondition implements Cloneable
 			
 			bkfxhighlightvaluesoftableslisteners.forEach(l -> l.BanKuaiGeGuMatchConditionValuesChanges( this ) );
 		}
-		public Double getSettingZhangFuMax() 
-		{
+		public Double getSettingDailyZhangDieFuMax() {
 			return this.zhangfumax ;
 		}
 
-		public Double getSettingZhangFuMin() 
-		{
+		public Double getSettingDailyZhangDieFuMin() {
 			return this.zhangfumin;
 		}
 
-		public void setExportOnlyYellowSignBkStk(boolean export) 
-		{
+		public void setExportOnlyYellowSignBkStk(boolean export) 	{
 			this.onlyexportyellowsignbkstk = export;
-			
 		}
-		public Boolean shouldExportOnlyYellowSignBkStk() 
-		{
+		public Boolean shouldExportOnlyYellowSignBkStk() {
 			return this.onlyexportyellowsignbkstk ;
-			
 		} 
 		private Double setttinglastwkcjezbgrowingratemin;
 		private Double setttinglastwkcjezbgrowingratemax;

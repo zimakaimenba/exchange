@@ -231,7 +231,7 @@ public  abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 			     	  Double cjlchangegrowthrate = nodexdatawk.getChenJiaoLiangChangeGrowthRateOfSuperBanKuaiOnDailyAverage(this.curbk,showdate,0);// fxrecord.getGgbkcjegrowthzhanbi();
 			     	  value = cjlchangegrowthrate;
 			     	  break;	
-		       case "highlevelpanxurank" :
+		       case "HighLevelPaiXuRank" :
 			     	  Integer paiming = this.entryList.indexOf(node) + 1;
 			       	  value = paiming;
 			       	 break;  	  
@@ -239,7 +239,7 @@ public  abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 			     	  Integer nCjeZbDpMinWk = nodexdatawk.getChenJiaoErZhanBiMinestWeekOfSuperBanKuaiInSpecificPeriod(showdate,0,15);
 			       	  value = nCjeZbDpMinWk;
 			       	 break;
-		       case "quanzhonginbankuai" :
+		       case "QuanZhongInBanKuai" :
 			     	  Integer stockweight =  ((BanKuai)curbk).getGeGuSuoShuBanKuaiWeight( node.getMyOwnCode() );
 				        	try {
 				        		value = (Integer)stockweight;

@@ -227,7 +227,7 @@ public class BkfxHightLightPnl extends JPanel {
 				this.add(tfldparsedfile);
 				
 				refreshMainBoardHightLight(ckboxparsefile);
-			} else {
+			} else { //ÆäËû
 				JCheckBox ckbxhighlight = new JCheckBox(name);
 				ckbxhighlight.setName(keyword);
 				if(color != null)
@@ -481,7 +481,7 @@ public class BkfxHightLightPnl extends JPanel {
 	{
 		String keyword = ckbxhighlight.getName();
 		switch (keyword) {
-		case "Dayujunxian":
+		case "CLOSEVSMA":
 			JTextField txtfldma = getHighlightTextField(keyword);
 			if(ckbxhighlight.isSelected() ) 
 				globeexpc.setSettingMaFormula(txtfldma.getText());
@@ -533,7 +533,7 @@ public class BkfxHightLightPnl extends JPanel {
 				globeexpc.setSettingDpMinWk (null);
 			
 			break;
-		case "AverageCjeMaxWk":
+		case "AverageChenJiaoErMaxWeek" :
 			JTextField txtfldAverageCjeMaxWk = getHighlightTextField(keyword);
 			if(ckbxhighlight.isSelected() ) 
 				globeexpc.setSettingChenJiaoErMaxWk(  Integer.parseInt( txtfldAverageCjeMaxWk.getText()) );
@@ -558,7 +558,7 @@ public class BkfxHightLightPnl extends JPanel {
 			}
 			
 			break;
-		case "ZhangDieFu":
+		case "DailyZhangDieFuRangeInWeek":
 			Double zdfmin = null; Double zdfmax = null;
 			if(ckbxhighlight.isSelected() ) {
 				JTextField tfldzhangfumin = getHighlightTextField(keyword + "MIN");
@@ -569,7 +569,7 @@ public class BkfxHightLightPnl extends JPanel {
 					zdfmax = Double.parseDouble( tfldzhangfumax.getText() );
 			}
 			
-			globeexpc.setSettingZhangFu (zdfmin, zdfmax );
+			globeexpc.setSettingDailyZhangDieFu (zdfmin, zdfmax );
 			break;
 		}
 		
@@ -578,7 +578,7 @@ public class BkfxHightLightPnl extends JPanel {
 	{
 		String keyword = ckbxhighlight.getName() ;
 		switch (keyword) {
-		case "GuJia": 
+		case "GuJiaCLOSE": 
 			tfldextramin.setEnabled(true); tfldextramax.setEnabled(true);
 			if(this.globeexpc.getSettingSotckPriceMax() == null || this.globeexpc.getSettingSotckPriceMax() >100000) {
 					tfldextramax.setText("");
@@ -626,7 +626,7 @@ public class BkfxHightLightPnl extends JPanel {
 	{
 		String keyword = ckbxhighlight.getName() ;
 		switch (keyword) {
-		case "GuJia":
+		case "GuJiaCLOSE":
 			Double pricemin = null; Double pricemax = null;
 			if(ckbxhighlight.isSelected() ) {
 				if(!Strings.isNullOrEmpty(tfldextramin.getText()  ) )  

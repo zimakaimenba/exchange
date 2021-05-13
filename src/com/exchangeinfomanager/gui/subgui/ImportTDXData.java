@@ -898,7 +898,7 @@ public class ImportTDXData extends JDialog {
 	private void initializeGui() 
 	{
 		setTitle("\u540C\u6B65\u901A\u8FBE\u4FE1\u6570\u636E");
-		setBounds(100, 100, 731, 858);
+		setBounds(100, 100, 731, 900);
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		
 		pbarbankuai = new JProgressBar();

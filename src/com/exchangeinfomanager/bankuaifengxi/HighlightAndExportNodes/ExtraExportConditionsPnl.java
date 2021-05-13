@@ -84,6 +84,7 @@ public class ExtraExportConditionsPnl extends JPanel
 	private JButton btnClearFormula;
 	private JButton btnimportsavedformula;
 	private JButton btnedit;
+	private JButton btndailykzhangfu;
 	/**
 	 * Create the panel.
 	 */
@@ -284,6 +285,13 @@ public class ExtraExportConditionsPnl extends JPanel
 					  tfldexportformula.setText( sltformula );
 					  cond.setExportConditionFormula (tfldexportformula.getText());
 			      }
+			}
+		});
+		
+		btndailykzhangfu.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				exportConditionSetting ("DailyZhangDieFuRangeInWeek","ÈÕÕÇ·ùÇø¼ä","%");
 			}
 		});
 		
@@ -599,7 +607,7 @@ btncjezbdpminwk.setEnabled(false);
 		
 		btnfreehsl = new JButton("\u81EA\u7531\u6D41\u901A\u6362\u624B\u7387");
 		
-		btnwkzhangfu = new JButton("\u5468\u6DA8\u5E45");
+		btnwkzhangfu = new JButton("\u6DA8\u5E45");
 		
 		btngujia = new JButton("\u80A1\u4EF7");
 		
@@ -638,6 +646,8 @@ btncjezbdpminwk.setEnabled(false);
 		JScrollPane scrollPane = new JScrollPane();
 		
 		btnedit = new JButton("\u7F16\u8F91");
+		
+		btndailykzhangfu = new JButton("\u5468\u5185\u65E5K\u6DA8\u5E45");
 		GroupLayout groupLayout = new GroupLayout(this);
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
@@ -736,6 +746,8 @@ btncjezbdpminwk.setEnabled(false);
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(btnwkzhangfu)
 							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(btndailykzhangfu)
+							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(btnhsl)
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(btnfreehsl)
@@ -798,7 +810,8 @@ btncjezbdpminwk.setEnabled(false);
 						.addComponent(btnwkzhangfu)
 						.addComponent(btnhsl)
 						.addComponent(btnfreehsl)
-						.addComponent(btnma))
+						.addComponent(btnma)
+						.addComponent(btndailykzhangfu))
 					.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addGroup(groupLayout.createSequentialGroup()

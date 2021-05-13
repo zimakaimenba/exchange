@@ -7,6 +7,7 @@ import java.text.ParseException;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 
@@ -40,6 +41,7 @@ import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.treerelated.NodesTreeRelated;
+import com.google.common.base.Splitter;
 import com.google.common.collect.Range;
 
 import Jama.util.Maths;
@@ -58,240 +60,317 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 	{
 		String valuetext =""; Font font = this.getFont();Color foreground = Color.BLACK, background = Color.white;
 		
-	    String current_column_bg_kw = null;
+	    String current_column_bg_kw = null; String column_info_valueformat ="";
 	    switch (col) {
 	    case 0:
-        	String column_bg_kw0  = prop.getProperty ("0column_background_highlight_keyword");
-        	current_column_bg_kw = column_bg_kw0;
-        	String column_bg_color0  = prop.getProperty ("0column_background_hightlight_color");
-        	
-        	String column_fg_kw0  = prop.getProperty ("0column_foreground_highlight_keyword");
-        	String column_fg_color0  = prop.getProperty ("0column_foreground_hightlight_color");
-        	
-        	if(column_fg_kw0 != null)
-        		foreground = rendererOperationsForColumnForgroundHighLight (node,column_fg_kw0,column_fg_color0);
-        	if(column_bg_kw0 != null)
-        		background = rendererOperationsForColumnBackgroundHighLight (node,column_bg_kw0, column_bg_color0);
-        	
-        	String column_kw0  = prop.getProperty ("0column_info_keyword");
-        	String column_info_valueformat = prop.getProperty ("0column_info_valueformat"); 
-        	if(column_info_valueformat != null)
-        		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_kw0, column_info_valueformat);
-        	
-//        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
-        	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
+	    	Object[] column0rendererresults = getRendererResultsByColumnIndex (node,value,row,col);
+	    	current_column_bg_kw = (String) column0rendererresults[0];
+	    	valuetext = (String) column0rendererresults[1];
+	    	background = (Color)column0rendererresults[2];
+	    	foreground = (Color)column0rendererresults[3];
+	    	font = (Font)column0rendererresults[4];
+	    	
+//        	String column_bg_kw0  = prop.getProperty ("0column_background_highlight_keyword");
+//        	current_column_bg_kw = column_bg_kw0;
+//        	String column_bg_color0  = prop.getProperty ("0column_background_hightlight_color");
+//        	
+//        	String column_fg_kw0  = prop.getProperty ("0column_foreground_highlight_keyword");
+//        	String column_fg_color0  = prop.getProperty ("0column_foreground_hightlight_color");
+//        	
+//        	if(column_fg_kw0 != null)
+//        		foreground = rendererOperationsForColumnForgroundHighLight (node,column_fg_kw0,column_fg_color0);
+//        	if(column_bg_kw0 != null)
+//        		background = rendererOperationsForColumnBackgroundHighLight (node,column_bg_kw0, column_bg_color0);
+//        	
+//        	String column_kw0  = prop.getProperty ("0column_info_keyword");
+//        	column_info_valueformat = prop.getProperty ("0column_info_valueformat"); 
+//        	if(column_info_valueformat != null)
+//        		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_kw0, column_info_valueformat);
+//        	
+////        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
+//        	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
         	
         	break;
         case 1:
-        	String column_bg_kw1  = prop.getProperty ("1column_background_highlight_keyword");
-        	current_column_bg_kw = column_bg_kw1;
-        	String column_bg_color1  = prop.getProperty ("1column_background_hightlight_color");
-        	
-        	String column_fg_kw1  = prop.getProperty ("1column_foreground_highlight_keyword");
-        	String column_fg_color1  = prop.getProperty ("1column_foreground_hightlight_color");
-        	
-        	if(column_fg_kw1 != null)
-        		foreground = rendererOperationsForColumnForgroundHighLight (node,column_fg_kw1,column_fg_color1);
-        	if(column_bg_kw1 != null)
-        		background = rendererOperationsForColumnBackgroundHighLight (node,column_bg_kw1, column_bg_color1);
-        	
-        	String column_kw1  = prop.getProperty ("1column_info_keyword");
-        	column_info_valueformat = prop.getProperty ("1column_info_valueformat"); 
-        	if(column_info_valueformat != null)
-        		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_kw1,column_info_valueformat);
-
-//        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
-        	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
+        	Object[] column0rendererresults1 = getRendererResultsByColumnIndex (node,value,row,col);
+	    	current_column_bg_kw = (String) column0rendererresults1[0];
+	    	valuetext = (String) column0rendererresults1[1];
+	    	background = (Color)column0rendererresults1[2];
+	    	foreground = (Color)column0rendererresults1[3];
+	    	font = (Font)column0rendererresults1[4];
+	    	
+//        	String column_bg_kw1  = prop.getProperty ("1column_background_highlight_keyword");
+//        	current_column_bg_kw = column_bg_kw1;
+//        	String column_bg_color1  = prop.getProperty ("1column_background_hightlight_color");
+//        	
+//        	String column_fg_kw1  = prop.getProperty ("1column_foreground_highlight_keyword");
+//        	String column_fg_color1  = prop.getProperty ("1column_foreground_hightlight_color");
+//        	
+//        	if(column_fg_kw1 != null)
+//        		foreground = rendererOperationsForColumnForgroundHighLight (node,column_fg_kw1,column_fg_color1);
+//        	if(column_bg_kw1 != null)
+//        		background = rendererOperationsForColumnBackgroundHighLight (node,column_bg_kw1, column_bg_color1);
+//        	
+//        	String column_kw1  = prop.getProperty ("1column_info_keyword");
+//        	column_info_valueformat = prop.getProperty ("1column_info_valueformat"); 
+//        	if(column_info_valueformat != null)
+//        		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_kw1,column_info_valueformat);
+//
+////        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
+//        	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
         	break;
         case 2:
-        	String column_bg_kw2  = prop.getProperty ("2column_background_highlight_keyword");
-        	current_column_bg_kw = column_bg_kw2;
-        	String column_bg_color2  = prop.getProperty ("2column_background_hightlight_color");
-        	
-        	String column_fg_kw2  = prop.getProperty ("2column_foreground_highlight_keyword");
-        	String column_fg_color2  = prop.getProperty ("2column_foreground_hightlight_color");
-        	
-        	if(column_fg_kw2 != null)
-        		foreground = rendererOperationsForColumnForgroundHighLight (node,column_fg_kw2,column_fg_color2);
-        	if(column_bg_kw2 != null)
-        		background = rendererOperationsForColumnBackgroundHighLight (node,column_bg_kw2, column_bg_color2);
-        	
-        	String column_kw2  = prop.getProperty ("2column_info_keyword");
-        	column_info_valueformat = prop.getProperty ("2column_info_valueformat"); 
-        	if(column_info_valueformat != null)
-        		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_kw2,column_info_valueformat);
-        	
-//        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
-        	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
+        	Object[] column0rendererresults2 = getRendererResultsByColumnIndex (node,value,row,col);
+	    	current_column_bg_kw = (String) column0rendererresults2[0];
+	    	valuetext = (String) column0rendererresults2[1];
+	    	background = (Color)column0rendererresults2[2];
+	    	foreground = (Color)column0rendererresults2[3];
+	    	font = (Font)column0rendererresults2[4];
+	    	
+//        	String column_bg_kw2  = prop.getProperty ("2column_background_highlight_keyword");
+//        	current_column_bg_kw = column_bg_kw2;
+//        	String column_bg_color2  = prop.getProperty ("2column_background_hightlight_color");
+//        	
+//        	String column_fg_kw2  = prop.getProperty ("2column_foreground_highlight_keyword");
+//        	String column_fg_color2  = prop.getProperty ("2column_foreground_hightlight_color");
+//        	
+//        	if(column_fg_kw2 != null)
+//        		foreground = rendererOperationsForColumnForgroundHighLight (node,column_fg_kw2,column_fg_color2);
+//        	if(column_bg_kw2 != null)
+//        		background = rendererOperationsForColumnBackgroundHighLight (node,column_bg_kw2, column_bg_color2);
+//        	
+//        	String column_kw2  = prop.getProperty ("2column_info_keyword");
+//        	column_info_valueformat = prop.getProperty ("2column_info_valueformat"); 
+//        	if(column_info_valueformat != null)
+//        		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_kw2,column_info_valueformat);
+//        	
+////        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
+//        	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
         	break;
         case 3:
-        	String column_bg_kw3  = prop.getProperty ("3column_background_highlight_keyword");
-        	current_column_bg_kw = column_bg_kw3;
-        	String column_bg_color3  = prop.getProperty ("3column_background_hightlight_color");
-        	
-        	String column_fg_kw3  = prop.getProperty ("3column_foreground_highlight_keyword");
-        	String column_fg_color3  = prop.getProperty ("3column_foreground_hightlight_color");
-        	
-        	if(column_fg_kw3 != null)
-        		foreground = rendererOperationsForColumnForgroundHighLight (node,column_fg_kw3,column_fg_color3);
-        	if(column_bg_kw3 != null)
-        		background = rendererOperationsForColumnBackgroundHighLight (node,column_bg_kw3, column_bg_color3);
-        	
-        	String column_kw3  = prop.getProperty ("3column_info_keyword");
-        	column_info_valueformat = prop.getProperty ("3column_info_valueformat"); 
-        	if(column_info_valueformat != null)
-        		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_kw3,column_info_valueformat);
-        	
-//        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
-        	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
+        	Object[] column0rendererresults3 = getRendererResultsByColumnIndex (node,value,row,col);
+	    	current_column_bg_kw = (String) column0rendererresults3[0];
+	    	valuetext = (String) column0rendererresults3[1];
+	    	background = (Color)column0rendererresults3[2];
+	    	foreground = (Color)column0rendererresults3[3];
+	    	font = (Font)column0rendererresults3[4];
+	    	
+//        	String column_bg_kw3  = prop.getProperty ("3column_background_highlight_keyword");
+//        	current_column_bg_kw = column_bg_kw3;
+//        	String column_bg_color3  = prop.getProperty ("3column_background_hightlight_color");
+//        	
+//        	String column_fg_kw3  = prop.getProperty ("3column_foreground_highlight_keyword");
+//        	String column_fg_color3  = prop.getProperty ("3column_foreground_hightlight_color");
+//        	
+//        	if(column_fg_kw3 != null)
+//        		foreground = rendererOperationsForColumnForgroundHighLight (node,column_fg_kw3,column_fg_color3);
+//        	if(column_bg_kw3 != null)
+//        		background = rendererOperationsForColumnBackgroundHighLight (node,column_bg_kw3, column_bg_color3);
+//        	
+//        	String column_kw3  = prop.getProperty ("3column_info_keyword");
+//        	column_info_valueformat = prop.getProperty ("3column_info_valueformat"); 
+//        	if(column_info_valueformat != null)
+//        		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_kw3,column_info_valueformat);
+//        	
+////        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
+//        	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
         	break;
         case 4:
-        	String column_bg_kw4  = prop.getProperty ("4column_background_highlight_keyword");
-        	current_column_bg_kw = column_bg_kw4;
-        	String column_bg_color4  = prop.getProperty ("4column_background_hightlight_color");
-        	
-        	String column_fg_kw4  = prop.getProperty ("4column_foreground_highlight_keyword");
-        	String column_fg_color4  = prop.getProperty ("4column_foreground_hightlight_color");
-        	
-        	if(column_fg_kw4 != null)
-        		foreground = rendererOperationsForColumnForgroundHighLight (node,column_fg_kw4,column_fg_color4);
-        	if(column_bg_kw4 != null)
-        		background = rendererOperationsForColumnBackgroundHighLight (node,column_bg_kw4, column_bg_color4);
-        	
-        	String column_kw4  = prop.getProperty ("4column_info_keyword");
-        	column_info_valueformat = prop.getProperty ("4column_info_valueformat"); 
-        	if(column_info_valueformat != null)
-        		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_kw4,column_info_valueformat);
-        	
-//        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
-        	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
+        	Object[] column0rendererresults4 = getRendererResultsByColumnIndex (node,value,row,col);
+	    	current_column_bg_kw = (String) column0rendererresults4[0];
+	    	valuetext = (String) column0rendererresults4[1];
+	    	background = (Color)column0rendererresults4[2];
+	    	foreground = (Color)column0rendererresults4[3];
+	    	font = (Font)column0rendererresults4[4];
+	    	
+//        	String column_bg_kw4  = prop.getProperty ("4column_background_highlight_keyword");
+//        	current_column_bg_kw = column_bg_kw4;
+//        	String column_bg_color4  = prop.getProperty ("4column_background_hightlight_color");
+//        	
+//        	String column_fg_kw4  = prop.getProperty ("4column_foreground_highlight_keyword");
+//        	String column_fg_color4  = prop.getProperty ("4column_foreground_hightlight_color");
+//        	
+//        	if(column_fg_kw4 != null)
+//        		foreground = rendererOperationsForColumnForgroundHighLight (node,column_fg_kw4,column_fg_color4);
+//        	if(column_bg_kw4 != null)
+//        		background = rendererOperationsForColumnBackgroundHighLight (node,column_bg_kw4, column_bg_color4);
+//        	
+//        	String column_kw4  = prop.getProperty ("4column_info_keyword");
+//        	column_info_valueformat = prop.getProperty ("4column_info_valueformat"); 
+//        	if(column_info_valueformat != null)
+//        		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_kw4,column_info_valueformat);
+//        	
+////        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
+//        	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
         	break;
         case 5:
-        	String column_bg_kw5  = prop.getProperty ("5column_background_highlight_keyword");
-        	current_column_bg_kw = column_bg_kw5;
-        	String column_bg_color5  = prop.getProperty ("5column_background_hightlight_color");
-        	
-        	String column_fg_kw5  = prop.getProperty ("5column_foreground_highlight_keyword");
-        	String column_fg_color5  = prop.getProperty ("5column_foreground_hightlight_color");
-        	
-        	if(column_fg_kw5 != null)
-        		foreground = rendererOperationsForColumnForgroundHighLight (node,column_fg_kw5,column_fg_color5 );
-        	if(column_bg_kw5 != null)
-        		background = rendererOperationsForColumnBackgroundHighLight (node,column_bg_kw5, column_bg_color5);
-        	
-        	String column_kw5  = prop.getProperty ("5column_info_keyword");
-        	column_info_valueformat = prop.getProperty ("5column_info_valueformat"); 
-        	if(column_info_valueformat != null)
-        		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_kw5, column_info_valueformat);
-        	
-//        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
-        	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
+        	Object[] column0rendererresults5 = getRendererResultsByColumnIndex (node,value,row,col);
+	    	current_column_bg_kw = (String) column0rendererresults5[0];
+	    	valuetext = (String) column0rendererresults5[1];
+	    	background = (Color)column0rendererresults5[2];
+	    	foreground = (Color)column0rendererresults5[3];
+	    	font = (Font)column0rendererresults5[4];
+	    	
+//        	String column_bg_kw5  = prop.getProperty ("5column_background_highlight_keyword");
+//        	current_column_bg_kw = column_bg_kw5;
+//        	String column_bg_color5  = prop.getProperty ("5column_background_hightlight_color");
+//        	
+//        	String column_fg_kw5  = prop.getProperty ("5column_foreground_highlight_keyword");
+//        	String column_fg_color5  = prop.getProperty ("5column_foreground_hightlight_color");
+//        	
+//        	if(column_fg_kw5 != null)
+//        		foreground = rendererOperationsForColumnForgroundHighLight (node,column_fg_kw5,column_fg_color5 );
+//        	if(column_bg_kw5 != null)
+//        		background = rendererOperationsForColumnBackgroundHighLight (node,column_bg_kw5, column_bg_color5);
+//        	
+//        	String column_kw5  = prop.getProperty ("5column_info_keyword");
+//        	column_info_valueformat = prop.getProperty ("5column_info_valueformat"); 
+//        	if(column_info_valueformat != null)
+//        		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_kw5, column_info_valueformat);
+//        	
+////        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
+//        	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
         	break;
         case 6:
-        	String column_bg_kw6  = prop.getProperty ("6column_background_highlight_keyword");
-        	current_column_bg_kw = column_bg_kw6;
-        	String column_bg_color6  = prop.getProperty ("6column_background_hightlight_color");
-        	
-        	String column_fg_kw6  = prop.getProperty ("6column_foreground_highlight_keyword");
-        	String column_fg_color6  = prop.getProperty ("6column_foreground_hightlight_color");
-        	
-        	if(column_fg_kw6 != null)
-        		foreground = rendererOperationsForColumnForgroundHighLight (node,column_fg_kw6,column_fg_color6);
-        	if(column_bg_kw6 != null)
-        		background = rendererOperationsForColumnBackgroundHighLight (node,column_bg_kw6, column_bg_color6);
-        	
-        	String column_kw6  = prop.getProperty ("6column_info_keyword");
-        	column_info_valueformat = prop.getProperty ("6column_info_valueformat"); 
-        	if(column_info_valueformat != null)
-        		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_kw6,column_info_valueformat);
-        	
-//        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
-        	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
+        	Object[] column0rendererresults6 = getRendererResultsByColumnIndex (node,value,row,col);
+	    	current_column_bg_kw = (String) column0rendererresults6[0];
+	    	valuetext = (String) column0rendererresults6[1];
+	    	background = (Color)column0rendererresults6[2];
+	    	foreground = (Color)column0rendererresults6[3];
+	    	font = (Font)column0rendererresults6[4];
+	    	
+//        	String column_bg_kw6  = prop.getProperty ("6column_background_highlight_keyword");
+//        	current_column_bg_kw = column_bg_kw6;
+//        	String column_bg_color6  = prop.getProperty ("6column_background_hightlight_color");
+//        	
+//        	String column_fg_kw6  = prop.getProperty ("6column_foreground_highlight_keyword");
+//        	String column_fg_color6  = prop.getProperty ("6column_foreground_hightlight_color");
+//        	
+//        	if(column_fg_kw6 != null)
+//        		foreground = rendererOperationsForColumnForgroundHighLight (node,column_fg_kw6,column_fg_color6);
+//        	if(column_bg_kw6 != null)
+//        		background = rendererOperationsForColumnBackgroundHighLight (node,column_bg_kw6, column_bg_color6);
+//        	
+//        	String column_kw6  = prop.getProperty ("6column_info_keyword");
+//        	column_info_valueformat = prop.getProperty ("6column_info_valueformat"); 
+//        	if(column_info_valueformat != null)
+//        		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_kw6,column_info_valueformat);
+//        	
+////        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
+//        	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
         	break;
         case 7:
-        	String column_bg_kw7  = prop.getProperty ("7column_background_highlight_keyword");
-        	current_column_bg_kw = column_bg_kw7;
-        	String column_bg_color7  = prop.getProperty ("7column_background_hightlight_color");
-        	
-        	String column_fg_kw7  = prop.getProperty ("7column_foreground_highlight_keyword");
-        	String column_fg_color7  = prop.getProperty ("7column_foreground_hightlight_color");
-        	
-        	if(column_fg_kw7 != null)
-        		foreground = rendererOperationsForColumnForgroundHighLight (node,column_fg_kw7,column_fg_color7);
-        	if(column_bg_kw7 != null)
-        		background = rendererOperationsForColumnBackgroundHighLight (node,column_bg_kw7, column_bg_color7);
-        	
-        	String column_kw7  = prop.getProperty ("7column_info_keyword");
-        	column_info_valueformat = prop.getProperty ("7column_info_valueformat"); 
-        	if(column_info_valueformat != null)
-        		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_kw7,column_info_valueformat);
-
-//        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
-        	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
+        	Object[] column0rendererresults7 = getRendererResultsByColumnIndex (node,value,row,col);
+	    	current_column_bg_kw = (String) column0rendererresults7[0];
+	    	valuetext = (String) column0rendererresults7[1];
+	    	background = (Color)column0rendererresults7[2];
+	    	foreground = (Color)column0rendererresults7[3];
+	    	font = (Font)column0rendererresults7[4];
+	    	
+//        	String column_bg_kw7  = prop.getProperty ("7column_background_highlight_keyword");
+//        	current_column_bg_kw = column_bg_kw7;
+//        	String column_bg_color7  = prop.getProperty ("7column_background_hightlight_color");
+//        	
+//        	String column_fg_kw7  = prop.getProperty ("7column_foreground_highlight_keyword");
+//        	String column_fg_color7  = prop.getProperty ("7column_foreground_hightlight_color");
+//        	
+//        	if(column_fg_kw7 != null)
+//        		foreground = rendererOperationsForColumnForgroundHighLight (node,column_fg_kw7,column_fg_color7);
+//        	if(column_bg_kw7 != null)
+//        		background = rendererOperationsForColumnBackgroundHighLight (node,column_bg_kw7, column_bg_color7);
+//        	
+//        	String column_kw7  = prop.getProperty ("7column_info_keyword");
+//        	column_info_valueformat = prop.getProperty ("7column_info_valueformat"); 
+//        	if(column_info_valueformat != null)
+//        		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_kw7,column_info_valueformat);
+//
+////        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
+//        	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
         	break;
         case 8:
-        	String column_bg_kw8  = prop.getProperty ("8column_background_highlight_keyword");
-        	current_column_bg_kw = column_bg_kw8;
-        	String column_bg_color8  = prop.getProperty ("8column_background_hightlight_color");
-        	
-        	String column_fg_kw8  = prop.getProperty ("8column_foreground_highlight_keyword");
-        	String column_fg_color8  = prop.getProperty ("8column_foreground_hightlight_color");
-        	
-        	if(column_fg_kw8 != null)
-        		foreground = rendererOperationsForColumnForgroundHighLight (node,column_fg_kw8,column_fg_color8);
-        	if(column_bg_kw8 != null)
-        		background = rendererOperationsForColumnBackgroundHighLight (node,column_bg_kw8, column_bg_color8);
-        	
-        	String column_kw8  = prop.getProperty ("8column_info_keyword");
-        	column_info_valueformat = prop.getProperty ("8column_info_valueformat"); 
-        	if(column_info_valueformat != null)
-        		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_kw8,column_info_valueformat);
-
-//        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
+        	Object[] column0rendererresults8 = getRendererResultsByColumnIndex (node,value,row,col);
+	    	current_column_bg_kw = (String) column0rendererresults8[0];
+	    	valuetext = (String) column0rendererresults8[1];
+	    	background = (Color)column0rendererresults8[2];
+	    	foreground = (Color)column0rendererresults8[3];
+	    	font = (Font)column0rendererresults8[4];
+	    	
+//        	String column_bg_kw8  = prop.getProperty ("8column_background_highlight_keyword");
+//        	current_column_bg_kw = column_bg_kw8;
+//        	String column_bg_color8  = prop.getProperty ("8column_background_hightlight_color");
+//        	
+//        	String column_fg_kw8  = prop.getProperty ("8column_foreground_highlight_keyword");
+//        	String column_fg_color8  = prop.getProperty ("8column_foreground_hightlight_color");
+//        	
+//        	if(column_fg_kw8 != null)
+//        		foreground = rendererOperationsForColumnForgroundHighLight (node,column_fg_kw8,column_fg_color8);
+//        	if(column_bg_kw8 != null)
+//        		background = rendererOperationsForColumnBackgroundHighLight (node,column_bg_kw8, column_bg_color8);
+//        	
+//        	String column_kw8  = prop.getProperty ("8column_info_keyword");
+//        	column_info_valueformat = prop.getProperty ("8column_info_valueformat"); 
+//        	if(column_info_valueformat != null)
+//        		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_kw8,column_info_valueformat);
+//
+////        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
         	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
         	break;
         case 9:
-        	String column_bg_kw9  = prop.getProperty ("9column_background_highlight_keyword");
-        	current_column_bg_kw = column_bg_kw9;
-        	String column_bg_color9  = prop.getProperty ("9column_background_hightlight_color");
-        	
-        	String column_fg_kw9  = prop.getProperty ("9column_foreground_highlight_keyword");
-        	String column_fg_color9  = prop.getProperty ("9column_foreground_hightlight_color");
-        	
-        	if(column_fg_kw9 != null)
-        		foreground = rendererOperationsForColumnForgroundHighLight (node,column_fg_kw9,column_fg_color9);
-        	if(column_bg_kw9 != null)
-        		background = rendererOperationsForColumnBackgroundHighLight (node,column_bg_kw9, column_bg_color9);
-        	
-        	String column_kw9  = prop.getProperty ("9column_info_keyword");
-        	column_info_valueformat = prop.getProperty ("9column_info_valueformat"); 
-        	if(column_info_valueformat != null)
-        		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_kw9,column_info_valueformat);
-
-//        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
-        	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
+        	Object[] column0rendererresults9 = getRendererResultsByColumnIndex (node,value,row,col);
+	    	current_column_bg_kw = (String) column0rendererresults9[0];
+	    	valuetext = (String) column0rendererresults9[1];
+	    	background = (Color)column0rendererresults9[2];
+	    	foreground = (Color)column0rendererresults9[3];
+	    	font = (Font)column0rendererresults9[4];
+	    	
+//        	String column_bg_kw9  = prop.getProperty ("9column_background_highlight_keyword");
+//        	current_column_bg_kw = column_bg_kw9;
+//        	String column_bg_color9  = prop.getProperty ("9column_background_hightlight_color");
+//        	
+//        	String column_fg_kw9  = prop.getProperty ("9column_foreground_highlight_keyword");
+//        	String column_fg_color9  = prop.getProperty ("9column_foreground_hightlight_color");
+//        	
+//        	if(column_fg_kw9 != null)
+//        		foreground = rendererOperationsForColumnForgroundHighLight (node,column_fg_kw9,column_fg_color9);
+//        	if(column_bg_kw9 != null)
+//        		background = rendererOperationsForColumnBackgroundHighLight (node,column_bg_kw9, column_bg_color9);
+//        	
+//        	String column_kw9  = prop.getProperty ("9column_info_keyword");
+//        	column_info_valueformat = prop.getProperty ("9column_info_valueformat"); 
+//        	if(column_info_valueformat != null)
+//        		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_kw9,column_info_valueformat);
+//
+////        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
+//        	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
         	break;
 
         case 10:
-        	String column_bg_kw10  = prop.getProperty ("10column_background_highlight_keyword");
-        	current_column_bg_kw = column_bg_kw10;
-        	String column_bg_color10  = prop.getProperty ("10column_background_hightlight_color");
-        	
-        	String column_fg_kw10  = prop.getProperty ("10column_foreground_highlight_keyword");
-        	String column_fg_color10  = prop.getProperty ("10column_foreground_hightlight_color");
-        	
-        	if(column_fg_kw10 != null)
-        		foreground = rendererOperationsForColumnForgroundHighLight (node,column_fg_kw10,column_fg_color10);
-        	if(column_bg_kw10 != null)
-        		background = rendererOperationsForColumnBackgroundHighLight (node,column_bg_kw10, column_bg_color10);
-        	
-        	String column_kw10  = prop.getProperty ("10column_info_keyword");
-        	column_info_valueformat = prop.getProperty ("10column_info_valueformat"); 
-        	if(column_info_valueformat != null)
-        		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_kw10,column_info_valueformat);
-
-//        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
-        	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
+        	Object[] column0rendererresults10 = getRendererResultsByColumnIndex (node,value,row,col);
+	    	current_column_bg_kw = (String) column0rendererresults10[0];
+	    	valuetext = (String) column0rendererresults10[1];
+	    	background = (Color)column0rendererresults10[2];
+	    	foreground = (Color)column0rendererresults10[3];
+	    	font = (Font)column0rendererresults10[4];
+	    	
+//        	String column_bg_kw10  = prop.getProperty ("10column_background_highlight_keyword");
+//        	current_column_bg_kw = column_bg_kw10;
+//        	String column_bg_color10  = prop.getProperty ("10column_background_hightlight_color");
+//        	
+//        	String column_fg_kw10  = prop.getProperty ("10column_foreground_highlight_keyword");
+//        	String column_fg_color10  = prop.getProperty ("10column_foreground_hightlight_color");
+//        	
+//        	if(column_fg_kw10 != null)
+//        		foreground = rendererOperationsForColumnForgroundHighLight (node,column_fg_kw10,column_fg_color10);
+//        	if(column_bg_kw10 != null)
+//        		background = rendererOperationsForColumnBackgroundHighLight (node,column_bg_kw10, column_bg_color10);
+//        	
+//        	String column_kw10  = prop.getProperty ("10column_info_keyword");
+//        	column_info_valueformat = prop.getProperty ("10column_info_valueformat"); 
+//        	if(column_info_valueformat != null)
+//        		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_kw10,column_info_valueformat);
+//
+////        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
+//        	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
         	break;
 	    };
 	    
@@ -334,6 +413,52 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 	    Object[] textbackgroundforegroundfont = {valuetext,background, foreground, font};
 	    return textbackgroundforegroundfont;
 	}
+	private Object[] getRendererResultsByColumnIndex (TDXNodes node,Object value, Integer row,  Integer col)
+	{
+		String valuetext =""; Font font = this.getFont();Color foreground = Color.BLACK, background = Color.WHITE;
+	    	    
+		String column_bg_kw  = prop.getProperty (col.toString() + "column_background_highlight_keyword");
+		String column_bg_color  = prop.getProperty (col.toString() + "column_background_hightlight_color");
+		if(column_bg_kw != null   && column_bg_kw.contains("||")) {
+			List<String> bgkwlist = Splitter.on("||").omitEmptyStrings().splitToList(column_bg_kw); 
+			for(String bgkw : bgkwlist ) {
+				Color tmpbackground = null;
+				if(bgkw != null)
+		    		tmpbackground = rendererOperationsForColumnBackgroundHighLight (node,bgkw.trim(), column_bg_color);
+				if(tmpbackground != null && !tmpbackground.equals(background) && !tmpbackground.equals(Color.WHITE))
+					background = tmpbackground;
+			}
+		} else {
+			if(column_bg_kw != null)
+				background = rendererOperationsForColumnBackgroundHighLight (node,column_bg_kw, column_bg_color);
+		}
+		
+    	String column_fg_kw  = prop.getProperty (col.toString() + "column_foreground_highlight_keyword");
+    	String column_fg_color  = prop.getProperty (col.toString() + "column_foreground_hightlight_color");
+    	if(column_fg_kw != null && column_fg_kw.contains("||")) {
+    		List<String> fgkwlist = Splitter.on("||").omitEmptyStrings().splitToList(column_fg_kw); 
+			for(String fgkw : fgkwlist ) {
+				Color tmpforground = null;
+				if(fgkw != null)
+		    		tmpforground = rendererOperationsForColumnForgroundHighLight (node,fgkw.trim(), column_bg_color);
+				if(tmpforground != null && !tmpforground.equals(background) && !tmpforground.equals(Color.BLACK))
+					background = tmpforground;
+			}
+    	} else {
+    		if(column_fg_kw != null)
+        		foreground = rendererOperationsForColumnForgroundHighLight (node,column_fg_kw,column_fg_color);
+    	}
+    	
+    	String column_kw  = prop.getProperty (col.toString() + "column_info_keyword");
+    	String column_info_valueformat = prop.getProperty (col.toString() + "column_info_valueformat"); 
+    	if(column_info_valueformat != null)
+    		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_kw,column_info_valueformat);
+
+    	font = rendererOperationsForColumnFont (node, "HasHqgq"); //其次看有没有皇亲国戚
+    	
+    	Object[] keywordtextbackgroundforegroundfont = {column_bg_kw, valuetext,background, foreground, font};
+	    return keywordtextbackgroundforegroundfont;
+	}
 	
 	private String rendererOperationsForColumnInfoFormat(TDXNodes node, Object value,	String column_keyword, String column_info_valueformat)
 	{
@@ -344,30 +469,22 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 		case "CjeZbGrowRate":
 			if(!column_info_valueformat.equalsIgnoreCase("PERCENT"))
 				return "";
-			 //用百分比显示
-	    	try {
-	    		 double formatevalue = NumberFormat.getInstance(Locale.CHINA).parse(value.toString()).doubleValue();
-	    		 
-	    		 NumberFormat percentFormat = NumberFormat.getPercentInstance(Locale.CHINA);
-	    	     percentFormat.setMinimumFractionDigits(2);
-	        	 valuepect = percentFormat.format (formatevalue );
-	    	} catch (java.lang.NullPointerException e) {		valuepect = "";
-	    	}catch (java.lang.NumberFormatException e)  { e.printStackTrace();
-	    	} catch (ParseException e) {e.printStackTrace();}
+			valuepect = rendererOperationForPercent (value);
+			break;
+		case "CjlZbGrowRate":
+			if(!column_info_valueformat.equalsIgnoreCase("PERCENT"))
+				return "";
+			valuepect = rendererOperationForPercent (value);
 			break;
 		case "BanKuaiChengJiaoErGongXian":
 			if(!column_info_valueformat.equalsIgnoreCase("PERCENT"))
 				return "";
-			 //用百分比显示
-	    	try {
-	    		 double formatevalue = NumberFormat.getInstance(Locale.CHINA).parse(value.toString()).doubleValue();
-	    		 
-	    		 NumberFormat percentFormat = NumberFormat.getPercentInstance(Locale.CHINA);
-	    	     percentFormat.setMinimumFractionDigits(2);
-	        	 valuepect = percentFormat.format (formatevalue );
-	    	} catch (java.lang.NullPointerException e) {		valuepect = "";
-	    	}catch (java.lang.NumberFormatException e)  { e.printStackTrace();
-	    	} catch (ParseException e) {e.printStackTrace();}
+			valuepect = rendererOperationForPercent (value);
+			break;
+		case "BanKuaiChengJiaoLiangGongXian":
+			if(!column_info_valueformat.equalsIgnoreCase("PERCENT"))
+				return "";
+			valuepect = rendererOperationForPercent (value);
 			break;
 		case "ChenJiaoEr":
 			if(!column_info_valueformat.equalsIgnoreCase("REDUCT"))
@@ -383,6 +500,22 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 		
     	return valuepect;
 	}
+	private String rendererOperationForPercent (Object value) {
+		
+		String  valuepect = "";
+		 //用百分比显示
+    	try {
+    		 double formatevalue = NumberFormat.getInstance(Locale.CHINA).parse(value.toString()).doubleValue();
+    		 
+    		 NumberFormat percentFormat = NumberFormat.getPercentInstance(Locale.CHINA);
+    	     percentFormat.setMinimumFractionDigits(2);
+        	 valuepect = percentFormat.format (formatevalue );
+    	} catch (java.lang.NullPointerException e) {		valuepect = "";
+    	}catch (java.lang.NumberFormatException e)  { e.printStackTrace();
+    	} catch (ParseException e) {e.printStackTrace();}
+    	
+    	return valuepect;
+	}
 	/*
 	 * 
 	 */
@@ -394,7 +527,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 		
 		LocalDate requireddate = tablemodel.getCurDisplayedDate();
 		switch (column_keyword) {
-		case "hashqgq":
+		case "HasHqgq":
 				Boolean has = false;
 				LocalDate maxcbrq = ((StockOfBanKuai)node).getStock().getNodeJiBenMian().getLastestCaiBaoDate();
 				try {
@@ -408,7 +541,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 				if(has) defaultFont =  new Font("Hei", Font.BOLD,defaultFont.getSize() + 1);
 			
 			break;
-		case "hasminxing":
+		case "HasMinXing":
 			has = false;
 			maxcbrq = ((StockOfBanKuai)node).getStock().getNodeJiBenMian().getLastestCaiBaoDate();
 			try {
@@ -468,11 +601,11 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
     	Double zhangdiefu = nodexdata.getSpecificOHLCZhangDieFu (requireddate,0);
     	
 		switch (column_keyword) {
-		case "hashqgq":
+		case "HasHqgq":
 			Boolean has = ((StockOfBanKuai)node).getStock().getNodeJiBenMian().hasHqgqGuDong(requireddate);
 			if(has) foreground = Color.RED;
 			break;
-		case "extremecjlzhanbi" :
+		case "ExtremeCjlZhanbi" :
 			Double[] extremecjl = node.getNodeCjlZhanbiLevel();
 			Double zhanbi = nodexdata.getChenJiaoLiangZhanBi(requireddate, 0);
 			if(extremecjl[0] != null && zhanbi < extremecjl[0])
@@ -481,7 +614,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 			if(extremecjl[1] != null && zhanbi > extremecjl[1])
 				foreground = Color.GREEN;
 			break;
-		case "extremecjezhanbi" :
+		case "ExtremeCjeZhanbi" :
 			Double[] extremecje = node.getNodeCjeZhanbiLevel();
 			Double cjezhanbi = nodexdata.getChenJiaoErZhanBi(requireddate, 0);
 			if(extremecje[0] != null && cjezhanbi < extremecje[0])
@@ -490,7 +623,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 			if(extremecje[1] != null && cjezhanbi > extremecje[1])
 				foreground = Color.GREEN;
 			break;
-        case "quanzhonginbankuai":
+        case "QuanZhongInBankuai":
         	if(node instanceof BanKuai)
         		break;
         	
@@ -510,32 +643,20 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 	    		foreground = Color.BLACK;
         	break;
         
-        case "lastwkdpcjezbgrowingrate":
+        case "LastWkDpcjezbGrowingRate": 
         	foreground = lwcjezbgr.getForeGround();
         	break;
-        case "lastwkdpcjezbmatch":
+        case "LastWkDpCjezbMatch":
 	    	if(lwzhangdiefu != null &&  lwzhangdiefu <0 && lwdpmaxwkRule.getRuleResult() && zhangdiefu !=null &&  zhangdiefu >0 )
 	    		foreground = Color.YELLOW;
         	break;
-        case "lastwkaveragecjematch" :
+        case "LastWkAverageCjeMatch" :
 	    	if(lwzhangdiefu != null && lwzhangdiefu <0 && lwaveragecjemaxwk.getRuleResult() && zhangdiefu != null && zhangdiefu >0 )
 	    		foreground = Color.YELLOW;
         	break;
 	    };
 	    
 	    return foreground;
-	}
-	/*
-	 * 
-	 */
-	protected void rendererOperationsForColumnInfomation ( StockOfBanKuai stockofbank, String column_keyword ) 
-	{
-		switch (column_keyword) {
-        case "":
-        	
-        	break;
-	    };
-		
 	}
 	/*
 	 * 注意：这里传过来的node有可能是stockofbankuai,要转为stock
@@ -558,44 +679,44 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         facts.put("evacond", matchcond);
         
         Rules rules = new Rules();
-        RuleOfLiuTongShiZhi ltszRule =  new RuleOfLiuTongShiZhi ();
-        rules.register(ltszRule);
+//        RuleOfLiuTongShiZhi ltszRule =  new RuleOfLiuTongShiZhi ();
+//        rules.register(ltszRule);
         
-        RuleOfZongShiZhi zszRule = new RuleOfZongShiZhi ();
-        rules.register(zszRule);
+//        RuleOfZongShiZhi zszRule = new RuleOfZongShiZhi ();
+//        rules.register(zszRule);
         
-        RuleOfGeGuDailyHighestZhangFuInWeek zfRule = new RuleOfGeGuDailyHighestZhangFuInWeek ();
-        rules.register(zfRule);
+//        RuleOfGeGuDailyHighestZhangFuInWeek zfRule = new RuleOfGeGuDailyHighestZhangFuInWeek ();
+//        rules.register(zfRule);
         
-        RuleOfGeGuPrice priceRule = new RuleOfGeGuPrice ();
-        rules.register(priceRule);
+//        RuleOfGeGuPrice priceRule = new RuleOfGeGuPrice ();
+//        rules.register(priceRule);
         
-        RuleOfQueKou qkRule = new RuleOfQueKou ();
-        rules.register(qkRule);
+//        RuleOfQueKou qkRule = new RuleOfQueKou ();
+//        rules.register(qkRule);
         
-        RuleOfCjeZbDpMaxWk cjezbdpmaxwkRule = new RuleOfCjeZbDpMaxWk ();
-        rules.register(cjezbdpmaxwkRule);
+//        RuleOfCjeZbDpMaxWk cjezbdpmaxwkRule = new RuleOfCjeZbDpMaxWk ();
+//        rules.register(cjezbdpmaxwkRule);
         
-        RuleOfWeeklyAverageChenJiaoErMaxWk averagecjemaxwkRule = new RuleOfWeeklyAverageChenJiaoErMaxWk ();
-        rules.register(averagecjemaxwkRule);
+//        RuleOfWeeklyAverageChenJiaoErMaxWk averagecjemaxwkRule = new RuleOfWeeklyAverageChenJiaoErMaxWk ();
+//        rules.register(averagecjemaxwkRule);
         
-        RuleOfMA maRule = new RuleOfMA ();
-        rules.register(maRule);
+//        RuleOfMA maRule = new RuleOfMA ();
+//        rules.register(maRule);
         
-        RuleOfChenJiaoEr cjeRule = new RuleOfChenJiaoEr ();
-        rules.register(cjeRule);
+//        RuleOfChenJiaoEr cjeRule = new RuleOfChenJiaoEr ();
+//        rules.register(cjeRule);
         
-        RuleOfHuanShouLv hslRule = new RuleOfHuanShouLv ();
-        rules.register(hslRule);
+//        RuleOfHuanShouLv hslRule = new RuleOfHuanShouLv ();
+//        rules.register(hslRule);
         
      // fire rules on known facts
         RulesEngine rulesEngine = new DefaultRulesEngine();
-        rulesEngine.fire(rules, facts);
+//        rulesEngine.fire(rules, facts);
         
         NodeXPeriodData nodexdata = node.getNodeXPeroidData(period);
-		Color background = Color.white;
+		Color background = Color.WHITE;
 		switch (column_keyword) {
-		case "extremecjlzhanbi" :
+		case "ExtremeCjlZhanbi" :
 			Double[] extremecjl = node.getNodeCjlZhanbiLevel();
 			Double zhanbi = nodexdata.getChenJiaoLiangZhanBi(requireddate, 0);
 			if(extremecjl[0] != null && zhanbi < extremecjl[0])
@@ -605,7 +726,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 				background = Color.GREEN;
 			break;
 			
-		case "extremecjezhanbi" :
+		case "ExtremeCjeZhanbi" :
 			Double[] extremecje = node.getNodeCjeZhanbiLevel();
 			Double cjezhanbi = nodexdata.getChenJiaoErZhanBi(requireddate, 0);
 			if(extremecje[0] != null && cjezhanbi < extremecje[0])
@@ -615,7 +736,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 				background = Color.GREEN;
 			break;
 			
-        case "zhangdiefu":
+        case "ZhangDieFu":
         	if(node instanceof StockOfBanKuai)
         		 nodexdata = ((StockOfBanKuai)node).getStock().getNodeXPeroidData(period);
     	    else
@@ -628,14 +749,14 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 		    else background = CandleStickColorFactory.getCandelStickColor(zhangdiefu);
         	break;
         	
-        case "infengxifile":
+        case "InFengXiFile":
         	NodesTreeRelated stofbktree ;
         	if(node instanceof StockOfBanKuai)
         		stofbktree = ((StockOfBanKuai)node).getStock().getNodeTreeRelated();
         	else
         		stofbktree = node.getNodeTreeRelated();
         	if(stofbktree == null)
-        		background = Color.white;
+        		background = Color.WHITE;
         	else {
         		Boolean isin = stofbktree.selfIsMatchModel(requireddate);
     	    	if(isin != null && isin  ) 
@@ -645,11 +766,27 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
     	    			background = Color.ORANGE;
     			    else background = Color.ORANGE;  
     	    	else 
-    	    		background = Color.white;
+    	    		background = Color.WHITE;
         	}
         	break;
-        case "quekouzhangfu":
-        	if(qkRule.getRuleResult() || zfRule.getRuleResult() )	
+        case "DailyZhangDieFuRangeInWeek":
+        	RuleOfGeGuDailyHighestZhangFuInWeek zfRule = new RuleOfGeGuDailyHighestZhangFuInWeek ();
+            rules.register(zfRule);
+            rulesEngine.fire(rules, facts);
+            
+        	if( zfRule.getRuleResult() )	
+        		if(predefinedcolor != null && !predefinedcolor.toUpperCase().equals("SYSTEM") )
+    		    	background = Color.decode( predefinedcolor );
+        		else if(predefinedcolor != null && predefinedcolor.toUpperCase().equals("SYSTEM") )
+        			background = Color.PINK;
+    		    else background = Color.PINK;
+        	break;
+        case "QueKou":
+        	RuleOfQueKou qkRule = new RuleOfQueKou ();
+            rules.register(qkRule);
+            rulesEngine.fire(rules, facts);
+            
+        	if(qkRule.getRuleResult()  )	
         		if(predefinedcolor != null && !predefinedcolor.toUpperCase().equals("SYSTEM") )
     		    	background = Color.decode( predefinedcolor );
         		else if(predefinedcolor != null && predefinedcolor.toUpperCase().equals("SYSTEM") )
@@ -657,6 +794,10 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
     		    else background = Color.PINK;
         	break;
         case "CjeZbDpMaxWk":
+        	RuleOfCjeZbDpMaxWk cjezbdpmaxwkRule = new RuleOfCjeZbDpMaxWk ();
+            rules.register(cjezbdpmaxwkRule);
+            rulesEngine.fire(rules, facts);
+            
         	if(predefinedcolor != null && !predefinedcolor.toUpperCase().equals("SYSTEM") && cjezbdpmaxwkRule.getRuleResult() )
 		    	background = Color.decode( predefinedcolor );
         	else if(predefinedcolor != null && predefinedcolor.toUpperCase().equals("SYSTEM") )
@@ -664,48 +805,76 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 		    else background = cjezbdpmaxwkRule.getBackGround();
         	break;
         case "CLOSEVSMA" :
+        	RuleOfMA maRule = new RuleOfMA ();
+            rules.register(maRule);
+            rulesEngine.fire(rules, facts);
+            
         	if(predefinedcolor != null && !predefinedcolor.toUpperCase().equals("SYSTEM") && maRule.getAnalysisResult() )
 		    	background = Color.decode( predefinedcolor );
         	else if(predefinedcolor != null && predefinedcolor.toUpperCase().equals("SYSTEM") )
         		background = maRule.getBackGround();
 		    else   	background = maRule.getBackGround();
         	break;
-        case "averagecjemaxwk" :
+        case "AverageChenJiaoErMaxWeek" : 
+        	RuleOfWeeklyAverageChenJiaoErMaxWk averagecjemaxwkRule = new RuleOfWeeklyAverageChenJiaoErMaxWk ();
+            rules.register(averagecjemaxwkRule);
+            rulesEngine.fire(rules, facts);
+            
         	if(predefinedcolor != null && !predefinedcolor.toUpperCase().equals("SYSTEM") && averagecjemaxwkRule.getRuleResult() )
 		    	background = Color.decode( predefinedcolor );
         	else if(predefinedcolor != null && predefinedcolor.toUpperCase().equals("SYSTEM") )
         		background = averagecjemaxwkRule.getBackGround();
 		    else  	background = averagecjemaxwkRule.getBackGround();
         	break;
-        case "liutongshizhi":
+        case "LiuTongShiZhi":
+        	RuleOfLiuTongShiZhi ltszRule =  new RuleOfLiuTongShiZhi ();
+            rules.register(ltszRule);
+            rulesEngine.fire(rules, facts);
+            
         	if(predefinedcolor != null && !predefinedcolor.toUpperCase().equals("SYSTEM") && ltszRule.getAnalysisResult())
 		    	background = Color.decode( predefinedcolor );
         	else if(predefinedcolor != null && predefinedcolor.toUpperCase().equals("SYSTEM") )
         		background = ltszRule.getBackGround ();
 		    else  	background = ltszRule.getBackGround ();
         	break;
-        case "zongshizhi":
-        	if(predefinedcolor != null && !predefinedcolor.toUpperCase().equals("SYSTEM") && ltszRule.getAnalysisResult())
+        case "ZongShiZhi":
+        	 RuleOfZongShiZhi zszRule = new RuleOfZongShiZhi ();
+             rules.register(zszRule);
+             rulesEngine.fire(rules, facts);
+             
+        	if(predefinedcolor != null && !predefinedcolor.toUpperCase().equals("SYSTEM") && zszRule.getAnalysisResult())
 		    	background = Color.decode( predefinedcolor );
         	else if(predefinedcolor != null && predefinedcolor.toUpperCase().equals("SYSTEM") )
         		background = zszRule.getBackGround ();
 		    else  	background = zszRule.getBackGround ();
         	break;
-        case "chengjiaoer" :
+        case "ChenJiaoEr" :
+        	RuleOfChenJiaoEr cjeRule = new RuleOfChenJiaoEr ();
+            rules.register(cjeRule);
+            rulesEngine.fire(rules, facts);
+            
         	if(predefinedcolor != null && !predefinedcolor.toUpperCase().equals("SYSTEM") && cjeRule.getRuleResult() )
 		    	background = Color.decode( predefinedcolor );
         	else if(predefinedcolor != null && predefinedcolor.toUpperCase().equals("SYSTEM") )
         		background = cjeRule.getBackGround();
         	else background = cjeRule.getBackGround();
         	break;
-        case "huanshoulv" :
+        case "HuanShouLv" :
+        	RuleOfHuanShouLv hslRule = new RuleOfHuanShouLv ();
+            rules.register(hslRule);
+            rulesEngine.fire(rules, facts);
+            
         	if(predefinedcolor != null && !predefinedcolor.toUpperCase().equals("SYSTEM") && hslRule.getRuleResult() )
 		    	background = Color.decode( predefinedcolor );
         	else if(predefinedcolor != null && predefinedcolor.toUpperCase().equals("SYSTEM") )
         	 	background = hslRule.getBackGround();
 		    else   	background = hslRule.getBackGround();
         	break;
-        case "gujia" :
+        case "GuJiaCLOSE" :
+        	RuleOfGeGuPrice priceRule = new RuleOfGeGuPrice ();
+        	rules.register(priceRule);
+        	rulesEngine.fire(rules, facts);
+        	
         	if(predefinedcolor != null && !predefinedcolor.toUpperCase().equals("SYSTEM") && priceRule.getAnalysisResult() )
 		    	background = Color.decode( predefinedcolor );
         	else if(predefinedcolor != null && predefinedcolor.toUpperCase().equals("SYSTEM") )

@@ -31,8 +31,8 @@ public class RuleOfGeGuDailyHighestZhangFuInWeek
 //		if(evanode.getType() == BkChanYeLianTreeNode.TDXBK )
 //			return false;
 		
-		Double zfmax = evacond.getSettingZhangFuMax();
-    	Double zfmin = evacond.getSettingZhangFuMin();
+		Double zfmax = evacond.getSettingDailyZhangDieFuMax();
+    	Double zfmin = evacond.getSettingDailyZhangDieFuMin();
     	
     	if(zfmax == null && zfmin == null ) 
     		return false;
