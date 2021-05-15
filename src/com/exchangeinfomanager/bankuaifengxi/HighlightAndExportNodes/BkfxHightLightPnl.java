@@ -789,34 +789,26 @@ public class BkfxHightLightPnl extends JPanel {
 			            try {
 			              final int count = exporttask.get();
 			              int exchangeresult = JOptionPane.showConfirmDialog(null, "导出完成，是否打开" + filefmxx.getAbsolutePath() + "查看","导出完成", JOptionPane.OK_CANCEL_OPTION);
-	//		      		  if(exchangeresult == JOptionPane.CANCEL_OPTION) {
-	//		      			  progressBarExport.setString(" ");
-	//		      			  return;
-	//		      		  }
+			      		  if(exchangeresult == JOptionPane.CANCEL_OPTION) {
+			      			  progressBarExport.setString(" ");
+			      			  return;
+			      		  }
 			      		  try {
 			      			String path = filefmxx.getAbsolutePath();
 			      			Runtime.getRuntime().exec("explorer.exe /select," + path);
-			      		  } catch (IOException e1) {
-			      				e1.printStackTrace();
-			      		  }
+			      		  } catch (IOException e1) {	e1.printStackTrace();}
+			      		  
 			      		  progressBarExport.setString(" ");
 			      		  stockmanager.setGetNodeDataFromDbWhenSystemIdleThreadStatus(true);
 			      		  System.gc();
 			            } catch (final CancellationException e) {
-			            	try {
-								exporttask.get();
-							} catch (InterruptedException | ExecutionException | CancellationException e1) {
-	//							e1.printStackTrace();
-							}
+			            	try {	exporttask.get();	} catch (InterruptedException | ExecutionException | CancellationException e1) {e1.printStackTrace();	}
 			            	progressBarExport.setIndeterminate(false);
 			            	progressBarExport.setValue(0);
 			            	JOptionPane.showMessageDialog(null, "导出条件个股被终止！", "导出条件个股",JOptionPane.WARNING_MESSAGE);
 			            	progressBarExport.setString("导出设置条件个股");
 			            	stockmanager.setGetNodeDataFromDbWhenSystemIdleThreadStatus(true);
-			            } catch (final Exception e) {
-	//		              JOptionPane.showMessageDialog(Application.this, "The search process failed", "Search Words",
-	//		                  JOptionPane.ERROR_MESSAGE);
-			            }
+			            } catch (final Exception e) {  }
 	
 			            exporttask = null;
 			            break;

@@ -8,6 +8,7 @@ import javax.swing.JRadioButton;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
 import com.exchangeinfomanager.commonlib.JLocalDataChooser.JLocalDateChooser;
+import com.google.common.base.Strings;
 
 import javax.swing.JComboBox;
 
@@ -78,14 +79,11 @@ public class ExportConditionsFactorPnl extends JPanel {
 		}
 		factor = "'" + factor  + "'";
 		
-		if(cbxjisuan.isSelected())
-			return factor  ;
-		
 		String operator = "";
 		if(this.factorkw.contains("VSMA"))
 			operator = "=";
 		else
-			operator = (String) cbxselection.getSelectedItem();
+			operator = ((String) cbxselection.getSelectedItem()).trim();
 		
 		String result = "";
 		if(operator.equals("区间")) {
@@ -93,9 +91,16 @@ public class ExportConditionsFactorPnl extends JPanel {
 			String upvalue=  getRealValueByDanWei (tfldvalueup.getText().trim() );
 			result = result + lowvalue + "<=" +  factor +" && "+ factor + "<=" + upvalue;
 		} else {
-			String lowvalue = getRealValueByDanWei (tfldvaluelow.getText().trim() );
-			result = result + " " + factor + " "+ operator + " " + lowvalue   ;
+			if(!Strings.isNullOrEmpty( tfldvaluelow.getText()) ) {
+				String lowvalue = getRealValueByDanWei (tfldvaluelow.getText().trim() );
+				result = result + " " + factor + " "+ operator + " " + lowvalue   ;
+			} else
+				result = factor;
 		}
+		
+		if(cbxjisuan.isSelected() && !Strings.isNullOrEmpty(operator) && !Strings.isNullOrEmpty( tfldvaluelow.getText()))
+			result = "(" + result + ")";
+		
 		return result;
 	}
 	private String getRealValueByDanWei (String value)
@@ -105,11 +110,19 @@ public class ExportConditionsFactorPnl extends JPanel {
 		
 		String realvalue = value;
 		switch (this.factordanwei) {
-		case "%": Double reald = Double.parseDouble(value) /100;
+		case "%": try {
+				  Double reald = Double.parseDouble(value) /100;
 				  realvalue = reald.toString();
+				  } catch (java.lang.NumberFormatException e) {
+					  realvalue = "";
+				  }
 			break;
-		case "亿": Double realy = Double.parseDouble(value) * 100000000;
-		  		 realvalue = realy.toString();
+		case "亿": try { 
+					Double realy = Double.parseDouble(value) * 100000000;
+			  		 realvalue = realy.toString();
+				   } catch (java.lang.NumberFormatException e) {
+						  realvalue = "";
+				   }
 			break;
 		}
 		
@@ -139,19 +152,19 @@ public class ExportConditionsFactorPnl extends JPanel {
 
         cbxselection.addActionListener(cbActionListener);
         
-        cbxjisuan.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if(cbxjisuan.isSelected()) {
-					cbxselection.setEnabled(false);
-					tfldvaluelow.setEnabled(false);
-					tfldvalueup.setEnabled(false);
-				} else {
-					cbxselection.setEnabled(true);
-					tfldvaluelow.setEnabled(true);
+//        cbxjisuan.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				if(cbxjisuan.isSelected()) {
+//					cbxselection.setEnabled(false);
+//					tfldvaluelow.setEnabled(false);
 //					tfldvalueup.setEnabled(false);
-				}
-			}
-		});
+//				} else {
+//					cbxselection.setEnabled(true);
+//					tfldvaluelow.setEnabled(true);
+////					tfldvalueup.setEnabled(false);
+//				}
+//			}
+//		});
 		
 	}
 
@@ -163,7 +176,7 @@ lblNewLabel = new JLabel("\u56E0\u5B50");
 		label = new JLabel("\u9009\u9879");
 		
 		cbxselection = new JComboBox<>();
-		cbxselection.setModel(new DefaultComboBoxModel(new String[] {">=", ">", "=", "<", "<=", "\u533A\u95F4"}));
+		cbxselection.setModel(new DefaultComboBoxModel(new String[] {">=", ">", "=", "<", "<=", "\u533A\u95F4", "    "}));
 		
 		label_1 = new JLabel("\u6570\u503C");
 		

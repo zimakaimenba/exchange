@@ -169,7 +169,7 @@ public class ExtraExportConditionsPnl extends JPanel
 		else
 			this.cond.setExportOnlyYellowSignBkStk (false);
 		
-		
+		this.cond.setExportConditionFormula(tfldexportformula.getText().trim());
 		
 		return this.cond;
 	}

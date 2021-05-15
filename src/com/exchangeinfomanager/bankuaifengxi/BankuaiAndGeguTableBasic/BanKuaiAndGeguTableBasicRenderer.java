@@ -69,27 +69,6 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 	    	background = (Color)column0rendererresults[2];
 	    	foreground = (Color)column0rendererresults[3];
 	    	font = (Font)column0rendererresults[4];
-	    	
-//        	String column_bg_kw0  = prop.getProperty ("0column_background_highlight_keyword");
-//        	current_column_bg_kw = column_bg_kw0;
-//        	String column_bg_color0  = prop.getProperty ("0column_background_hightlight_color");
-//        	
-//        	String column_fg_kw0  = prop.getProperty ("0column_foreground_highlight_keyword");
-//        	String column_fg_color0  = prop.getProperty ("0column_foreground_hightlight_color");
-//        	
-//        	if(column_fg_kw0 != null)
-//        		foreground = rendererOperationsForColumnForgroundHighLight (node,column_fg_kw0,column_fg_color0);
-//        	if(column_bg_kw0 != null)
-//        		background = rendererOperationsForColumnBackgroundHighLight (node,column_bg_kw0, column_bg_color0);
-//        	
-//        	String column_kw0  = prop.getProperty ("0column_info_keyword");
-//        	column_info_valueformat = prop.getProperty ("0column_info_valueformat"); 
-//        	if(column_info_valueformat != null)
-//        		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_kw0, column_info_valueformat);
-//        	
-////        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
-//        	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
-        	
         	break;
         case 1:
         	Object[] column0rendererresults1 = getRendererResultsByColumnIndex (node,value,row,col);
@@ -98,26 +77,6 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 	    	background = (Color)column0rendererresults1[2];
 	    	foreground = (Color)column0rendererresults1[3];
 	    	font = (Font)column0rendererresults1[4];
-	    	
-//        	String column_bg_kw1  = prop.getProperty ("1column_background_highlight_keyword");
-//        	current_column_bg_kw = column_bg_kw1;
-//        	String column_bg_color1  = prop.getProperty ("1column_background_hightlight_color");
-//        	
-//        	String column_fg_kw1  = prop.getProperty ("1column_foreground_highlight_keyword");
-//        	String column_fg_color1  = prop.getProperty ("1column_foreground_hightlight_color");
-//        	
-//        	if(column_fg_kw1 != null)
-//        		foreground = rendererOperationsForColumnForgroundHighLight (node,column_fg_kw1,column_fg_color1);
-//        	if(column_bg_kw1 != null)
-//        		background = rendererOperationsForColumnBackgroundHighLight (node,column_bg_kw1, column_bg_color1);
-//        	
-//        	String column_kw1  = prop.getProperty ("1column_info_keyword");
-//        	column_info_valueformat = prop.getProperty ("1column_info_valueformat"); 
-//        	if(column_info_valueformat != null)
-//        		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_kw1,column_info_valueformat);
-//
-////        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
-//        	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
         	break;
         case 2:
         	Object[] column0rendererresults2 = getRendererResultsByColumnIndex (node,value,row,col);
@@ -126,26 +85,6 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 	    	background = (Color)column0rendererresults2[2];
 	    	foreground = (Color)column0rendererresults2[3];
 	    	font = (Font)column0rendererresults2[4];
-	    	
-//        	String column_bg_kw2  = prop.getProperty ("2column_background_highlight_keyword");
-//        	current_column_bg_kw = column_bg_kw2;
-//        	String column_bg_color2  = prop.getProperty ("2column_background_hightlight_color");
-//        	
-//        	String column_fg_kw2  = prop.getProperty ("2column_foreground_highlight_keyword");
-//        	String column_fg_color2  = prop.getProperty ("2column_foreground_hightlight_color");
-//        	
-//        	if(column_fg_kw2 != null)
-//        		foreground = rendererOperationsForColumnForgroundHighLight (node,column_fg_kw2,column_fg_color2);
-//        	if(column_bg_kw2 != null)
-//        		background = rendererOperationsForColumnBackgroundHighLight (node,column_bg_kw2, column_bg_color2);
-//        	
-//        	String column_kw2  = prop.getProperty ("2column_info_keyword");
-//        	column_info_valueformat = prop.getProperty ("2column_info_valueformat"); 
-//        	if(column_info_valueformat != null)
-//        		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_kw2,column_info_valueformat);
-//        	
-////        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
-//        	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
         	break;
         case 3:
         	Object[] column0rendererresults3 = getRendererResultsByColumnIndex (node,value,row,col);
@@ -154,26 +93,6 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 	    	background = (Color)column0rendererresults3[2];
 	    	foreground = (Color)column0rendererresults3[3];
 	    	font = (Font)column0rendererresults3[4];
-	    	
-//        	String column_bg_kw3  = prop.getProperty ("3column_background_highlight_keyword");
-//        	current_column_bg_kw = column_bg_kw3;
-//        	String column_bg_color3  = prop.getProperty ("3column_background_hightlight_color");
-//        	
-//        	String column_fg_kw3  = prop.getProperty ("3column_foreground_highlight_keyword");
-//        	String column_fg_color3  = prop.getProperty ("3column_foreground_hightlight_color");
-//        	
-//        	if(column_fg_kw3 != null)
-//        		foreground = rendererOperationsForColumnForgroundHighLight (node,column_fg_kw3,column_fg_color3);
-//        	if(column_bg_kw3 != null)
-//        		background = rendererOperationsForColumnBackgroundHighLight (node,column_bg_kw3, column_bg_color3);
-//        	
-//        	String column_kw3  = prop.getProperty ("3column_info_keyword");
-//        	column_info_valueformat = prop.getProperty ("3column_info_valueformat"); 
-//        	if(column_info_valueformat != null)
-//        		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_kw3,column_info_valueformat);
-//        	
-////        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
-//        	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
         	break;
         case 4:
         	Object[] column0rendererresults4 = getRendererResultsByColumnIndex (node,value,row,col);
@@ -182,26 +101,6 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 	    	background = (Color)column0rendererresults4[2];
 	    	foreground = (Color)column0rendererresults4[3];
 	    	font = (Font)column0rendererresults4[4];
-	    	
-//        	String column_bg_kw4  = prop.getProperty ("4column_background_highlight_keyword");
-//        	current_column_bg_kw = column_bg_kw4;
-//        	String column_bg_color4  = prop.getProperty ("4column_background_hightlight_color");
-//        	
-//        	String column_fg_kw4  = prop.getProperty ("4column_foreground_highlight_keyword");
-//        	String column_fg_color4  = prop.getProperty ("4column_foreground_hightlight_color");
-//        	
-//        	if(column_fg_kw4 != null)
-//        		foreground = rendererOperationsForColumnForgroundHighLight (node,column_fg_kw4,column_fg_color4);
-//        	if(column_bg_kw4 != null)
-//        		background = rendererOperationsForColumnBackgroundHighLight (node,column_bg_kw4, column_bg_color4);
-//        	
-//        	String column_kw4  = prop.getProperty ("4column_info_keyword");
-//        	column_info_valueformat = prop.getProperty ("4column_info_valueformat"); 
-//        	if(column_info_valueformat != null)
-//        		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_kw4,column_info_valueformat);
-//        	
-////        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
-//        	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
         	break;
         case 5:
         	Object[] column0rendererresults5 = getRendererResultsByColumnIndex (node,value,row,col);
@@ -210,26 +109,6 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 	    	background = (Color)column0rendererresults5[2];
 	    	foreground = (Color)column0rendererresults5[3];
 	    	font = (Font)column0rendererresults5[4];
-	    	
-//        	String column_bg_kw5  = prop.getProperty ("5column_background_highlight_keyword");
-//        	current_column_bg_kw = column_bg_kw5;
-//        	String column_bg_color5  = prop.getProperty ("5column_background_hightlight_color");
-//        	
-//        	String column_fg_kw5  = prop.getProperty ("5column_foreground_highlight_keyword");
-//        	String column_fg_color5  = prop.getProperty ("5column_foreground_hightlight_color");
-//        	
-//        	if(column_fg_kw5 != null)
-//        		foreground = rendererOperationsForColumnForgroundHighLight (node,column_fg_kw5,column_fg_color5 );
-//        	if(column_bg_kw5 != null)
-//        		background = rendererOperationsForColumnBackgroundHighLight (node,column_bg_kw5, column_bg_color5);
-//        	
-//        	String column_kw5  = prop.getProperty ("5column_info_keyword");
-//        	column_info_valueformat = prop.getProperty ("5column_info_valueformat"); 
-//        	if(column_info_valueformat != null)
-//        		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_kw5, column_info_valueformat);
-//        	
-////        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
-//        	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
         	break;
         case 6:
         	Object[] column0rendererresults6 = getRendererResultsByColumnIndex (node,value,row,col);
@@ -238,26 +117,6 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 	    	background = (Color)column0rendererresults6[2];
 	    	foreground = (Color)column0rendererresults6[3];
 	    	font = (Font)column0rendererresults6[4];
-	    	
-//        	String column_bg_kw6  = prop.getProperty ("6column_background_highlight_keyword");
-//        	current_column_bg_kw = column_bg_kw6;
-//        	String column_bg_color6  = prop.getProperty ("6column_background_hightlight_color");
-//        	
-//        	String column_fg_kw6  = prop.getProperty ("6column_foreground_highlight_keyword");
-//        	String column_fg_color6  = prop.getProperty ("6column_foreground_hightlight_color");
-//        	
-//        	if(column_fg_kw6 != null)
-//        		foreground = rendererOperationsForColumnForgroundHighLight (node,column_fg_kw6,column_fg_color6);
-//        	if(column_bg_kw6 != null)
-//        		background = rendererOperationsForColumnBackgroundHighLight (node,column_bg_kw6, column_bg_color6);
-//        	
-//        	String column_kw6  = prop.getProperty ("6column_info_keyword");
-//        	column_info_valueformat = prop.getProperty ("6column_info_valueformat"); 
-//        	if(column_info_valueformat != null)
-//        		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_kw6,column_info_valueformat);
-//        	
-////        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
-//        	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
         	break;
         case 7:
         	Object[] column0rendererresults7 = getRendererResultsByColumnIndex (node,value,row,col);
@@ -266,26 +125,6 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 	    	background = (Color)column0rendererresults7[2];
 	    	foreground = (Color)column0rendererresults7[3];
 	    	font = (Font)column0rendererresults7[4];
-	    	
-//        	String column_bg_kw7  = prop.getProperty ("7column_background_highlight_keyword");
-//        	current_column_bg_kw = column_bg_kw7;
-//        	String column_bg_color7  = prop.getProperty ("7column_background_hightlight_color");
-//        	
-//        	String column_fg_kw7  = prop.getProperty ("7column_foreground_highlight_keyword");
-//        	String column_fg_color7  = prop.getProperty ("7column_foreground_hightlight_color");
-//        	
-//        	if(column_fg_kw7 != null)
-//        		foreground = rendererOperationsForColumnForgroundHighLight (node,column_fg_kw7,column_fg_color7);
-//        	if(column_bg_kw7 != null)
-//        		background = rendererOperationsForColumnBackgroundHighLight (node,column_bg_kw7, column_bg_color7);
-//        	
-//        	String column_kw7  = prop.getProperty ("7column_info_keyword");
-//        	column_info_valueformat = prop.getProperty ("7column_info_valueformat"); 
-//        	if(column_info_valueformat != null)
-//        		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_kw7,column_info_valueformat);
-//
-////        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
-//        	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
         	break;
         case 8:
         	Object[] column0rendererresults8 = getRendererResultsByColumnIndex (node,value,row,col);
@@ -294,26 +133,6 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 	    	background = (Color)column0rendererresults8[2];
 	    	foreground = (Color)column0rendererresults8[3];
 	    	font = (Font)column0rendererresults8[4];
-	    	
-//        	String column_bg_kw8  = prop.getProperty ("8column_background_highlight_keyword");
-//        	current_column_bg_kw = column_bg_kw8;
-//        	String column_bg_color8  = prop.getProperty ("8column_background_hightlight_color");
-//        	
-//        	String column_fg_kw8  = prop.getProperty ("8column_foreground_highlight_keyword");
-//        	String column_fg_color8  = prop.getProperty ("8column_foreground_hightlight_color");
-//        	
-//        	if(column_fg_kw8 != null)
-//        		foreground = rendererOperationsForColumnForgroundHighLight (node,column_fg_kw8,column_fg_color8);
-//        	if(column_bg_kw8 != null)
-//        		background = rendererOperationsForColumnBackgroundHighLight (node,column_bg_kw8, column_bg_color8);
-//        	
-//        	String column_kw8  = prop.getProperty ("8column_info_keyword");
-//        	column_info_valueformat = prop.getProperty ("8column_info_valueformat"); 
-//        	if(column_info_valueformat != null)
-//        		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_kw8,column_info_valueformat);
-//
-////        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
-        	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
         	break;
         case 9:
         	Object[] column0rendererresults9 = getRendererResultsByColumnIndex (node,value,row,col);
@@ -322,28 +141,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 	    	background = (Color)column0rendererresults9[2];
 	    	foreground = (Color)column0rendererresults9[3];
 	    	font = (Font)column0rendererresults9[4];
-	    	
-//        	String column_bg_kw9  = prop.getProperty ("9column_background_highlight_keyword");
-//        	current_column_bg_kw = column_bg_kw9;
-//        	String column_bg_color9  = prop.getProperty ("9column_background_hightlight_color");
-//        	
-//        	String column_fg_kw9  = prop.getProperty ("9column_foreground_highlight_keyword");
-//        	String column_fg_color9  = prop.getProperty ("9column_foreground_hightlight_color");
-//        	
-//        	if(column_fg_kw9 != null)
-//        		foreground = rendererOperationsForColumnForgroundHighLight (node,column_fg_kw9,column_fg_color9);
-//        	if(column_bg_kw9 != null)
-//        		background = rendererOperationsForColumnBackgroundHighLight (node,column_bg_kw9, column_bg_color9);
-//        	
-//        	String column_kw9  = prop.getProperty ("9column_info_keyword");
-//        	column_info_valueformat = prop.getProperty ("9column_info_valueformat"); 
-//        	if(column_info_valueformat != null)
-//        		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_kw9,column_info_valueformat);
-//
-////        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
-//        	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
         	break;
-
         case 10:
         	Object[] column0rendererresults10 = getRendererResultsByColumnIndex (node,value,row,col);
 	    	current_column_bg_kw = (String) column0rendererresults10[0];
@@ -351,26 +149,14 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 	    	background = (Color)column0rendererresults10[2];
 	    	foreground = (Color)column0rendererresults10[3];
 	    	font = (Font)column0rendererresults10[4];
-	    	
-//        	String column_bg_kw10  = prop.getProperty ("10column_background_highlight_keyword");
-//        	current_column_bg_kw = column_bg_kw10;
-//        	String column_bg_color10  = prop.getProperty ("10column_background_hightlight_color");
-//        	
-//        	String column_fg_kw10  = prop.getProperty ("10column_foreground_highlight_keyword");
-//        	String column_fg_color10  = prop.getProperty ("10column_foreground_hightlight_color");
-//        	
-//        	if(column_fg_kw10 != null)
-//        		foreground = rendererOperationsForColumnForgroundHighLight (node,column_fg_kw10,column_fg_color10);
-//        	if(column_bg_kw10 != null)
-//        		background = rendererOperationsForColumnBackgroundHighLight (node,column_bg_kw10, column_bg_color10);
-//        	
-//        	String column_kw10  = prop.getProperty ("10column_info_keyword");
-//        	column_info_valueformat = prop.getProperty ("10column_info_valueformat"); 
-//        	if(column_info_valueformat != null)
-//        		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_kw10,column_info_valueformat);
-//
-////        	font = rendererOperationsForColumnFont (node, "hasminxing"); //先看有没有明星，
-//        	font = rendererOperationsForColumnFont (node, "hashqgq"); //其次看有没有皇亲国戚
+        	break;
+        case 11:
+        	Object[] column0rendererresults11 = getRendererResultsByColumnIndex (node,value,row,col);
+	    	current_column_bg_kw = (String) column0rendererresults11[0];
+	    	valuetext = (String) column0rendererresults11[1];
+	    	background = (Color)column0rendererresults11[2];
+	    	foreground = (Color)column0rendererresults11[3];
+	    	font = (Font)column0rendererresults11[4];
         	break;
 	    };
 	    
@@ -419,8 +205,8 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 	    	    
 		String column_bg_kw  = prop.getProperty (col.toString() + "column_background_highlight_keyword");
 		String column_bg_color  = prop.getProperty (col.toString() + "column_background_hightlight_color");
-		if(column_bg_kw != null   && column_bg_kw.contains("||")) {
-			List<String> bgkwlist = Splitter.on("||").omitEmptyStrings().splitToList(column_bg_kw); 
+		if(column_bg_kw != null   && column_bg_kw.contains("OTHERWISE")) {
+			List<String> bgkwlist = Splitter.on("OTHERWISE").omitEmptyStrings().splitToList(column_bg_kw); 
 			for(String bgkw : bgkwlist ) {
 				Color tmpbackground = null;
 				if(bgkw != null)
@@ -435,8 +221,8 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 		
     	String column_fg_kw  = prop.getProperty (col.toString() + "column_foreground_highlight_keyword");
     	String column_fg_color  = prop.getProperty (col.toString() + "column_foreground_hightlight_color");
-    	if(column_fg_kw != null && column_fg_kw.contains("||")) {
-    		List<String> fgkwlist = Splitter.on("||").omitEmptyStrings().splitToList(column_fg_kw); 
+    	if(column_fg_kw != null && column_fg_kw.contains("OTHERWISE")) {
+    		List<String> fgkwlist = Splitter.on("OTHERWISE").omitEmptyStrings().splitToList(column_fg_kw); 
 			for(String fgkw : fgkwlist ) {
 				Color tmpforground = null;
 				if(fgkw != null)

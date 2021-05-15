@@ -125,7 +125,7 @@ public class ExportMatchedNode2
 				
 				if( ((Stock)childnode).isVeryVeryNewXinStock(this.exportdate) )
 					continue;
-				
+			
 				Boolean result = this.checkNodesMatchedCurSettingConditions ((Stock)childnode);
 				if(result != null && result && !matchednodeset.contains(childnode))	matchednodeset.add((TDXNodes) childnode);
 				if(!checkednodesset.contains(childnode.getMyOwnCode() ) )  checkednodesset.add( childnode.getMyOwnCode() );
@@ -179,7 +179,11 @@ public class ExportMatchedNode2
                 vars.add(m.group());
             }
             
+            String checkedvar = "";
             for(String var : vars) {
+            	if(var.equals(checkedvar))	continue;
+            	else  checkedvar = var;
+            		
             	LocalDate sltdate = null ; String datestr = null;
             	Pattern pdate = Pattern.compile("\\d+", Pattern.CASE_INSENSITIVE);
                 Matcher mdate = pdate.matcher(var);
@@ -228,17 +232,21 @@ public class ExportMatchedNode2
 		  Object value = null;
 		  factor = factor.replaceAll(" ", "");
 		  NodeXPeriodData nodexdata = node.getNodeXPeroidData(curperiod);
-		  
+          
 		  if(kw.equals("CLOSEVSMA")) {
-			  int indexofeq = factor.trim().lastIndexOf("=");
-			  int indexofend = factor.trim().lastIndexOf(")");
-			  String maformula = factor.substring(indexofeq + 1, indexofend);
+	          Pattern p = Pattern.compile("\'.*?\'", Pattern.CASE_INSENSITIVE);
+	          Matcher m = p.matcher(factor);
+	          int indexofeq ;  int indexofend = 0;
+	          while (m.find()) {
+	        	  indexofeq = m.start();
+	        	  indexofend = m.end();
+	          }
+	          String maformula = factor.substring(indexofend + 1, factor.length()-1);
 			  value =  nodexdata.getNodeDataByKeyWord( kw, selectdate,  maformula);
 		  }
 		  else try {
 			  value = nodexdata.getNodeDataByKeyWord(kw,selectdate,"");
-		  } catch (java.lang.NullPointerException e) {
-			  e.printStackTrace();
+		  } catch (java.lang.NullPointerException e) {  e.printStackTrace();
 			  System.out.println(node.getMyOwnCode() + node.getMyOwnName() + "Get keyword failed. keyword is" + kw + selectdate.toString() + ". FACTOR is" + factor + "PERIOD is " + curperiod);
 		  }
 		  

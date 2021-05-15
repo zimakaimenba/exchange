@@ -31,17 +31,15 @@ public class NodeChenJiaoErComparator implements Comparator<TDXNodes>
 	}
     public int compare(TDXNodes node1, TDXNodes node2) {
     	try {
-        Double cje1 = node1.getNodeXPeroidData( period).getChengJiaoEr(compareDate, difference) ;
-        if(cje1 == null) 
-        	cje1 = this.getNodeChenJiaoEr(node1); 
-        
-        Double cje2 = node2.getNodeXPeroidData( period).getChengJiaoEr(compareDate, difference);
-        if(cje2 == null) 
-        	cje2 = this.getNodeChenJiaoEr(node1); 
-        
-        return cje2.compareTo(cje1);
-    	}catch (Exception e) {
-    		e.printStackTrace();
+	        Double cje1 = node1.getNodeXPeroidData( period).getChengJiaoEr(compareDate, difference) ;
+	        if(cje1 == null) 
+	        	cje1 = this.getNodeChenJiaoEr(node1); 
+	        
+	        Double cje2 = node2.getNodeXPeroidData( period).getChengJiaoEr(compareDate, difference);
+	        if(cje2 == null) 
+	        	cje2 = this.getNodeChenJiaoEr(node1); 
+	        	return cje2.compareTo(cje1);
+    	}catch (Exception e) {//    		e.printStackTrace();
         	return 1;
         }
     }

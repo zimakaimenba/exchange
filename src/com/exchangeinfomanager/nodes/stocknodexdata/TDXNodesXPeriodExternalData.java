@@ -862,7 +862,10 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 	    	   	  Integer cjedpmaxwk = null;
 		          try{
 		        	   cjedpmaxwk = this.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(date,0);
-		        	   value = cjedpmaxwk;
+		        	   if(cjedpmaxwk == 0)
+		        		   value = null;
+		        	   else
+		        	   	   value = cjedpmaxwk;
 		                break;
 		          } catch (java.lang.NullPointerException e) {  value = null;}
 		          break;
@@ -871,6 +874,8 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 		          try{
 	              		cjedpminwk = this.getChenJiaoErZhanBiMinWeekOfSuperBanKuai(date, 0);
 	              		value = 0 - cjedpminwk;
+	              		if(cjedpminwk == 0)
+	              			value = null;
 	              		break;
 		          } catch (java.lang.NullPointerException e) {  value = null;}
 		          break;

@@ -25,6 +25,7 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.StockNodesXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
+import com.google.common.base.Splitter;
 
 public  abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel 
 {
@@ -232,9 +233,14 @@ public  abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 			     	  value = cjlchangegrowthrate;
 			     	  break;	
 		       case "HighLevelPaiXuRank" :
-			     	  Integer paiming = this.entryList.indexOf(node) + 1;
-			       	  value = paiming;
-			       	 break;  	  
+			    	   for(int i=0;i<this.entryList.size();i++) {
+			    		   if(this.entryList.get(i).getMyOwnCode().equals(node.getMyOwnCode())) {
+			    			   Integer paiming = i+1;
+						       value = paiming;
+						       break;
+			    		   }
+			    	   }
+			    	   break;
 		       case "NCjeZbDpMinWk":
 			     	  Integer nCjeZbDpMinWk = nodexdatawk.getChenJiaoErZhanBiMinestWeekOfSuperBanKuaiInSpecificPeriod(showdate,0,15);
 			       	  value = nCjeZbDpMinWk;
@@ -283,21 +289,18 @@ public  abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 		if(value == null)
 			return null;
 		
+		if(value.equals("??")) 
+			return value;
+		
     	Class<?> columncl = this.getColumnClass (columnIndex);
     	if (  !columncl.equals(Double.class) ) 
     		return value;
     	
-	    if(value.equals("??")) 
-			return value;
-	    	
     	String decimal = prop.getProperty (columnIndexForDecimal);
     	if(decimal == null)
     		return value;
     			
     	int decimalnumber = Integer.parseInt(decimal);
-//    			BigDecimal roundOff = new BigDecimal( (Double)value).setScale(decimalnumber, BigDecimal.ROUND_HALF_EVEN);
-//    			value = roundOff;
-    			
     	double count = Math.pow(10, decimalnumber);
     	try {
     				Double output = Math.round(  (Double)value * count) / count;
@@ -355,7 +358,30 @@ public  abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 		  
 		  return columnIndex;
 	  }
-	  
+	  /*
+	   * 
+	   */
+	  private Object getCellValueByKeywords (int rowIndex, int columnIndex,String kw)
+	  {
+		  if(kw == null)
+			  return null;
+		  
+		  Object value = null;
+		  
+		  if(kw.toUpperCase().contains("OTHERWISE")) {
+			  List<String> kwlist = Splitter.on("OTHERWISE").omitEmptyStrings().splitToList(kw);
+			  for(String modelkw : kwlist ) {
+				  Object valueresult = getColomnValue (modelkw, rowIndex);
+				  if(valueresult != null) {
+					  value = valueresult;
+					  break;
+				  }
+			  }
+		  } else 
+			  value = getColomnValue (kw, rowIndex);
+		  
+		  return value;
+	  }
 	  public Object getValueAt(int rowIndex, int columnIndex) 
 	    {
 	    	if(entryList.isEmpty())
@@ -365,62 +391,79 @@ public  abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 			switch (columnIndex) {
 	        case 0: //{ "代码", "名称","高级排序排名","板块成交额贡献","大盘CJEZB增长率","CJEDpMaxWk","大盘CJLZB增长率","CJLDpMaxWk"};
 	        	String column_kw0  = prop.getProperty ("0column_info_keyword");
-	        	value = getColomnValue (column_kw0, rowIndex);
+//	        	value = getColomnValue (column_kw0, rowIndex);
+	        	value = getCellValueByKeywords(rowIndex, columnIndex, column_kw0);
 	        	value = reformateDoubleValue (columnIndex, value, "0column_info_value_decimal" );
 	            break;
 	            
 	        case 1: 
 	        	String column_kw1  = prop.getProperty ("1column_info_keyword");
-	        	value = getColomnValue (column_kw1, rowIndex);
+//	        	value = getColomnValue (column_kw1, rowIndex);
+	        	value = getCellValueByKeywords(rowIndex, columnIndex, column_kw1);
 	        	value = reformateDoubleValue (columnIndex, value, "1column_info_value_decimal" );
 	        	break;
 	        	
 	        case 2: // "板块成交额贡献",
 	        	String column_kw2  = prop.getProperty ("2column_info_keyword");
-	        	value = getColomnValue (column_kw2, rowIndex);
+//	        	value = getColomnValue (column_kw2, rowIndex);
+	        	value = getCellValueByKeywords(rowIndex, columnIndex, column_kw2);
 	        	value = reformateDoubleValue (columnIndex, value, "2column_info_value_decimal" );
 	        	break;
 	        	
 	        case 3://{ "代码", "名称","高级排序排名","板块成交额贡献","大盘CJEZB增长率","CJEDpMaxWk","大盘CJLZB增长率","CJLDpMaxWk"};
 	        	String column_kw3  = prop.getProperty ("3column_info_keyword");
-	        	value = getColomnValue (column_kw3, rowIndex);
+//	        	value = getColomnValue (column_kw3, rowIndex);
+	        	value = getCellValueByKeywords(rowIndex, columnIndex, column_kw3);
 	        	value = reformateDoubleValue (columnIndex, value, "3column_info_value_decimal" );
 	        	break;            	
 	            
 	        case 4:
 	        	String column_kw4  = prop.getProperty ("4column_info_keyword");
-	        	value = getColomnValue (column_kw4, rowIndex);
+//	        	value = getColomnValue (column_kw4, rowIndex);
+	        	value = getCellValueByKeywords(rowIndex, columnIndex, column_kw4);
 	        	value = reformateDoubleValue (columnIndex, value, "4column_info_value_decimal" );
 	            break;
 	            
 	        case 5://{ "代码", "名称","高级排序排名","板块成交额贡献","大盘CJEZB增长率","CJEDpMaxWk","大盘CJLZB增长率","CJLDpMaxWk"};
 	        	String column_kw5  = prop.getProperty ("5column_info_keyword");
-	        	value = getColomnValue (column_kw5, rowIndex);
+//	        	value = getColomnValue (column_kw5, rowIndex);
+	        	value = getCellValueByKeywords(rowIndex, columnIndex, column_kw5);
 	        	value = reformateDoubleValue (columnIndex, value, "5column_info_value_decimal" );
 	            break;
 	        case 6:
 	        	String column_kw6  = prop.getProperty ("6column_info_keyword");
-	        	value = getColomnValue (column_kw6, rowIndex);
+//	        	value = getColomnValue (column_kw6, rowIndex);
+	        	value = getCellValueByKeywords(rowIndex, columnIndex, column_kw6);
 	        	value = reformateDoubleValue (columnIndex, value, "6column_info_value_decimal" );
 	            break;
 	        case 7:
 	        	String column_kw7  = prop.getProperty ("7column_info_keyword");
-	        	value = getColomnValue (column_kw7, rowIndex);
+//	        	value = getColomnValue (column_kw7, rowIndex);
+	        	value = getCellValueByKeywords(rowIndex, columnIndex, column_kw7);
 	        	value = reformateDoubleValue (columnIndex, value, "7column_info_value_decimal" );
 	            break;
 	        case 8:
 	        	String column_kw8  = prop.getProperty ("8column_info_keyword");
-	        	value = getColomnValue (column_kw8, rowIndex);
+//	        	value = getColomnValue (column_kw8, rowIndex);
+	        	value = getCellValueByKeywords(rowIndex, columnIndex, column_kw8);
 	        	value = reformateDoubleValue (columnIndex, value, "8column_info_value_decimal" );
 	            break;
 	        case 9:
 	        	String column_kw9  = prop.getProperty ("9column_info_keyword");
-	        	value = getColomnValue (column_kw9, rowIndex);
+//	        	value = getColomnValue (column_kw9, rowIndex);
+	        	value = getCellValueByKeywords(rowIndex, columnIndex, column_kw9);
 	        	value = reformateDoubleValue (columnIndex, value, "9column_info_value_decimal" );
 	            break;
 	        case 10:
 	        	String column_kw10  = prop.getProperty ("10column_info_keyword");
-	        	value = getColomnValue (column_kw10, rowIndex);
+//	        	value = getColomnValue (column_kw10, rowIndex);
+	        	value = getCellValueByKeywords(rowIndex, columnIndex, column_kw10);
+	        	value = reformateDoubleValue (columnIndex, value, "10column_info_value_decimal" );
+	            break;
+	        case 11:
+	        	String column_kw11  = prop.getProperty ("11column_info_keyword");
+//	        	value = getColomnValue (column_kw10, rowIndex);
+	        	value = getCellValueByKeywords(rowIndex, columnIndex, column_kw11);
 	        	value = reformateDoubleValue (columnIndex, value, "10column_info_value_decimal" );
 	            break;
 	    	}
@@ -474,6 +517,10 @@ public  abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 		        case 10:
 		        	String column_kwt10  = prop.getProperty ("10column_info_valuetype");
 		        	clazz = getColomnValueType (column_kwt10, columnIndex);
+	               break;
+		        case 11:
+		        	String column_kwt11  = prop.getProperty ("11column_info_valuetype");
+		        	clazz = getColomnValueType (column_kwt11, columnIndex);
 	               break;
 		      }
 		      

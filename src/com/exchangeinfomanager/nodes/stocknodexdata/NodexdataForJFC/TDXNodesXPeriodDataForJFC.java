@@ -15,6 +15,7 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalField;
 import java.time.temporal.WeekFields;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -396,10 +397,21 @@ import com.udojava.evalex.Expression;
 	 */
 	public Double getSpecificTimeRangeOHLCHightestZhangFu (LocalDate requiredstart,LocalDate requiredend)
 	{
+		 DayOfWeek d_requiredstart = requiredstart.getDayOfWeek();
+		 if(d_requiredstart == DayOfWeek.SATURDAY) requiredstart  = requiredstart.plus(2,ChronoUnit.DAYS);
+		 else if( d_requiredstart == DayOfWeek.SUNDAY) requiredstart = requiredstart.plus(1,ChronoUnit.DAYS);
+		 
+		 DayOfWeek d_requiredend = requiredend.getDayOfWeek();
+		 if(d_requiredend == DayOfWeek.SATURDAY) requiredend  = requiredend.minus(1,ChronoUnit.DAYS);
+		 else if( d_requiredend == DayOfWeek.SUNDAY) requiredend = requiredend.minus(2,ChronoUnit.DAYS);
+		    
 		LocalDate curohlcstart = this.getOHLCRecordsStartDate();
 		LocalDate curohlcend = this.getOHLCRecordsEndDate();
-		if(requiredstart.isBefore(curohlcstart) || requiredend.isAfter(curohlcend) )
+		if(requiredstart.isBefore(curohlcstart) )
 			return null;
+		
+		if(requiredend.isAfter(curohlcend))
+			requiredend = curohlcend;
 
 		Integer indexofstart = this.getIndexOfSpecificDateOHLCData(requiredstart, 0);
 		if(indexofstart == null) { //没有可能是停牌，往后找
