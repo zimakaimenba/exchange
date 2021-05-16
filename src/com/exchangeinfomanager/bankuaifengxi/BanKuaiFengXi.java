@@ -223,10 +223,10 @@ public class BanKuaiFengXi extends JDialog
 		setupBkfxSettingProperties ();
 		setupBkfxHighLightSettingProperties ();
 		
-		if(screenresoltuion.equals("2560") )
+//		if(screenresoltuion.equals("2560") )
 			initializeGuiOf2560Resolution ();
-		else 
-			initializeGuiOfNormal ();
+//		else 
+//			initializeGuiOfNormal ();
 		initializeKuaiJieZhishuPnl ();
 			
 		createEvents ();
@@ -397,6 +397,13 @@ public class BanKuaiFengXi extends JDialog
 		((JStockComboBoxModel)combxsearchbk.getModel() ).setCurrentDataDate(curselectdate);
 		((JStockComboBoxModel)combxstockcode.getModel() ).setCurrentDataDate(curselectdate);
 		
+		//如果TEMP TABLE有个股，需要重新设置一下日期，否则high light用的是老日期，
+		int tmpcount = ((BanKuaiGeGuBasicTableModel)this.tableTempGeGu.getModel()).getRowCount();
+		if(((BanKuaiGeGuBasicTableModel)this.tableTempGeGu.getModel()).getRowCount() >0 ) {
+			TDXNodes tmpbk = ((BanKuaiGeGuBasicTableModel)this.tableTempGeGu.getModel()).getCurDispalyBandKuai ();
+			((BanKuaiGeGuBasicTableModel)this.tableTempGeGu.getModel()).refresh((BanKuai)tmpbk, curselectdate, globeperiod);
+		}
+		
 		curselectdate = null;
 		SystemAudioPlayed.playSound();
 	}
@@ -473,8 +480,7 @@ public class BanKuaiFengXi extends JDialog
 		refreshCurrentBanKuaiTags (selectedbk,globeperiod);
 		
 		Integer alreadyin = ((JStockComboBoxModel)combxsearchbk.getModel()).hasTheNode(selectedbk.getMyOwnCode());
-		if(alreadyin == -1)
-			combxsearchbk.updateUserSelectedNode(selectedbk);
+		if(alreadyin == -1)	combxsearchbk.updateUserSelectedNode(selectedbk);
 		
 		displayNodeInfo(selectedbk);
 		
@@ -490,10 +496,8 @@ public class BanKuaiFengXi extends JDialog
 		
 		((BanKuaiGeGuBasicTableModel)tableTempGeGu.getModel()).setInterSectionBanKuai(selectedbk); //为临时个股突出和当前板块交集个股做准备
 		BanKuai tmpbk = (BanKuai)((BanKuaiGeGuBasicTableModel)tableTempGeGu.getModel()).getCurDispalyBandKuai();
-		if(tmpbk != null) {
-			((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).setInterSectionBanKuai(tmpbk); //也突出和临时板块有交集的板块
-		} else
-			((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).setInterSectionBanKuai(null); 
+		if(tmpbk != null) 	((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).setInterSectionBanKuai(tmpbk); //也突出和临时板块有交集的板块
+		else	((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).setInterSectionBanKuai(null); 
 		
 		bkggmatchcondition.setSettingBanKuai(selectedbk.getMyOwnCode()); //为可能导出做准备
 		
@@ -509,12 +513,8 @@ public class BanKuaiFengXi extends JDialog
 		try {
 			tags = tagsevofbk.getTags();
 			selectedbk.setNodeTags(tags);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			tagsevofbk = null;
-		}
+		} catch (SQLException e) {		e.printStackTrace();
+		} finally {	tagsevofbk = null;	}
 		
 		List<BkChanYeLianTreeNode> allbkgg = selectedbk.getAllGeGuOfBanKuaiInHistory();
 		if(allbkgg == null)
@@ -615,9 +615,9 @@ public class BanKuaiFengXi extends JDialog
 			//更改显示日期
 			tabbedPanegegu.setTitleAt(0, "当前周" + curselectdate);
 			//显示2周的板块个股pie chart
-			for(PieChartPanelDataChangedListener tmplistener : piechartpanelbankuaidatachangelisteners) {
+			for(PieChartPanelDataChangedListener tmplistener : piechartpanelbankuaidatachangelisteners) 
 				tmplistener.updateDate(selectedbk, curselectdate, 0,globeperiod);
-			}
+//			piechartpanelbankuaidatachangelisteners.forEach(l -> l.updateDate(selectedbk, curselectdate, 0,globeperiod) );
 		}
 		
 		//板块成交额占比显示大盘的周平均成交额，以便和板块的周平均成交额对比
@@ -626,6 +626,7 @@ public class BanKuaiFengXi extends JDialog
 		//板块自身占比
 		for(BarChartPanelDataChangedListener tmplistener : barchartpanelbankuaidatachangelisteners) 
 			tmplistener.updatedDate(selectedbk, CommonUtility.getSettingRangeDate(curselectdate,"basic"),curselectdate,globeperiod);
+//		barchartpanelbankuaidatachangelisteners.forEach(l -> l.updatedDate(selectedbk, CommonUtility.getSettingRangeDate(curselectdate,"basic"),curselectdate,globeperiod) );
 		
 		return;
 	}
@@ -1581,7 +1582,6 @@ public class BanKuaiFengXi extends JDialog
         });
         
         menuItemtimerangezhangfu.addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
             	menuItemchengjiaoer.setText("按成交额排名");
@@ -1589,6 +1589,9 @@ public class BanKuaiFengXi extends JDialog
             	
             	DateRangeSelectPnl datachoose = new DateRangeSelectPnl ( LocalDate.now().minusDays(1), LocalDate.now() ); 
         		JOptionPane.showMessageDialog(null, datachoose,"选择时间段", JOptionPane.OK_CANCEL_OPTION);
+        		
+        		Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
+    			setCursor(hourglassCursor);
         		
         		LocalDate searchstart = datachoose.getDatachoosestart();
         		LocalDate searchend = datachoose.getDatachooseend();
@@ -1613,9 +1616,9 @@ public class BanKuaiFengXi extends JDialog
     			} catch (SQLException ex) {ex.printStackTrace();}
     			svsbk = null;
     			
-    			if(selecttitle.contains("临时")) {
+    			if(selecttitle.contains("临时")) 
     				((BanKuaiGeGuBasicTableModel)tableTempGeGu.getModel()).sortTableByTimeRangeZhangFu(searchstart,searchend,NodeGivenPeriodDataItem.DAY);
-    			} else {
+    			else {
     				((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).sortTableByTimeRangeZhangFu(searchstart,searchend,NodeGivenPeriodDataItem.DAY);
                 	((BanKuaiGeGuBasicTableModel)tableExternalInfo.getModel()).sortTableByTimeRangeZhangFu(searchstart,searchend,NodeGivenPeriodDataItem.DAY);
             		((BanKuaiGeGuBasicTableModel)tablexuandingzhou.getModel()).sortTableByTimeRangeZhangFu(searchstart,searchend,NodeGivenPeriodDataItem.DAY);
@@ -1623,7 +1626,10 @@ public class BanKuaiFengXi extends JDialog
             		((BanKuaiGeGuBasicTableModel)tablexuandingminustwo.getModel()).sortTableByTimeRangeZhangFu(searchstart,searchend,NodeGivenPeriodDataItem.DAY);
             		((BanKuaiGeGuBasicTableModel)tablexuandingplusone.getModel()).sortTableByTimeRangeZhangFu(searchstart,searchend,NodeGivenPeriodDataItem.DAY);
     			}
-            	
+    			
+    			hourglassCursor = null;
+				Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
+    			setCursor(hourglassCursor2);
             }
         });
         
@@ -3087,448 +3093,448 @@ public class BanKuaiFengXi extends JDialog
 	private JMenuItem menuItemcancelreviewedtoday;
 	
 	
-	private void initializeGuiOfNormal() {
-		setTitle("\u677F\u5757\u5206\u6790");
-		
-		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		Double width = screenSize.getWidth();
-		Double height = screenSize.getHeight();
-		setBounds(10, 10,  width.intValue(), height.intValue());
-		getContentPane().setLayout(new BorderLayout());
-		
-		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-		getContentPane().add(contentPanel, BorderLayout.EAST);
-		
-		UIManager.put("TabbedPane.selected", Color.yellow); 
-		
-		JPanel panel = new JPanel();
-		JPanel panel_1 = new JPanel();
-		
-		JPanel panel_2 = new JPanel();
-		
-		paneldayCandle = new BanKuaiFengXiCandlestickPnl();
-//		paneldayCandle.setBorder(new TitledBorder(null, "\u677F\u5757/\u4E2A\u80A1K\u7EBF\u8D70\u52BF", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		
-		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		tabbedPane.setUI(new com.exchangeinfomanager.commonlib.MetalBorderlessTabbedPaneUI());
-		scrldailydata = new JScrollPane();
-		
-		editorPanebankuai = new JScrollPane();
-		
-		GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
-		gl_contentPanel.setHorizontalGroup(
-			gl_contentPanel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_contentPanel.createSequentialGroup()
-					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_contentPanel.createSequentialGroup()
-							.addGap(18)
-							.addComponent(panel, 0, 0, Short.MAX_VALUE))
-						.addGroup(gl_contentPanel.createSequentialGroup()
-							.addContainerGap()
-							.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, 382, GroupLayout.PREFERRED_SIZE)))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_contentPanel.createSequentialGroup()
-							.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
-								.addComponent(panel_2, GroupLayout.PREFERRED_SIZE, 1107, Short.MAX_VALUE)
-								.addComponent(editorPanebankuai, GroupLayout.DEFAULT_SIZE, 1107, Short.MAX_VALUE))
-							.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-								.addGroup(gl_contentPanel.createSequentialGroup()
-									.addGap(18)
-									.addComponent(scrldailydata, GroupLayout.PREFERRED_SIZE, 375, GroupLayout.PREFERRED_SIZE))
-								.addGroup(gl_contentPanel.createSequentialGroup()
-									.addGap(14)
-									.addComponent(tabbedPane, GroupLayout.PREFERRED_SIZE, 380, GroupLayout.PREFERRED_SIZE))))
-						.addComponent(paneldayCandle, GroupLayout.PREFERRED_SIZE, 1501, GroupLayout.PREFERRED_SIZE))
-					.addContainerGap())
-		);
-		gl_contentPanel.setVerticalGroup(
-			gl_contentPanel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_contentPanel.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_contentPanel.createSequentialGroup()
-							.addComponent(panel, GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE)
-							.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING, false)
-								.addGroup(gl_contentPanel.createSequentialGroup()
-									.addGap(237)
-									.addComponent(panel_2, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(editorPanebankuai, GroupLayout.PREFERRED_SIZE, 60, GroupLayout.PREFERRED_SIZE))
-								.addGroup(gl_contentPanel.createSequentialGroup()
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, 831, GroupLayout.PREFERRED_SIZE))))
-						.addGroup(gl_contentPanel.createSequentialGroup()
-							.addComponent(paneldayCandle, GroupLayout.PREFERRED_SIZE, 327, GroupLayout.PREFERRED_SIZE)
-							.addGap(5)
-							.addComponent(tabbedPane, GroupLayout.PREFERRED_SIZE, 274, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(scrldailydata, GroupLayout.DEFAULT_SIZE, 320, Short.MAX_VALUE)))
-					.addContainerGap())
-		);
-		
-		tfldselectedmsg = new JPanel ();
-		scrldailydata.setViewportView(tfldselectedmsg);
-		tfldselectedmsg.setLayout(new BoxLayout(tfldselectedmsg, BoxLayout.Y_AXIS));
-//		tfldselectedmsg.setEditable(false);
-		
-		pnlcurwkggcjezhanbi = new BanKuaiFengXiPieChartCjePnl(0);
-		tabbedPane.addTab("\u677F\u5757\u5F53\u5468\u6210\u4EA4\u989D\u4E2A\u80A1\u5360\u6BD4", null, pnlcurwkggcjezhanbi, null);
-		pnlcurwkggcjezhanbi.setBorder(new TitledBorder(null, "\u677F\u5757\u5F53\u524D\u5468\u4E2A\u80A1\u5360\u6BD4", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		
-		panelLastWkGeGucjeZhanBi = new BanKuaiFengXiPieChartCjePnl(-1);
-		tabbedPane.addTab("-1\u5468/\u9009\u5B9A\u5468", null, panelLastWkGeGucjeZhanBi, null);
-		panelLastWkGeGucjeZhanBi.setBorder(new TitledBorder(null, "\u677F\u5757\u4E0A\u4E00\u5468\u4E2A\u80A1\u5360\u6BD4", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		
-		tabbedPanegeguzhanbi = new JTabbedPane(JTabbedPane.TOP);
-		tabbedPanegeguzhanbi.setUI(new com.exchangeinfomanager.commonlib.MetalBorderlessTabbedPaneUI());
-		
-		this.panelGgDpCjeZhanBi = new BanKuaiFengXiNodeCombinedCategoryPnl("CJE");
-		this.panelGgDpCjeZhanBi.setAllowDrawAnnoation(false);
-		this.panelGgDpCjeZhanBi.setDrawQueKouLine(false);
-		this.panelGgDpCjeZhanBi.setDrawZhangDieTingLine(false);
-		this.panelGgDpCjeZhanBi.setDrawAverageDailyCjeOfWeekLine(true);
-		this.panelGgDpCjeZhanBi.setDisplayZhanBiInLine(true);
-		tabbedPanegeguzhanbi.addTab("\u4E2A\u80A1\u989D\u5360\u6BD4", null, panelGgDpCjeZhanBi, null);
-		
-		
-		panelggdpcjlwkzhanbi = new BanKuaiFengXiNodeCombinedCategoryPnl("CJL");
-		tabbedPanegeguzhanbi.addTab("\u4E2A\u80A1\u91CF\u5360\u6BD4", null, panelggdpcjlwkzhanbi, null);
-		
-		tabbedPanebkzb = new JTabbedPane(JTabbedPane.TOP);
-		tabbedPanebkzb.setUI(new com.exchangeinfomanager.commonlib.MetalBorderlessTabbedPaneUI());
-		GroupLayout gl_panel_2 = new GroupLayout(panel_2);
-		gl_panel_2.setHorizontalGroup(
-			gl_panel_2.createParallelGroup(Alignment.TRAILING)
-				.addGroup(Alignment.LEADING, gl_panel_2.createSequentialGroup()
-					.addComponent(tabbedPanebkzb, GroupLayout.PREFERRED_SIZE, 567, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-					.addComponent(tabbedPanegeguzhanbi, GroupLayout.PREFERRED_SIZE, 533, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap())
-		);
-		gl_panel_2.setVerticalGroup(
-			gl_panel_2.createParallelGroup(Alignment.TRAILING)
-				.addComponent(tabbedPanebkzb, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 534, Short.MAX_VALUE)
-				.addComponent(tabbedPanegeguzhanbi, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 534, Short.MAX_VALUE)
-		);
-		
-		panelbkwkcjezhanbi = new BanKuaiFengXiNodeCombinedCategoryPnl("CJE");
-		tabbedPanebkzb.addTab("\u677F\u5757\u989D\u5360\u6BD4", null, panelbkwkcjezhanbi, null);
-
-		pnlbkwkcjlzhanbi = new BanKuaiFengXiNodeCombinedCategoryPnl("CJL");
-		tabbedPanebkzb.addTab("\u677F\u5757\u91CF\u5360\u6BD4", null, pnlbkwkcjlzhanbi, null);
-		panel_2.setLayout(gl_panel_2);
-		
-		tabbedPanegegu = new JTabbedPane(JTabbedPane.TOP);
-		tabbedPanegegu.setUI(new com.exchangeinfomanager.commonlib.MetalBorderlessTabbedPaneUI());
-		
-		tabbedPanebk = new JTabbedPane(JTabbedPane.TOP);
-		tabbedPanebk.setUI(new com.exchangeinfomanager.commonlib.MetalBorderlessTabbedPaneUI());
-		combxstockcode = new JStockComboBox(BkChanYeLianTreeNode.TDXGG);
-		
-		combxsearchbk = new JStockComboBox();
-		combxsearchbk.setEditable(true);
-		
-		pnl_paomd = new PaoMaDeng2();
-		pnl_paomd.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
-		
-		
-		btnexportcsv = new JButton();
-		btnexportcsv.setText("\u5BFC\u51FA\u5230CSV");
-		btnexportcsv.setEnabled(false);
-		
-		GroupLayout gl_panel_1 = new GroupLayout(panel_1);
-		gl_panel_1.setHorizontalGroup(
-			gl_panel_1.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_panel_1.createSequentialGroup()
-					.addGap(10)
-					.addGroup(gl_panel_1.createParallelGroup(Alignment.TRAILING)
-						.addGroup(gl_panel_1.createSequentialGroup()
-							.addGap(10)
-							.addComponent(pnl_paomd, GroupLayout.DEFAULT_SIZE, 231, Short.MAX_VALUE)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(combxstockcode, GroupLayout.PREFERRED_SIZE, 115, GroupLayout.PREFERRED_SIZE)
-							.addContainerGap())
-						.addGroup(gl_panel_1.createSequentialGroup()
-							.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-							.addGroup(gl_panel_1.createParallelGroup(Alignment.TRAILING, false)
-								.addGroup(gl_panel_1.createSequentialGroup()
-									.addComponent(combxsearchbk, 0, 0, Short.MAX_VALUE)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(btnexportcsv)
-									.addGap(141))
-								.addGroup(gl_panel_1.createSequentialGroup()
-									.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING, false)
-										.addComponent(tabbedPanebk, Alignment.TRAILING, 0, 0, Short.MAX_VALUE)
-										.addComponent(tabbedPanegegu, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 352, Short.MAX_VALUE))
-									.addContainerGap())))))
-		);
-		gl_panel_1.setVerticalGroup(
-			gl_panel_1.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_panel_1.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING)
-						.addComponent(combxsearchbk, GroupLayout.PREFERRED_SIZE, 29, Short.MAX_VALUE)
-						.addComponent(btnexportcsv, GroupLayout.DEFAULT_SIZE, 29, Short.MAX_VALUE))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(tabbedPanebk, GroupLayout.PREFERRED_SIZE, 370, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(tabbedPanegegu, GroupLayout.PREFERRED_SIZE, 361, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING)
-						.addComponent(combxstockcode, GroupLayout.PREFERRED_SIZE, 31, GroupLayout.PREFERRED_SIZE)
-						.addComponent(pnl_paomd, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE))
-					.addGap(33))
-		);
-		
-		sclpleft = new JScrollPane();
-		tabbedPanebk.addTab("\u5F53\u524D\u5468", null, sclpleft, null);
-		tabbedPanebk.setBackgroundAt(0, Color.ORANGE);
-		
-
-		String bkzbtablepropFileName =   (new SetupSystemConfiguration()).getSystemInstalledPath() + "/config/" +  bkfxsettingprop.getProperty ("BkfxBanKuaiTableInfoSettingFile")  + "/";
-		tableBkZhanBi = new BanKuaiInfoTable(this.stockmanager,bkzbtablepropFileName);	
-		
-		sclpleft.setViewportView(tableBkZhanBi);
-		
-		scrollPane_1 = new JScrollPane();
-		tabbedPanebk.addTab("\u9009\u5B9A\u5468", null, scrollPane_1, null);
-		
-		tableselectedwkbkzb = new BanKuaiInfoTable(this.stockmanager,bkzbtablepropFileName);
-		scrollPane_1.setViewportView(tableselectedwkbkzb);
-		
-		sclpinfosummary = new JScrollPane();
-		tabbedPanebk.addTab("\u7EFC\u5408\u4FE1\u606F", null, sclpinfosummary, null);
-		
-		pnlextrainfo = new JPanel();
-		sclpinfosummary.setViewportView(pnlextrainfo);
-		pnlextrainfo.setLayout(new BoxLayout(pnlextrainfo, BoxLayout.Y_AXIS));
-		
-//		editorPanenodeinfo = new DisplayBkGgInfoEditorPane();
-//		editorPanenodeinfo.setClearContentsBeforeDisplayNewInfo(true);
-//		sclpinfosummary.setViewportView(editorPanenodeinfo);
-//		editorPanenodeinfo.setEditable(false);
-		
-		JPanel panel_3 = new JPanel();
-		tabbedPanebk.addTab("\u5173\u952E\u8BCD", null, panel_3, null);
-		panel_3.setLayout(new BoxLayout(panel_3, BoxLayout.Y_AXIS));
-		
-		pnlbktags = new TagsPanel("",TagsPanel.HIDEHEADERMODE,TagsPanel.PARTCONTROLMODE);
-		panel_3.add(pnlbktags);
-		
-		pnlstocktags = new TagsPanel("",TagsPanel.HIDEHEADERMODE,TagsPanel.PARTCONTROLMODE);
-		panel_3.add(pnlstocktags);
-		
-		JScrollPane scrollPane = new JScrollPane();
-		tabbedPanebk.addTab("\u4EA7\u4E1A\u94FE", null, scrollPane, null);
-		
-//		InvisibleTreeModel treeModel = (InvisibleTreeModel)this.cyldbopt.getBkChanYeLianTree().getModel();
-		cyltreecopy = CreateExchangeTree.CreateTreeOfChanYeLian();//new BanKuaiAndStockTree(treeModel,"cyltreecopy");
-		
-		scrollPane.setViewportView(cyltreecopy);
-		
-		
-		String ggzbtablepropFileName =   (new SetupSystemConfiguration()).getSystemInstalledPath() + "/config/" +  bkfxsettingprop.getProperty ("BkfxGeGuTableInfoSettingFile")  + "/";
-		String ggexternaltablepropFileName =   (new SetupSystemConfiguration()).getSystemInstalledPath() + "/config/" +  bkfxsettingprop.getProperty ("BkfxGeGuExternalTableInfoSettingFile")  + "/";
-		JScrollPane scrollPanedangqian = new JScrollPane();
-		tabbedPanegegu.addTab("当前周", null, scrollPanedangqian, null);
-		tabbedPanegegu.setBackgroundAt(0, Color.ORANGE);
-		tableGuGuZhanBiInBk = new BanKuaiGeGuTableFromPropertiesFile (this.stockmanager,ggzbtablepropFileName);
-//		tableGuGuZhanBiInBk.hideZhanBiColumn(1);
-//		tableGuGuZhanBiInBk.sortByZhanBiGrowthRate();
-		scrollPanedangqian.setViewportView(tableGuGuZhanBiInBk);
-		
-//		JScrollBar scrollbarGuGuZhanBiInBk = new JScrollBar(JScrollBar.VERTICAL);
-//		scrollbarGuGuZhanBiInBk.setUnitIncrement(10);
-//	    scrollbarGuGuZhanBiInBk.setUI(new MetalScrollBarUI() { //https://stackoverflow.com/questions/14176848/java-coloured-scroll-bar-search-result
-//	    	//https://java-swing-tips.blogspot.com/search/label/Matcher?m=0
-//	      @Override protected void paintTrack(
-//	            Graphics g, JComponent c, Rectangle trackBounds) {
-//	        super.paintTrack(g, c, trackBounds);
-////	        Rectangle rect = tabbedPanegegu.getBounds();
-////	        double sy = trackBounds.getHeight() / rect.getHeight();
-////	        AffineTransform at = AffineTransform.getScaleInstance(1.0, sy);
-//	        g.setColor(Color.BLUE.darker());
-//	        
-//	        BanKuai interbk = ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).getInterSetctionBanKuai();
-//		    if(interbk!= null) {
-//		    	List<BkChanYeLianTreeNode> allstks = ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel() ).getAllStocks();
-//		    	int rownum = allstks.size();
-//		    	for(BkChanYeLianTreeNode tmpnode : allstks) {
-//		    		if( interbk.getBanKuaiGeGu (tmpnode.getMyOwnCode())  != null) {
-//		    			Integer rowindex = ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel() ).getStockRowIndex(tmpnode.getMyOwnCode() );
-//						if( rowindex  != null && rowindex >=0 ) {
-//							int modelRow = tableGuGuZhanBiInBk.convertRowIndexToView(rowindex);
-////							int width = tableTempGeGu.getCellRect(modelRow, 0, true).width;
-////							int height = tableTempGeGu.getCellRect(modelRow, 0, true).height;
-////						    Rectangle r = new Rectangle(width, height * modelRow);
-////						    Rectangle s = at.createTransformedShape(r).getBounds();
-//						    int h = 2; //Math.max(2, s.height-2);
-//						    int zuobiaoy = (trackBounds.height* modelRow)/rownum ;
-//					        g.fillRect(trackBounds.x+2, zuobiaoy , trackBounds.width, h);
-//						}
-//		    		}
-//		    	}
-//		    }
-//	      }
-//	    });
-//	    scrollPanedangqian.setVerticalScrollBar(scrollbarGuGuZhanBiInBk);
-		
-		JScrollPane scrollPanGeGuExtralInfo = new JScrollPane();
-		tabbedPanegegu.addTab("\u5176\u4ED6\u4FE1\u606F", null, scrollPanGeGuExtralInfo, null);
-		tableExternalInfo = new BanKuaiGeGuExternalInfoTableFromPropertiesFile (this.stockmanager,ggexternaltablepropFileName);
-		scrollPanGeGuExtralInfo.setViewportView(tableExternalInfo);
-		
-		JScrollPane scrollPanexuanding = new JScrollPane();
-		tabbedPanegegu.addTab("选定周", null, scrollPanexuanding, null);
-		tabbedPanegegu.setBackgroundAt(2, UIManager.getColor("MenuItem.selectionBackground"));
-		tablexuandingzhou = new BanKuaiGeGuTableFromPropertiesFile (this.stockmanager,ggzbtablepropFileName);
-		scrollPanexuanding.setViewportView(tablexuandingzhou);
-		
-		JScrollPane scrollPanexuandingminusone = new JScrollPane();
-		tabbedPanegegu.addTab("\u9009\u5B9A\u5468-1", null, scrollPanexuandingminusone, null);
-//		tabbedPanegegu.setBackgroundAt(3, Color.LIGHT_GRAY);
-		tablexuandingminusone = new BanKuaiGeGuTableFromPropertiesFile (this.stockmanager,ggzbtablepropFileName);
-		scrollPanexuandingminusone.setViewportView(tablexuandingminusone);
-		
-		JScrollPane scrollPanexuandingminustwo = new JScrollPane();
-		tabbedPanegegu.addTab("\u9009\u5B9A\u5468-2", null, scrollPanexuandingminustwo, null);
-		tablexuandingminustwo = new BanKuaiGeGuTableFromPropertiesFile (this.stockmanager,ggzbtablepropFileName);
-		scrollPanexuandingminustwo.setViewportView(tablexuandingminustwo);
-		
-		JScrollPane scrollPanexuandingplusone = new JScrollPane();
-		tabbedPanegegu.addTab("\u9009\u5B9A\u5468+1", null, scrollPanexuandingplusone, null);
-		
-		tablexuandingplusone = new BanKuaiGeGuTableFromPropertiesFile (this.stockmanager,ggzbtablepropFileName);
-		scrollPanexuandingplusone.setViewportView(tablexuandingplusone);
-		
-		JScrollPane scrollPaneTempGeGu = new JScrollPane();
-		tableTempGeGu = new BanKuaiGeGuTableFromPropertiesFile (this.stockmanager,ggzbtablepropFileName);
-		scrollPaneTempGeGu.setViewportView(tableTempGeGu);
-		
-//		JScrollBar scrollbarTempGeGu = new JScrollBar(JScrollBar.VERTICAL);
-//		scrollbarTempGeGu.setUnitIncrement(10);
-//	    scrollbarTempGeGu.setUI(new MetalScrollBarUI() { //https://stackoverflow.com/questions/14176848/java-coloured-scroll-bar-search-result
-//	    	//https://java-swing-tips.blogspot.com/search/label/Matcher?m=0
-//	      @Override protected void paintTrack(
-//	            Graphics g, JComponent c, Rectangle trackBounds) {
-//	        super.paintTrack(g, c, trackBounds);
-////	        Rectangle rect = tabbedPanegegu.getBounds();
-////	        double sy = trackBounds.getHeight() / rect.getHeight();
-////	        AffineTransform at = AffineTransform.getScaleInstance(1.0, sy);
-//	        g.setColor(Color.BLUE.darker());
-//	        
-//	        BanKuaiGeGuTableModelFromPropertiesFile tableTempGeGuModel = (BanKuaiGeGuTableModelFromPropertiesFile)tableTempGeGu.getModel(); 
-//	        BanKuai interbk = tableTempGeGuModel.getInterSetctionBanKuai();
-//		    if(interbk!= null) {
-//		    	List<BkChanYeLianTreeNode> allstks = tableTempGeGuModel.getAllStocks();
-//		    	int rownum = allstks.size();
-//		    	for(BkChanYeLianTreeNode tmpnode : allstks) {
-//		    		if( interbk.getBanKuaiGeGu (tmpnode.getMyOwnCode())  != null) {
-//		    			Integer rowindex = tableTempGeGuModel.getStockRowIndex(tmpnode.getMyOwnCode() );
-//						if( rowindex  != null && rowindex >=0 ) {
-//							int modelRow = tableTempGeGu.convertRowIndexToView(rowindex);
-////							int width = tableTempGeGu.getCellRect(modelRow, 0, true).width;
-////							int height = tableTempGeGu.getCellRect(modelRow, 0, true).height;
-////						    Rectangle r = new Rectangle(width, height * modelRow);
-////						    Rectangle s = at.createTransformedShape(r).getBounds();
-//						    int h = 2; //Math.max(2, s.height-2);
-//						    int zuobiaoy = (trackBounds.height* modelRow)/rownum ;
-//					        g.fillRect(trackBounds.x+2, zuobiaoy , trackBounds.width, h);
-//						}
-//		    		}
-//		    	}
-//		    }
-//	      }
-//	    });
-//	    scrollPaneTempGeGu.setVerticalScrollBar(scrollbarTempGeGu);
-		tabbedPanegegu.addTab("\u4E34\u65F6\u4E2A\u80A1", null, scrollPaneTempGeGu, null);
-		tabbedPanegegu.setBackgroundAt(6, Color.CYAN);
-		
-		
-		
-		panel_1.setLayout(gl_panel_1);
-		
-//		dateChooser = new JDateChooser();
-		dateChooser = new JStockCalendarDateChooser(new StockCalendar());
-		dateChooser.setDateFormatString("yyyy-MM-dd");
-		dateChooser.setDate(new Date() );
-		
-		bkfxCancelAction = new AbstractAction("重置") {
-
-		      private static final long serialVersionUID = 4669650683189592364L;
-
-		      @Override
-		      public void actionPerformed(final ActionEvent e) {
-//		        if (bkfxtask == null) {
-//		        	if(!btnresetdate.isEnabled())
-//		        		return;
-//		        	
-//		        	LocalDate cursettingdate = dateChooser.getLocalDate(); //.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-//		        	if(!cursettingdate.equals(LocalDate.now())) {
-////		        		LocalDate newdate =  LocalDate.now();
-//		        		adjustDate (LocalDate.now());
-////						dateChooser.setDate(Date.from(newdate.atStartOfDay(ZoneId.systemDefault()).toInstant() ) );
-////						btnresetdate.setEnabled(false);
-////						btnsixmonthafter.setEnabled(false);
-//		        	} else {
-//		        		btnresetdate.setEnabled(false);
-//		        		
-//		        	}
-//		        } else { //当在做板块分析时候，如果用户调整时间，就取消板块分析任务。其实感觉也没多大必要
-//		        	bkfxtask.cancel(true);
-//		        }
-		      }
-		    		
-		 };
-		
-		btnresetdate = new JButton(bkfxCancelAction);
-		btnresetdate.setText("\u4ECA\u5929");
-		
-		chxbxwholeweek = new JCheckBox("\u8BA1\u7B97\u5B8C\u6574\u5468");
-		chxbxwholeweek.setToolTipText("\u5982\u4E0D\u52FE\u9009\uFF0C\u5219\u8BA1\u7B97\u5230\u88AB\u9009\u62E9\u7684\u90A3\u4E00\u5929");
-		chxbxwholeweek.setSelected(true);
-		
-		pnlZhiShu = new JPanel();
-		
-		GroupLayout gl_panel = new GroupLayout(panel);
-		gl_panel.setHorizontalGroup(
-			gl_panel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_panel.createSequentialGroup()
-					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_panel.createSequentialGroup()
-							.addContainerGap()
-							.addComponent(dateChooser, GroupLayout.PREFERRED_SIZE, 133, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(chxbxwholeweek)
-							.addGap(18)
-							.addComponent(btnresetdate))
-						.addComponent(pnlZhiShu, GroupLayout.PREFERRED_SIZE, 370, GroupLayout.PREFERRED_SIZE))
-					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-		);
-		gl_panel.setVerticalGroup(
-			gl_panel.createParallelGroup(Alignment.TRAILING)
-				.addGroup(gl_panel.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(gl_panel.createParallelGroup(Alignment.TRAILING)
-						.addComponent(dateChooser, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)
-						.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
-							.addComponent(chxbxwholeweek)
-							.addComponent(btnresetdate, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)))
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addComponent(pnlZhiShu, GroupLayout.PREFERRED_SIZE, 45, GroupLayout.PREFERRED_SIZE))
-		);
-		
-		panel.setLayout(gl_panel);
-		contentPanel.setLayout(gl_contentPanel);
-		{
-			JPanel buttonPane = new JPanel();
-			getContentPane().add(buttonPane, BorderLayout.SOUTH);
-			
-		}
-		
-		reFormatGui ();
-	}
+//	private void initializeGuiOfNormal() {
+//		setTitle("\u677F\u5757\u5206\u6790");
+//		
+//		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+//		Double width = screenSize.getWidth();
+//		Double height = screenSize.getHeight();
+//		setBounds(10, 10,  width.intValue(), height.intValue());
+//		getContentPane().setLayout(new BorderLayout());
+//		
+//		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+//		getContentPane().add(contentPanel, BorderLayout.EAST);
+//		
+//		UIManager.put("TabbedPane.selected", Color.yellow); 
+//		
+//		JPanel panel = new JPanel();
+//		JPanel panel_1 = new JPanel();
+//		
+//		JPanel panel_2 = new JPanel();
+//		
+//		paneldayCandle = new BanKuaiFengXiCandlestickPnl();
+////		paneldayCandle.setBorder(new TitledBorder(null, "\u677F\u5757/\u4E2A\u80A1K\u7EBF\u8D70\u52BF", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+//		
+//		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+//		tabbedPane.setUI(new com.exchangeinfomanager.commonlib.MetalBorderlessTabbedPaneUI());
+//		scrldailydata = new JScrollPane();
+//		
+//		editorPanebankuai = new JScrollPane();
+//		
+//		GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
+//		gl_contentPanel.setHorizontalGroup(
+//			gl_contentPanel.createParallelGroup(Alignment.LEADING)
+//				.addGroup(gl_contentPanel.createSequentialGroup()
+//					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+//						.addGroup(gl_contentPanel.createSequentialGroup()
+//							.addGap(18)
+//							.addComponent(panel, 0, 0, Short.MAX_VALUE))
+//						.addGroup(gl_contentPanel.createSequentialGroup()
+//							.addContainerGap()
+//							.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, 382, GroupLayout.PREFERRED_SIZE)))
+//					.addPreferredGap(ComponentPlacement.RELATED)
+//					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+//						.addGroup(gl_contentPanel.createSequentialGroup()
+//							.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
+//								.addComponent(panel_2, GroupLayout.PREFERRED_SIZE, 1107, Short.MAX_VALUE)
+//								.addComponent(editorPanebankuai, GroupLayout.DEFAULT_SIZE, 1107, Short.MAX_VALUE))
+//							.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+//								.addGroup(gl_contentPanel.createSequentialGroup()
+//									.addGap(18)
+//									.addComponent(scrldailydata, GroupLayout.PREFERRED_SIZE, 375, GroupLayout.PREFERRED_SIZE))
+//								.addGroup(gl_contentPanel.createSequentialGroup()
+//									.addGap(14)
+//									.addComponent(tabbedPane, GroupLayout.PREFERRED_SIZE, 380, GroupLayout.PREFERRED_SIZE))))
+//						.addComponent(paneldayCandle, GroupLayout.PREFERRED_SIZE, 1501, GroupLayout.PREFERRED_SIZE))
+//					.addContainerGap())
+//		);
+//		gl_contentPanel.setVerticalGroup(
+//			gl_contentPanel.createParallelGroup(Alignment.LEADING)
+//				.addGroup(gl_contentPanel.createSequentialGroup()
+//					.addContainerGap()
+//					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+//						.addGroup(gl_contentPanel.createSequentialGroup()
+//							.addComponent(panel, GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE)
+//							.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING, false)
+//								.addGroup(gl_contentPanel.createSequentialGroup()
+//									.addGap(237)
+//									.addComponent(panel_2, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+//									.addPreferredGap(ComponentPlacement.RELATED)
+//									.addComponent(editorPanebankuai, GroupLayout.PREFERRED_SIZE, 60, GroupLayout.PREFERRED_SIZE))
+//								.addGroup(gl_contentPanel.createSequentialGroup()
+//									.addPreferredGap(ComponentPlacement.RELATED)
+//									.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, 831, GroupLayout.PREFERRED_SIZE))))
+//						.addGroup(gl_contentPanel.createSequentialGroup()
+//							.addComponent(paneldayCandle, GroupLayout.PREFERRED_SIZE, 327, GroupLayout.PREFERRED_SIZE)
+//							.addGap(5)
+//							.addComponent(tabbedPane, GroupLayout.PREFERRED_SIZE, 274, GroupLayout.PREFERRED_SIZE)
+//							.addPreferredGap(ComponentPlacement.RELATED)
+//							.addComponent(scrldailydata, GroupLayout.DEFAULT_SIZE, 320, Short.MAX_VALUE)))
+//					.addContainerGap())
+//		);
+//		
+//		tfldselectedmsg = new JPanel ();
+//		scrldailydata.setViewportView(tfldselectedmsg);
+//		tfldselectedmsg.setLayout(new BoxLayout(tfldselectedmsg, BoxLayout.Y_AXIS));
+////		tfldselectedmsg.setEditable(false);
+//		
+//		pnlcurwkggcjezhanbi = new BanKuaiFengXiPieChartCjePnl(0);
+//		tabbedPane.addTab("\u677F\u5757\u5F53\u5468\u6210\u4EA4\u989D\u4E2A\u80A1\u5360\u6BD4", null, pnlcurwkggcjezhanbi, null);
+//		pnlcurwkggcjezhanbi.setBorder(new TitledBorder(null, "\u677F\u5757\u5F53\u524D\u5468\u4E2A\u80A1\u5360\u6BD4", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+//		
+//		panelLastWkGeGucjeZhanBi = new BanKuaiFengXiPieChartCjePnl(-1);
+//		tabbedPane.addTab("-1\u5468/\u9009\u5B9A\u5468", null, panelLastWkGeGucjeZhanBi, null);
+//		panelLastWkGeGucjeZhanBi.setBorder(new TitledBorder(null, "\u677F\u5757\u4E0A\u4E00\u5468\u4E2A\u80A1\u5360\u6BD4", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+//		
+//		tabbedPanegeguzhanbi = new JTabbedPane(JTabbedPane.TOP);
+//		tabbedPanegeguzhanbi.setUI(new com.exchangeinfomanager.commonlib.MetalBorderlessTabbedPaneUI());
+//		
+//		this.panelGgDpCjeZhanBi = new BanKuaiFengXiNodeCombinedCategoryPnl("CJE");
+//		this.panelGgDpCjeZhanBi.setAllowDrawAnnoation(false);
+//		this.panelGgDpCjeZhanBi.setDrawQueKouLine(false);
+//		this.panelGgDpCjeZhanBi.setDrawZhangDieTingLine(false);
+//		this.panelGgDpCjeZhanBi.setDrawAverageDailyCjeOfWeekLine(true);
+//		this.panelGgDpCjeZhanBi.setDisplayZhanBiInLine(true);
+//		tabbedPanegeguzhanbi.addTab("\u4E2A\u80A1\u989D\u5360\u6BD4", null, panelGgDpCjeZhanBi, null);
+//		
+//		
+//		panelggdpcjlwkzhanbi = new BanKuaiFengXiNodeCombinedCategoryPnl("CJL");
+//		tabbedPanegeguzhanbi.addTab("\u4E2A\u80A1\u91CF\u5360\u6BD4", null, panelggdpcjlwkzhanbi, null);
+//		
+//		tabbedPanebkzb = new JTabbedPane(JTabbedPane.TOP);
+//		tabbedPanebkzb.setUI(new com.exchangeinfomanager.commonlib.MetalBorderlessTabbedPaneUI());
+//		GroupLayout gl_panel_2 = new GroupLayout(panel_2);
+//		gl_panel_2.setHorizontalGroup(
+//			gl_panel_2.createParallelGroup(Alignment.TRAILING)
+//				.addGroup(Alignment.LEADING, gl_panel_2.createSequentialGroup()
+//					.addComponent(tabbedPanebkzb, GroupLayout.PREFERRED_SIZE, 567, GroupLayout.PREFERRED_SIZE)
+//					.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+//					.addComponent(tabbedPanegeguzhanbi, GroupLayout.PREFERRED_SIZE, 533, GroupLayout.PREFERRED_SIZE)
+//					.addContainerGap())
+//		);
+//		gl_panel_2.setVerticalGroup(
+//			gl_panel_2.createParallelGroup(Alignment.TRAILING)
+//				.addComponent(tabbedPanebkzb, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 534, Short.MAX_VALUE)
+//				.addComponent(tabbedPanegeguzhanbi, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 534, Short.MAX_VALUE)
+//		);
+//		
+//		panelbkwkcjezhanbi = new BanKuaiFengXiNodeCombinedCategoryPnl("CJE");
+//		tabbedPanebkzb.addTab("\u677F\u5757\u989D\u5360\u6BD4", null, panelbkwkcjezhanbi, null);
+//
+//		pnlbkwkcjlzhanbi = new BanKuaiFengXiNodeCombinedCategoryPnl("CJL");
+//		tabbedPanebkzb.addTab("\u677F\u5757\u91CF\u5360\u6BD4", null, pnlbkwkcjlzhanbi, null);
+//		panel_2.setLayout(gl_panel_2);
+//		
+//		tabbedPanegegu = new JTabbedPane(JTabbedPane.TOP);
+//		tabbedPanegegu.setUI(new com.exchangeinfomanager.commonlib.MetalBorderlessTabbedPaneUI());
+//		
+//		tabbedPanebk = new JTabbedPane(JTabbedPane.TOP);
+//		tabbedPanebk.setUI(new com.exchangeinfomanager.commonlib.MetalBorderlessTabbedPaneUI());
+//		combxstockcode = new JStockComboBox(BkChanYeLianTreeNode.TDXGG);
+//		
+//		combxsearchbk = new JStockComboBox();
+//		combxsearchbk.setEditable(true);
+//		
+//		pnl_paomd = new PaoMaDeng2();
+//		pnl_paomd.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+//		
+//		
+//		btnexportcsv = new JButton();
+//		btnexportcsv.setText("\u5BFC\u51FA\u5230CSV");
+//		btnexportcsv.setEnabled(false);
+//		
+//		GroupLayout gl_panel_1 = new GroupLayout(panel_1);
+//		gl_panel_1.setHorizontalGroup(
+//			gl_panel_1.createParallelGroup(Alignment.LEADING)
+//				.addGroup(gl_panel_1.createSequentialGroup()
+//					.addGap(10)
+//					.addGroup(gl_panel_1.createParallelGroup(Alignment.TRAILING)
+//						.addGroup(gl_panel_1.createSequentialGroup()
+//							.addGap(10)
+//							.addComponent(pnl_paomd, GroupLayout.DEFAULT_SIZE, 231, Short.MAX_VALUE)
+//							.addPreferredGap(ComponentPlacement.RELATED)
+//							.addComponent(combxstockcode, GroupLayout.PREFERRED_SIZE, 115, GroupLayout.PREFERRED_SIZE)
+//							.addContainerGap())
+//						.addGroup(gl_panel_1.createSequentialGroup()
+//							.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+//							.addGroup(gl_panel_1.createParallelGroup(Alignment.TRAILING, false)
+//								.addGroup(gl_panel_1.createSequentialGroup()
+//									.addComponent(combxsearchbk, 0, 0, Short.MAX_VALUE)
+//									.addPreferredGap(ComponentPlacement.RELATED)
+//									.addComponent(btnexportcsv)
+//									.addGap(141))
+//								.addGroup(gl_panel_1.createSequentialGroup()
+//									.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING, false)
+//										.addComponent(tabbedPanebk, Alignment.TRAILING, 0, 0, Short.MAX_VALUE)
+//										.addComponent(tabbedPanegegu, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 352, Short.MAX_VALUE))
+//									.addContainerGap())))))
+//		);
+//		gl_panel_1.setVerticalGroup(
+//			gl_panel_1.createParallelGroup(Alignment.LEADING)
+//				.addGroup(gl_panel_1.createSequentialGroup()
+//					.addContainerGap()
+//					.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING)
+//						.addComponent(combxsearchbk, GroupLayout.PREFERRED_SIZE, 29, Short.MAX_VALUE)
+//						.addComponent(btnexportcsv, GroupLayout.DEFAULT_SIZE, 29, Short.MAX_VALUE))
+//					.addPreferredGap(ComponentPlacement.RELATED)
+//					.addComponent(tabbedPanebk, GroupLayout.PREFERRED_SIZE, 370, GroupLayout.PREFERRED_SIZE)
+//					.addPreferredGap(ComponentPlacement.RELATED)
+//					.addComponent(tabbedPanegegu, GroupLayout.PREFERRED_SIZE, 361, GroupLayout.PREFERRED_SIZE)
+//					.addPreferredGap(ComponentPlacement.RELATED)
+//					.addGroup(gl_panel_1.createParallelGroup(Alignment.LEADING)
+//						.addComponent(combxstockcode, GroupLayout.PREFERRED_SIZE, 31, GroupLayout.PREFERRED_SIZE)
+//						.addComponent(pnl_paomd, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE))
+//					.addGap(33))
+//		);
+//		
+//		sclpleft = new JScrollPane();
+//		tabbedPanebk.addTab("\u5F53\u524D\u5468", null, sclpleft, null);
+//		tabbedPanebk.setBackgroundAt(0, Color.ORANGE);
+//		
+//
+//		String bkzbtablepropFileName =   (new SetupSystemConfiguration()).getSystemInstalledPath() + "/config/" +  bkfxsettingprop.getProperty ("BkfxBanKuaiTableInfoSettingFile")  + "/";
+//		tableBkZhanBi = new BanKuaiInfoTable(this.stockmanager,bkzbtablepropFileName);	
+//		
+//		sclpleft.setViewportView(tableBkZhanBi);
+//		
+//		scrollPane_1 = new JScrollPane();
+//		tabbedPanebk.addTab("\u9009\u5B9A\u5468", null, scrollPane_1, null);
+//		
+//		tableselectedwkbkzb = new BanKuaiInfoTable(this.stockmanager,bkzbtablepropFileName);
+//		scrollPane_1.setViewportView(tableselectedwkbkzb);
+//		
+//		sclpinfosummary = new JScrollPane();
+//		tabbedPanebk.addTab("\u7EFC\u5408\u4FE1\u606F", null, sclpinfosummary, null);
+//		
+//		pnlextrainfo = new JPanel();
+//		sclpinfosummary.setViewportView(pnlextrainfo);
+//		pnlextrainfo.setLayout(new BoxLayout(pnlextrainfo, BoxLayout.Y_AXIS));
+//		
+////		editorPanenodeinfo = new DisplayBkGgInfoEditorPane();
+////		editorPanenodeinfo.setClearContentsBeforeDisplayNewInfo(true);
+////		sclpinfosummary.setViewportView(editorPanenodeinfo);
+////		editorPanenodeinfo.setEditable(false);
+//		
+//		JPanel panel_3 = new JPanel();
+//		tabbedPanebk.addTab("\u5173\u952E\u8BCD", null, panel_3, null);
+//		panel_3.setLayout(new BoxLayout(panel_3, BoxLayout.Y_AXIS));
+//		
+//		pnlbktags = new TagsPanel("",TagsPanel.HIDEHEADERMODE,TagsPanel.PARTCONTROLMODE);
+//		panel_3.add(pnlbktags);
+//		
+//		pnlstocktags = new TagsPanel("",TagsPanel.HIDEHEADERMODE,TagsPanel.PARTCONTROLMODE);
+//		panel_3.add(pnlstocktags);
+//		
+//		JScrollPane scrollPane = new JScrollPane();
+//		tabbedPanebk.addTab("\u4EA7\u4E1A\u94FE", null, scrollPane, null);
+//		
+////		InvisibleTreeModel treeModel = (InvisibleTreeModel)this.cyldbopt.getBkChanYeLianTree().getModel();
+//		cyltreecopy = CreateExchangeTree.CreateTreeOfChanYeLian();//new BanKuaiAndStockTree(treeModel,"cyltreecopy");
+//		
+//		scrollPane.setViewportView(cyltreecopy);
+//		
+//		
+//		String ggzbtablepropFileName =   (new SetupSystemConfiguration()).getSystemInstalledPath() + "/config/" +  bkfxsettingprop.getProperty ("BkfxGeGuTableInfoSettingFile")  + "/";
+//		String ggexternaltablepropFileName =   (new SetupSystemConfiguration()).getSystemInstalledPath() + "/config/" +  bkfxsettingprop.getProperty ("BkfxGeGuExternalTableInfoSettingFile")  + "/";
+//		JScrollPane scrollPanedangqian = new JScrollPane();
+//		tabbedPanegegu.addTab("当前周", null, scrollPanedangqian, null);
+//		tabbedPanegegu.setBackgroundAt(0, Color.ORANGE);
+//		tableGuGuZhanBiInBk = new BanKuaiGeGuTableFromPropertiesFile (this.stockmanager,ggzbtablepropFileName);
+////		tableGuGuZhanBiInBk.hideZhanBiColumn(1);
+////		tableGuGuZhanBiInBk.sortByZhanBiGrowthRate();
+//		scrollPanedangqian.setViewportView(tableGuGuZhanBiInBk);
+//		
+////		JScrollBar scrollbarGuGuZhanBiInBk = new JScrollBar(JScrollBar.VERTICAL);
+////		scrollbarGuGuZhanBiInBk.setUnitIncrement(10);
+////	    scrollbarGuGuZhanBiInBk.setUI(new MetalScrollBarUI() { //https://stackoverflow.com/questions/14176848/java-coloured-scroll-bar-search-result
+////	    	//https://java-swing-tips.blogspot.com/search/label/Matcher?m=0
+////	      @Override protected void paintTrack(
+////	            Graphics g, JComponent c, Rectangle trackBounds) {
+////	        super.paintTrack(g, c, trackBounds);
+//////	        Rectangle rect = tabbedPanegegu.getBounds();
+//////	        double sy = trackBounds.getHeight() / rect.getHeight();
+//////	        AffineTransform at = AffineTransform.getScaleInstance(1.0, sy);
+////	        g.setColor(Color.BLUE.darker());
+////	        
+////	        BanKuai interbk = ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).getInterSetctionBanKuai();
+////		    if(interbk!= null) {
+////		    	List<BkChanYeLianTreeNode> allstks = ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel() ).getAllStocks();
+////		    	int rownum = allstks.size();
+////		    	for(BkChanYeLianTreeNode tmpnode : allstks) {
+////		    		if( interbk.getBanKuaiGeGu (tmpnode.getMyOwnCode())  != null) {
+////		    			Integer rowindex = ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel() ).getStockRowIndex(tmpnode.getMyOwnCode() );
+////						if( rowindex  != null && rowindex >=0 ) {
+////							int modelRow = tableGuGuZhanBiInBk.convertRowIndexToView(rowindex);
+//////							int width = tableTempGeGu.getCellRect(modelRow, 0, true).width;
+//////							int height = tableTempGeGu.getCellRect(modelRow, 0, true).height;
+//////						    Rectangle r = new Rectangle(width, height * modelRow);
+//////						    Rectangle s = at.createTransformedShape(r).getBounds();
+////						    int h = 2; //Math.max(2, s.height-2);
+////						    int zuobiaoy = (trackBounds.height* modelRow)/rownum ;
+////					        g.fillRect(trackBounds.x+2, zuobiaoy , trackBounds.width, h);
+////						}
+////		    		}
+////		    	}
+////		    }
+////	      }
+////	    });
+////	    scrollPanedangqian.setVerticalScrollBar(scrollbarGuGuZhanBiInBk);
+//		
+//		JScrollPane scrollPanGeGuExtralInfo = new JScrollPane();
+//		tabbedPanegegu.addTab("\u5176\u4ED6\u4FE1\u606F", null, scrollPanGeGuExtralInfo, null);
+//		tableExternalInfo = new BanKuaiGeGuExternalInfoTableFromPropertiesFile (this.stockmanager,ggexternaltablepropFileName);
+//		scrollPanGeGuExtralInfo.setViewportView(tableExternalInfo);
+//		
+//		JScrollPane scrollPanexuanding = new JScrollPane();
+//		tabbedPanegegu.addTab("选定周", null, scrollPanexuanding, null);
+//		tabbedPanegegu.setBackgroundAt(2, UIManager.getColor("MenuItem.selectionBackground"));
+//		tablexuandingzhou = new BanKuaiGeGuTableFromPropertiesFile (this.stockmanager,ggzbtablepropFileName);
+//		scrollPanexuanding.setViewportView(tablexuandingzhou);
+//		
+//		JScrollPane scrollPanexuandingminusone = new JScrollPane();
+//		tabbedPanegegu.addTab("\u9009\u5B9A\u5468-1", null, scrollPanexuandingminusone, null);
+////		tabbedPanegegu.setBackgroundAt(3, Color.LIGHT_GRAY);
+//		tablexuandingminusone = new BanKuaiGeGuTableFromPropertiesFile (this.stockmanager,ggzbtablepropFileName);
+//		scrollPanexuandingminusone.setViewportView(tablexuandingminusone);
+//		
+//		JScrollPane scrollPanexuandingminustwo = new JScrollPane();
+//		tabbedPanegegu.addTab("\u9009\u5B9A\u5468-2", null, scrollPanexuandingminustwo, null);
+//		tablexuandingminustwo = new BanKuaiGeGuTableFromPropertiesFile (this.stockmanager,ggzbtablepropFileName);
+//		scrollPanexuandingminustwo.setViewportView(tablexuandingminustwo);
+//		
+//		JScrollPane scrollPanexuandingplusone = new JScrollPane();
+//		tabbedPanegegu.addTab("\u9009\u5B9A\u5468+1", null, scrollPanexuandingplusone, null);
+//		
+//		tablexuandingplusone = new BanKuaiGeGuTableFromPropertiesFile (this.stockmanager,ggzbtablepropFileName);
+//		scrollPanexuandingplusone.setViewportView(tablexuandingplusone);
+//		
+//		JScrollPane scrollPaneTempGeGu = new JScrollPane();
+//		tableTempGeGu = new BanKuaiGeGuTableFromPropertiesFile (this.stockmanager,ggzbtablepropFileName);
+//		scrollPaneTempGeGu.setViewportView(tableTempGeGu);
+//		
+////		JScrollBar scrollbarTempGeGu = new JScrollBar(JScrollBar.VERTICAL);
+////		scrollbarTempGeGu.setUnitIncrement(10);
+////	    scrollbarTempGeGu.setUI(new MetalScrollBarUI() { //https://stackoverflow.com/questions/14176848/java-coloured-scroll-bar-search-result
+////	    	//https://java-swing-tips.blogspot.com/search/label/Matcher?m=0
+////	      @Override protected void paintTrack(
+////	            Graphics g, JComponent c, Rectangle trackBounds) {
+////	        super.paintTrack(g, c, trackBounds);
+//////	        Rectangle rect = tabbedPanegegu.getBounds();
+//////	        double sy = trackBounds.getHeight() / rect.getHeight();
+//////	        AffineTransform at = AffineTransform.getScaleInstance(1.0, sy);
+////	        g.setColor(Color.BLUE.darker());
+////	        
+////	        BanKuaiGeGuTableModelFromPropertiesFile tableTempGeGuModel = (BanKuaiGeGuTableModelFromPropertiesFile)tableTempGeGu.getModel(); 
+////	        BanKuai interbk = tableTempGeGuModel.getInterSetctionBanKuai();
+////		    if(interbk!= null) {
+////		    	List<BkChanYeLianTreeNode> allstks = tableTempGeGuModel.getAllStocks();
+////		    	int rownum = allstks.size();
+////		    	for(BkChanYeLianTreeNode tmpnode : allstks) {
+////		    		if( interbk.getBanKuaiGeGu (tmpnode.getMyOwnCode())  != null) {
+////		    			Integer rowindex = tableTempGeGuModel.getStockRowIndex(tmpnode.getMyOwnCode() );
+////						if( rowindex  != null && rowindex >=0 ) {
+////							int modelRow = tableTempGeGu.convertRowIndexToView(rowindex);
+//////							int width = tableTempGeGu.getCellRect(modelRow, 0, true).width;
+//////							int height = tableTempGeGu.getCellRect(modelRow, 0, true).height;
+//////						    Rectangle r = new Rectangle(width, height * modelRow);
+//////						    Rectangle s = at.createTransformedShape(r).getBounds();
+////						    int h = 2; //Math.max(2, s.height-2);
+////						    int zuobiaoy = (trackBounds.height* modelRow)/rownum ;
+////					        g.fillRect(trackBounds.x+2, zuobiaoy , trackBounds.width, h);
+////						}
+////		    		}
+////		    	}
+////		    }
+////	      }
+////	    });
+////	    scrollPaneTempGeGu.setVerticalScrollBar(scrollbarTempGeGu);
+//		tabbedPanegegu.addTab("\u4E34\u65F6\u4E2A\u80A1", null, scrollPaneTempGeGu, null);
+//		tabbedPanegegu.setBackgroundAt(6, Color.CYAN);
+//		
+//		
+//		
+//		panel_1.setLayout(gl_panel_1);
+//		
+////		dateChooser = new JDateChooser();
+//		dateChooser = new JStockCalendarDateChooser(new StockCalendar());
+//		dateChooser.setDateFormatString("yyyy-MM-dd");
+//		dateChooser.setDate(new Date() );
+//		
+//		bkfxCancelAction = new AbstractAction("重置") {
+//
+//		      private static final long serialVersionUID = 4669650683189592364L;
+//
+//		      @Override
+//		      public void actionPerformed(final ActionEvent e) {
+////		        if (bkfxtask == null) {
+////		        	if(!btnresetdate.isEnabled())
+////		        		return;
+////		        	
+////		        	LocalDate cursettingdate = dateChooser.getLocalDate(); //.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+////		        	if(!cursettingdate.equals(LocalDate.now())) {
+//////		        		LocalDate newdate =  LocalDate.now();
+////		        		adjustDate (LocalDate.now());
+//////						dateChooser.setDate(Date.from(newdate.atStartOfDay(ZoneId.systemDefault()).toInstant() ) );
+//////						btnresetdate.setEnabled(false);
+//////						btnsixmonthafter.setEnabled(false);
+////		        	} else {
+////		        		btnresetdate.setEnabled(false);
+////		        		
+////		        	}
+////		        } else { //当在做板块分析时候，如果用户调整时间，就取消板块分析任务。其实感觉也没多大必要
+////		        	bkfxtask.cancel(true);
+////		        }
+//		      }
+//		    		
+//		 };
+//		
+//		btnresetdate = new JButton(bkfxCancelAction);
+//		btnresetdate.setText("\u4ECA\u5929");
+//		
+//		chxbxwholeweek = new JCheckBox("\u8BA1\u7B97\u5B8C\u6574\u5468");
+//		chxbxwholeweek.setToolTipText("\u5982\u4E0D\u52FE\u9009\uFF0C\u5219\u8BA1\u7B97\u5230\u88AB\u9009\u62E9\u7684\u90A3\u4E00\u5929");
+//		chxbxwholeweek.setSelected(true);
+//		
+//		pnlZhiShu = new JPanel();
+//		
+//		GroupLayout gl_panel = new GroupLayout(panel);
+//		gl_panel.setHorizontalGroup(
+//			gl_panel.createParallelGroup(Alignment.LEADING)
+//				.addGroup(gl_panel.createSequentialGroup()
+//					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
+//						.addGroup(gl_panel.createSequentialGroup()
+//							.addContainerGap()
+//							.addComponent(dateChooser, GroupLayout.PREFERRED_SIZE, 133, GroupLayout.PREFERRED_SIZE)
+//							.addPreferredGap(ComponentPlacement.RELATED)
+//							.addComponent(chxbxwholeweek)
+//							.addGap(18)
+//							.addComponent(btnresetdate))
+//						.addComponent(pnlZhiShu, GroupLayout.PREFERRED_SIZE, 370, GroupLayout.PREFERRED_SIZE))
+//					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+//		);
+//		gl_panel.setVerticalGroup(
+//			gl_panel.createParallelGroup(Alignment.TRAILING)
+//				.addGroup(gl_panel.createSequentialGroup()
+//					.addContainerGap()
+//					.addGroup(gl_panel.createParallelGroup(Alignment.TRAILING)
+//						.addComponent(dateChooser, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)
+//						.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
+//							.addComponent(chxbxwholeweek)
+//							.addComponent(btnresetdate, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)))
+//					.addPreferredGap(ComponentPlacement.UNRELATED)
+//					.addComponent(pnlZhiShu, GroupLayout.PREFERRED_SIZE, 45, GroupLayout.PREFERRED_SIZE))
+//		);
+//		
+//		panel.setLayout(gl_panel);
+//		contentPanel.setLayout(gl_contentPanel);
+//		{
+//			JPanel buttonPane = new JPanel();
+//			getContentPane().add(buttonPane, BorderLayout.SOUTH);
+//			
+//		}
+//		
+//		reFormatGui ();
+//	}
 	
 	private void initializeGuiOf2560Resolution ()
 	{
@@ -3827,7 +3833,8 @@ public class BanKuaiFengXi extends JDialog
 		scrollPanexuandingplusone.setViewportView(tablexuandingplusone);
 		
 		JScrollPane scrollPaneTempGeGu = new JScrollPane();
-		tableTempGeGu = new BanKuaiGeGuTableFromPropertiesFile (this.stockmanager,ggzbtablepropFileName);
+		String tempggzbtablepropFileName =   (new SetupSystemConfiguration()).getSystemInstalledPath() + "/config/" +  bkfxsettingprop.getProperty ("BkfxTempGeGuTableInfoSettingFile")  + "/";
+		tableTempGeGu = new BanKuaiGeGuTableFromPropertiesFile (this.stockmanager,tempggzbtablepropFileName);
 		scrollPaneTempGeGu.setViewportView(tableTempGeGu);
 		
 		JScrollBar scrollbarTempGeGu = new JScrollBar(JScrollBar.VERTICAL); //如果要使用windowbuilder修改界面，这里需要修改

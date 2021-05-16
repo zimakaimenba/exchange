@@ -62,8 +62,13 @@ public  abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 		if(prop == null)
 			return;
 		
-		String[] jtableTitleStrings = new String[11];
-		for(int i=0;i<=10;i++) {
+		String columnmaxnumberstr = prop.getProperty ( "columnmaxnumber");
+		int columnmaxnumber =0;
+		try {
+			columnmaxnumber = Integer.parseInt(columnmaxnumberstr);
+		} catch (java.lang.NumberFormatException e) {	e.printStackTrace();	}
+		String[] jtableTitleStrings = new String[columnmaxnumber];
+		for(int i=0;i<columnmaxnumber;i++) {
 			String column_name  = prop.getProperty (String.valueOf(i) + "column_name");
 			if(column_name != null)
 				jtableTitleStrings[i] = column_name ;
@@ -99,7 +104,9 @@ public  abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 	    @Override
 	    public int getColumnCount() 
 	    {
-	        return jtableTitleStrings.length;
+	    	String columnmaxnumberstr = prop.getProperty ( "columnmaxnumber");
+			int columnmaxnumber = Integer.parseInt(columnmaxnumberstr);
+	        return columnmaxnumber;
 	    } 
 	    @Override
 	    public String getColumnName(int column) { 
@@ -135,10 +142,8 @@ public  abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 	    }
 	    public void deleteAllRows ()
 	    {	
-	    	if(this.entryList == null)
-				 return ;
-			 else 
-				 entryList.clear();
+	    	if(this.entryList == null)	 return ;
+			else  entryList.clear();
 	    	
 	    	this.showwknum = null;
 	    	this.curperiod = null;
@@ -160,8 +165,7 @@ public  abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 	    				break;
 	    			}
 	    			
-	    			if(stockname == null)
-	    				continue;
+	    			if(stockname == null) continue;
 	    			
 	    			Boolean compresult = hypy.compareTwoStrings (stockname, neededfindstring.trim() );
 			   		if(compresult) {

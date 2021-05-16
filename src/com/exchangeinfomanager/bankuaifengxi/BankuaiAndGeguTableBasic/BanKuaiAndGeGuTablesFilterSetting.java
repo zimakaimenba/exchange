@@ -58,13 +58,12 @@ public class BanKuaiAndGeGuTablesFilterSetting extends JDialog
 	private final JPanel contentPanel = new JPanel();
 	private TableFilterHeader filterHeader;
 	private Properties prop;
-	private BanKuaiandGeGuTableBasic bkggtable;
 	private JButton okButton;
-	JUpdatedTextField[] filtertxtfldcollection = new JUpdatedTextField[11]; 
+	JUpdatedTextField[] filtertxtfldcollection ; 
 	private JPanel pnlfilter;
 	private JLabel btnsave;
 	private JLabel btnapply;
-	private JComboBox jcbxsavedfilter;
+	private JComboBox<String> jcbxsavedfilter;
 	private Properties savedfiltersprop;
 	private int columnmaxnumber;
 
@@ -74,7 +73,6 @@ public class BanKuaiAndGeGuTablesFilterSetting extends JDialog
 	public BanKuaiAndGeGuTablesFilterSetting(BanKuaiandGeGuTableBasic bkggtable1, Properties prop1, TableFilterHeader filterHeader1) 
 	{
 		setTitle("Filter Setting");
-		this.bkggtable = bkggtable1;
 		this.prop = prop1;
 		this.filterHeader = filterHeader1;
 		setupBkfxHighLightSettingProperties ();
@@ -215,6 +213,7 @@ public class BanKuaiAndGeGuTablesFilterSetting extends JDialog
 
 	private void createUIComponents() 
 	{
+		filtertxtfldcollection = new JUpdatedTextField[columnmaxnumber];
 		for(int i=0;i<columnmaxnumber;i++) {
 			String column_name = prop.getProperty (String.valueOf(i) + "column_name");
 			
@@ -238,10 +237,12 @@ public class BanKuaiAndGeGuTablesFilterSetting extends JDialog
 			} catch (Exception e) {
 				filterPanel.add(filterField);
 			}
-
-			filtertxtfldcollection[i] = filterField; 
+			try {filtertxtfldcollection[i] = filterField; 
+			} catch (Exception e) {e.printStackTrace();}
 	        this.contentPanel.add(filterPanel);
 		}
+		
+		return;
 	}
 	private void createGui ()
 	{

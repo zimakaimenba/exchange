@@ -83,8 +83,7 @@ public class BanKuaiGeGuExternalInfoTableFromPropertiesFile extends BanKuaiGeGuB
 	private void setGeGuWeightInBanKuai()
     {
 		int row = this.getSelectedRow();
-		if(row < 0)
-			return;
+		if(row < 0)	return;
 		int modelRow = this.convertRowIndexToModel(row);
 		
 //		BkChanYeLianTreeNode curselectedbknode = (BkChanYeLianTreeNode) treechanyelian.getLastSelectedPathComponent();
@@ -105,16 +104,13 @@ public class BanKuaiGeGuExternalInfoTableFromPropertiesFile extends BanKuaiGeGuB
 				bkdbopt.setStockWeightInBanKuai (bkcode,stockcode,newweight);
 				( (BanKuaiGeGuExternalInfoTableModelFromPropertiesFile)this.getModel() ).setStockCurWeight (modelRow,newweight);
 			}
-		} catch (java.lang.NumberFormatException e) {
-			return;
-		}
+		} catch (java.lang.NumberFormatException e) {	return;		}
 	}
 	/*
 	 * (non-Javadoc)
 	 * @see javax.swing.JTable#getCellRenderer(int, int)
 	 */
-	public TableCellRenderer getCellRenderer(int row, int column) 
-	{
+	public TableCellRenderer getCellRenderer(int row, int column) 	{
 		return renderer;
 	}
 	
@@ -136,15 +132,12 @@ public class BanKuaiGeGuExternalInfoTableFromPropertiesFile extends BanKuaiGeGuB
 					tip = doc.toString();
 	        	} else
 	        		tip = getValueAt(rowIndex, colIndex).toString();
-	        } catch (RuntimeException e1) {
-	            //catch null pointer exception if mouse is over an empty line
-	        }
+	        } catch (RuntimeException e1) {  }
 
 	        return tip;
     }
 	 
-	 private  String toUNIXpath(String filePath) 
-	 {
+	 private  String toUNIXpath(String filePath) 	 {
 	   		    return filePath.replace('\\', '/');
 	 }
 }

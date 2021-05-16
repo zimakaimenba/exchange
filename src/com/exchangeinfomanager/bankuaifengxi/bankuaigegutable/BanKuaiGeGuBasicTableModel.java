@@ -25,7 +25,9 @@ import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.StockNodesXPeriodData;
 import com.google.common.base.Strings;
-
+import com.exchangeinfomanager.bankuaifengxi.BankuaiAndGeguTableBasic.SortByKeyWords.NodeChenJiaoErComparator;
+import com.exchangeinfomanager.bankuaifengxi.BankuaiAndGeguTableBasic.SortByKeyWords.NodeLiuTongShiZhiComparator;
+import com.exchangeinfomanager.bankuaifengxi.BankuaiAndGeguTableBasic.SortByKeyWords.NodeTimeRangeZhangFuComparator;
 
 public abstract class BanKuaiGeGuBasicTableModel extends BandKuaiAndGeGuTableBasicModel
 {
@@ -83,44 +85,63 @@ public abstract class BanKuaiGeGuBasicTableModel extends BandKuaiAndGeGuTableBas
 	{ 
 			Class clazz = super.getColumnClass(columnIndex);
 			return clazz;
-	 }
-	
+	}
+	public void sortTableByKeywords (String kw, LocalDate... startend )
+	{
+		switch(kw) {
+		case "LiuTongShiZhi": sortTableByLiuTongShiZhi ();
+			break;
+		case "ZongShiZhi": sortTableByZongShiZhi ();
+			break;
+		case "ChenJiaoEr": sortTableByChenJiaoEr ();
+			break;
+		case "TimeRangeZhangFu": sortTableByTimeRangeZhangFu ( startend[0],  startend[1],  super.curperiod);
+			break;
+		case "QuanZhongInBanKuai":
+			break;
+		case "CjeZbGrowRate":
+			break;
+		case "ChengJiaoErZhanBi":
+			break;
+		case "CjeZbDpMaxWk":
+			break;
+		case "ChenJiaoLiang":
+			break;
+		case "ZhangDieFu":
+			break;
+		case "AverageChenJiaoEr":
+			break;
+		case "HuanShouLv":
+			break;
+		case "HuanShouLvFree":
+			break;
+		}
+	}
 	/*
 	 * 
 	 */
 	public void sortTableByLiuTongShiZhi ()
 	{
-		try{
-			Collections.sort(entryList, new NodeLiuTongShiZhiComparator(showwknum,0,super.curperiod) );
-		} catch (java.lang.NullPointerException e) {
-//			e.printStackTrace();
-		}
+		try{ Collections.sort(entryList, new NodeLiuTongShiZhiComparator(showwknum,0,super.curperiod) );
+		} catch (java.lang.NullPointerException e) {}
 		
 		this.fireTableDataChanged();
 	}
 	public void sortTableByZongShiZhi ()
 	{
-		
 	}
-	/*
-	 * 
-	 */
 	public void sortTableByChenJiaoEr ()
 	{
-		try{
-			Collections.sort(entryList, new NodeChenJiaoErComparator(showwknum,0,curperiod) );
+		try{ Collections.sort(entryList, new NodeChenJiaoErComparator(showwknum,0,curperiod) );
 			this.fireTableDataChanged();
 		} catch (java.lang.NullPointerException e) {logger.debug("该表内容为空，表排序出错");
 		} catch (java.lang.Exception ex) {ex.printStackTrace();}
 	}
 	public void sortTableByTimeRangeZhangFu (LocalDate start, LocalDate end, String specificperiod)
 	{
-		try{
-			Collections.sort(entryList, new NodeTimeRangeZhangFuComparator(start,end,specificperiod) );
+		try{Collections.sort(entryList, new NodeTimeRangeZhangFuComparator(start,end,specificperiod) );
 			this.fireTableDataChanged();
-		} catch (java.lang.NullPointerException e) {//			e.printStackTrace();
-			logger.debug("该表没有数据，表排序出错");
-		}
+		} catch (java.lang.NullPointerException e) {		logger.debug("该表没有数据，表排序出错");		}
 	}
 	
 	/*
@@ -153,29 +174,6 @@ public abstract class BanKuaiGeGuBasicTableModel extends BandKuaiAndGeGuTableBas
 		{
 			return this.tags ;
 		}
-}
-/*
- * 按流通市值对个股排序
- */
-class NodeLiuTongShiZhiComparator implements Comparator<BkChanYeLianTreeNode> {
-	private String period;
-	private LocalDate compareDate;
-	private int difference;
-	public NodeLiuTongShiZhiComparator (LocalDate compareDate, int difference, String period )
-	{
-		this.period = period;
-		this.compareDate = compareDate;
-		this.difference = difference;
-	}
-    public int compare(BkChanYeLianTreeNode node1, BkChanYeLianTreeNode node2) {
-    	Stock stock1 = ( (StockOfBanKuai)node1).getStock();
-    	Stock stock2 = ( (StockOfBanKuai)node2).getStock();
-    	
-        Double cje1 = ((StockNodesXPeriodData)stock1.getNodeXPeroidData( period)).getSpecificTimeLiuTongShiZhi(compareDate, difference) ;
-        Double cje2 = ((StockNodesXPeriodData)stock2.getNodeXPeroidData( period)).getSpecificTimeLiuTongShiZhi(compareDate, difference);
-        
-        return cje2.compareTo(cje1);
-    }
 }
 
 

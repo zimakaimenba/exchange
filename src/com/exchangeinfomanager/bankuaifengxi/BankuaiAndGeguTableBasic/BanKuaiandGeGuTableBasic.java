@@ -40,8 +40,7 @@ public abstract class BanKuaiandGeGuTableBasic extends JTable  implements  BanKu
 	private String systeminstalledpath;
 	protected Properties prop;
 	protected TableFilterHeader filterHeader;
-	String[] jtableTitleStringsTooltips = new String[11];
-//	JMenuItem mntmResetFilter;
+	String[] jtableTitleStringsTooltips ;
 	private JMenuItem menuItemfiltersetting;
 
 	public BanKuaiandGeGuTableBasic (String propertiesfile)
@@ -149,7 +148,13 @@ public abstract class BanKuaiandGeGuTableBasic extends JTable  implements  BanKu
 	
 	protected void setColumnPreferredWidth ()
 	{
-		for(int i=0;i<=10;i++) {
+		String columnmaxnumberstr = prop.getProperty ( "columnmaxnumber");
+		int columnmaxnumber =0;
+		try {
+			columnmaxnumber = Integer.parseInt(columnmaxnumberstr);
+		} catch (java.lang.NumberFormatException e) {	e.printStackTrace();	}
+		
+		for(int i=0;i<columnmaxnumber;i++) {
 			String column_name = prop.getProperty (String.valueOf(i) + "column_name");
 			String column_width  = prop.getProperty (String.valueOf(i) + "column_preferredWidth");
 			Integer columnwidth =0;
@@ -170,7 +175,14 @@ public abstract class BanKuaiandGeGuTableBasic extends JTable  implements  BanKu
 	
 	protected void createTableHeaderTooltips ()
 	{
-		for(int i=0;i<=10;i++) {
+		String columnmaxnumberstr = prop.getProperty ( "columnmaxnumber");
+		int columnmaxnumber =0;
+		try {
+			columnmaxnumber = Integer.parseInt(columnmaxnumberstr);
+		} catch (java.lang.NumberFormatException e) {	e.printStackTrace();	}
+		
+		jtableTitleStringsTooltips = new String[columnmaxnumber];
+		for(int i=0;i<columnmaxnumber;i++) {
 			String column_name  = prop.getProperty (String.valueOf(i) + "column_name");
 			String column_background_highlight_info  = prop.getProperty (String.valueOf(i) + "column_background_highlight_info");
 			if(column_background_highlight_info != null)
@@ -181,13 +193,23 @@ public abstract class BanKuaiandGeGuTableBasic extends JTable  implements  BanKu
 				column_foreground_highlight_info = "Ç°Í»³ö:" + column_foreground_highlight_info;
 			else column_foreground_highlight_info = "";
 			
-			jtableTitleStringsTooltips[i] = column_name + "(" + column_background_highlight_info + "." + column_foreground_highlight_info +  ")";
+			try {
+				jtableTitleStringsTooltips[i] = column_name + "(" + column_background_highlight_info + "." + column_foreground_highlight_info +  ")";
+			} catch ( java.lang.ArrayIndexOutOfBoundsException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
 	protected void setColumnPredefinedFilter ()
 	{
-		for(int i=0;i<=10;i++) {
+		String columnmaxnumberstr = prop.getProperty ( "columnmaxnumber");
+		int columnmaxnumber =0;
+		try {
+			columnmaxnumber = Integer.parseInt(columnmaxnumberstr);
+		} catch (java.lang.NumberFormatException e) {	e.printStackTrace();	}
+		
+		for(int i=0;i<columnmaxnumber;i++) {
 			String column_name = prop.getProperty (String.valueOf(i) + "column_name");
 			if(column_name == null || column_name.toUpperCase().equals("NULL")   )
 					continue;
@@ -206,7 +228,13 @@ public abstract class BanKuaiandGeGuTableBasic extends JTable  implements  BanKu
 		header.setToolTipText("");
 		String tooltipstr = header.getToolTipText(); 
 		
-		for(int i=0;i<=10;i++) {
+		String columnmaxnumberstr = prop.getProperty ( "columnmaxnumber");
+		int columnmaxnumber =0;
+		try {
+			columnmaxnumber = Integer.parseInt(columnmaxnumberstr);
+		} catch (java.lang.NumberFormatException e) {	e.printStackTrace();	}
+		
+		for(int i=0;i<columnmaxnumber;i++) {
 			String column_name = prop.getProperty (String.valueOf(i) + "column_name");
 			if(column_name == null || column_name.toUpperCase().equals("NULL")   )
 					continue;
