@@ -215,23 +215,19 @@ import com.udojava.evalex.Expression;
 	/*
 	 * 
 	 */
-	public OHLCSeries getOHLCData ()
-	{
+	public OHLCSeries getOHLCData () {
 		return this.nodeohlc;
 	}
-	public TimeSeries getMA250 ()
-	{
+	public TimeSeries getMA250 ()	{
 		return this.nodeohlcma250;
 	}
-	public TimeSeries getMA60 ()
-	{
+	public TimeSeries getMA60 () {
 		return this.nodeohlcma60;
 	}
 	/*
 	 * 
 	 */
-	public TimeSeries getAMOData ()
-	{
+	public TimeSeries getAMOData ()	{
 		return this.nodeamo;
 	}
 	/*
@@ -1298,7 +1294,6 @@ import com.udojava.evalex.Expression;
 		
 		return;
 	}
-	
 	/*
 	 * 通过apache math计算MA
 	 */

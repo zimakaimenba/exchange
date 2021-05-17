@@ -141,6 +141,8 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 
 
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
+
 import com.toedter.calendar.JDateChooser;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
@@ -475,7 +477,13 @@ public class BanKuaiFengXi extends JDialog
 	 */
 	private void unifiedOperationsAfterUserSelectABanKuai (BanKuai selectedbk)
 	{
-		refreshCurentBanKuaiFengXiResult (selectedbk,globeperiod); //板块内个股的分析结果
+		LocalDate curselectdate = null;
+		try{	curselectdate = dateChooser.getLocalDate();// dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		} catch (java.lang.NullPointerException e) {	JOptionPane.showMessageDialog(null,"日期有误!","Warning",JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+		
+		refreshCurentBanKuaiFengXiResult (selectedbk,curselectdate, globeperiod); //板块内个股的分析结果
 		
 		refreshCurrentBanKuaiTags (selectedbk,globeperiod);
 		
@@ -578,7 +586,7 @@ public class BanKuaiFengXi extends JDialog
 	/*
 	 * 
 	 */
-	protected void refreshCurentBanKuaiFengXiResult(BanKuai selectedbk,String period)  
+	protected void refreshCurentBanKuaiFengXiResult(BanKuai selectedbk,LocalDate curselectdate, String period)  
 	{
 		clearTheGuiBeforDisplayNewInfoSection2 ();
 		clearTheGuiBeforDisplayNewInfoSection3 ();
@@ -586,13 +594,7 @@ public class BanKuaiFengXi extends JDialog
 		tabbedPanebkzb.setSelectedIndex(0);
 		
 		selectedbk.getShuJuJiLuInfo().setHasReviewedToday(true);
-		LocalDate curselectdate = null;
-		try{
-			curselectdate = dateChooser.getLocalDate();// dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-		} catch (java.lang.NullPointerException e) {
-			JOptionPane.showMessageDialog(null,"日期有误!","Warning",JOptionPane.WARNING_MESSAGE);
-			return;
-		}
+
 		ServicesForNodeBanKuai svsbk = (ServicesForNodeBanKuai) selectedbk.getBanKuaiService (true);
 		//一次性同步板块数据以及所属个股数据
 		try {
@@ -920,8 +922,8 @@ public class BanKuaiFengXi extends JDialog
 		((BanKuaiGeGuBasicTableModel)tablexuandingminustwo.getModel()).deleteAllRows();
 		((BanKuaiGeGuBasicTableModel)tablexuandingplusone.getModel()).deleteAllRows();
 				
-		menuItemchengjiaoer.setText("X 按成交额排名");
-    	menuItemliutong.setText("按流通市值排名");
+//		menuItemchengjiaoer.setText("X 按成交额排名");
+//    	menuItemliutong.setText("按流通市值排名");
     	menuItemtimerangezhangfu.setText("按阶段涨幅排名");
     	
 		pnlstocktags.removeAll();
@@ -1530,38 +1532,38 @@ public class BanKuaiFengXi extends JDialog
             }
         });
 
-        menuItemliutong.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-            	menuItemliutong.setText("X 按流通市值排名");
-            	menuItemchengjiaoer.setText("按成交额排名");
-            	menuItemtimerangezhangfu.setText("按阶段涨幅排名");
-            	
-            	((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).sortTableByLiuTongShiZhi();
-            	((BanKuaiGeGuBasicTableModel)tableExternalInfo.getModel()).sortTableByLiuTongShiZhi();
-            	((BanKuaiGeGuBasicTableModel)tablexuandingzhou.getModel()).sortTableByLiuTongShiZhi();
-            	((BanKuaiGeGuBasicTableModel)tablexuandingminusone.getModel()).sortTableByLiuTongShiZhi();
-            	((BanKuaiGeGuBasicTableModel)tablexuandingminustwo.getModel()).sortTableByLiuTongShiZhi();
-            	((BanKuaiGeGuBasicTableModel)tablexuandingplusone.getModel()).sortTableByLiuTongShiZhi();
-            }
-        });
-        menuItemchengjiaoer.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-            	menuItemchengjiaoer.setText("X 按成交额排名");
-            	menuItemliutong.setText("按流通市值排名");
-            	menuItemtimerangezhangfu.setText("按阶段涨幅排名");
-            	
-            	((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).sortTableByChenJiaoEr();
-            	((BanKuaiGeGuBasicTableModel)tableExternalInfo.getModel()).sortTableByChenJiaoEr();
-        		((BanKuaiGeGuBasicTableModel)tablexuandingzhou.getModel()).sortTableByChenJiaoEr();
-        		((BanKuaiGeGuBasicTableModel)tablexuandingminusone.getModel()).sortTableByChenJiaoEr();
-        		((BanKuaiGeGuBasicTableModel)tablexuandingminustwo.getModel()).sortTableByChenJiaoEr();
-        		((BanKuaiGeGuBasicTableModel)tablexuandingplusone.getModel()).sortTableByChenJiaoEr();
-            }
-        });
+//        menuItemliutong.addActionListener(new ActionListener() {
+//
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//            	menuItemliutong.setText("X 按流通市值排名");
+//            	menuItemchengjiaoer.setText("按成交额排名");
+//            	menuItemtimerangezhangfu.setText("按阶段涨幅排名");
+//            	
+//            	((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).sortTableByLiuTongShiZhi();
+//            	((BanKuaiGeGuBasicTableModel)tableExternalInfo.getModel()).sortTableByLiuTongShiZhi();
+//            	((BanKuaiGeGuBasicTableModel)tablexuandingzhou.getModel()).sortTableByLiuTongShiZhi();
+//            	((BanKuaiGeGuBasicTableModel)tablexuandingminusone.getModel()).sortTableByLiuTongShiZhi();
+//            	((BanKuaiGeGuBasicTableModel)tablexuandingminustwo.getModel()).sortTableByLiuTongShiZhi();
+//            	((BanKuaiGeGuBasicTableModel)tablexuandingplusone.getModel()).sortTableByLiuTongShiZhi();
+//            }
+//        });
+//        menuItemchengjiaoer.addActionListener(new ActionListener() {
+//
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//            	menuItemchengjiaoer.setText("X 按成交额排名");
+//            	menuItemliutong.setText("按流通市值排名");
+//            	menuItemtimerangezhangfu.setText("按阶段涨幅排名");
+//            	
+//            	((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).sortTableByChenJiaoEr();
+//            	((BanKuaiGeGuBasicTableModel)tableExternalInfo.getModel()).sortTableByChenJiaoEr();
+//        		((BanKuaiGeGuBasicTableModel)tablexuandingzhou.getModel()).sortTableByChenJiaoEr();
+//        		((BanKuaiGeGuBasicTableModel)tablexuandingminusone.getModel()).sortTableByChenJiaoEr();
+//        		((BanKuaiGeGuBasicTableModel)tablexuandingminustwo.getModel()).sortTableByChenJiaoEr();
+//        		((BanKuaiGeGuBasicTableModel)tablexuandingplusone.getModel()).sortTableByChenJiaoEr();
+//            }
+//        });
         menuItemcancelreviewedtoday.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -1584,8 +1586,8 @@ public class BanKuaiFengXi extends JDialog
         menuItemtimerangezhangfu.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-            	menuItemchengjiaoer.setText("按成交额排名");
-            	menuItemliutong.setText("按流通市值排名");
+//            	menuItemchengjiaoer.setText("按成交额排名");
+//            	menuItemliutong.setText("按流通市值排名");
             	
             	DateRangeSelectPnl datachoose = new DateRangeSelectPnl ( LocalDate.now().minusDays(1), LocalDate.now() ); 
         		JOptionPane.showMessageDialog(null, datachoose,"选择时间段", JOptionPane.OK_CANCEL_OPTION);
@@ -1609,12 +1611,13 @@ public class BanKuaiFengXi extends JDialog
         		}
         		if(bk == null)  return;
         		
-    			SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai ();
-    			//一次性同步板块数据以及所属个股数据
-    			try {
-    				svsbk.syncBanKuaiAndItsStocksForSpecificTime(bk, searchstart, searchend,globeperiod,globecalwholeweek);
-    			} catch (SQLException ex) {ex.printStackTrace();}
-    			svsbk = null;
+        		//一次性同步板块数据以及所属个股数据
+//        		refreshCurentBanKuaiFengXiResult (bk, LocalDate.now(), globeperiod);
+//    			SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai ();  
+//    			try {	svsbk.syncBanKuaiAndItsStocksForSpecificTime(bk, CommonUtility.getSettingRangeDate(searchstart,"large").with(DayOfWeek.MONDAY),LocalDate.now(),globeperiod,globecalwholeweek);
+////    				svsbk.syncBanKuaiAndItsStocksForSpecificTime(bk, searchstart,searchend,globeperiod,globecalwholeweek);
+//    			} catch (SQLException ex) {ex.printStackTrace();}
+//    			svsbk = null;
     			
     			if(selecttitle.contains("临时")) 
     				((BanKuaiGeGuBasicTableModel)tableTempGeGu.getModel()).sortTableByTimeRangeZhangFu(searchstart,searchend,NodeGivenPeriodDataItem.DAY);
@@ -1784,6 +1787,23 @@ public class BanKuaiFengXi extends JDialog
     	        
             }
         });
+		((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).addPropertyChangeListener(new PropertyChangeListener() {
+			public void propertyChange(PropertyChangeEvent evt) 
+			{
+				Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
+				setCursor(hourglassCursor);
+				
+                 String kw = evt.getNewValue().toString();
+                 Object oldob = evt.getOldValue();
+                 for(BanKuaiGeGuBasicTable tmptbl : tablebkggtableset) 
+                	 if(!tmptbl.equals(oldob))
+                		 ((BanKuaiGeGuBasicTableModel)tmptbl.getModel()).sortTableByKeywords(kw,false);
+
+                 hourglassCursor = null;
+				Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
+				setCursor(hourglassCursor2);
+			}
+		});
 
 		pnlbkwkcjlzhanbi.addPropertyChangeListener(new PropertyChangeListener() {
 			public void propertyChange(PropertyChangeEvent evt) 
@@ -1980,10 +2000,8 @@ public class BanKuaiFengXi extends JDialog
 			{
 				if(arg0.getStateChange() == ItemEvent.SELECTED) {
 					updatedComboxAndFengXiResult ();
-					
 				}
 			}
-			
 		});
 		
 		combxstockcode.addItemListener(new ItemListener() {
@@ -2469,10 +2487,8 @@ public class BanKuaiFengXi extends JDialog
 		setCursor(hourglassCursor);
 		
 		LocalDate curselectdate = null;
-		try{
-			curselectdate = dateChooser.getLocalDate();// dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-		} catch (java.lang.NullPointerException e) {
-			JOptionPane.showMessageDialog(null,"日期有误!","Warning",JOptionPane.WARNING_MESSAGE);
+		try{	curselectdate = dateChooser.getLocalDate();// dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		} catch (java.lang.NullPointerException e) {JOptionPane.showMessageDialog(null,"日期有误!","Warning",JOptionPane.WARNING_MESSAGE);
 			return;
 		}
 		
@@ -2495,7 +2511,7 @@ public class BanKuaiFengXi extends JDialog
 			if(tmpstock == null)
 				continue;
 			try {
-				tmpstock = (Stock) svstock.getNodeData( tmpstock , CommonUtility.getSettingRangeDate(curselectdate,"middle"), curselectdate,
+				tmpstock = (Stock) svstock.getNodeData( tmpstock , CommonUtility.getSettingRangeDate(curselectdate,"middle"),  LocalDate.now(),
 						globeperiod,this.globecalwholeweek);
 				svstock.syncNodeData(tmpstock);
 			} catch (java.lang.NullPointerException e) {logger.info(tmpgegu + "数据有误！");e.printStackTrace();}
@@ -3050,9 +3066,9 @@ public class BanKuaiFengXi extends JDialog
 	private BanKuaiAndStockTree cyltreecopy;
 	private JMenuItem menuItemRmvNodeFmFile;
 	private JPopupMenu jPopupMenuoftabbedpane;
-	private JMenuItem menuItemliutong ; //系统默认按流通市值排名
-	private JMenuItem menuItemzongshizhi ;
-	private JMenuItem menuItemchengjiaoer ;
+//	private JMenuItem menuItemliutong ; //系统默认按流通市值排名
+//	private JMenuItem menuItemzongshizhi ;
+//	private JMenuItem menuItemchengjiaoer ;
 //	private JMenuItem menuItemstocktocsv ;
 //	private JPopupMenu jPopupMenuoftabbedpanebk;
 //	private JMenuItem menuItembktocsv ; //系统默认按流通市值排名
@@ -4035,16 +4051,16 @@ public class BanKuaiFengXi extends JDialog
 	private void reFormatGui ()
 	{
 		jPopupMenuoftabbedpane = new JPopupMenu();
-		menuItemliutong = new JMenuItem(" 按流通市值排名"); 
-		menuItemzongshizhi = new JMenuItem("按总市值排名");
-		menuItemchengjiaoer = new JMenuItem("X 按成交额排名"); //系统默认按成交额排名
+//		menuItemliutong = new JMenuItem(" 按流通市值排名"); 
+//		menuItemzongshizhi = new JMenuItem("按总市值排名");
+//		menuItemchengjiaoer = new JMenuItem("X 按成交额排名"); //系统默认按成交额排名
 		menuItemtimerangezhangfu = new JMenuItem("按阶段涨幅排名"); //系统默认按成交额排名
 //		menuItemstocktocsv = new JMenuItem("导出所有个股到CSV");
 //      
-		jPopupMenuoftabbedpane.add(menuItemzongshizhi);
-       menuItemzongshizhi.setEnabled(false);
-       jPopupMenuoftabbedpane.add(menuItemliutong);
-       jPopupMenuoftabbedpane.add(menuItemchengjiaoer);
+//		jPopupMenuoftabbedpane.add(menuItemzongshizhi);
+//       menuItemzongshizhi.setEnabled(false);
+//       jPopupMenuoftabbedpane.add(menuItemliutong);
+//       jPopupMenuoftabbedpane.add(menuItemchengjiaoer);
        jPopupMenuoftabbedpane.add(menuItemtimerangezhangfu);
 //       jPopupMenuoftabbedpane.add(menuItemstocktocsv);
        
@@ -4121,7 +4137,13 @@ public class BanKuaiFengXi extends JDialog
        popupMenuGeguNews.add(menuItemTempGeGuFromZhidingbk);
        menuItemTempGeGuClear = new JMenuItem("清空");
        popupMenuGeguNews.add(menuItemTempGeGuClear);
-       tableTempGeGu.getTableHeader().setComponentPopupMenu (popupMenuGeguNews);
+       
+       tableTempGeGu.getTableHeader().getComponentPopupMenu().add(menuItemTempGeGuFromFile,0);
+       tableTempGeGu.getTableHeader().getComponentPopupMenu().add(menuItemTempGeGuFromTDXSw,0);
+       tableTempGeGu.getTableHeader().getComponentPopupMenu().add(menuItemTempGeGuFromZhidingbk,0);
+       tableTempGeGu.getTableHeader().getComponentPopupMenu().add(menuItemTempGeGuClear,0);
+       JSeparator separator = new JSeparator ();
+       tableTempGeGu.getTableHeader().getComponentPopupMenu().add(separator,4);
 	}
 	private void initializeKuaiJieZhishuPnl ()
 	{

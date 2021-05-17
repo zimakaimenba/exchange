@@ -1,5 +1,6 @@
 package com.exchangeinfomanager.bankuaifengxi.bankuaigegutable;
 
+import java.beans.PropertyChangeEvent;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,10 +25,12 @@ import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.StockNodesXPeriodData;
+import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.google.common.base.Strings;
 import com.exchangeinfomanager.bankuaifengxi.BankuaiAndGeguTableBasic.SortByKeyWords.NodeChenJiaoErComparator;
 import com.exchangeinfomanager.bankuaifengxi.BankuaiAndGeguTableBasic.SortByKeyWords.NodeLiuTongShiZhiComparator;
 import com.exchangeinfomanager.bankuaifengxi.BankuaiAndGeguTableBasic.SortByKeyWords.NodeTimeRangeZhangFuComparator;
+import com.exchangeinfomanager.bankuaifengxi.BankuaiAndGeguTableBasic.SortByKeyWords.NodeZongShiZhiComparator;
 
 public abstract class BanKuaiGeGuBasicTableModel extends BandKuaiAndGeGuTableBasicModel
 {
@@ -37,6 +40,7 @@ public abstract class BanKuaiGeGuBasicTableModel extends BandKuaiAndGeGuTableBas
 	}
 
 	private static Logger logger = Logger.getLogger(BanKuaiGeGuBasicTableModel.class);
+	public static String SORTBYCHENJIAOER = "Sort Node By ChenJiaoEr";
 
 	private Collection<Tag> tags;
 
@@ -69,8 +73,6 @@ public abstract class BanKuaiGeGuBasicTableModel extends BandKuaiAndGeGuTableBas
 	    	 }
 	     } 
 		
-		sortTableByChenJiaoEr ();
-    	
     	this.fireTableDataChanged();
 	}
 	
@@ -86,16 +88,17 @@ public abstract class BanKuaiGeGuBasicTableModel extends BandKuaiAndGeGuTableBas
 			Class clazz = super.getColumnClass(columnIndex);
 			return clazz;
 	}
-	public void sortTableByKeywords (String kw, LocalDate... startend )
+	public void sortTableByKeywords (String kw, Boolean triggereventbyrequest, LocalDate... startend )
 	{
 		switch(kw) {
 		case "LiuTongShiZhi": sortTableByLiuTongShiZhi ();
 			break;
 		case "ZongShiZhi": sortTableByZongShiZhi ();
 			break;
-		case "ChenJiaoEr": sortTableByChenJiaoEr ();
+		case "ChenJiaoEr":
+			sortTableByChenJiaoEr ();
 			break;
-		case "TimeRangeZhangFu": sortTableByTimeRangeZhangFu ( startend[0],  startend[1],  super.curperiod);
+		case "TimeRangeZhangFu": sortTableByTimeRangeZhangFu ( startend[0],  startend[1],  NodeGivenPeriodDataItem.DAY );
 			break;
 		case "QuanZhongInBanKuai":
 			break;
@@ -116,31 +119,42 @@ public abstract class BanKuaiGeGuBasicTableModel extends BandKuaiAndGeGuTableBas
 		case "HuanShouLvFree":
 			break;
 		}
+		
+		if(triggereventbyrequest) {
+			PropertyChangeEvent evt = new PropertyChangeEvent(this, SORTBYCHENJIAOER, this,  kw );
+	        pcs.firePropertyChange(evt);
+		}
 	}
+//	private Boolean sortsource = false;
+//	public void setSortTriggerSource () {
+//		sortsource = true;
+//	}
 	/*
 	 * 
 	 */
 	public void sortTableByLiuTongShiZhi ()
 	{
-		try{ Collections.sort(entryList, new NodeLiuTongShiZhiComparator(showwknum,0,super.curperiod) );
-		} catch (java.lang.NullPointerException e) {}
-		
-		this.fireTableDataChanged();
+		try{ 	Collections.sort(entryList, new NodeLiuTongShiZhiComparator(showwknum,0,super.curperiod) );
+				this.fireTableDataChanged();
+		} catch (java.lang.NullPointerException e) {e.printStackTrace();}
 	}
-	public void sortTableByZongShiZhi ()
+	public void sortTableByZongShiZhi ()  
 	{
+		try{ 	Collections.sort(entryList, new NodeZongShiZhiComparator(showwknum,0,super.curperiod) );
+				this.fireTableDataChanged();
+		} catch (java.lang.NullPointerException e) {e.printStackTrace();}
 	}
 	public void sortTableByChenJiaoEr ()
 	{
-		try{ Collections.sort(entryList, new NodeChenJiaoErComparator(showwknum,0,curperiod) );
-			this.fireTableDataChanged();
+		try{ 	Collections.sort(entryList, new NodeChenJiaoErComparator(showwknum,0,curperiod) );
+				this.fireTableDataChanged();
 		} catch (java.lang.NullPointerException e) {logger.debug("该表内容为空，表排序出错");
 		} catch (java.lang.Exception ex) {ex.printStackTrace();}
 	}
 	public void sortTableByTimeRangeZhangFu (LocalDate start, LocalDate end, String specificperiod)
 	{
-		try{Collections.sort(entryList, new NodeTimeRangeZhangFuComparator(start,end,specificperiod) );
-			this.fireTableDataChanged();
+		try{	Collections.sort(entryList, new NodeTimeRangeZhangFuComparator(start,end,specificperiod) );
+				this.fireTableDataChanged();
 		} catch (java.lang.NullPointerException e) {		logger.debug("该表没有数据，表排序出错");		}
 	}
 	

@@ -943,7 +943,6 @@ class CustomCategoryToolTipGeneratorForChenJiaoEr extends BanKuaiFengXiCategoryB
     {
 		String selected = dataset.getColumnKey(column).toString();
     	LocalDate selecteddate = CommonUtility.formateStringToDate(selected);
-//    	nodexdata = super.node.getNodeXPeroidData(period);
     			
 		String html;
 		DaPan dapan = (DaPan)  super.node.getRoot();

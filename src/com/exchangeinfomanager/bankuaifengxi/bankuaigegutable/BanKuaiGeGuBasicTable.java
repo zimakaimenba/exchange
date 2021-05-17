@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +26,7 @@ import javax.swing.table.TableRowSorter;
 
 import org.apache.log4j.Logger;
 
+import com.exchangeinfomanager.NodesServices.SvsForNodeOfBanKuai;
 import com.exchangeinfomanager.TagManagment.JDialogForTagSearchMatrixPanelForAddSysNewsToNode;
 import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.NewsPnl2.TDXNodsInforPnl;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchConditionListener;
@@ -34,9 +36,11 @@ import com.exchangeinfomanager.bankuaifengxi.ai.WeeklyFenXiWizard;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.StockCalendarAndNewDbOperation;
 import com.exchangeinfomanager.gui.StockInfoManager;
+import com.exchangeinfomanager.gui.subgui.DateRangeSelectPnl;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
+import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 
 import net.coderazzi.filters.gui.AutoChoices;
 import net.coderazzi.filters.gui.TableFilterHeader;
@@ -51,7 +55,8 @@ public abstract class BanKuaiGeGuBasicTable extends BanKuaiandGeGuTableBasic
 		this.newsdbopt = new StockCalendarAndNewDbOperation ();
 		this.stockmanager = stockmanager1;
 				
-		createMenu ();
+		createMenuForIndividualGeGu ();
+		createMenuForTable ();
 		createEvents ();
 		
 //		filterHeader = new TableFilterHeader(this, AutoChoices.ENABLED); //https://coderazzi.net/tablefilter/index.html#    //https://stackoverflow.com/questions/16277700/i-want-to-obtain-auto-filtering-in-jtable-as-in-ms-excel
@@ -112,8 +117,62 @@ public abstract class BanKuaiGeGuBasicTable extends BanKuaiandGeGuTableBasic
 		sortKeys = null;
 	}
 
+	protected void createMenuForTable ()
+	{
+		String columnmaxnumberstr = prop.getProperty ( "columnmaxnumber");
+		int columnmaxnumber =0;
+		try {
+			columnmaxnumber = Integer.parseInt(columnmaxnumberstr);
+		} catch (java.lang.NumberFormatException e) {	e.printStackTrace();	}
+		
+		JPopupMenu popupMenuGegu = new JPopupMenu () ;
+		for(int i=0;i<columnmaxnumber;i++) {
+			String column_name = prop.getProperty (String.valueOf(i) + "column_name");
+			if(column_name == null || column_name.toUpperCase().equals("NULL")   )
+					continue;
+			String column_kw = prop.getProperty (String.valueOf(i) + "column_info_keyword");
+			String column_info_topaixumenu =  prop.getProperty (String.valueOf(i) + "column_info_topaixumenu");
+			if(column_info_topaixumenu!= null && column_info_topaixumenu.toUpperCase().equals("FALSE") )
+				continue;
+			
+			JMenuItem menuItemGegu = new JMenuItem("按" + column_name + "排序");
+			menuItemGegu.setName(column_kw);
+			menuItemGegu.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent evt) {
+					String kw = menuItemGegu.getName();
+					
+					if(kw.equals("TimeRangeZhangFu")) {
+						BanKuai bk = (BanKuai) ((BanKuaiGeGuBasicTableModel)getModel()).getCurDispalyBandKuai ();
+						if(bk == null)  return;
+						
+						DateRangeSelectPnl datachoose = new DateRangeSelectPnl ( LocalDate.now().minusDays(1), LocalDate.now() ); 
+		        		JOptionPane.showMessageDialog(null, datachoose,"选择时间段", JOptionPane.OK_CANCEL_OPTION);
+		        		
+		        		LocalDate searchstart = datachoose.getDatachoosestart();
+		        		LocalDate searchend = datachoose.getDatachooseend();
+		        		
+						SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai ();
+		    			//一次性同步板块数据以及所属个股数据
+		    			try {
+		    				svsbk.syncBanKuaiAndItsStocksForSpecificTime(bk, searchstart, LocalDate.now(),NodeGivenPeriodDataItem.WEEK,true);
+		    			} catch (SQLException ex) {ex.printStackTrace();}
+		    			svsbk = null;
+//		    			((BanKuaiGeGuBasicTableModel)getModel()).setSortTriggerSource();
+		        		((BanKuaiGeGuBasicTableModel)getModel()).sortTableByKeywords (kw,true,searchstart,searchend);
+					} else {
+//						((BanKuaiGeGuBasicTableModel)getModel()).setSortTriggerSource();
+						((BanKuaiGeGuBasicTableModel)getModel()).sortTableByKeywords (kw,true);
+					}
+				}
+			});
+			
+			popupMenuGegu.add(menuItemGegu);
+		}
+		this.getTableHeader().setComponentPopupMenu (popupMenuGegu);
+	}
 	
-	private void createMenu() 
+	private void createMenuForIndividualGeGu() 
 	{
 		popupMenuGeguNews = new JPopupMenu();
 		menuItemGeguInfo = new JMenuItem("个股信息");

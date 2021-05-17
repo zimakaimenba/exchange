@@ -1,5 +1,7 @@
 package com.exchangeinfomanager.bankuaifengxi.BankuaiAndGeguTableBasic;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Collection;
@@ -38,8 +40,6 @@ public  abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 		createTableTitleStrings ();
 	}
 	
-	private static Logger logger = Logger.getLogger(BandKuaiAndGeGuTableBasicModel.class);
-	
 	protected String[] jtableTitleStrings ;
 	protected TDXNodes curbk;
 	protected List<BkChanYeLianTreeNode> entryList;
@@ -48,6 +48,11 @@ public  abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 	protected String curperiod;
 	
 	protected BanKuaiGeGuMatchCondition matchcond;
+	
+	protected PropertyChangeSupport pcs = new PropertyChangeSupport(this); //	https://stackoverflow.com/questions/4690892/passing-a-value-between-components/4691447#4691447
+	public void addPropertyChangeListener(PropertyChangeListener listener) {
+	        pcs.addPropertyChangeListener(listener);
+	}
 	
 	public void setTableHeader (String[] jtableTitleStrings1)
 	{
@@ -293,8 +298,8 @@ public  abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 		if(value == null)
 			return null;
 		
-		if(value.equals("??")) 
-			return value;
+//		if(value.equals("??")) 
+//			return value;
 		
     	Class<?> columncl = this.getColumnClass (columnIndex);
     	if (  !columncl.equals(Double.class) ) 
@@ -391,7 +396,7 @@ public  abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 	    	if(entryList.isEmpty())
 	    		return null;
 
-	    	Object value = "??";
+	    	Object value = null;
 			switch (columnIndex) {
 	        case 0: //{ "代码", "名称","高级排序排名","板块成交额贡献","大盘CJEZB增长率","CJEDpMaxWk","大盘CJLZB增长率","CJLDpMaxWk"};
 	        	String column_kw0  = prop.getProperty ("0column_info_keyword");
