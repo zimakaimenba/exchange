@@ -272,6 +272,11 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 				return "";
 			valuepect = rendererOperationForPercent (value);
 			break;
+		case "TimeRangeZhangFu" :
+			if(!column_info_valueformat.equalsIgnoreCase("PERCENT"))
+				return "";
+			valuepect = rendererOperationForPercent (value);
+			break;
 		case "ChenJiaoEr":
 			if(!column_info_valueformat.equalsIgnoreCase("REDUCT"))
 				return "";

@@ -1,18 +1,25 @@
 package com.exchangeinfomanager.nodes;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.jsoup.Jsoup;
 
 import com.exchangeinfomanager.Tag.Tag;
+import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.nodes.nodejibenmian.ShuJuJiLuInfo;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
+import com.google.common.base.Splitter;
 import com.google.common.collect.Range;
+import com.udojava.evalex.Expression;
 
 public abstract class TDXNodes extends BkChanYeLianTreeNode
 {
@@ -220,5 +227,93 @@ public abstract class TDXNodes extends BkChanYeLianTreeNode
 	}
 	
 	public abstract ServicesForNode getServicesForNode (Boolean getornot);
+	
+	public Boolean checkNodeDataMatchedWithFormula (String formula)
+	{
+		Boolean checkresult = false;
+		List<String> exportfactors = Splitter.on("AND").omitEmptyStrings().splitToList(formula);
+		for(String factor : exportfactors) {
+			String factoreq = factor.replaceAll(" ", "");
+			
+			ArrayList<String> vars = new ArrayList<String>();
+            Pattern p = Pattern.compile("\'.*?\'", Pattern.CASE_INSENSITIVE);
+            Matcher m = p.matcher(factor);
+            while (m.find()) 
+                vars.add(m.group());
+            
+            String checkedvar = "";
+            for(String var : vars) {
+            	if(var.equals(checkedvar))	continue;
+            	else  checkedvar = var;
+            		
+            	LocalDate sltdate = null ; String datestr = null;
+            	Pattern pdate = Pattern.compile("\\d+", Pattern.CASE_INSENSITIVE);
+                Matcher mdate = pdate.matcher(var);
+                while (mdate.find()) {
+                	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+                	sltdate = LocalDate.parse(mdate.group(), formatter);
+                	datestr = mdate.group();
+                }
+                int indexofdate = var.indexOf(datestr);
+            	String kw = var.substring(1, indexofdate);
+            	String period = var.substring(indexofdate+8, var.length()-1);
+            	if(period.isEmpty()) period = "WEEK";
+            	
+                String sltvalue = getKeywordValue (kw,sltdate, period, factor);
+                if(sltvalue == null) {	System.out.println(this.getMyOwnCode() + this.getMyOwnName() +  factoreq + "没有获取计算结果\n");
+                	checkresult = null;
+                	break;
+                }
+                	
+                if(kw.equals("CLOSEVSMA") ) {
+                	if(sltvalue.equals("true"))  checkresult = true;
+                	else	checkresult = false;
+                }
+                else factoreq = factoreq.replace(var, sltvalue);
+            }
+            
+            if(!factoreq.contains("CLOSEVSMA") && checkresult != null) 
+            	try{
+    		    	BigDecimal result = null; 
+    		    	result = new Expression(factoreq).eval(); //https://github.com/uklimaschewski/EvalEx
+    		    	String sesultstr = result.toString();
+    			    if(sesultstr.equals("0"))   	checkresult = false;
+    			    else   	checkresult = true;
+    		    } catch (com.udojava.evalex.Expression.ExpressionException e) {e.printStackTrace();return false;}
+            
+            if(checkresult == null || checkresult == false  ) 
+            	break;
+		}
+		
+		return checkresult;
+	}
+	private String getKeywordValue(String kw, LocalDate selectdate, String curperiod,String factor)
+	{
+		  Object value = null;
+		  factor = factor.replaceAll(" ", "");
+		  NodeXPeriodData nodexdata = this.getNodeXPeroidData(curperiod);
+          
+		  if(kw.equals("CLOSEVSMA")) {
+	          Pattern p = Pattern.compile("\'.*?\'", Pattern.CASE_INSENSITIVE);
+	          Matcher m = p.matcher(factor);
+	          int indexofeq ;  int indexofend = 0;
+	          while (m.find()) {
+	        	  indexofeq = m.start();
+	        	  indexofend = m.end();
+	          }
+	          String maformula = factor.substring(indexofend + 1, factor.length()-1);
+			  value =  nodexdata.getNodeDataByKeyWord( kw, selectdate,  maformula);
+		  }
+		  else try {
+			  value = nodexdata.getNodeDataByKeyWord(kw,selectdate,"");
+		  } catch (java.lang.NullPointerException e) {  e.printStackTrace();
+			  System.out.println(this.getMyOwnCode() + this.getMyOwnName() + "Get keyword failed. keyword is" + kw + selectdate.toString() + ". FACTOR is" + factor + "PERIOD is " + curperiod);
+		  }
+		  
+		  if(value != null)
+			  return value.toString();
+		  else
+			  return null;
+	}
 	
 }

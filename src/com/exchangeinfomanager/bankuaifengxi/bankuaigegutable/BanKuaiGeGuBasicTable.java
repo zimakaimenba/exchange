@@ -154,16 +154,12 @@ public abstract class BanKuaiGeGuBasicTable extends BanKuaiandGeGuTableBasic
 		        		
 						SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai ();
 		    			//一次性同步板块数据以及所属个股数据
-		    			try {
-		    				svsbk.syncBanKuaiAndItsStocksForSpecificTime(bk, searchstart, LocalDate.now(),NodeGivenPeriodDataItem.WEEK,true);
+		    			try {	svsbk.syncBanKuaiAndItsStocksForSpecificTime(bk, searchstart, LocalDate.now(),NodeGivenPeriodDataItem.WEEK,true);
 		    			} catch (SQLException ex) {ex.printStackTrace();}
 		    			svsbk = null;
-//		    			((BanKuaiGeGuBasicTableModel)getModel()).setSortTriggerSource();
-		        		((BanKuaiGeGuBasicTableModel)getModel()).sortTableByKeywords (kw,true,searchstart,searchend);
-					} else {
-//						((BanKuaiGeGuBasicTableModel)getModel()).setSortTriggerSource();
+		        		((BanKuaiGeGuBasicTableModel)getModel()).sortTableByKeywords (kw,true);
+					} else 
 						((BanKuaiGeGuBasicTableModel)getModel()).sortTableByKeywords (kw,true);
-					}
 				}
 			});
 			

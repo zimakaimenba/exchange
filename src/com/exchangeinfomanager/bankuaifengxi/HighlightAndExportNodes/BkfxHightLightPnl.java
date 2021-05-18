@@ -483,8 +483,10 @@ public class BkfxHightLightPnl extends JPanel {
 		switch (keyword) {
 		case "CLOSEVSMA":
 			JTextField txtfldma = getHighlightTextField(keyword);
-			if(ckbxhighlight.isSelected() ) 
+			if(ckbxhighlight.isSelected() ) {
 				globeexpc.setSettingMaFormula(txtfldma.getText());
+				txtfldma.setToolTipText(txtfldma.getText());
+			}
 			else
 				globeexpc.setSettingMaFormula(null);
 			

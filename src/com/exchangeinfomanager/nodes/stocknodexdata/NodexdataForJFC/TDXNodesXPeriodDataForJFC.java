@@ -393,6 +393,8 @@ import com.udojava.evalex.Expression;
 	 */
 	public Double getSpecificTimeRangeOHLCHightestZhangFu (LocalDate requiredstart,LocalDate requiredend)
 	{
+		if(requiredstart == null || requiredend == null)
+			return null; 
 		 DayOfWeek d_requiredstart = requiredstart.getDayOfWeek();
 		 if(d_requiredstart == DayOfWeek.SATURDAY) requiredstart  = requiredstart.plus(2,ChronoUnit.DAYS);
 		 else if( d_requiredstart == DayOfWeek.SUNDAY) requiredstart = requiredstart.plus(1,ChronoUnit.DAYS);

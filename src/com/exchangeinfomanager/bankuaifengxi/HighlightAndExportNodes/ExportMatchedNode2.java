@@ -143,10 +143,8 @@ public class ExportMatchedNode2
 	{
 		if(this.cond.shouldExportOnlyYellowSignBkStk() ) {
 			NodesTreeRelated filetree = childnode.getNodeTreeRelated ();
-			if(!filetree.selfIsMatchModel(exportdate) )
-				return false;
-			else
-				return true;
+			if(!filetree.selfIsMatchModel(exportdate) )		return false;
+			else	return true;
 		} 
 		
 		return null;
@@ -156,75 +154,76 @@ public class ExportMatchedNode2
 	 */
 	private Boolean checkNodesMatchedCurSettingConditions (TDXNodes node)
 	{
-		Boolean checkresult = false;
+		Boolean checkresult = null;
 		LocalDate requirestart = CommonUtility.getSettingRangeDate(exportdate,"large");
 
 		ServicesForNode svsnode = node.getServicesForNode(true);
-		try {
-			node =  (TDXNodes) svsnode.getNodeData( node,requirestart,exportdate,NodeGivenPeriodDataItem.WEEK,true);
+		try {	node =  (TDXNodes) svsnode.getNodeData( node,requirestart,exportdate,NodeGivenPeriodDataItem.WEEK,true);
 		} catch (java.lang.NullPointerException e) {	e.printStackTrace();}
 		
 		String formula = this.cond.getExportConditionFormula();
 		if(formula != null && formula.contains("CLOSEVSMA") || formula.contains("ZhangDieFu") || formula.contains("DAY")) 
 			svsnode.getNodeKXian( node, requirestart, exportdate, NodeGivenPeriodDataItem.DAY,true);
 		
-		List<String> exportfactors = Splitter.on("AND").omitEmptyStrings().splitToList(formula);
-		for(String factor : exportfactors) {
-			String factoreq = factor.replaceAll(" ", "");
-			
-			ArrayList<String> vars = new ArrayList<String>();
-            Pattern p = Pattern.compile("\'.*?\'", Pattern.CASE_INSENSITIVE);
-            Matcher m = p.matcher(factor);
-            while (m.find()) {
-                vars.add(m.group());
-            }
-            
-            String checkedvar = "";
-            for(String var : vars) {
-            	if(var.equals(checkedvar))	continue;
-            	else  checkedvar = var;
-            		
-            	LocalDate sltdate = null ; String datestr = null;
-            	Pattern pdate = Pattern.compile("\\d+", Pattern.CASE_INSENSITIVE);
-                Matcher mdate = pdate.matcher(var);
-                while (mdate.find()) {
-                	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-                	sltdate = LocalDate.parse(mdate.group(), formatter);
-                	datestr = mdate.group();
-                }
-                int indexofdate = var.indexOf(datestr);
-            	String kw = var.substring(1, indexofdate);
-            	String period = var.substring(indexofdate+8, var.length()-1);
-            	if(period.isEmpty()) period = "WEEK";
-            	
-                String sltvalue = getKeywordValue (node, kw,sltdate, period, factor);
-                if(sltvalue == null) {
-                	System.out.println(node.getMyOwnCode() + node.getMyOwnName() +  factoreq + "没有获取计算结果\n");
-                	checkresult = null;
-                	break;
-                }
-                	
-                if(kw.equals("CLOSEVSMA") ) {
-                	if(sltvalue.equals("true"))  checkresult = true;
-                	else	checkresult = false;
-                }
-                else factoreq = factoreq.replace(var, sltvalue);
-            }
-            
-            if(!factoreq.contains("CLOSEVSMA") && checkresult != null) 
-            	try{
-    		    	BigDecimal result = null; 
-    		    	result = new Expression(factoreq).eval(); //https://github.com/uklimaschewski/EvalEx
-    		    	String sesultstr = result.toString();
-    			    if(sesultstr.equals("0"))   	checkresult = false;
-    			    else   	checkresult = true;
-    		    } catch (com.udojava.evalex.Expression.ExpressionException e) {e.printStackTrace();return false;}
-            
-            if(checkresult == null || checkresult == false  ) 
-            	break;
-		}
+		checkresult = node.checkNodeDataMatchedWithFormula(formula);
 		
-		svsnode = null;
+//		List<String> exportfactors = Splitter.on("AND").omitEmptyStrings().splitToList(formula);
+//		for(String factor : exportfactors) {
+//			String factoreq = factor.replaceAll(" ", "");
+//			
+//			ArrayList<String> vars = new ArrayList<String>();
+//            Pattern p = Pattern.compile("\'.*?\'", Pattern.CASE_INSENSITIVE);
+//            Matcher m = p.matcher(factor);
+//            while (m.find()) {
+//                vars.add(m.group());
+//            }
+//            
+//            String checkedvar = "";
+//            for(String var : vars) {
+//            	if(var.equals(checkedvar))	continue;
+//            	else  checkedvar = var;
+//            		
+//            	LocalDate sltdate = null ; String datestr = null;
+//            	Pattern pdate = Pattern.compile("\\d+", Pattern.CASE_INSENSITIVE);
+//                Matcher mdate = pdate.matcher(var);
+//                while (mdate.find()) {
+//                	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+//                	sltdate = LocalDate.parse(mdate.group(), formatter);
+//                	datestr = mdate.group();
+//                }
+//                int indexofdate = var.indexOf(datestr);
+//            	String kw = var.substring(1, indexofdate);
+//            	String period = var.substring(indexofdate+8, var.length()-1);
+//            	if(period.isEmpty()) period = "WEEK";
+//            	
+//                String sltvalue = getKeywordValue (node, kw,sltdate, period, factor);
+//                if(sltvalue == null) {
+//                	System.out.println(node.getMyOwnCode() + node.getMyOwnName() +  factoreq + "没有获取计算结果\n");
+//                	checkresult = null;
+//                	break;
+//                }
+//                	
+//                if(kw.equals("CLOSEVSMA") ) {
+//                	if(sltvalue.equals("true"))  checkresult = true;
+//                	else	checkresult = false;
+//                }
+//                else factoreq = factoreq.replace(var, sltvalue);
+//            }
+//            
+//            if(!factoreq.contains("CLOSEVSMA") && checkresult != null) 
+//            	try{
+//    		    	BigDecimal result = null; 
+//    		    	result = new Expression(factoreq).eval(); //https://github.com/uklimaschewski/EvalEx
+//    		    	String sesultstr = result.toString();
+//    			    if(sesultstr.equals("0"))   	checkresult = false;
+//    			    else   	checkresult = true;
+//    		    } catch (com.udojava.evalex.Expression.ExpressionException e) {e.printStackTrace();return false;}
+//            
+//            if(checkresult == null || checkresult == false  ) 
+//            	break;
+//		}
+//		
+//		svsnode = null;
 		return checkresult;
 	}
 	private String getKeywordValue(TDXNodes node, String kw, LocalDate selectdate, String curperiod,String factor)
@@ -244,16 +243,13 @@ public class ExportMatchedNode2
 	          String maformula = factor.substring(indexofend + 1, factor.length()-1);
 			  value =  nodexdata.getNodeDataByKeyWord( kw, selectdate,  maformula);
 		  }
-		  else try {
-			  value = nodexdata.getNodeDataByKeyWord(kw,selectdate,"");
+		  else try {  value = nodexdata.getNodeDataByKeyWord(kw,selectdate,"");
 		  } catch (java.lang.NullPointerException e) {  e.printStackTrace();
 			  System.out.println(node.getMyOwnCode() + node.getMyOwnName() + "Get keyword failed. keyword is" + kw + selectdate.toString() + ". FACTOR is" + factor + "PERIOD is " + curperiod);
 		  }
 		  
-		  if(value != null)
-			  return value.toString();
-		  else
-			  return null;
+		  if(value != null)		  return value.toString();
+		  else	  return null;
 	}
 	/*
 	 * 检查板块是否符合设定

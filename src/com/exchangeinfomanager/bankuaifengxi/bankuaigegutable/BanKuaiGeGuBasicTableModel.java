@@ -88,7 +88,7 @@ public abstract class BanKuaiGeGuBasicTableModel extends BandKuaiAndGeGuTableBas
 			Class clazz = super.getColumnClass(columnIndex);
 			return clazz;
 	}
-	public void sortTableByKeywords (String kw, Boolean triggereventbyrequest, LocalDate... startend )
+	public void sortTableByKeywords (String kw, Boolean triggereventbyrequest)
 	{
 		switch(kw) {
 		case "LiuTongShiZhi": sortTableByLiuTongShiZhi ();
@@ -98,7 +98,7 @@ public abstract class BanKuaiGeGuBasicTableModel extends BandKuaiAndGeGuTableBas
 		case "ChenJiaoEr":
 			sortTableByChenJiaoEr ();
 			break;
-		case "TimeRangeZhangFu": sortTableByTimeRangeZhangFu ( startend[0],  startend[1],  NodeGivenPeriodDataItem.DAY );
+		case "TimeRangeZhangFu": sortTableByTimeRangeZhangFu ( super.timerangezhangfu[0] ,  super.timerangezhangfu[1],  NodeGivenPeriodDataItem.DAY );
 			break;
 		case "QuanZhongInBanKuai":
 			break;
@@ -153,6 +153,9 @@ public abstract class BanKuaiGeGuBasicTableModel extends BandKuaiAndGeGuTableBas
 	}
 	public void sortTableByTimeRangeZhangFu (LocalDate start, LocalDate end, String specificperiod)
 	{
+		if(start == null && end == null)
+			return;
+		
 		try{	Collections.sort(entryList, new NodeTimeRangeZhangFuComparator(start,end,specificperiod) );
 				this.fireTableDataChanged();
 		} catch (java.lang.NullPointerException e) {		logger.debug("该表没有数据，表排序出错");		}

@@ -46,7 +46,7 @@ public  abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 	protected LocalDate showwknum;
 	protected int difference;
 	protected String curperiod;
-	
+	protected LocalDate[] timerangezhangfu = new LocalDate[2];
 	protected BanKuaiGeGuMatchCondition matchcond;
 	
 	protected PropertyChangeSupport pcs = new PropertyChangeSupport(this); //	https://stackoverflow.com/questions/4690892/passing-a-value-between-components/4691447#4691447
@@ -83,23 +83,24 @@ public  abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 
 		this.setTableHeader(jtableTitleStrings);
 	}
+	public void setTimeRangeZhangFuDates(LocalDate start, LocalDate end)	{
+		this.timerangezhangfu[0] = start;
+		this.timerangezhangfu[1] = end; 
+	}
 	/*
 	 * 
 	 */
-	public LocalDate getCurDisplayedDate ()
-	{
+	public LocalDate getCurDisplayedDate () {
 		return this.showwknum;
 	}
 	/*
 	 * 
 	 */
-	public String getCurDisplayPeriod ()
-	{
+	public String getCurDisplayPeriod ()	{
 		return this.curperiod;
 	}
 	@Override
-	public int getRowCount() 
-	{
+	public int getRowCount() 	{
 		 if(entryList == null)
 			 return 0;
 		 else 
@@ -263,7 +264,12 @@ public  abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 			  case "CjeLianXuZhang": //周日平均成交额MAXWK
 				        	Integer cjemaxwk = nodexdatawk.getAverageDailyCjeLianXuFangLiangPeriodNumber(showdate,0); 
 				        	value = cjemaxwk;
-				        	break;     	  
+				        	break; 
+			  case "TimeRangeZhangFu":
+				  	NodeXPeriodData nodexdataday = ((TDXNodes)node).getNodeXPeroidData(NodeGivenPeriodDataItem.DAY);
+			    	Double nodetimerangezhangfu = nodexdataday.getSpecificTimeRangeOHLCHightestZhangFu (this.timerangezhangfu[0], this.timerangezhangfu[1] );
+			    	value =  nodetimerangezhangfu;
+				    break;
 		  }
 
 		  return value;
