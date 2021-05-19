@@ -1742,6 +1742,14 @@ import com.udojava.evalex.Expression;
 			 Integer cjemaxwk =  this.getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(date,0);//显示成交额是多少周最大,成交额多少周最小没有意义，因为如果不是完整周成交量就是会很小
 	   	     value = cjemaxwk;
 	   	     break;
+		 case "ChengJiaoErDifferenceWithLastPeriod":
+			 Double difference = this.getChengJiaoErDifferenceWithLastPeriod(date, 0);
+			 value = difference;
+			 break;
+		 case "ChengJiaoErDailyAverageDifferenceWithLastPeriod":
+			 Double averagediff = this.getChengJiaoErDailyAverageDifferenceWithLastPeriod (date, 0);
+			 value = averagediff;
+			 break;
 		 case "ChenJiaoLiang" :
 			 Double curcjl = this.getChengJiaoLiang(date, 0);
 	   	     value = curcjl;
@@ -1773,6 +1781,11 @@ import com.udojava.evalex.Expression;
 		 case "DailyZhangDieFuRangeInWeek":
 			 Double wkhighzhangfu = this.getSpecificTimeHighestZhangDieFu(date, 0);
 			 value = wkhighzhangfu;
+			 break;
+		 case "CjeLianXuZhang": //周日平均成交额MAXWK
+	        	Integer cjelx = this.getAverageDailyCjeLianXuFangLiangPeriodNumber(date,0); 
+	        	value = cjelx;
+	        	break; 
 		 }
 		 return value;
 	 }

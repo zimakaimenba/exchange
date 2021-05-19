@@ -149,18 +149,16 @@ public class BkfxHightLightPnl extends JPanel {
 					@Override
 					public void mouseClicked(MouseEvent arg0) 
 					{
-						if(SwingUtilities.isLeftMouseButton(arg0) ) {
+						if(SwingUtilities.isLeftMouseButton(arg0) ) 
 							initializeExportConditions (btnaddexportcond);
-						} else 
-						if (SwingUtilities.isRightMouseButton(arg0)) {
+						else if (SwingUtilities.isRightMouseButton(arg0)) {
 							if( exportcond != null) { 
 								exportcond.clear();
 								
 								btnaddexportcond.setText(String.valueOf(0));
 								btnaddexportcond.setToolTipText("<html>导出条件设置(鼠标右键删除设置)<br></html>");
 							}
-						} else if (SwingUtilities.isMiddleMouseButton(arg0)) {							
-						}
+						} else if (SwingUtilities.isMiddleMouseButton(arg0)) {}
 					}
 				});
 				
@@ -171,10 +169,8 @@ public class BkfxHightLightPnl extends JPanel {
 				progressBarExport.addMouseListener(new MouseAdapter() {
 					@Override
 					public void mouseClicked(MouseEvent arg0) {
-						if (exporttask == null)  
-				        	exportBanKuaiWithGeGuOnCondition();
-				         else 
-				        	exporttask.cancel(true);
+						if (exporttask == null)   	exportBanKuaiWithGeGuOnCondition();
+				        else exporttask.cancel(true);
 					}
 				});
 				progressBarExport.setString("点击导出条件个股");
@@ -738,11 +734,10 @@ public class BkfxHightLightPnl extends JPanel {
 
 		String msg =  "导出耗时较长，请先确认条件是否正确。\n是否导出？";
 		int exchangeresult = JOptionPane.showConfirmDialog(null,msg , "确实导出？", JOptionPane.OK_CANCEL_OPTION);
-		if(exchangeresult == JOptionPane.CANCEL_OPTION)
-			return;
+		if(exchangeresult == JOptionPane.CANCEL_OPTION)			return;
 
-		if(curselectdate == null)
-			curselectdate = LocalDate.now();
+		if(curselectdate == null)			curselectdate = LocalDate.now();
+		
 		String dateshowinfilename = null;
 		if(globeperiod == null  || globeperiod.equals(NodeGivenPeriodDataItem.WEEK))
 			dateshowinfilename = "week" + curselectdate.with(DayOfWeek.FRIDAY).toString().replaceAll("-","");
@@ -759,8 +754,7 @@ public class BkfxHightLightPnl extends JPanel {
                 return ;  
             }  
         }  
-		try {
-				if (filefmxx.exists()) {
+		try {	if (filefmxx.exists()) {
 					filefmxx.delete();
 					filefmxx.createNewFile();
 				} else

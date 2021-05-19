@@ -261,10 +261,6 @@ public  abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 				        		value = (Integer)stockweight;
 				        	} catch (java.lang.NullPointerException e) {value = null;}
 				      break;
-			  case "CjeLianXuZhang": //周日平均成交额MAXWK
-				        	Integer cjemaxwk = nodexdatawk.getAverageDailyCjeLianXuFangLiangPeriodNumber(showdate,0); 
-				        	value = cjemaxwk;
-				        	break; 
 			  case "TimeRangeZhangFu":
 				  	NodeXPeriodData nodexdataday = ((TDXNodes)node).getNodeXPeroidData(NodeGivenPeriodDataItem.DAY);
 			    	Double nodetimerangezhangfu = nodexdataday.getSpecificTimeRangeOHLCHightestZhangFu (this.timerangezhangfu[0], this.timerangezhangfu[1] );

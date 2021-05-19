@@ -201,7 +201,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 	}
 	private Object[] getRendererResultsByColumnIndex (TDXNodes node,Object value, Integer row,  Integer col)
 	{
-		String valuetext =""; Font font = this.getFont();Color foreground = Color.BLACK, background = Color.WHITE;
+		String valuetext = null; Font font = this.getFont();Color foreground = Color.BLACK, background = Color.WHITE;
 	    	    
 		String column_bg_kw  = prop.getProperty (col.toString() + "column_background_highlight_keyword");
 		String column_bg_color  = prop.getProperty (col.toString() + "column_background_hightlight_color");
@@ -237,8 +237,11 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
     	
     	String column_kw  = prop.getProperty (col.toString() + "column_info_keyword");
     	String column_info_valueformat = prop.getProperty (col.toString() + "column_info_valueformat"); 
-    	if(column_info_valueformat != null)
-    		valuetext = rendererOperationsForColumnInfoFormat (node,value, column_kw,column_info_valueformat);
+    	if(column_info_valueformat != null) {
+    		valuetext = (String) rendererOperationsForColumnInfoFormat (node,value, column_kw,column_info_valueformat);
+    		if(valuetext == null &&  value !=null)
+    			valuetext = value.toString();
+    	}
 
     	font = rendererOperationsForColumnFont (node, "HasHqgq"); //其次看有没有皇亲国戚
     	
@@ -246,54 +249,71 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 	    return keywordtextbackgroundforegroundfont;
 	}
 	
-	private String rendererOperationsForColumnInfoFormat(TDXNodes node, Object value,	String column_keyword, String column_info_valueformat)
+	private Object rendererOperationsForColumnInfoFormat(TDXNodes node, Object value,	String column_keyword, String column_info_valueformat)
 	{
 		if(value == null)
 			return null;
-		String valuepect = "";
+		
+		String valuepect = null;
 		switch (column_keyword) {
 		case "CjeZbGrowRate":
 			if(!column_info_valueformat.equalsIgnoreCase("PERCENT"))
-				return "";
+				return null;
 			valuepect = rendererOperationForPercent (value);
 			break;
 		case "CjlZbGrowRate":
 			if(!column_info_valueformat.equalsIgnoreCase("PERCENT"))
-				return "";
+				return null;
 			valuepect = rendererOperationForPercent (value);
 			break;
 		case "BanKuaiChengJiaoErGongXian":
 			if(!column_info_valueformat.equalsIgnoreCase("PERCENT"))
-				return "";
+				return null;
 			valuepect = rendererOperationForPercent (value);
 			break;
 		case "BanKuaiChengJiaoLiangGongXian":
 			if(!column_info_valueformat.equalsIgnoreCase("PERCENT"))
-				return "";
+				return null;
 			valuepect = rendererOperationForPercent (value);
 			break;
 		case "TimeRangeZhangFu" :
 			if(!column_info_valueformat.equalsIgnoreCase("PERCENT"))
-				return "";
+				return null;
 			valuepect = rendererOperationForPercent (value);
 			break;
 		case "ChenJiaoEr":
-			if(!column_info_valueformat.equalsIgnoreCase("REDUCT"))
-				return "";
-			Double cje = Double.parseDouble(value.toString()) / 100000000;
-			double count = Math.pow(10, 2);
-	    	try {
-	    				Double output = Math.round(  (Double)cje * count) / count;
-	    				valuepect = output.toString();
-	    	} catch ( java.lang.ClassCastException e) {	e.printStackTrace(); valuepect ="";}
+			if(!column_info_valueformat.equalsIgnoreCase("BILLION"))
+				return null;
+			valuepect = rendererOperationForBillion (value);
+			break;
+		case "ChengJiaoErDifferenceWithLastPeriod":
+			if(!column_info_valueformat.equalsIgnoreCase("BILLION"))
+				return null;
+			valuepect = rendererOperationForBillion (value);
+			break;
+		case "ChengJiaoErDailyAverageDifferenceWithLastPeriod":
+			if(!column_info_valueformat.equalsIgnoreCase("BILLION"))
+				return null;
+			valuepect = rendererOperationForBillion (value);
 			break;
 		}	
 		
     	return valuepect;
 	}
+	private String rendererOperationForBillion (Object value) {
+		String  valuepect = null;
+		Double cje = Double.parseDouble(value.toString()) / 100000000;
+		double count = Math.pow(10, 2);
+    	try {
+    				Double output = Math.round(  (Double)cje * count) / count;
+    				valuepect = output.toString();
+    	} catch ( java.lang.ClassCastException e) {	e.printStackTrace(); valuepect =null;}
+    	
+    	return valuepect;
+	}
 	private String rendererOperationForPercent (Object value) {
 		
-		String  valuepect = "";
+		String  valuepect = null;
 		 //用百分比显示
     	try {
     		 double formatevalue = NumberFormat.getInstance(Locale.CHINA).parse(value.toString()).doubleValue();
@@ -301,9 +321,9 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
     		 NumberFormat percentFormat = NumberFormat.getPercentInstance(Locale.CHINA);
     	     percentFormat.setMinimumFractionDigits(2);
         	 valuepect = percentFormat.format (formatevalue );
-    	} catch (java.lang.NullPointerException e) {		valuepect = "";
-    	}catch (java.lang.NumberFormatException e)  { e.printStackTrace();
-    	} catch (ParseException e) {e.printStackTrace();}
+    	} catch (java.lang.NullPointerException e) {		valuepect = null;
+    	} catch (java.lang.NumberFormatException e)  { e.printStackTrace(); valuepect = null;
+    	} catch (ParseException e) {e.printStackTrace();valuepect = null; }
     	
     	return valuepect;
 	}

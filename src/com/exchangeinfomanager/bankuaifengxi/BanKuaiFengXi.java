@@ -1962,13 +1962,10 @@ public class BanKuaiFengXi extends JDialog
 						clearTheGuiBeforDisplayNewInfoSection1 ();
 						clearTheGuiBeforDisplayNewInfoSection2 ();
 						clearTheGuiBeforDisplayNewInfoSection3 ();
-						
-//						cyltreecopy.setCurrentDisplayedWk (newdate);
-//			    		DefaultTreeModel treeModel = (DefaultTreeModel) cyltreecopy.getModel();
-//			    		treeModel.reload();
 			    		
 			    		gettBanKuaiZhanBiRangedByGrowthRateOfPeriod (NodeGivenPeriodDataItem.WEEK);
 			    		
+			    		if(lastselecteddate != null)  		lbllastselect.setText(lastselecteddate.toString());
 			    		lastselecteddate = newdate;
 			    		bkhlpnl.setCurrentDisplayDate(lastselecteddate );
 			    		
@@ -1979,6 +1976,13 @@ public class BanKuaiFengXi extends JDialog
 		    	}
 
 		    }
+		});
+		lbllastselect.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				LocalDate curdate = dateChooser.getLocalDate();
+				dateChooser.setLocalDate(LocalDate.parse(lbllastselect.getText()));
+			}
 		});
 
 		/*
@@ -3008,6 +3012,7 @@ public class BanKuaiFengXi extends JDialog
 	private BkfxHightLightPnl bkhlpnl;
 	private JMenu stkhistorycsvfileMenu;
 	private JMenuItem menuItemcancelreviewedtoday;
+	private JLabel lbllastselect;
 	
 	
 //	private void initializeGuiOfNormal() {
@@ -3790,6 +3795,7 @@ public class BanKuaiFengXi extends JDialog
 	      }
 	    });
 	    scrollPaneTempGeGu.setVerticalScrollBar(scrollbarTempGeGu);
+		
 		tabbedPanegegu.addTab("\u4E34\u65F6\u4E2A\u80A1", null, scrollPaneTempGeGu, null);
 		tabbedPanegegu.setBackgroundAt(6, Color.CYAN);
 		
@@ -3839,6 +3845,8 @@ public class BanKuaiFengXi extends JDialog
 		
 		pnlZhiShu = new JPanel();
 		
+		lbllastselect = new JLabel("New label");
+		
 		GroupLayout gl_panel = new GroupLayout(panel);
 		gl_panel.setHorizontalGroup(
 			gl_panel.createParallelGroup(Alignment.LEADING)
@@ -3850,7 +3858,9 @@ public class BanKuaiFengXi extends JDialog
 							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(chxbxwholeweek)
 							.addGap(18)
-							.addComponent(btnresetdate))
+							.addComponent(btnresetdate)
+							.addGap(39)
+							.addComponent(lbllastselect))
 						.addComponent(pnlZhiShu, GroupLayout.PREFERRED_SIZE, 473, Short.MAX_VALUE))
 					.addContainerGap())
 		);
@@ -3862,7 +3872,8 @@ public class BanKuaiFengXi extends JDialog
 						.addComponent(dateChooser, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)
 						.addGroup(gl_panel.createParallelGroup(Alignment.BASELINE)
 							.addComponent(chxbxwholeweek)
-							.addComponent(btnresetdate, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)))
+							.addComponent(btnresetdate, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE)
+							.addComponent(lbllastselect)))
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(pnlZhiShu, GroupLayout.PREFERRED_SIZE, 45, GroupLayout.PREFERRED_SIZE)
 					.addContainerGap())
@@ -4106,6 +4117,4 @@ public class BanKuaiFengXi extends JDialog
 		}
 		
 	}
-
-	
 }
