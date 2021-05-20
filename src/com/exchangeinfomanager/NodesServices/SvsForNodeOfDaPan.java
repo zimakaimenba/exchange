@@ -75,7 +75,7 @@ public class SvsForNodeOfDaPan implements ServicesForNode
 		szdpbankuai = (BanKuai) this.servicsofbk.getNodeData (szdpbankuai,requiredstartday,requiredendday,period,calwholeweek);
 		cybdpbankuai = (BanKuai) this.servicsofbk.getNodeData (cybdpbankuai,requiredstartday,requiredendday,period,calwholeweek);
 		
-		return shdpbankuai;
+		return bankuai;
 	}
 
 	@Override

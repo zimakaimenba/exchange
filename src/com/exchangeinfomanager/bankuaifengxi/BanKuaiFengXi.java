@@ -2806,7 +2806,6 @@ public class BanKuaiFengXi extends JDialog
 		long m = 12 * 3  - n; 
 		LocalDate requireend = curselectdate.plus(n,ChronoUnit.MONTHS).with(DayOfWeek.FRIDAY);
 		LocalDate requirestartd = curselectdate.minus(m,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
-		
 		LocalDate bufferdatastartday  = requirestartd.minus(2 * 36,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY); 
 		
 		//同步数据
@@ -2828,11 +2827,13 @@ public class BanKuaiFengXi extends JDialog
 			}
 		}
 				
-		DaPan dapan = (DaPan) CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode("000000", BkChanYeLianTreeNode.DAPAN);
-		dapan.getServicesForNode(true).getNodeData(dapan, bufferdatastartday, requireend, this.globeperiod, this.globecalwholeweek);
-		dapan.getServicesForNode(true).syncNodeData (dapan);
-		dapan.getServicesForNode(false);
-		
+		if(node.getType() != BkChanYeLianTreeNode.DAPAN) {
+			DaPan dapan = (DaPan) CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode("000000", BkChanYeLianTreeNode.DAPAN);
+			dapan.getServicesForNode(true).getNodeData(dapan, bufferdatastartday, requireend, this.globeperiod, this.globecalwholeweek);
+			dapan.getServicesForNode(true).syncNodeData (dapan);
+			dapan.getServicesForNode(false);
+		}
+
 				BanKuaiFengXiLargePnl largeinfo = null;
 				String guitype = "CJE";
 				if( guisource.contains("CJL") )
