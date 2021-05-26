@@ -36,6 +36,9 @@ public class RuleOfMA
 		if(evanode.getType() != BkChanYeLianTreeNode.TDXBK && evanode.getType() != BkChanYeLianTreeNode.TDXGG)
 			return false;
 		
+		String displayma = evacond.getSettingMaFormula();
+		if (Strings.isNullOrEmpty(displayma)) return false;
+	
 		NodeXPeriodData nodexdataday = evanode.getNodeXPeroidData(NodeGivenPeriodDataItem.DAY);
 		DayOfWeek dayOfWeek = evadate.getDayOfWeek();
 	    int dayOfWeekIntValue = dayOfWeek.getValue();
@@ -64,13 +67,9 @@ public class RuleOfMA
 		} else
 			return true; //没有均线数据，可能是系统没有导入，所以就不还任何判断，默认为有。
 		
-		String displayma = evacond.getSettingMaFormula();
-    	if (!Strings.isNullOrEmpty(displayma)) {
-		    Boolean checkresult = nodexdataday.checkCloseComparingToMAFormula(displayma,evadate,0);
-		    if( checkresult != null && checkresult) 
-		    	return true;
-    	}
-    	
+	    Boolean checkresult = nodexdataday.checkCloseComparingToMAFormula(displayma,evadate,0);
+	    if( checkresult != null && checkresult)	    	return true;
+	    
     	return false;
 	}
 	

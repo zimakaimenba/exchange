@@ -4,12 +4,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class BanKuaiAndGeGuMatchingConditions {
+public class BanKuaiAndGeGuMatchingConditions implements Cloneable {
 
 	private Set<BanKuaiAndGeGuMatchingConditionListener> bkfxhighlightvaluesoftableslisteners;
-//	private String systeminstalledpath;
-//	private Properties prop;
-
 
 	public BanKuaiAndGeGuMatchingConditions() 
 	{
@@ -58,25 +55,6 @@ public class BanKuaiAndGeGuMatchingConditions {
 		public String getConditionsDescriptions ()
 		{
 			String outputfilehead = "[导出条件:";
-//			if(this.shouldExportAllBanKuai())
-//				outputfilehead = outputfilehead + "导出所有板块。";
-//			if(this.shouldOnlyExportCurrentBankuai())
-//				outputfilehead = outputfilehead + "导出限定板块为" + this.shouldOnlyExportCurrentBankuai() + "。";
-//			if(this.shouldOnlyExportBanKuaiAllowedInSetting())
-//				outputfilehead = outputfilehead + "仅导出板块设置允许的板块。" ; 
-//			if(this.shouldOnlyExportBanKuaiOfZhanBiUp())
-//				outputfilehead = outputfilehead +"仅导出板块大盘成交额或成交量占比环比上升的板块。";
-//			outputfilehead = outputfilehead + "导出个股设定为:";
-//			outputfilehead = outputfilehead + "成交额大于" + this.getSettingCjemin() + "亿；";
-//			outputfilehead = outputfilehead + "成交额小于" + this.getSettingCjeMax() + "亿。";
-//			outputfilehead = outputfilehead + "成交额或成交量DPMAX大于" + this.getSettinDpmaxwk() + "。";
-//			outputfilehead = outputfilehead + "成交额大于" + this.getSettingCjemaxwk() + "周。";
-//			outputfilehead = outputfilehead + "不导出ST" + this.shouldNotExportSTStocks() + "。";
-//			outputfilehead = outputfilehead + "导出个股周K线涨幅不低于" + this.shouldOnlyExportStocksWithWkYangXian () + "。";
-//			outputfilehead = outputfilehead + "导出周收盘价满足均线公式为" + this.getSettingMAFormula() + "。";
-//			outputfilehead = outputfilehead + "换手率必须>=" + this.getSettingHsl() + "。";
-//			outputfilehead = outputfilehead  +"]";
-			
 			return outputfilehead + this.getExportConditionFormula();
 		}
 		private Double settingzszmax;
@@ -160,7 +138,7 @@ public class BanKuaiAndGeGuMatchingConditions {
 		public Integer getSettingCjeZbDpMinWkMax() {
 			return settingcjezbdpminwkmax;
 		}
-		public void setSettingCjeDpMinWk(Integer settingcjedpminwkmin,Integer settingcjedpminwkmax) {
+		public void setSettingCjeZbDpMinWk(Integer settingcjedpminwkmin,Integer settingcjedpminwkmax) {
 			this.settingcjezbdpminwkmin = settingcjedpminwkmin;
 			this.settingcjezbdpminwkmax = settingcjedpminwkmax;
 			
@@ -378,12 +356,10 @@ public class BanKuaiAndGeGuMatchingConditions {
 			setttinglastwkcjezbgrowingratemin = min;
 			setttinglastwkcjezbgrowingratemax = max;
 		}
-		public Double getCjezbGrowingRateMin()
-		{
+		public Double getCjezbGrowingRateMin()	{
 			return setttinglastwkcjezbgrowingratemin;
 		}
-		public Double getCjezbGrowingRateMax()
-		{
+		public Double getCjezbGrowingRateMax()	{
 			return setttinglastwkcjezbgrowingratemax;
 		}
 		private Integer settinglastwkcjezbmaxkwk;

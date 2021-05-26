@@ -475,7 +475,6 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 	 */
 	protected Color rendererOperationsForColumnBackgroundHighLight ( TDXNodes node, String column_keyword, String predefinedcolor ) 
 	{
-//		Stock stock = stockofbank.getStock();
 		LocalDate requireddate = tablemodel.getCurDisplayedDate();
 	    String period = tablemodel.getCurDisplayPeriod();
 	    BanKuaiAndGeGuMatchingConditions matchcond = tablemodel.getHighLightBanKuaiAndGeGuMatchingCondition ();
