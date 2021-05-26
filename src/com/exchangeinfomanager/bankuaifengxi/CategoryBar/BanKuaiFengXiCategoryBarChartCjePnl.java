@@ -29,7 +29,7 @@ import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.ui.TextAnchor;
 
 import com.exchangeinfomanager.Trees.CreateExchangeTree;
-import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiGeGuMatchCondition;
+import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiAndGeGuMatchingConditions;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.commonlib.Season;
 import com.exchangeinfomanager.nodes.BanKuai;
@@ -804,27 +804,22 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 		return tooltips;
 	}
 
-	@Override
-	public void BanKuaiGeGuMatchConditionValuesChanges(BanKuaiGeGuMatchCondition expc) 
-	{
-		Integer cjezbtoupleveldpmax = expc.getSettingDpMaxWk();
-		Double cjemin = expc.getSettingChenJiaoErMin();
-		Double cjemax = expc.getSettingChenJiaoErMax();
-		Integer cjemaxwk = expc.getSettingChenJiaoErMaxWk();
-		Double shoowhsl = expc.getSettingHuanShouLv();
-	
-		
-		if(cjemaxwk != null) {
-			((BanKuaiFengXiCategoryBarRenderer)plot.getRenderer()).setDisplayMaxwkLevel (cjemaxwk);
-			this.barchart.fireChartChanged();//必须有这句
-		}
-	}
 	/*
 	 * 
 	 */
 	public void setDisplayBarOfSpecificBanKuaiCjeCjlInsteadOfSelfCjeCjl (TDXNodes supernode) 
 	{
 		this.shouldDisplayBarOfSuperBanKuaiCjeInsteadOfSelfCje = supernode;
+	}
+	@Override
+	public void BanKuaiAndGeGuMatchingConditionValuesChanges(BanKuaiAndGeGuMatchingConditions expc) {
+		Integer cjemaxwk = expc.getSettingChenJiaoErMaxWkMin();
+				
+		if(cjemaxwk != null) {
+			((BanKuaiFengXiCategoryBarRenderer)plot.getRenderer()).setDisplayMaxwkLevel (cjemaxwk);
+			this.barchart.fireChartChanged();//必须有这句
+		}
+		
 	}
 
 }

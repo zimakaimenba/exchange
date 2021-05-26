@@ -10,7 +10,7 @@ import org.jeasy.rules.annotation.Fact;
 import org.jeasy.rules.annotation.Priority;
 import org.jeasy.rules.annotation.Rule;
 
-import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiGeGuMatchCondition;
+import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiAndGeGuMatchingConditions;
 import com.exchangeinfomanager.bankuaifengxi.bankuaigegutable.BanKuaiGeGuBasicTable;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
@@ -27,7 +27,7 @@ public class RuleOfWeeklyAverageChenJiaoErMaxWk
 	public boolean evaluate(@Fact("evanode") TDXNodes evanode, 
 			@Fact("evadate") LocalDate evadate, @Fact("evadatedifference") Integer evadatedifference, 
 			@Fact("evaperiod") String evaperiod,
-    		@Fact("evacond") BanKuaiGeGuMatchCondition evacond ) 
+    		@Fact("evacond") BanKuaiAndGeGuMatchingConditions evacond ) 
 	{
 		if(evacond == null)
 			return false;
@@ -41,9 +41,8 @@ public class RuleOfWeeklyAverageChenJiaoErMaxWk
     	
 		int lianxuxjeflnum = nodexdata.getAverageDailyCjeLianXuFangLiangPeriodNumber(evadate, evadatedifference);
 		
-    	Integer settingcjemaxwk = evacond.getSettingChenJiaoErMaxWk();
-    	if(settingcjemaxwk == null)
-    		settingcjemaxwk =  10000000;
+    	Integer settingcjemaxwk = evacond.getSettingChenJiaoErMaxWkMin();
+    	if(settingcjemaxwk == null) settingcjemaxwk =  10000000;
     	
     	if( dpmaxwk >=settingcjemaxwk && lianxuxjeflnum <2) {
     		analysisresultforvoice = analysisresultforvoice + "周平均成交额MAXWEEK等于" + dpmaxwk + "。" ;
@@ -63,7 +62,7 @@ public class RuleOfWeeklyAverageChenJiaoErMaxWk
     public void execute(@Fact("evanode") TDXNodes evanode, 
     		@Fact("evadate") LocalDate evadate, @Fact("evadatedifference") Integer evadatedifference, 
     		@Fact("evaperiod") String evaperiod,
-    		@Fact("evacond") BanKuaiGeGuMatchCondition evacond )
+    		@Fact("evacond") BanKuaiAndGeGuMatchingConditions evacond )
     {
 		isweeklyavergecjemaxwkmatched = true;
     }

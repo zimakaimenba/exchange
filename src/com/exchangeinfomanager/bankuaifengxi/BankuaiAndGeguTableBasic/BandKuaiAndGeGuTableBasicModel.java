@@ -16,7 +16,7 @@ import org.apache.log4j.Logger;
 
 import com.exchangeinfomanager.Tag.Tag;
 import com.exchangeinfomanager.TagServices.TagsServiceForNodes;
-import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiGeGuMatchCondition;
+import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiAndGeGuMatchingConditions;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
@@ -46,8 +46,8 @@ public  abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 	protected LocalDate showwknum;
 	protected int difference;
 	protected String curperiod;
-	protected LocalDate[] timerangezhangfu = new LocalDate[2];
-	protected BanKuaiGeGuMatchCondition matchcond;
+	protected LocalDate[] timerangezhangfu = new LocalDate[2]; //区间日期，用于判断区间涨幅
+	protected BanKuaiAndGeGuMatchingConditions highlightcond;
 	
 	protected PropertyChangeSupport pcs = new PropertyChangeSupport(this); //	https://stackoverflow.com/questions/4690892/passing-a-value-between-components/4691447#4691447
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
@@ -286,7 +286,7 @@ public  abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 			  sendnode = node;
 		
 		  if(column_keyword.equals("CLOSEVSMA")) {
-			  String maformula = matchcond.getSettingMaFormula();
+			  String maformula = highlightcond.getSettingMaFormula();
 			  value = getNodeValueByKeyWord(sendnode, column_keyword, this.showwknum, NodeGivenPeriodDataItem.DAY, maformula);
 		  }
 		  else 
@@ -346,15 +346,6 @@ public  abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 	  	  
 	  	  return clazz;
      }
-	  public void setDisplayMatchCondition(BanKuaiGeGuMatchCondition expc) 
-	  {
-			this.matchcond = expc;
-	  }
-	  public BanKuaiGeGuMatchCondition getDisplayMatchCondition ()
-	  {
-			return this.matchcond;
-	  }
-	  
 	  public Integer getKeyWrodColumnIndex (String keywords)
 	  {
 		  Integer columnIndex = null;
@@ -537,4 +528,13 @@ public  abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 		      
 		      return clazz;
 		 }
+
+		public void setHighLightBanKuaiAndGeGuMatchingCondition(BanKuaiAndGeGuMatchingConditions expc)
+		{
+			this.highlightcond = expc;
+		}
+		public BanKuaiAndGeGuMatchingConditions getHighLightBanKuaiAndGeGuMatchingCondition()
+		{
+			return this.highlightcond;
+		}
 }

@@ -4,40 +4,29 @@ import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
+
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.ArrayList;
-import java.util.List;
+
 import java.util.Properties;
-import java.util.Scanner;
+
 
 import javax.swing.JDialog;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
-import javax.swing.event.RowSorterEvent;
-import javax.swing.event.RowSorterListener;
+
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 
-import com.exchangeinfomanager.News.News;
-import com.exchangeinfomanager.bankuaichanyelian.BanKuaiGuanLi;
-import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchConditionListener;
-import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiGeGuMatchCondition;
-import com.exchangeinfomanager.bankuaifengxi.bankuaigegutable.BanKuaiGeGuBasicTableModel;
-import com.exchangeinfomanager.bankuaifengxi.bankuaiinfotable.BanKuaiInfoTableModel;
-import com.exchangeinfomanager.nodes.StockOfBanKuai;
-import com.exchangeinfomanager.nodes.TDXNodes;
-
-import net.coderazzi.filters.IFilterObserver;
+import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiAndGeGuMatchingConditionListener;
+import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiAndGeGuMatchingConditions;
 import net.coderazzi.filters.gui.AutoChoices;
 import net.coderazzi.filters.gui.IFilterEditor;
 import net.coderazzi.filters.gui.IFilterHeaderObserver;
 import net.coderazzi.filters.gui.TableFilterHeader;
 
-public abstract class BanKuaiandGeGuTableBasic extends JTable  implements  BanKuaiGeGuMatchConditionListener  , IFilterHeaderObserver
+public abstract class BanKuaiandGeGuTableBasic extends JTable  implements   IFilterHeaderObserver, BanKuaiAndGeGuMatchingConditionListener
 {
 	private String systeminstalledpath;
 	protected Properties prop;
@@ -63,11 +52,10 @@ public abstract class BanKuaiandGeGuTableBasic extends JTable  implements  BanKu
 	}
 	
 	@Override
-	public void BanKuaiGeGuMatchConditionValuesChanges(BanKuaiGeGuMatchCondition expc)
+	public void BanKuaiAndGeGuMatchingConditionValuesChanges (BanKuaiAndGeGuMatchingConditions expc)
 	{
-		((BandKuaiAndGeGuTableBasicModel)this.getModel()).setDisplayMatchCondition(expc);
+		((BandKuaiAndGeGuTableBasicModel)this.getModel()).setHighLightBanKuaiAndGeGuMatchingCondition(expc);
     	this.repaint();
-		
 	}
 	/*
 	 * 
@@ -121,7 +109,6 @@ public abstract class BanKuaiandGeGuTableBasic extends JTable  implements  BanKu
 	 
 	private void setPropertiesInfo (String propertiesfile)
 	{
-
 		File directory = new File("");//设定为当前文件夹
 		try{
 		    Properties properties = System.getProperties();
@@ -132,7 +119,6 @@ public abstract class BanKuaiandGeGuTableBasic extends JTable  implements  BanKu
 		
 		try {
 			prop = new Properties();
-//			String propFileName = this.systeminstalledpath  + propertiesfile;
 			String propFileName = propertiesfile;
 			FileInputStream inputStream = new FileInputStream(propFileName);
 			if (inputStream != null) {

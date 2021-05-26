@@ -12,7 +12,7 @@ import org.jeasy.rules.annotation.Priority;
 import org.jeasy.rules.annotation.Rule;
 import org.jfree.data.time.ohlc.OHLCItem;
 
-import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiGeGuMatchCondition;
+import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiAndGeGuMatchingConditions;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
@@ -31,7 +31,7 @@ public class RuleOfMA
 	public boolean evaluate(@Fact("evanode") TDXNodes evanode, 
 			@Fact("evadate") LocalDate evadate, @Fact("evadatedifference") Integer evadatedifference, 
 			@Fact("evaperiod") String evaperiod,
-    		@Fact("evacond") BanKuaiGeGuMatchCondition evacond ) 
+    		@Fact("evacond") BanKuaiAndGeGuMatchingConditions evacond ) 
 	{
 		if(evanode.getType() != BkChanYeLianTreeNode.TDXBK && evanode.getType() != BkChanYeLianTreeNode.TDXGG)
 			return false;
@@ -78,7 +78,7 @@ public class RuleOfMA
     public void execute(@Fact("evanode") TDXNodes evanode,
     		@Fact("evadate") LocalDate evadate, @Fact("evadatedifference") Integer evadatedifference, 
     		@Fact("evaperiod") String evaperiod,
-    		@Fact("evacond") BanKuaiGeGuMatchCondition evacond )
+    		@Fact("evacond") BanKuaiAndGeGuMatchingConditions evacond )
     {
 		analysisresult = true;
 		background = new Color(0,153,153) ;

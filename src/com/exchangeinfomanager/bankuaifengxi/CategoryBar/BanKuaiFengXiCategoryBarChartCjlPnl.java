@@ -27,7 +27,7 @@ import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.ui.TextAnchor;
 
 import com.exchangeinfomanager.Trees.CreateExchangeTree;
-import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiGeGuMatchCondition;
+import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiAndGeGuMatchingConditions;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
@@ -589,15 +589,10 @@ public class BanKuaiFengXiCategoryBarChartCjlPnl extends BanKuaiFengXiCategoryBa
 		
 		return tooltips;
 	}
+	
 	@Override
-	public void BanKuaiGeGuMatchConditionValuesChanges(BanKuaiGeGuMatchCondition expc) 
-	{
-		Integer cjezbtoupleveldpmax = expc.getSettingDpMaxWk();
-		Double cjemin = expc.getSettingChenJiaoErMin();
-		Double cjemax = expc.getSettingChenJiaoErMax();
-		Integer cjemaxwk = expc.getSettingChenJiaoErMaxWk();
-		Double shoowhsl = expc.getSettingHuanShouLv();
-		
+	public void BanKuaiAndGeGuMatchingConditionValuesChanges(BanKuaiAndGeGuMatchingConditions expc) {
+		Integer cjemaxwk = expc.getSettingChenJiaoErMaxWkMin();
 		if(cjemaxwk != null) {
 			((BanKuaiFengXiCategoryBarRenderer)plot.getRenderer()).setDisplayMaxwkLevel (cjemaxwk);
 			this.barchart.fireChartChanged();//±ÿ–Î”–’‚æ‰

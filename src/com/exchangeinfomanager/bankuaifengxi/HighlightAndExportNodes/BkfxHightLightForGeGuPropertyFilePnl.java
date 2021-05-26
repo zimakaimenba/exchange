@@ -14,11 +14,13 @@ import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Properties;
 import java.util.Vector;
 import java.util.concurrent.CancellationException;
@@ -38,6 +40,7 @@ import javax.swing.SwingWorker.StateValue;
 
 import com.exchangeinfomanager.Trees.CreateExchangeTree;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi;
+import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfCjeZbDpMaxWk;
 import com.exchangeinfomanager.bankuaifengxi.xmlhandlerforbkfx.ServicesForBkfxEbkOutPutFileDirectRead;
 import com.exchangeinfomanager.commonlib.JComboCheckBox.JComboCheckBox;
 import com.exchangeinfomanager.gui.StockInfoManager;
@@ -49,178 +52,52 @@ import com.google.common.base.Strings;
 
 public class BkfxHightLightForGeGuPropertyFilePnl extends JPanel {
 
-	private Properties prop;
-	private BanKuaiGeGuMatchCondition globeexpc;
-	private List<BanKuaiGeGuMatchCondition> exportcond;
-	private ExportTask exporttask;
+	private Properties mainboardprop;
+	private Properties secondboardprop;
+	private BanKuaiAndGeGuMatchingConditions globeexpc;
 	private LocalDate curselectdate;
-	private String globeperiod;
 	private SetupSystemConfiguration sysconfig;
-	private StockInfoManager stockmanager;
 	private JTextField tfldextramin;
 	private JTextField tfldextramax;
-//	private LocalDate curhighdate;
-	
+
 	public static final String TIMESHOULDCHANGE_PROPERTY = "timeshouldchange";
 	/**
 	 * Create the panel.
 	 */
-	public BkfxHightLightForGeGuPropertyFilePnl(Properties prop1,BanKuaiGeGuMatchCondition expc1) 
+	public BkfxHightLightForGeGuPropertyFilePnl(String mainboardpropertiesfile,String secondboardpropertiesfile, BanKuaiAndGeGuMatchingConditions expc1) 
 	{
-		this.prop = prop1;
+//		this.mbpropfile = mainboardpropertiesfile;
+//		this.sbpropfile = secondboardpropertiesfile;
 		this.globeexpc = expc1;
 		this.sysconfig = new SetupSystemConfiguration();
-		this.exportcond = new ArrayList<> ();
 		
+		this.mainboardprop = setupBkfxSettingProperties ( mainboardpropertiesfile);
+		this.secondboardprop = setupBkfxSettingProperties ( secondboardpropertiesfile);
 		createMainBorardGui ();
 		createSecondBorardGui ();
-		setupPredefinedExportFormula ();
 	}
 	
-	
-	private void setupPredefinedExportFormula() {
-		String PreSetExportConditionFormulaCount = prop.getProperty("PreSetExportConditionFormulaCount");
-		if(PreSetExportConditionFormulaCount == null  || Integer.parseInt(PreSetExportConditionFormulaCount) == 0)
-			return ;
-		List<String> formula = new ArrayList<> ();
-		for(int i=0;i<Integer.parseInt(PreSetExportConditionFormulaCount);i++) {
-			String PreSetExportConditionFormula  = prop.getProperty ("PreSetExportConditionFormula" + String.valueOf(i+1) );
-			if(PreSetExportConditionFormula != null)
-				formula.add(PreSetExportConditionFormula);
-		}
-		if(!formula.isEmpty())
-			this.globeexpc.setPredefinedExportConditionFormula (formula);
-	}
-
-
-	private void createMainBorardGui() 
+	private Properties setupBkfxSettingProperties(  String propertiesfile ) 
 	{
-		String columnmaxnumber   = prop.getProperty ("columnmaxnumber ");
-		int itemCount;
-		if(columnmaxnumber  == null)
-			return ;
-		else
-			itemCount = Integer.parseInt(columnmaxnumber );
+		try {
+			Properties prop = new Properties();
+			FileInputStream inputStream = new FileInputStream(propertiesfile);
+			if (inputStream != null) 	prop.load(inputStream);
+			 
+			inputStream.close();
+			
+			return prop;
+		} catch (Exception e) {	e.printStackTrace();} finally {}
 		
-		for(int i=0;i<itemCount;i++) {
-			String propname = String.valueOf(i) + "column_background_highlight_info";
-			String name  = prop.getProperty (propname);
-			
-			String propkw = String.valueOf(i) + "column_background_highlight_keyword";
-			String keyword = prop.getProperty (propkw);
-			
-			String propcolor = String.valueOf(i) + "column_background_hightlight_color";
-			String color = prop.getProperty (propcolor);
-			
-			if(keyword == null)
-				continue;
-
-			if(keyword.equals("InFengXiFile") ) {
-				JCheckBox ckboxparsefile = new JCheckBox(name);
-				ckboxparsefile.setName(keyword);
-				ckboxparsefile.setBackground(Color.ORANGE);
-				ckboxparsefile.setToolTipText(name);
-				ckboxparsefile.setFont(new Font("宋体", Font.PLAIN, 12));
-				ckboxparsefile.setForeground(Color.BLACK);
-				if(color != null)
-					ckboxparsefile.setBackground(Color.decode(color) );
-				ckboxparsefile.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent arg0) 
-					{
-						String keyword = ckboxparsefile.getName();
-						JTextField tmptfldparsedfile = getHighlightTextField(keyword);
-						if(ckboxparsefile.isSelected()) {
-							if( Strings.isNullOrEmpty(tmptfldparsedfile.getText() )) {
-								Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
-								setCursor(hourglassCursor);
-								
-								chooseParsedFile (null,ckboxparsefile, tmptfldparsedfile);
-
-								hourglassCursor = null;
-								Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
-								setCursor(hourglassCursor2);
-							}
-						} else
-							tmptfldparsedfile.setText("");
-					}
-				});
-				
-				this.add(ckboxparsefile);
-				
-				JTextField tfldparsedfile = new JTextField();
-				tfldparsedfile.setName(keyword);
-				if(color != null)
-					tfldparsedfile.setBackground(Color.decode(color) );
-				tfldparsedfile.setColumns(12);
-				tfldparsedfile.setToolTipText(tfldparsedfile.getText());
-				
-				this.add(tfldparsedfile);
-				
-				refreshMainBoardHightLight(ckboxparsefile);
-			} else { //其他
-				JCheckBox ckbxhighlight = new JCheckBox(name);
-				ckbxhighlight.setName(keyword);
-				if(color != null)
-					ckbxhighlight.setBackground(Color.decode(color) );
-				ckbxhighlight.setFont(new Font("宋体", Font.PLAIN, 12));
-				ckbxhighlight.setForeground(new Color(0, 0, 0) );
-				ckbxhighlight.setSelected(true);
-				
-				ckbxhighlight.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent arg0) {
-						refreshMainBoardHightLight (ckbxhighlight);
-					}
-				});
-				
-				this.add(ckbxhighlight);
-				
-				if(info == null) {
-					refreshMainBoardHightLight (ckbxhighlight);
-					continue;
-				}
-				
-				List<String> infolist = Splitter.on(",").omitEmptyStrings().splitToList(info); 
-				for(int j=0;j<infolist.size();j++) {
-					String txfldinfo = infolist.get(j);
-					JTextField tmptxfield = new JTextField();
-					tmptxfield.setPreferredSize(new Dimension(30, 25));
-					if(color != null)
-						tmptxfield.setForeground(Color.decode(color) );
-					if(infolist.size() ==1) {
-						tmptxfield.setText(txfldinfo);
-						tmptxfield.setName(keyword);
-					} else {
-						if(txfldinfo.equals("MIN") || txfldinfo.equals("MAX"))
-							tmptxfield.setText("");
-						else
-							tmptxfield.setText(txfldinfo);
-						if(j==0)
-							tmptxfield.setName(keyword + "MIN");
-						else
-							tmptxfield.setName(keyword + "MAX");
-					}
-									
-					this.add(tmptxfield);
-				}
-				
-				refreshMainBoardHightLight (ckbxhighlight);
-			}
-		}
-		
-		String HightLightSecondBoradItemCount  = prop.getProperty ("HightLightSecondBoradItemCount");
-		if(HightLightSecondBoradItemCount == null)
-			return ;
-		else
-			itemCount = Integer.parseInt(HightLightSecondBoradItemCount);
+		return null;
 	}
+	
 	private void createSecondBorardGui() 
 	{
-		String HightLightSecondBoradItemCount  = prop.getProperty ("HightLightSecondBoradItemCount");
+		String HightLightSecondBoradItemCount  = this.secondboardprop.getProperty ("columnmaxnumber");
 		int itemCount;
-		if(HightLightSecondBoradItemCount == null)
-			return ;
-		else
-			itemCount = Integer.parseInt(HightLightSecondBoradItemCount);
+		if(HightLightSecondBoradItemCount == null)			return ;
+		else	itemCount = Integer.parseInt(HightLightSecondBoradItemCount);
 		
 		JLabel morelabel = new JLabel("更多:  " );
 		this.add(morelabel);
@@ -232,58 +109,13 @@ public class BkfxHightLightForGeGuPropertyFilePnl extends JPanel {
 		
 		Vector<JCheckBox> v = new Vector<>();
 		for(int i=0;i<itemCount;i++) {
-			String propname = "HightLightSecondBoradItem" + String.valueOf(i) + "_name";
-			String name  = prop.getProperty (propname);
+			String proptpnl = String.valueOf(i) + "column_background_highlight_tohighlightpnl";
+			String topnl = secondboardprop.getProperty (proptpnl);
+			if(topnl != null && !topnl.equalsIgnoreCase("false"))	createBackGroundComponentsforSecondBoard(v, i);
 			
-			String propkw = "HightLightSecondBoradItem" + String.valueOf(i) + "_keyword";
-			String keyword = prop.getProperty (propkw);
-			
-			String propstatus = "HightLightSecondBoradItem" + String.valueOf(i) + "_status";
-			String status = prop.getProperty (propstatus);
-			
-			String propcolor = "HightLightSecondBoradItem" + String.valueOf(i) + "_backgroundcolor";
-			String color = prop.getProperty (propcolor);
-			
-			String propinfo = "HightLightSecondBoradItem" + String.valueOf(i) + "_info";
-			String info = prop.getProperty (propinfo);
-			
-			if(keyword == null)
-				continue;
-			
-			JCheckBox ckbxhighlight = new JCheckBox(name,false);
-			ckbxhighlight.setName(keyword);
-			if(color != null)
-				ckbxhighlight.setForeground(Color.decode(color) );
-			if(status == null)
-				ckbxhighlight.setSelected(false);
-			else
-			if(status.equalsIgnoreCase("SELECTED"))
-				ckbxhighlight.setSelected(true);
-			else
-				ckbxhighlight.setSelected(false);
-			
-			List<String> infolist = Splitter.on(",").omitEmptyStrings().splitToList(info); 
-			for(int j=0;j<infolist.size();j++) {
-				String txfldinfo = infolist.get(j);
-				if(infolist.size() ==1) {
-					tfldextramin.setText(txfldinfo);
-					tfldextramin.setName(keyword);
-				} else {
-					if(txfldinfo.equals("MIN") && j==0 )
-						tfldextramin.setText("");
-					else
-					if(txfldinfo.equals("MAX") && j==1 )
-						tfldextramax.setText("");
-					else 
-					if(j == 0)
-						tfldextramin.setText(txfldinfo);
-					else
-					if(j==1)
-						tfldextramax.setText(txfldinfo);
-				}
-			}
-			refreshSecondBoardHightLights (ckbxhighlight);
-			v.add(ckbxhighlight);
+			proptpnl = String.valueOf(i) + "column_foreground_highlight_tohighlightpnl";
+			topnl = secondboardprop.getProperty (proptpnl);
+			if(topnl != null && !topnl.equalsIgnoreCase("false"))	createForeGroundComponentsforSecondBoard(v, i);
 		}
 		
 		JComboCheckBox cbbxmore = new JComboCheckBox(v);
@@ -297,7 +129,9 @@ public class BkfxHightLightForGeGuPropertyFilePnl extends JPanel {
                     {
                     	JComboCheckBox check = ( JComboCheckBox ) e.getSource();
                     	JCheckBox selectitem = (JCheckBox)check.getSelectedItem();
-                    	refreshSecondBoardHightLights (selectitem);
+                    	String min = null; if(!Strings.isNullOrEmpty(tfldextramin.getText()  )) min =tfldextramin.getText()  ;
+            			String max = null; if(!Strings.isNullOrEmpty(tfldextramax.getText()  ) ) max = tfldextramax.getText();  
+            			refreshHightLightValueBasedOnBoardInput (selectitem,min,max);
                     }
                 });
             }
@@ -318,46 +152,557 @@ public class BkfxHightLightForGeGuPropertyFilePnl extends JPanel {
 				
 			}
 		});
-		
 		this.add(cbbxmore);
 		this.add(tfldextramin);
 		this.add(tfldextramax);
 	}
-	
-	private String getSecondboardItemInfo (String keyword)
+	private void createBackGroundComponentsforSecondBoard(Vector<JCheckBox> v, int i)
 	{
-		String HightLightSecondBoradItemCount  = prop.getProperty ("HightLightSecondBoradItemCount");
+		String propkw = String.valueOf(i) + "column_background_highlight_keyword";
+		String keyword = secondboardprop.getProperty (propkw);
+		if(keyword == null)	return;
+		
+		String propname = String.valueOf(i) + "column_background_highlight_info";
+		String name  = secondboardprop.getProperty (propname);
+		String propcolor = String.valueOf(i) + "column_background_highlight_color";
+		String color = secondboardprop.getProperty (propcolor);
+		
+		List<String> kwinfolist = Splitter.on("OTHERWISE").omitEmptyStrings().splitToList(keyword);
+		for(int m=0;m< kwinfolist.size(); m++) {
+			String ckbkey =  kwinfolist.get(m);
+			
+//			if(ckbkey.equalsIgnoreCase("InFengXiFile")) {
+//				String propckbname  = String.valueOf(i) + "column_background_highlight_" + ckbkey +  "_Label";
+//				String ckbname  = secondboardprop.getProperty (propckbname);
+//				createBackGroundComponentsforHighLightOfInFengXiFile (ckbname, keyword, color); 
+//				continue;
+//			}
+			
+			String propckbname  = String.valueOf(i) + "column_background_highlight_" + ckbkey +  "_Label";
+			String ckbname  = secondboardprop.getProperty (propckbname);
+			JCheckBox ckbxhighlight = new JCheckBox(ckbname);
+			ckbxhighlight.setName(ckbkey);
+			
+			if(color != null && !color.equalsIgnoreCase("SYSTEM"))	ckbxhighlight.setBackground(Color.decode(color) );
+			else if(color != null && color.equalsIgnoreCase("SYSTEM")) { Color systemcolor = getSystemColorForHighLight(ckbkey);  ckbxhighlight.setBackground(systemcolor);}
+			else color = "#FF33FF";
+			
+			ckbxhighlight.setFont(new Font("宋体", Font.PLAIN, 12));
+			ckbxhighlight.setForeground(new Color(0, 0, 0) );
+			ckbxhighlight.setSelected(true);
+			
+			String propoperator  = String.valueOf(i) + "column_background_highlight_" + ckbkey +  "_operator"; 
+			String operator = secondboardprop.getProperty (propoperator);
+			if(operator == null || operator.equalsIgnoreCase("NONE")) 		continue;
+				
+			String prophighvalue = String.valueOf(i) + "column_background_highlight_" + ckbkey +  "_value";
+			String highlightvalue = secondboardprop.getProperty (prophighvalue);
+//			List<String> valuelist = Splitter.on(",").omitEmptyStrings().splitToList(highlightvalue);
+			List<String> valuelist = new ArrayList<>(Splitter.on(",").omitEmptyStrings().splitToList(highlightvalue));
+			ListIterator<String> iter = valuelist.listIterator();
+			while(iter.hasNext()) {
+				String tmpstr = iter.next().trim();
+			    if(tmpstr.equals("MIN") || tmpstr.equals("MAX")) 
+			        iter.set("");
+			}
+			JTextField tmptxfield = new JTextField();
+			tmptxfield.setPreferredSize(new Dimension(30, 25));
+			if(color != null && !color.equalsIgnoreCase("SYSTEM"))	tmptxfield.setForeground(Color.decode(color) );
+			else if(color != null && color.equalsIgnoreCase("SYSTEM")) { Color systemcolor = getSystemColorForHighLight(ckbkey);  tmptxfield.setForeground(systemcolor);}
+			
+			switch (operator) {
+			case "\'>=\'": tfldextramin.setText(valuelist.get(0));
+				break;
+			case "\'<=\'": tfldextramax.setText(valuelist.get(0));
+				break;
+			case "RANGE":  if(!valuelist.get(0).trim().equalsIgnoreCase("MIN"))  tfldextramin.setText(valuelist.get(0));
+						   if(!valuelist.get(1).trim().equalsIgnoreCase("MAX"))  tfldextramax.setText(valuelist.get(1));
+				break;
+			}
+			String min = null; if(!Strings.isNullOrEmpty(tfldextramin.getText()  )) min =tfldextramin.getText()  ;
+			String max = null; if(!Strings.isNullOrEmpty(tfldextramax.getText()  ) ) max = tfldextramax.getText();  
+			refreshHightLightValueBasedOnBoardInput (ckbxhighlight,min,max);
+			v.add(ckbxhighlight);
+		}
+	
+	}
+	/*
+	 * 
+	 */
+	private void createForeGroundComponentsforSecondBoard(Vector<JCheckBox> v, int i) 
+	{
+		String propkw = String.valueOf(i) + "column_foreground_highlight_keyword";
+		String keyword = secondboardprop.getProperty (propkw);
+		if(keyword == null)			return;
+		
+		String propcolor = String.valueOf(i) + "column_foreground_highlight_color";
+		String color = secondboardprop.getProperty (propcolor);
+		
+		List<String> kwinfolist = Splitter.on("OTHERWISE").omitEmptyStrings().splitToList(keyword);
+		for(int m=0;m< kwinfolist.size(); m++) {
+			String ckbkey =  kwinfolist.get(m);
+			
+//			if(ckbkey.equalsIgnoreCase("InFengXiFile")) {
+//				String propckbname  = String.valueOf(i) + "column_foreground_highlight_" + ckbkey +  "_Label";
+//				String ckbname  = secondboardprop.getProperty (propckbname);
+//				createBackGroundComponentsforHighLightOfInFengXiFile (ckbname, keyword, color); 
+//				continue;
+//			}
+			
+			String propckbname  = String.valueOf(i) + "column_background_highlight_" + ckbkey +  "_Label";
+			String ckbname  = secondboardprop.getProperty (propckbname);
+			JCheckBox ckbxhighlight = new JCheckBox(ckbname);
+			ckbxhighlight.setName(ckbkey);
+			
+			if(color != null && !color.equalsIgnoreCase("SYSTEM"))	ckbxhighlight.setBackground(Color.decode(color) );
+			else if(color != null && color.equalsIgnoreCase("SYSTEM")) { Color systemcolor = getSystemColorForHighLight(ckbkey);  ckbxhighlight.setBackground(systemcolor);}
+			else color = "#FF33FF";
+			
+			ckbxhighlight.setFont(new Font("宋体", Font.PLAIN, 12));
+			ckbxhighlight.setForeground(new Color(0, 0, 0) );
+			ckbxhighlight.setSelected(true);
+			
+			String propoperator  = String.valueOf(i) + "column_foreground_highlight_" + ckbkey +  "_operator"; 
+			String operator = secondboardprop.getProperty (propoperator);
+			if(operator == null || operator.equalsIgnoreCase("NONE")) 		continue;
+				
+			String prophighvalue = String.valueOf(i) + "column_foreground_highlight_" + ckbkey +  "_value";
+			String highlightvalue = secondboardprop.getProperty (prophighvalue);
+//			List<String> valuelist = Splitter.on(",").omitEmptyStrings().splitToList(highlightvalue);
+			List<String> valuelist = new ArrayList<>(Splitter.on(",").omitEmptyStrings().splitToList(highlightvalue));
+			ListIterator<String> iter = valuelist.listIterator();
+			while(iter.hasNext()) {
+				String tmpstr = iter.next().trim();
+			    if(tmpstr.equals("MIN") || tmpstr.equals("MAX")) 
+			        iter.set("");
+			}
+			JTextField tmptxfield = new JTextField();
+			tmptxfield.setPreferredSize(new Dimension(30, 25));
+			if(color != null && !color.equalsIgnoreCase("SYSTEM"))	tmptxfield.setForeground(Color.decode(color) );
+			else if(color != null && color.equalsIgnoreCase("SYSTEM")) { Color systemcolor = getSystemColorForHighLight(ckbkey);  tmptxfield.setForeground(systemcolor);}
+			
+			switch (operator) {
+			case "\'>=\'": tfldextramin.setText(valuelist.get(0));
+				break;
+			case "\'<=\'": tfldextramax.setText(valuelist.get(0));
+				break;
+			case "RANGE": if(!valuelist.get(0).trim().equalsIgnoreCase("MIN"))  tfldextramin.setText(valuelist.get(0));
+						  if(!valuelist.get(1).trim().equalsIgnoreCase("MAX"))  tfldextramax.setText(valuelist.get(1));
+				break;
+			}
+			
+			String min = null; if(!Strings.isNullOrEmpty(tfldextramin.getText()  )) min =tfldextramin.getText()  ;
+			String max = null; if(!Strings.isNullOrEmpty(tfldextramax.getText()  ) ) max = tfldextramax.getText();  
+			refreshHightLightValueBasedOnBoardInput (ckbxhighlight,min,max);
+			v.add(ckbxhighlight);
+		}
+	}
+	/*
+	 * 
+	 */
+	private void createMainBorardGui() 
+	{
+		String columnmaxnumber   = mainboardprop.getProperty ("columnmaxnumber");
 		int itemCount;
-		if(HightLightSecondBoradItemCount == null)
-			return null ;
-		else
-			itemCount = Integer.parseInt(HightLightSecondBoradItemCount);
+		if(columnmaxnumber  == null)	return ;
+		else	itemCount = Integer.parseInt(columnmaxnumber );
 		
 		for(int i=0;i<itemCount;i++) {
-			String propname = "HightLightSecondBoradItem" + String.valueOf(i) + "_name";
-			String name  = prop.getProperty (propname);
+			String proptpnl = String.valueOf(i) + "column_background_highlight_tohighlightpnl";
+			String topnl = mainboardprop.getProperty (proptpnl);
+			if(topnl != null && !topnl.equalsIgnoreCase("false"))	createBackGroundComponentsforMainBoard(i);
 			
-			String propkw = "HightLightSecondBoradItem" + String.valueOf(i) + "_keyword";
-			String tmpkeyword = prop.getProperty (propkw);
-			
-			String propstatus = "HightLightSecondBoradItem" + String.valueOf(i) + "_status";
-			String status = prop.getProperty (propstatus);
-			
-			String propcolor = "HightLightSecondBoradItem" + String.valueOf(i) + "_backgroundcolor";
-			String color = prop.getProperty (propcolor);
-			
-			String propinfo = "HightLightSecondBoradItem" + String.valueOf(i) + "_info";
-			String info = prop.getProperty (propinfo);
-			
-			if(keyword == null)
-				continue;
-			
-			if(tmpkeyword.equalsIgnoreCase(keyword))
-				return info;
+			proptpnl = String.valueOf(i) + "column_foreground_highlight_tohighlightpnl";
+			topnl = mainboardprop.getProperty (proptpnl);
+			if(topnl != null && !topnl.equalsIgnoreCase("false"))	createForeGroundComponentsforMainBoard(i);;
 		}
-		
-		return null;
 	}
+	private void createForeGroundComponentsforMainBoard (int i)
+	{
+		String propkw = String.valueOf(i) + "column_foreground_highlight_keyword";
+		String keyword = mainboardprop.getProperty (propkw);
+		if(keyword == null)			return;
+		
+		String propcolor = String.valueOf(i) + "column_foreground_highlight_color";
+		String color = mainboardprop.getProperty (propcolor);
+		
+		List<String> kwinfolist = Splitter.on("OTHERWISE").omitEmptyStrings().splitToList(keyword);
+		for(int m=0;m< kwinfolist.size(); m++) {
+			String ckbkey =  kwinfolist.get(m);
+			
+			if(ckbkey.equalsIgnoreCase("InFengXiFile")) { 
+				String propckbname  = String.valueOf(i) + "column_foreground_highlight_" + ckbkey +  "_Label";
+				String ckbname  = mainboardprop.getProperty (propckbname);
+				createBackGroundComponentsforHighLightOfInFengXiFile (ckbname, keyword, color); 
+				continue;
+			}
+			
+			String propckbname  = String.valueOf(i) + "column_foreground_highlight_" + ckbkey +  "_Label";
+			String ckbname  = mainboardprop.getProperty (propckbname);
+			JCheckBox ckbxhighlight = new JCheckBox(ckbname);
+			ckbxhighlight.setName(ckbkey);
+			
+			if(color != null && !color.equalsIgnoreCase("SYSTEM"))	ckbxhighlight.setBackground(Color.decode(color) );
+			else if(color != null && color.equalsIgnoreCase("SYSTEM")) { Color systemcolor = getSystemColorForHighLight(ckbkey);  ckbxhighlight.setBackground(systemcolor);}
+			
+			ckbxhighlight.setFont(new Font("宋体", Font.PLAIN, 12));
+			ckbxhighlight.setForeground(new Color(0, 0, 0) );
+			ckbxhighlight.setSelected(true);
+			
+			ckbxhighlight.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					JTextField txtfldltszmin = getHighlightTextField(ckbkey + "_MIN");
+					JTextField txtfldltszmax = getHighlightTextField(ckbkey + "_MAX");
+					String min = null ; if(txtfldltszmin != null) min = txtfldltszmin.getText();
+					String max = null ; if(txtfldltszmax != null) max = txtfldltszmax.getText();
+					refreshHightLightValueBasedOnBoardInput (ckbxhighlight, min, max);
+				}
+			});
+			
+			this.add(ckbxhighlight);
+			
+			String propoperator  = String.valueOf(i) + "column_foreground_highlight_" + ckbkey +  "_operator"; 
+			String operator = mainboardprop.getProperty (propoperator);
+			if(operator == null   || operator.equalsIgnoreCase("NONE"))			continue;
+				
+			String prophighvalue = String.valueOf(i) + "column_foreground_highlight_" + ckbkey +  "_value";
+			String highlightvalue = mainboardprop.getProperty (prophighvalue);
+			List<String> valuelist = Splitter.on(",").omitEmptyStrings().splitToList(highlightvalue);
+			JTextField tmptxfield = new JTextField();
+			tmptxfield.setPreferredSize(new Dimension(30, 25));
+			if(color != null && !color.equalsIgnoreCase("SYSTEM"))	tmptxfield.setForeground(Color.decode(color) );
+			else if(color != null && color.equalsIgnoreCase("SYSTEM")) { Color systemcolor = getSystemColorForHighLight(ckbkey);  tmptxfield.setBackground(systemcolor);}
+			
+			switch (operator) {
+			case "\'>=\'": tmptxfield.setName(ckbkey + "_MIN");
+						tmptxfield.setText(valuelist.get(0));
+						this.add(tmptxfield);
+						
+				break;
+			case "\'<=\'": tmptxfield.setName(ckbkey + "_MAX");
+						tmptxfield.setText(valuelist.get(0));
+						this.add(tmptxfield);
+				break;
+			case "RANGE": tmptxfield.setName(ckbkey + "_MIN");
+						  tmptxfield.setText(valuelist.get(0));
+						  this.add(tmptxfield);
+						JTextField tmptxfieldmax = new JTextField();
+						tmptxfieldmax.setName(ckbkey + "_MAX");
+						tmptxfieldmax.setText(valuelist.get(1));
+						tmptxfieldmax.setPreferredSize(new Dimension(30, 25));
+						if(color != null && !color.equalsIgnoreCase("SYSTEM"))	tmptxfieldmax.setForeground(Color.decode(color) );
+						else if(color != null && color.equalsIgnoreCase("SYSTEM")) { Color systemcolor = getSystemColorForHighLight(ckbkey);  tmptxfieldmax.setBackground(systemcolor);}
+						this.add(tmptxfieldmax);
+				break;
+			}
+			
+			JTextField txtfldltszmin = getHighlightTextField(keyword + "_MIN");
+			JTextField txtfldltszmax = getHighlightTextField(keyword + "_MAX");
+			String min = null ; if(txtfldltszmin != null) min = txtfldltszmin.getText();
+			String max = null ; if(txtfldltszmax != null) max = txtfldltszmax.getText();
+			refreshHightLightValueBasedOnBoardInput (ckbxhighlight, min, max);
+		}
+	}
+	private void createBackGroundComponentsforMainBoard (int i)
+	{
+		String propkw = String.valueOf(i) + "column_background_highlight_keyword";
+		String keyword = mainboardprop.getProperty (propkw);
+		if(keyword == null)			return;
+		
+		String propcolor = String.valueOf(i) + "column_background_highlight_color";
+		String color = mainboardprop.getProperty (propcolor);
+		
+		List<String> kwinfolist = Splitter.on("OTHERWISE").omitEmptyStrings().splitToList(keyword);
+		for(int m=0;m< kwinfolist.size(); m++) {
+			String ckbkey =  kwinfolist.get(m).trim();
+			
+			if(ckbkey.equalsIgnoreCase("InFengXiFile")) {
+				String propckbname  = String.valueOf(i) + "column_background_highlight_" + ckbkey +  "_Label";
+				String ckbname  = mainboardprop.getProperty (propckbname);
+				createBackGroundComponentsforHighLightOfInFengXiFile (ckbname, keyword, color); 
+				continue;
+			}
+			
+			String propckbname  = String.valueOf(i) + "column_background_highlight_" + ckbkey +  "_Label";
+			String ckbname  = mainboardprop.getProperty (propckbname.trim());
+			JCheckBox ckbxhighlight = new JCheckBox(ckbname);
+			ckbxhighlight.setName(ckbkey);
+			
+			if(color != null && !color.equalsIgnoreCase("SYSTEM"))	ckbxhighlight.setBackground(Color.decode(color) );
+			else if(color != null && color.equalsIgnoreCase("SYSTEM")) { Color systemcolor = getSystemColorForHighLight(ckbkey);  ckbxhighlight.setBackground(systemcolor);}
+			
+			ckbxhighlight.setFont(new Font("宋体", Font.PLAIN, 12));
+			ckbxhighlight.setForeground(new Color(0, 0, 0) );
+			ckbxhighlight.setSelected(true);
+			
+			ckbxhighlight.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					JTextField txtfldltszmin = getHighlightTextField(ckbkey + "_MIN");
+					JTextField txtfldltszmax = getHighlightTextField(ckbkey + "_MAX");
+					String min = null ; if(txtfldltszmin != null) min = txtfldltszmin.getText();
+					String max = null ; if(txtfldltszmax != null) max = txtfldltszmax.getText();
+					refreshHightLightValueBasedOnBoardInput (ckbxhighlight, min, max);
+				}
+			});
+			
+			this.add(ckbxhighlight);
+			
+			String propoperator  = String.valueOf(i) + "column_background_highlight_" + ckbkey +  "_operator"; 
+			String operator = mainboardprop.getProperty (propoperator);
+			if(operator == null) continue;
+			
+			String prophighvalue = String.valueOf(i) + "column_background_highlight_" + ckbkey +  "_value";
+			String highlightvalue = mainboardprop.getProperty (prophighvalue);
+			if(highlightvalue == null) continue;
+//			List<String> valuelist1 = Splitter.on(",").omitEmptyStrings().splitToList(highlightvalue);
+			List<String> valuelist = new ArrayList<>(Splitter.on(",").omitEmptyStrings().splitToList(highlightvalue));
+			ListIterator<String> iter = valuelist.listIterator();
+			while(iter.hasNext()) {
+				String tmpstr = iter.next().trim();
+			    if(tmpstr.equals("MIN") || tmpstr.equals("MAX")) 
+			        iter.set("");
+			}
+			JTextField tmptxfield = new JTextField();
+			tmptxfield.setPreferredSize(new Dimension(30, 25));
+			if(color != null && !color.equalsIgnoreCase("SYSTEM"))	tmptxfield.setForeground(Color.decode(color) );
+			else if(color != null && color.equalsIgnoreCase("SYSTEM")) { Color systemcolor = getSystemColorForHighLight(ckbkey);  tmptxfield.setBackground(systemcolor);}
+			switch (operator) {
+			case "\'>=\'": tmptxfield.setName(ckbkey + "_MIN");
+						tmptxfield.setText(valuelist.get(0));
+						this.add(tmptxfield);
+						
+				break;
+			case "\'<=\'": tmptxfield.setName(ckbkey + "_MAX");
+						tmptxfield.setText(valuelist.get(0));
+						this.add(tmptxfield);
+				break;
+			case "RANGE": tmptxfield.setName(ckbkey + "_MIN");
+						  if(!valuelist.get(0).equalsIgnoreCase("MIN")) tmptxfield.setText(valuelist.get(0));
+						  this.add(tmptxfield);
+						JTextField tmptxfieldmax = new JTextField();
+						tmptxfieldmax.setName(ckbkey + "_MAX");
+						if(!valuelist.get(1).equalsIgnoreCase("MAX")) tmptxfieldmax.setText(valuelist.get(1)); 
+						tmptxfieldmax.setPreferredSize(new Dimension(30, 25));
+						if(color != null && !color.equalsIgnoreCase("SYSTEM"))	tmptxfieldmax.setBackground(Color.decode(color) );
+						else if(color != null && color.equalsIgnoreCase("SYSTEM")) { Color systemcolor = getSystemColorForHighLight(ckbkey);  tmptxfieldmax.setBackground(systemcolor);}
+						this.add(tmptxfieldmax);
+				break;
+			}
+			
+			JTextField txtfldltszmin = getHighlightTextField(ckbkey + "_MIN");
+			JTextField txtfldltszmax = getHighlightTextField(ckbkey + "_MAX");
+			String min = null ; if(txtfldltszmin != null) min = txtfldltszmin.getText();
+			String max = null ; if(txtfldltszmax != null) max = txtfldltszmax.getText();
+			refreshHightLightValueBasedOnBoardInput (ckbxhighlight, min, max);
+		}
+	}
+	private void createBackGroundComponentsforHighLightOfInFengXiFile( String ckbname, String keyword, String color) 
+	{
+		JCheckBox ckboxparsefile = new JCheckBox(ckbname);
+		ckboxparsefile.setName(keyword);
+		ckboxparsefile.setToolTipText(ckbname);
+		ckboxparsefile.setFont(new Font("宋体", Font.PLAIN, 12));
+		ckboxparsefile.setForeground(Color.BLACK);
+		if(color != null)	ckboxparsefile.setBackground(Color.decode(color) );
+		ckboxparsefile.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) 
+			{
+				String keyword = ckboxparsefile.getName();
+				JTextField tmptfldparsedfile = getHighlightTextField(keyword);
+				if(ckboxparsefile.isSelected()) {
+					if( Strings.isNullOrEmpty(tmptfldparsedfile.getText() )) {
+						Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
+						setCursor(hourglassCursor);
+						
+						chooseParsedFile (null,ckboxparsefile, tmptfldparsedfile);
+
+						hourglassCursor = null;
+						Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
+						setCursor(hourglassCursor2);
+					}
+				} else
+					tmptfldparsedfile.setText("");
+			}
+		});
+		
+		this.add(ckboxparsefile);
+		
+		JTextField tfldparsedfile = new JTextField();
+		tfldparsedfile.setName(keyword);
+		if(color != null)
+			tfldparsedfile.setBackground(Color.decode(color) );
+		tfldparsedfile.setColumns(12);
+		tfldparsedfile.setToolTipText(tfldparsedfile.getText());
+		
+		this.add(tfldparsedfile);
+	}
+
+	/*
+	 * 
+	 */
+	private Color getSystemColorForHighLight(String ckbkey) 
+	{
+		ckbkey = ckbkey.trim();
+		Color color = Color.WHITE;
+		switch(ckbkey) {
+		case "CjeZbDpMaxWk": 
+			color = new Color(255,0,0) ;
+	     	break;
+		case "CjeZbDpMinWk":
+			color = Color.GREEN ;
+	     	break;
+		case "AverageChenJiaoErMaxWeek":
+			color = Color.decode("#00FFFF");
+		}
+	 
+		return color;
+	}
+	/*
+	 * 
+	 */
+	protected void refreshHightLightValueBasedOnBoardInput(JCheckBox ckbxhighlight,String min, String max) 
+	{
+		String keyword = ckbxhighlight.getName();
+		switch (keyword) {
+		case "CLOSEVSMA":
+			if(ckbxhighlight.isSelected() && !Strings.isNullOrEmpty(min) && !min.trim().equalsIgnoreCase("MIN")  ) 
+				globeexpc.setSettingMaFormula(min);
+			else
+				globeexpc.setSettingMaFormula(null);
+			
+			break;
+		case "LiuTongShiZhi":
+			Double showltszmin = null; Double showltszmax = null;
+			if(ckbxhighlight.isSelected()) {
+				if( !Strings.isNullOrEmpty(min) && !min.trim().equalsIgnoreCase("MIN") ) 
+					showltszmin =  Double.parseDouble( min );
+
+				if( !Strings.isNullOrEmpty(max) && !Strings.isNullOrEmpty(max.trim()) && !max.trim().equalsIgnoreCase("MAX")  ) 
+					showltszmax = Double.parseDouble(max );
+			} 
+			globeexpc.setSettingLiuTongShiZhi(showltszmin ,showltszmax);
+
+			break;
+		case "ZongShiZhi":
+			Double showzszmin = null;Double showzszmax = null;
+			if(ckbxhighlight.isSelected()) {
+				if( !Strings.isNullOrEmpty(min) && !min.trim().equalsIgnoreCase("MIN") ) 
+					showzszmin =  Double.parseDouble( min );
+				
+				if( !Strings.isNullOrEmpty(max) &&  !max.trim().equalsIgnoreCase("MAX")) 
+					showzszmax = Double.parseDouble( max );
+			}	
+			globeexpc.setSettingZongShiZhix(showzszmin,showzszmax );
+			
+			break;
+		case "CjeZbDpMaxWk":
+			Integer cjedpmaxmin = null;
+			if(ckbxhighlight.isSelected()  && !Strings.isNullOrEmpty(min) &&  !min.trim().equalsIgnoreCase("MIN") )
+				cjedpmaxmin = Integer.parseInt( min );
+			
+			Integer cjedpmaxmax = null;
+			if(ckbxhighlight.isSelected() && !Strings.isNullOrEmpty(max) &&  !max.trim().equalsIgnoreCase("MAX") )
+				cjedpmaxmax = Integer.parseInt(max );
+			
+			globeexpc.setSettingCjeZbDpMaxWk(cjedpmaxmin, cjedpmaxmax);
+			break;
+		case "CjeZbDpMinWk":
+			Integer cjedpminmin = null;
+			if(ckbxhighlight.isSelected() &&  !Strings.isNullOrEmpty(min) &&  !min.trim().equalsIgnoreCase("MIN") )
+				cjedpminmin = Integer.parseInt( min );
+			
+			Integer cjedpminmax = null;
+			if(ckbxhighlight.isSelected() &&  !Strings.isNullOrEmpty(max) &&  !max.trim().equalsIgnoreCase("MAX") )
+				cjedpminmax = Integer.parseInt( max );
+			
+			globeexpc.setSettingCjeZbDpMaxWk(cjedpminmin, cjedpminmax);
+			break;
+		case "AverageChenJiaoErMaxWeek" :
+			Integer cjemxwkmin = null; Integer cjemxwkmax = null;
+			if(ckbxhighlight.isSelected() &&  !Strings.isNullOrEmpty(min) &&  !min.trim().equalsIgnoreCase("MIN") ) 
+				cjemxwkmin  = Integer.parseInt( min );
+			if(ckbxhighlight.isSelected() &&  !Strings.isNullOrEmpty(max) &&  !min.trim().equalsIgnoreCase("MAX") ) 
+				cjemxwkmax  = Integer.parseInt( max );
+				
+			globeexpc.setSettingChenJiaoErMaxWk(  cjemxwkmin,cjemxwkmax );
+			break;
+		case "HuanShouLv":
+			Double hslmin = null; Double hslmax = null;
+			if(ckbxhighlight.isSelected() &&  !Strings.isNullOrEmpty(min) &&  !min.trim().equalsIgnoreCase("MIN") )
+				hslmin = Double.parseDouble( min ) ;
+			if(ckbxhighlight.isSelected() &&  !Strings.isNullOrEmpty(max) &&  !min.trim().equalsIgnoreCase("MAX") )
+				hslmin = Double.parseDouble( max ) ;
+			
+			globeexpc.setSettingHuanShouLv(hslmin,hslmax);
+			break;
+		case "QueKou" :
+			if(ckbxhighlight.isSelected()) globeexpc.setHuiBuDownQueKou(true);	
+			else  globeexpc.setHuiBuDownQueKou(false);	
+			break;
+		case "DailyZhangDieFuRangeInWeek":
+			Double zdfmin = null; Double zdfmax = null;
+			if(ckbxhighlight.isSelected() ) {
+//				JTextField tfldzhangfumin = getHighlightTextField(keyword + "_MIN");
+//				JTextField tfldzhangfumax = getHighlightTextField(keyword + "_MAX");
+				if( !Strings.isNullOrEmpty(min) &&  !min.trim().equalsIgnoreCase("MIN")  ) 
+					zdfmin = Double.parseDouble( min );
+				if( !Strings.isNullOrEmpty(max) && !max.trim().equalsIgnoreCase("MAX") ) 
+					zdfmax = Double.parseDouble( max );
+			}
+			
+			globeexpc.setSettingDailyZhangDieFu (zdfmin, zdfmax );
+			break;
+		case "ChenJiaoEr" :
+			Double cjemin = null; Double cjemax = null;
+			if(ckbxhighlight.isSelected() ) {
+//				JTextField tfldcjemin = getHighlightTextField(keyword + "_MIN");
+//				JTextField tfldcjemax = getHighlightTextField(keyword + "_MAX");
+				if( !Strings.isNullOrEmpty(min) && !min.equalsIgnoreCase("MIN") ) 
+					cjemin = Double.parseDouble( min );
+				if( !Strings.isNullOrEmpty(max)  && !max.equalsIgnoreCase("MAX")) 
+					cjemax = Double.parseDouble( max );
+			}
+			
+			globeexpc.setSettingChenJiaoEr(cjemin, cjemax );
+		case "LastWkDpcjezbGrowingRate":
+			Double showcjegrmin = null; Double showcjegrmax = null;
+			if(ckbxhighlight.isSelected()) {
+				
+				if( !Strings.isNullOrEmpty(min) && !min.trim().equalsIgnoreCase("MIN")  ) 
+					showcjegrmin =  Double.parseDouble(min );
+
+				if( !Strings.isNullOrEmpty(max) && !max.trim().equalsIgnoreCase("MAX")  ) 
+					showcjegrmax =  Double.parseDouble(max );
+			} 
+			globeexpc.setCjezbGrowingRate (showcjegrmin, showcjegrmax);
+			break;
+		case "LastWkCjeZbDpMaxWk" :
+			break;
+		case "GuJiaCLOSE":
+			Double pricemin = null; Double pricemax = null;
+			if(ckbxhighlight.isSelected() ) {
+				if(!Strings.isNullOrEmpty(min) ) pricemin = Double.parseDouble(min);
+				if(!Strings.isNullOrEmpty(max) ) pricemax = Double.parseDouble(max);
+			} 
+			this.globeexpc.setSettingStockPriceLevel(pricemin,pricemax);
+			break;
+		}
+	}
+	/*
+	 * 
+	 */
+	private JTextField getHighlightTextField(String keywords) {
+        for (Component tmpcomp : this.getComponents() ) {
+        	
+            String name = tmpcomp.getName();
+            if (name != null && name.equalsIgnoreCase(keywords)) {
+            	if(tmpcomp instanceof JTextField)
+            		return (JTextField)  tmpcomp;
+            }
+        }
+        return null;
+    }
+
 	/*
 	 * 
 	 */
@@ -402,209 +747,54 @@ public class BkfxHightLightForGeGuPropertyFilePnl extends JPanel {
 		 tfldparsedfile.setText(filename);
 	}
 
-	protected void refreshMainBoardHightLight(JCheckBox ckbxhighlight) 
-	{
-		String keyword = ckbxhighlight.getName();
-		switch (keyword) {
-		case "CLOSEVSMA":
-			JTextField txtfldma = getHighlightTextField(keyword);
-			if(ckbxhighlight.isSelected() ) 
-				globeexpc.setSettingMaFormula(txtfldma.getText());
-			else
-				globeexpc.setSettingMaFormula(null);
-			
-			break;
-		case "LiuTongShiZhi":
-			JTextField txtfldltszmin = getHighlightTextField(keyword + "MIN");
-			JTextField txtfldltszmax = getHighlightTextField(keyword + "MAX");
-			Double showltszmin = null; Double showltszmax = null;
-			if(ckbxhighlight.isSelected()) {
-				if( !Strings.isNullOrEmpty(txtfldltszmin.getText()) ) 
-					showltszmin =  Double.parseDouble( txtfldltszmin.getText() );
-
-				if( !Strings.isNullOrEmpty(txtfldltszmax.getText()) ) 
-					showltszmax = Double.parseDouble( txtfldltszmax.getText() );
-			} 
-			globeexpc.setSettingLiuTongShiZhi(showltszmin ,showltszmax);
-
-			break;
-		case "ZongShiZhi":
-			JTextField txtfldzszmin = getHighlightTextField(keyword + "MIN");
-			JTextField txtfldzszmax = getHighlightTextField(keyword + "MAX");
-			Double showzszmin = null;Double showzszmax = null;
-			if(ckbxhighlight.isSelected()) {
-				if( !Strings.isNullOrEmpty(txtfldzszmin.getText()) ) 
-					showzszmin =  Double.parseDouble( txtfldzszmin.getText() );
-				
-				if( !Strings.isNullOrEmpty(txtfldzszmax.getText()) ) 
-					showzszmax = Double.parseDouble( txtfldzszmax.getText() );
-			}	
-			globeexpc.setSettingZongShiZhix(showzszmin,showzszmax );
-			
-			break;
-		case "CjeZbDpMaxWk":
-			JTextField txtflddpmaxwk = getHighlightTextField(keyword);
-			if(ckbxhighlight.isSelected() ) 
-				globeexpc.setSettingDpMaxWk(Integer.parseInt( txtflddpmaxwk.getText() ) );
-			else
-				globeexpc.setSettingDpMaxWk(null );
-			
-			break;
-		case "CjeZbDpMinWk":
-			JTextField txtflddpminwk = getHighlightTextField(keyword);
-			if(ckbxhighlight.isSelected() ) 
-				globeexpc.setSettingDpMinWk(Integer.parseInt(txtflddpminwk.getText())  );
-			else
-				globeexpc.setSettingDpMinWk (null);
-			
-			break;
-		case "AverageChenJiaoErMaxWeek" :
-			JTextField txtfldAverageCjeMaxWk = getHighlightTextField(keyword);
-			if(ckbxhighlight.isSelected() ) 
-				globeexpc.setSettingChenJiaoErMaxWk(  Integer.parseInt( txtfldAverageCjeMaxWk.getText()) );
-			else
-				globeexpc.setSettingChenJiaoErMaxWk(null);
-			
-			break;
-		case "HuanShouLv":
-			JTextField txtfldhsl = getHighlightTextField(keyword);
-			if(ckbxhighlight.isSelected())
-				globeexpc.setSettingHuanShouLv(Double.parseDouble( txtfldhsl.getText() ) );
-			else 
-				globeexpc.setSettingHuanShouLv( null );
-			break;
-		case "QueKou" :
-			if(ckbxhighlight.isSelected()) {
-				globeexpc.setHuiBuDownQueKou(true);
-				globeexpc.setZhangTing(true);
-			} else {
-				globeexpc.setHuiBuDownQueKou(false);
-				globeexpc.setZhangTing(false);
-			}
-			
-			break;
-		case "DailyZhangDieFuRangeInWeek":
-			Double zdfmin = null; Double zdfmax = null;
-			if(ckbxhighlight.isSelected() ) {
-				JTextField tfldzhangfumin = getHighlightTextField(keyword + "MIN");
-				JTextField tfldzhangfumax = getHighlightTextField(keyword + "MAX");
-				if( !Strings.isNullOrEmpty(tfldzhangfumin.getText()) ) 
-					zdfmin = Double.parseDouble( tfldzhangfumin.getText() );
-				if( !Strings.isNullOrEmpty(tfldzhangfumax.getText()) ) 
-					zdfmax = Double.parseDouble( tfldzhangfumax.getText() );
-			}
-			
-			globeexpc.setSettingDailyZhangDieFu (zdfmin, zdfmax );
-			break;
-		}
-		
-	}
+	
 	private void setupSecondBoardTextfieldValues (JCheckBox ckbxhighlight)
 	{
 		String keyword = ckbxhighlight.getName() ;
 		switch (keyword) {
 		case "GuJiaCLOSE": 
 			tfldextramin.setEnabled(true); tfldextramax.setEnabled(true);
-			if(this.globeexpc.getSettingSotckPriceMax() == null || this.globeexpc.getSettingSotckPriceMax() >100000) {
+			if(this.globeexpc.getSettingSotckPriceMax() == null || this.globeexpc.getSettingSotckPriceMax() >100000) 
 					tfldextramax.setText("");
-			}	else
-				tfldextramax.setText(this.globeexpc.getSettingSotckPriceMax().toString());
+			else tfldextramax.setText(this.globeexpc.getSettingSotckPriceMax().toString());
 
-			if(this.globeexpc.getSettingSotckPriceMin() == null || this.globeexpc.getSettingSotckPriceMin() <0) {
+			if(this.globeexpc.getSettingSotckPriceMin() == null || this.globeexpc.getSettingSotckPriceMin() <0) 
     				tfldextramin.setText("");
-    		}
-    		else
-    			tfldextramin.setText(this.globeexpc.getSettingSotckPriceMin().toString());
+    		else tfldextramin.setText(this.globeexpc.getSettingSotckPriceMin().toString());
 		
 			break;
 		case "ChenJiaoEr":
 			tfldextramin.setEnabled(true);tfldextramax.setEnabled(true);
-			if(this.globeexpc.getSettingChenJiaoErMin() == null) {
-					tfldextramin.setText("5");
-			}
-    		else
-    			tfldextramin.setText(this.globeexpc.getSettingChenJiaoErMin().toString());
+			if(this.globeexpc.getSettingChenJiaoErMin() == null) 	tfldextramin.setText("5");
+			else	tfldextramin.setText(this.globeexpc.getSettingChenJiaoErMin().toString());
 			
-    		if(this.globeexpc.getSettingChenJiaoErMax() == null) {
-    				tfldextramax.setText(" ");
-    		}
-    		else
-    			tfldextramax.setText(this.globeexpc.getSettingChenJiaoErMax().toString());
+    		if(this.globeexpc.getSettingChenJiaoErMax() == null) tfldextramax.setText(" ");
+    		else tfldextramax.setText(this.globeexpc.getSettingChenJiaoErMax().toString());
 			break;
 		case "LastWkDpcjezbGrowingRate" :
 			tfldextramin.setEnabled(true);tfldextramax.setEnabled(true);
-			if(this.globeexpc.getCjezbGrowingRateMin() == null) {
-					tfldextramin.setText("");
-			}
-			else
-				tfldextramin.setText(this.globeexpc.getCjezbGrowingRateMin().toString());
+			if(this.globeexpc.getCjezbGrowingRateMin() == null) tfldextramin.setText("");
+			else tfldextramin.setText(this.globeexpc.getCjezbGrowingRateMin().toString());
 			
-    		if(this.globeexpc.getCjezbGrowingRateMax() == null) {
-    				tfldextramax.setText(" ");
-    		}
-    		else
-    			tfldextramax.setText(this.globeexpc.getCjezbGrowingRateMax().toString());
+    		if(this.globeexpc.getCjezbGrowingRateMax() == null) tfldextramax.setText(" ");
+    		else tfldextramax.setText(this.globeexpc.getCjezbGrowingRateMax().toString());
 			break;
+		case "HuanShouLv":
+			tfldextramin.setEnabled(true);tfldextramax.setEnabled(true);
+			if(this.globeexpc.getSettingHuanShouLvMin() == null) tfldextramin.setText("");
+			else tfldextramin.setText(this.globeexpc.getSettingHuanShouLvMin().toString());
+			if(this.globeexpc.getSettingHuanShouLvMax() == null) tfldextramax.setText("");
+			else tfldextramax.setText(this.globeexpc.getSettingHuanShouLvMax().toString());
+			break;
+		case "LiuTongShiZhi":
+			tfldextramin.setEnabled(true);tfldextramax.setEnabled(true);
+			if(this.globeexpc.getSettingLiuTongShiZhiMin() == null) 	tfldextramin.setText("200");
+			else	tfldextramin.setText(this.globeexpc.getSettingLiuTongShiZhiMin().toString());
+			
+    		if(this.globeexpc.getSettingLiuTongShiZhiMax() == null) tfldextramax.setText(" ");
+    		else tfldextramax.setText(this.globeexpc.getSettingLiuTongShiZhiMax().toString());
+    		break;
 		}
-	}
-	private void refreshSecondBoardHightLights(JCheckBox ckbxhighlight)
-	{
-		String keyword = ckbxhighlight.getName() ;
-		switch (keyword) {
-		case "GuJiaCLOSE":
-			Double pricemin = null; Double pricemax = null;
-			if(ckbxhighlight.isSelected() ) {
-				if(!Strings.isNullOrEmpty(tfldextramin.getText()  ) )  
-					pricemin = Double.parseDouble(tfldextramin.getText()  );
-				
-				if(!Strings.isNullOrEmpty(tfldextramax.getText()  ) )  
-					pricemax = Double.parseDouble(tfldextramax.getText()  );
-			} 
-			this.globeexpc.setSettingStockPriceLevel(pricemin,pricemax);
-			break;
-		case "ChenJiaoEr" :
-			Double showcjemin = null; Double showcjemax = null;
-			if(ckbxhighlight.isSelected()) {
-				
-				if( !Strings.isNullOrEmpty(tfldextramin.getText().trim()) ) 
-					showcjemin =  Double.parseDouble( tfldextramin.getText()  );
-				
-				if( !Strings.isNullOrEmpty(tfldextramax.getText().trim()) ) 
-					showcjemax = Double.parseDouble(  tfldextramax.getText() );
-			}
-			globeexpc.setSettingChenJiaoEr (showcjemin, showcjemax);
-			break;
-		case "LastWkDpcjezbGrowingRate":
-			Double showcjegrmin = null; Double showcjegrmax = null;
-			if(ckbxhighlight.isSelected()) {
-				
-				if( !Strings.isNullOrEmpty(tfldextramin.getText().trim()) && !tfldextramin.getText().trim().equalsIgnoreCase("MIN")  ) 
-					showcjegrmin =  Double.parseDouble(tfldextramin.getText() );
-
-				if( !Strings.isNullOrEmpty(tfldextramax.getText().trim()) && !tfldextramax.getText().trim().equalsIgnoreCase("MAX")  ) 
-					showcjegrmax =  Double.parseDouble(tfldextramax.getText() );
-			} 
-			globeexpc.setCjezbGrowingRate (showcjegrmin, showcjegrmax);
-			break;
-		}
-	}
-	private JTextField getHighlightTextField(String keywords) {
-        for (Component tmpcomp : this.getComponents() ) {
-        	
-            String name = tmpcomp.getName();
-            if (name != null && name.equalsIgnoreCase(keywords)) {
-            	if(tmpcomp instanceof JTextField)
-            		return (JTextField)  tmpcomp;
-            }
-        }
-        return null;
-    }
-	private JProgressBar getProgressBar () {
-		for (Component tmpcomp : this.getComponents() ) {
-            	if(tmpcomp instanceof JProgressBar)
-            		return (JProgressBar)  tmpcomp;
-        }
-        return null;
 	}
 	/*
 	 * 
@@ -613,189 +803,5 @@ public class BkfxHightLightForGeGuPropertyFilePnl extends JPanel {
 	{
 		this.curselectdate = date;
 	}
-	public void setCurrentExportPeriod (String period)
-	{
-		this.globeperiod = period;
-	}
-	public void setStockInfoManager (StockInfoManager stkm)
-	{
-		this.stockmanager = stkm;
-	}
-	
-	protected void initializeExportConditions (JLabel btnaddexportcond) 
-	{
-		if( exportcond == null)
-			exportcond = new ArrayList<BanKuaiGeGuMatchCondition> ();
-		
-		try {
-			BanKuaiGeGuMatchCondition expcCloned =  (BanKuaiGeGuMatchCondition) this.globeexpc.clone();
-//			ExtraExportConditions extraexportcondition = new ExtraExportConditions (expcCloned);
-			ExtraExportConditionsPnl extraexportcondition = new ExtraExportConditionsPnl (expcCloned,curselectdate);
-			int extraresult = JOptionPane.showConfirmDialog(null,extraexportcondition , "附加导出条件:", JOptionPane.OK_CANCEL_OPTION);
-			if(extraresult == JOptionPane.OK_OPTION) { //其他导出条件 
-				
-				expcCloned = extraexportcondition.getSettingCondition ();
-				if( expcCloned.shouldExportOnlyCurrentBanKuai() ) {
-//					expcCloned.setSettingBanKuai(exportbk);
-				}
-				exportcond.add(expcCloned);
-				
-				btnaddexportcond.setText(String.valueOf(exportcond.size() ));
-				String tooltips = btnaddexportcond.getToolTipText() + "<html>" + expcCloned.getConditionsDescriptions() + "<br></html>";
-				btnaddexportcond.setToolTipText(tooltips);
-			}
-		} catch (CloneNotSupportedException e) {e.printStackTrace();}
-
-		return;
-	}
-	
-	/*
-	 * 把当前的板块当周符合条件的导出
-	 */
-	private void exportBanKuaiWithGeGuOnCondition ()
-	{
-		if(exportcond == null || exportcond.size() == 0) {
-			JOptionPane.showMessageDialog(null,"未设置导出条件，请先设置导出条件！");
-			return;
-		}
-
-		String msg =  "导出耗时较长，请先确认条件是否正确。\n是否导出？";
-		int exchangeresult = JOptionPane.showConfirmDialog(null,msg , "确实导出？", JOptionPane.OK_CANCEL_OPTION);
-		if(exchangeresult == JOptionPane.CANCEL_OPTION)
-			return;
-
-		if(curselectdate == null)
-			curselectdate = LocalDate.now();
-		String dateshowinfilename = null;
-		if(globeperiod == null  || globeperiod.equals(NodeGivenPeriodDataItem.WEEK))
-			dateshowinfilename = "week" + curselectdate.with(DayOfWeek.FRIDAY).toString().replaceAll("-","");
-		else if(globeperiod.equals(NodeGivenPeriodDataItem.DAY))
-			dateshowinfilename = "day" + curselectdate.toString().replaceAll("-","");
-		else if(globeperiod.equals(NodeGivenPeriodDataItem.MONTH))
-			dateshowinfilename = "month" +  curselectdate.withDayOfMonth(curselectdate.lengthOfMonth()).toString().replaceAll("-","");
-		String exportfilename = sysconfig.getTDXModelMatchExportFile () + "TDX模型个股" + dateshowinfilename + ".EBK";
-		File filefmxx = new File( exportfilename );
-		if( !filefmxx.getParentFile().exists() ) {  
-            //如果目标文件所在的目录不存在，则创建父目录  
-            if(!filefmxx.getParentFile().mkdirs()) {  
-                System.out.println("创建目标文件所在目录失败！");  
-                return ;  
-            }  
-        }  
-		try {
-				if (filefmxx.exists()) {
-					filefmxx.delete();
-					filefmxx.createNewFile();
-				} else
-					filefmxx.createNewFile();
-		} catch (Exception e) {		e.printStackTrace();return ;}
-		
-		if(this.stockmanager != null)
-			this.stockmanager.setGetNodeDataFromDbWhenSystemIdleThreadStatus(false);
-		if(globeperiod == null)
-			globeperiod = NodeGivenPeriodDataItem.WEEK;
-		
-		exporttask = new ExportTask(exportcond, curselectdate,globeperiod,filefmxx);
-		exporttask.addPropertyChangeListener(new PropertyChangeListener() {
-		      @Override
-		      public void propertyChange(final PropertyChangeEvent eventexport) 
-		      {  
-		    	  JProgressBar progressBarExport = getProgressBar ();
-			      	switch (eventexport.getPropertyName()) {
-			        case "progress":
-			        	progressBarExport.setIndeterminate(false);
-			        	progressBarExport.setString("正在导出..." + (Integer) eventexport.getNewValue() + "%(,点击取消导出)");
-			        	progressBarExport.setToolTipText("点击取消导出");
-			          break;
-			        case "state":
-			          switch ((StateValue) eventexport.getNewValue()) {
-			          case DONE:
-//			        	exportCancelAction.putValue(Action.NAME, "导出条件个股");
-			            try {
-			              final int count = exporttask.get();
-			              int exchangeresult = JOptionPane.showConfirmDialog(null, "导出完成，是否打开" + filefmxx.getAbsolutePath() + "查看","导出完成", JOptionPane.OK_CANCEL_OPTION);
-	//		      		  if(exchangeresult == JOptionPane.CANCEL_OPTION) {
-	//		      			  progressBarExport.setString(" ");
-	//		      			  return;
-	//		      		  }
-			      		  try {
-			      			String path = filefmxx.getAbsolutePath();
-			      			Runtime.getRuntime().exec("explorer.exe /select," + path);
-			      		  } catch (IOException e1) {
-			      				e1.printStackTrace();
-			      		  }
-			      		  progressBarExport.setString(" ");
-			      		  stockmanager.setGetNodeDataFromDbWhenSystemIdleThreadStatus(true);
-			      		  System.gc();
-			            } catch (final CancellationException e) {
-			            	try {
-								exporttask.get();
-							} catch (InterruptedException | ExecutionException | CancellationException e1) {
-	//							e1.printStackTrace();
-							}
-			            	progressBarExport.setIndeterminate(false);
-			            	progressBarExport.setValue(0);
-			            	JOptionPane.showMessageDialog(null, "导出条件个股被终止！", "导出条件个股",JOptionPane.WARNING_MESSAGE);
-			            	progressBarExport.setString("导出设置条件个股");
-			            	stockmanager.setGetNodeDataFromDbWhenSystemIdleThreadStatus(true);
-			            } catch (final Exception e) {
-	//		              JOptionPane.showMessageDialog(Application.this, "The search process failed", "Search Words",
-	//		                  JOptionPane.ERROR_MESSAGE);
-			            }
-	
-			            exporttask = null;
-			            break;
-			          case STARTED:
-			          case PENDING:
-//			        	  exportCancelAction.putValue(Action.NAME, "取消导出");
-			        	  progressBarExport.setVisible(true);
-			        	  progressBarExport.setIndeterminate(true);
-			            break;
-			          }
-			          break;
-			        }
-			      }
-		    });
-		
-		exporttask.execute();
-//		try {
-//			exporttask.get();
-//		} catch (InterruptedException | ExecutionException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-	}
-
-	/*
-	 * 根据星期几已经本周几个交易日自动设置成交量的值
-	 */
-//	private void setHighLightChenJiaoEr() 
-//	{
-//		LocalDate curselectdate = dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-//		if(LocalDate.now().with(DayOfWeek.FRIDAY).equals(curselectdate.with(DayOfWeek.FRIDAY) ) ) { //说明在当前周，按星期来设置
-//			if(curselectdate.getDayOfWeek() == DayOfWeek.MONDAY )
-//				tfldshowcje.setText("0");
-//			else if(curselectdate.getDayOfWeek() == DayOfWeek.TUESDAY )
-//				tfldshowcje.setText("1.2");
-//			else if(curselectdate.getDayOfWeek() == DayOfWeek.WEDNESDAY )
-//				tfldshowcje.setText("2.5");
-//			else if(curselectdate.getDayOfWeek() == DayOfWeek.THURSDAY )
-//				tfldshowcje.setText("3.7");
-//			else if(curselectdate.getDayOfWeek() == DayOfWeek.FRIDAY )
-//				tfldshowcje.setText("4.9");
-//			else if(curselectdate.getDayOfWeek() == DayOfWeek.SATURDAY || curselectdate.getDayOfWeek() == DayOfWeek.SUNDAY)
-//				tfldshowcje.setText("5.8");
-//			
-//		} else { //应该根据该周有多少个交易日来设置，而不是简单的按1.2*5 约=5.8
-//			int tradingdays = this.bkdbopt.getTradingDaysOfTheWeek (curselectdate);
-//			if(tradingdays < 5)
-//				tfldshowcje.setText(String.valueOf(1.15*tradingdays).substring(0, 3) );
-//			else
-//				tfldshowcje.setText("5.8");
-//		}
-//		
-//	}
-
-
-
+//	 
 }

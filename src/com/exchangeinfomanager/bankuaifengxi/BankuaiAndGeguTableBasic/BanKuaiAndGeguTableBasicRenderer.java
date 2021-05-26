@@ -20,7 +20,7 @@ import org.jeasy.rules.api.RulesEngine;
 import org.jeasy.rules.core.DefaultRulesEngine;
 
 import com.exchangeinfomanager.bankuaifengxi.CandleStick.CandleStickColorFactory;
-import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiGeGuMatchCondition;
+import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiAndGeGuMatchingConditions;
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfChenJiaoEr;
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfCjeZbDpMaxWk;
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfCjeZbGrowingRate;
@@ -183,8 +183,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         } else
         if (reviewedtoday && !table.isRowSelected(row) && current_column_bg_kw != null && current_column_bg_kw.equalsIgnoreCase("infengxifile") ) {//已经浏览过的个股，全部灰色，不会混淆，更加清晰
         	font = new Font(font.getName(), font.getStyle() | Font.ITALIC,font.getSize());
-        	if(background == Color.WHITE)
-        		background = Color.gray;
+        	if(background == Color.WHITE)     		background = Color.gray;
         }
 
 	    if(table.isRowSelected(row)) {
@@ -194,6 +193,8 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 		    else
 			if(rowselectedindex != null && col == Integer.parseInt(rowselectedindex.trim() ) )  //	    if( columnname.equals("名称") ) { //个股名称
 	    		background = new Color(102,102,255);
+		    
+		    font = new Font(font.getName(), font.getStyle() | Font.ITALIC,font.getSize());
 	    }
 	    
 	    Object[] textbackgroundforegroundfont = {valuetext,background, foreground, font};
@@ -204,7 +205,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 		String valuetext = null; Font font = this.getFont();Color foreground = Color.BLACK, background = Color.WHITE;
 	    	    
 		String column_bg_kw  = prop.getProperty (col.toString() + "column_background_highlight_keyword");
-		String column_bg_color  = prop.getProperty (col.toString() + "column_background_hightlight_color");
+		String column_bg_color  = prop.getProperty (col.toString() + "column_background_highlight_color");
 		if(column_bg_kw != null   && column_bg_kw.contains("OTHERWISE")) {
 			List<String> bgkwlist = Splitter.on("OTHERWISE").omitEmptyStrings().splitToList(column_bg_kw); 
 			for(String bgkw : bgkwlist ) {
@@ -220,7 +221,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 		}
 		
     	String column_fg_kw  = prop.getProperty (col.toString() + "column_foreground_highlight_keyword");
-    	String column_fg_color  = prop.getProperty (col.toString() + "column_foreground_hightlight_color");
+    	String column_fg_color  = prop.getProperty (col.toString() + "column_foreground_highlight_color");
     	if(column_fg_kw != null && column_fg_kw.contains("OTHERWISE")) {
     		List<String> fgkwlist = Splitter.on("OTHERWISE").omitEmptyStrings().splitToList(column_fg_kw); 
 			for(String fgkw : fgkwlist ) {
@@ -379,7 +380,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 		
 		LocalDate requireddate = tablemodel.getCurDisplayedDate();
 	    String period = tablemodel.getCurDisplayPeriod();
-	    BanKuaiGeGuMatchCondition matchcond = tablemodel.getDisplayMatchCondition ();
+	    BanKuaiAndGeGuMatchingConditions matchcond = tablemodel.getHighLightBanKuaiAndGeGuMatchingCondition ();
 		
 	    Facts lwfacts = new Facts();
 	    if(node instanceof StockOfBanKuai)
@@ -477,7 +478,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 //		Stock stock = stockofbank.getStock();
 		LocalDate requireddate = tablemodel.getCurDisplayedDate();
 	    String period = tablemodel.getCurDisplayPeriod();
-	    BanKuaiGeGuMatchCondition matchcond = tablemodel.getDisplayMatchCondition ();
+	    BanKuaiAndGeGuMatchingConditions matchcond = tablemodel.getHighLightBanKuaiAndGeGuMatchingCondition ();
 		
 		Facts facts = new Facts();
 		if(node instanceof StockOfBanKuai)
@@ -490,39 +491,8 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         facts.put("evacond", matchcond);
         
         Rules rules = new Rules();
-//        RuleOfLiuTongShiZhi ltszRule =  new RuleOfLiuTongShiZhi ();
-//        rules.register(ltszRule);
-        
-//        RuleOfZongShiZhi zszRule = new RuleOfZongShiZhi ();
-//        rules.register(zszRule);
-        
-//        RuleOfGeGuDailyHighestZhangFuInWeek zfRule = new RuleOfGeGuDailyHighestZhangFuInWeek ();
-//        rules.register(zfRule);
-        
-//        RuleOfGeGuPrice priceRule = new RuleOfGeGuPrice ();
-//        rules.register(priceRule);
-        
-//        RuleOfQueKou qkRule = new RuleOfQueKou ();
-//        rules.register(qkRule);
-        
-//        RuleOfCjeZbDpMaxWk cjezbdpmaxwkRule = new RuleOfCjeZbDpMaxWk ();
-//        rules.register(cjezbdpmaxwkRule);
-        
-//        RuleOfWeeklyAverageChenJiaoErMaxWk averagecjemaxwkRule = new RuleOfWeeklyAverageChenJiaoErMaxWk ();
-//        rules.register(averagecjemaxwkRule);
-        
-//        RuleOfMA maRule = new RuleOfMA ();
-//        rules.register(maRule);
-        
-//        RuleOfChenJiaoEr cjeRule = new RuleOfChenJiaoEr ();
-//        rules.register(cjeRule);
-        
-//        RuleOfHuanShouLv hslRule = new RuleOfHuanShouLv ();
-//        rules.register(hslRule);
-        
      // fire rules on known facts
         RulesEngine rulesEngine = new DefaultRulesEngine();
-//        rulesEngine.fire(rules, facts);
         
         NodeXPeriodData nodexdata = node.getNodeXPeroidData(period);
 		Color background = Color.WHITE;

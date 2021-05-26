@@ -10,7 +10,7 @@ import org.jeasy.rules.annotation.Fact;
 import org.jeasy.rules.annotation.Priority;
 import org.jeasy.rules.annotation.Rule;
 
-import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiGeGuMatchCondition;
+import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiAndGeGuMatchingConditions;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 
@@ -25,7 +25,7 @@ public class RuleOfCjeZbGrowingRate
 	public boolean evaluate(@Fact("evanode") TDXNodes evanode,
 			@Fact("evadate") LocalDate evadate, @Fact("evadatedifference") Integer evadatedifference, 
 			@Fact("evaperiod") String evaperiod,
-    		@Fact("evacond") BanKuaiGeGuMatchCondition evacond ) 
+    		@Fact("evacond") BanKuaiAndGeGuMatchingConditions evacond ) 
 	{
 		NodeXPeriodData nodexdata = evanode.getNodeXPeroidData(evaperiod);
 		Double cjedpzbgr = nodexdata.getChenJiaoErZhanBiGrowthRateOfSuperBanKuai(evadate,evadatedifference);
@@ -34,21 +34,13 @@ public class RuleOfCjeZbGrowingRate
 				return false;
 			
     		Double grmin = null; Double grmax = null;
-	    	try {
-	    		grmin = evacond.getCjezbGrowingRateMin() * 1 /100;
-	    	} catch (java.lang.NullPointerException e) {
-	    		grmin = -100000000.0;
-	    	}
-	    	try {
-	    		grmax = evacond.getCjezbGrowingRateMax() * 1 /100;
-	    	} catch (java.lang.NullPointerException e) {
-	    		grmax = 100000000.0;
-	    	}
+	    	try {  		grmin = evacond.getCjezbGrowingRateMin() * 1 /100;
+	    	} catch (java.lang.NullPointerException e) { grmin = -100000000.0;}
+	    	try { grmax = evacond.getCjezbGrowingRateMax() * 1 /100;
+	    	} catch (java.lang.NullPointerException e) {grmax = 100000000.0;}
 	    	
-	    	if(cjedpzbgr >= grmin && cjedpzbgr <= grmax) 	    		
-	    		return true;
-	    	else
-	    		return false;
+	    	if(cjedpzbgr >= grmin && cjedpzbgr <= grmax) return true;
+	    	else return false;
     	} 
     	
     	return false;
@@ -58,7 +50,7 @@ public class RuleOfCjeZbGrowingRate
     public void execute(@Fact("evanode") TDXNodes evanode, 
     		@Fact("evadate") LocalDate evadate, @Fact("evadatedifference") Integer evadatedifference, 
     		@Fact("evaperiod") String evaperiod,
-    		@Fact("evacond") BanKuaiGeGuMatchCondition evacond )
+    		@Fact("evacond") BanKuaiAndGeGuMatchingConditions evacond )
     {
 		checkresult = true;
 		foreground = Color.yellow;

@@ -30,7 +30,7 @@ import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.TextAnchor;
 
 import com.exchangeinfomanager.Trees.CreateExchangeTree;
-import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiGeGuMatchCondition;
+import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiAndGeGuMatchingConditions;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.gui.subgui.DateRangeSelectPnl;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
@@ -492,30 +492,15 @@ public class BanKuaiFengXiCategoryBarChartCjlZhanbiPnl extends BanKuaiFengXiCate
 		
 		return tooltips;
 	}
+
 	@Override
-	public void BanKuaiGeGuMatchConditionValuesChanges(BanKuaiGeGuMatchCondition expc) 
+	public void BanKuaiAndGeGuMatchingConditionValuesChanges(BanKuaiAndGeGuMatchingConditions expc) 
 	{
-		Integer cjezbtoupleveldpmax = expc.getSettingDpMaxWk();
-		Double cjemin = expc.getSettingChenJiaoErMin();
-		Double cjemax = expc.getSettingChenJiaoErMax();
-		Integer cjemaxwk = expc.getSettingChenJiaoErMaxWk();
-		Double shoowhsl = expc.getSettingHuanShouLv();
-	
-//		Integer cjezbdporbkmax = expc.getSettinDpmaxwk();
-//		Integer cjezbdporbkmin = expc.getSettingDpminwk();
-//		Double cjemin = expc.getSettingCjemin();
-//		Double cjemax = expc.getSettingCjeMax();
-//		Integer cjemaxwk = expc.getSettingCjemaxwk();
-//		Double shoowhsl = expc.getSettingHsl();
-//		
-//		if(cjezbdporbkmax != null) {
-//			((BanKuaiFengXiCategoryBarRenderer)plot.getRenderer()).setDisplayMaxwkLevel (cjezbdporbkmax);
-//			this.barchart.fireChartChanged();//必须有这句
-//		}
-//		if(cjezbdporbkmin != null) {
-//			((BanKuaiFengXiCategoryBarRenderer)plot.getRenderer()).setDisplayMinwkLevel (cjezbdporbkmin);
-//			this.barchart.fireChartChanged();//必须有这句
-//		}
+//		Integer cjezbtoupleveldpmax = expc.getSettingDpMaxWk();
+//		Double cjemin = expc.getSettingChenJiaoErMin();
+//		Double cjemax = expc.getSettingChenJiaoErMax();
+//		Integer cjemaxwk = expc.getSettingChenJiaoErMaxWk();
+//		Double shoowhsl = expc.getSettingHuanShouLv();
 		
 	}
 	

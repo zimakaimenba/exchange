@@ -30,7 +30,7 @@ import org.jfree.ui.Layer;
 import org.jfree.ui.TextAnchor;
 
 import com.exchangeinfomanager.Trees.CreateExchangeTree;
-import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiGeGuMatchCondition;
+import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiAndGeGuMatchingConditions;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
@@ -692,22 +692,12 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 		
 		return tooltips;
 	}
-	@Override
-	public void BanKuaiGeGuMatchConditionValuesChanges(BanKuaiGeGuMatchCondition expc) 
-	{
-		Integer cjezbtoupleveldpmax = expc.getSettingDpMaxWk();
-		Double cjemin = expc.getSettingChenJiaoErMin();
-		Double cjemax = expc.getSettingChenJiaoErMax();
-		Integer cjemaxwk = expc.getSettingChenJiaoErMaxWk();
-		Double shoowhsl = expc.getSettingHuanShouLv();
 	
-		Integer cjezbdporbkmax = expc.getSettingDpMaxWk();
-		Integer cjezbdporbkmin = expc.getSettingDpMinWk();
-//		Double cjemin = expc.getSettingCjemin();
-//		Double cjemax = expc.getSettingCjeMax();
-//		Integer cjemaxwk = expc.getSettingCjemaxwk();
-//		Double shoowhsl = expc.getSettingHsl();
+	@Override
+	public void BanKuaiAndGeGuMatchingConditionValuesChanges(BanKuaiAndGeGuMatchingConditions expc) {
 		
+		Integer cjezbdporbkmax = expc.getSettingCjeZbDpMaxWkMin();
+		Integer cjezbdporbkmin = expc.getSettingCjeZbDpMinWkMax();
 		if(cjezbdporbkmax != null) {
 			((BanKuaiFengXiCategoryBarRenderer)plot.getRenderer()).setDisplayMaxwkLevel (cjezbdporbkmax);
 			this.barchart.fireChartChanged();//必须有这句
@@ -718,6 +708,8 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 		}
 		
 	}
+
+	
 }
 /*
  * 

@@ -16,7 +16,6 @@ import org.apache.log4j.Logger;
 
 import com.exchangeinfomanager.Tag.Tag;
 import com.exchangeinfomanager.bankuaifengxi.BankuaiAndGeguTableBasic.BandKuaiAndGeGuTableBasicModel;
-import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiGeGuMatchCondition;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.HanYuPinYing;
@@ -31,6 +30,7 @@ import com.exchangeinfomanager.bankuaifengxi.BankuaiAndGeguTableBasic.SortByKeyW
 import com.exchangeinfomanager.bankuaifengxi.BankuaiAndGeguTableBasic.SortByKeyWords.NodeLiuTongShiZhiComparator;
 import com.exchangeinfomanager.bankuaifengxi.BankuaiAndGeguTableBasic.SortByKeyWords.NodeTimeRangeZhangFuComparator;
 import com.exchangeinfomanager.bankuaifengxi.BankuaiAndGeguTableBasic.SortByKeyWords.NodeZongShiZhiComparator;
+import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiAndGeGuMatchingConditions;
 
 public abstract class BanKuaiGeGuBasicTableModel extends BandKuaiAndGeGuTableBasicModel
 {
@@ -46,7 +46,7 @@ public abstract class BanKuaiGeGuBasicTableModel extends BandKuaiAndGeGuTableBas
 
 	private BanKuai intersectionbankuai;
 
-	private BanKuaiGeGuMatchCondition matchcond;
+//	private BanKuaiAndGeGuMatchingConditions matchcond;
 
 	public void refresh (BanKuai bankuai,LocalDate wknum,String period)
 	{

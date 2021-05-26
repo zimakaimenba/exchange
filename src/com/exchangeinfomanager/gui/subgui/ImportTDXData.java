@@ -519,7 +519,7 @@ public class ImportTDXData extends JDialog {
 			java.time.LocalDate neededend = java.time.LocalDate.of(requirediterval.getEnd().toLocalDate().getYear(), 
 					requirediterval.getEnd().toLocalDate().getMonthOfYear(),
 					requirediterval.getEnd().toLocalDate().getDayOfMonth());
-		
+			System.out.println("Import Tushare data from" + neededstart.toString() + " to " + neededend.toString() + "   ");
 			bkdbopt.refreshExtraStockDataFromTushare (neededstart,neededend ); //开始要减少一天，保证最早数据被导入，代码的需要
 		}
 	}

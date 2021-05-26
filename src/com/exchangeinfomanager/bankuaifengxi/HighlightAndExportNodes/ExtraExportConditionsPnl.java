@@ -55,7 +55,7 @@ public class ExtraExportConditionsPnl extends JPanel
 	private List<JCheckBox> huchixuanzeaboutstock;
 	private JCheckBox chkbxonlyexportbk;
 	private JCheckBox chkbxonlycurstock;
-	private BanKuaiGeGuMatchCondition cond;
+	private BanKuaiAndGeGuMatchingConditions cond;
 	private JCheckBox chckbxexportyellowbkstk;
 	private JTextArea tfldexportformula;
 	private JButton btnCJEZbDpMaxWk;
@@ -89,7 +89,7 @@ public class ExtraExportConditionsPnl extends JPanel
 	 * Create the panel.
 	 */
 	
-	public ExtraExportConditionsPnl(BanKuaiGeGuMatchCondition cond, LocalDate curselectdate1) 
+	public ExtraExportConditionsPnl(BanKuaiAndGeGuMatchingConditions cond, LocalDate curselectdate1) 
 	{
 		this.cond  = cond;
 		this.curselectdate = curselectdate1;
@@ -114,7 +114,7 @@ public class ExtraExportConditionsPnl extends JPanel
 	/*
 	 * 
 	 */
-	public BanKuaiGeGuMatchCondition getSettingCondition ()
+	public BanKuaiAndGeGuMatchingConditions getSettingCondition ()
 	{
 		if(chkbxexportallbk.isSelected())
 			this.cond.setExportAllBanKuai(true);

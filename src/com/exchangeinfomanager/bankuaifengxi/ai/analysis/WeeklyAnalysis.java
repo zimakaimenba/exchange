@@ -12,10 +12,9 @@ import org.jeasy.rules.core.DefaultRulesEngine;
 import org.jfree.data.time.ohlc.OHLCItem;
 
 import com.exchangeinfomanager.bankuaifengxi.CandleStick.CandleStickColorFactory;
-import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiGeGuMatchCondition;
+import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiAndGeGuMatchingConditions;
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfCjeZbDpMaxWk;
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfGeGuPrice;
-import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfGeGuZhangFu;
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfLiuTongShiZhi;
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfMA;
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfQueKou;
@@ -33,7 +32,7 @@ import com.google.common.collect.Range;
 public class WeeklyAnalysis 
 {
 
-	public static String BanKuaiGeGuMatchConditionAnalysis (TDXNodes node, LocalDate requireddate, BanKuaiGeGuMatchCondition matchcond)
+	public static String BanKuaiGeGuMatchConditionAnalysis (TDXNodes node, LocalDate requireddate, BanKuaiAndGeGuMatchingConditions matchcond)
 	{
 			String analysisresult = "";
 		

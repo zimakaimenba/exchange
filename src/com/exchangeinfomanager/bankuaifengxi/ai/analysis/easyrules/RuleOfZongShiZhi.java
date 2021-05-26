@@ -9,7 +9,7 @@ import org.jeasy.rules.annotation.Fact;
 import org.jeasy.rules.annotation.Priority;
 import org.jeasy.rules.annotation.Rule;
 
-import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiGeGuMatchCondition;
+import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiAndGeGuMatchingConditions;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
@@ -25,7 +25,7 @@ public class RuleOfZongShiZhi
     public boolean evaluate(@Fact("evanode") TDXNodes evanode, 
     		@Fact("evadate") LocalDate evadate, @Fact("evadatedifference") Integer evadatedifference, 
     		@Fact("evaperiod") String evaperiod,
-    		@Fact("evacond") BanKuaiGeGuMatchCondition evacond ) 
+    		@Fact("evacond") BanKuaiAndGeGuMatchingConditions evacond ) 
 	{
 		if(evanode.getType() == BkChanYeLianTreeNode.TDXBK)
 			return false;
@@ -79,7 +79,7 @@ public class RuleOfZongShiZhi
     public void execute(@Fact("evanode") TDXNodes evanode, 
     		@Fact("evadate") LocalDate evadate, @Fact("evadatedifference") Integer evadatedifference, 
     		@Fact("evaperiod") String evaperiod,
-    		@Fact("evacond") BanKuaiGeGuMatchCondition evacond )
+    		@Fact("evacond") BanKuaiAndGeGuMatchingConditions evacond )
     {
     	if(specialarea)
     		background = new Color(201,0,102) ;

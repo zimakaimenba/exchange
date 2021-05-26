@@ -24,19 +24,19 @@ import javax.swing.border.TitledBorder;
 
 import org.jfree.chart.renderer.category.CategoryItemRenderer;
 
-import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchConditionListener;
 import com.exchangeinfomanager.bankuaifengxi.BarChartPanelDataChangedListener;
 import com.exchangeinfomanager.bankuaifengxi.BarChartPanelHightLightColumnListener;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartCjePnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartCjeZhanbiPnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartPnl;
-import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiGeGuMatchCondition;
+import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiAndGeGuMatchingConditionListener;
+import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiAndGeGuMatchingConditions;
 import com.exchangeinfomanager.nodes.DaPan;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 
 public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel 
-		implements BarChartPanelDataChangedListener, BarChartPanelHightLightColumnListener ,PropertyChangeListener,BanKuaiGeGuMatchConditionListener
+		implements BarChartPanelDataChangedListener, BarChartPanelHightLightColumnListener ,PropertyChangeListener,BanKuaiAndGeGuMatchingConditionListener
 {
 	/**
 	 * Create the panel.
@@ -129,13 +129,6 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 	{
 		chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(selecteddate));
 	}
-	@Override
-	public void BanKuaiGeGuMatchConditionValuesChanges (BanKuaiGeGuMatchCondition expc)
-	{
-		cjecjlzbpnldown.BanKuaiGeGuMatchConditionValuesChanges(expc) ;
-		cjecjlpnlup.BanKuaiGeGuMatchConditionValuesChanges(expc) ;
-	}
-
 	@Override
 	public void highLightSpecificBarColumn(Integer columnindex) 
 	{
@@ -627,6 +620,13 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 	public void setChangeNodeDisplayDateRange(boolean b) {
 		cjecjlzbpnldown.setChangeNodeDisplayDateRange( b  );
 		cjecjlpnlup.setChangeNodeDisplayDateRange( b  );
+	}
+	@Override
+	public void BanKuaiAndGeGuMatchingConditionValuesChanges(BanKuaiAndGeGuMatchingConditions expc) 
+	{
+		cjecjlzbpnldown.BanKuaiAndGeGuMatchingConditionValuesChanges(expc) ;
+		cjecjlpnlup.BanKuaiAndGeGuMatchingConditionValuesChanges(expc) ;
+		
 	}
 
 

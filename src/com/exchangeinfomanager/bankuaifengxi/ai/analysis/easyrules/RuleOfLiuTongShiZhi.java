@@ -9,7 +9,7 @@ import org.jeasy.rules.annotation.Fact;
 import org.jeasy.rules.annotation.Priority;
 import org.jeasy.rules.annotation.Rule;
 
-import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiGeGuMatchCondition;
+import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiAndGeGuMatchingConditions;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
@@ -25,33 +25,24 @@ public class RuleOfLiuTongShiZhi //extends BasicRule //extends RuleOfNodeXdataBa
     public boolean evaluate(@Fact("evanode") TDXNodes evanode, 
     		@Fact("evadate") LocalDate evadate, @Fact("evadatedifference") Integer evadatedifference, 
     		@Fact("evaperiod") String evaperiod,
-    		@Fact("evacond") BanKuaiGeGuMatchCondition evacond ) 
+    		@Fact("evacond") BanKuaiAndGeGuMatchingConditions evacond ) 
 	{
 		if(evanode.getType() == BkChanYeLianTreeNode.TDXBK)
 			return false;
 		
 		Double ltszmin ;
 	    Double ltszmax ;
-	    try {
-	    	ltszmax = evacond.getSettingLiuTongShiZhiMax().doubleValue() *  100000000;
-	    } catch (Exception e) {
-	    	ltszmax = 10000000000000.0;
-	    }
-	    try {
-	    	ltszmin = evacond.getSettingLiuTongShiZhiMin() * 100000000;
-	    } catch (Exception e) {
-	    	ltszmin = 10000000000000.0;
-	    }
+	    try { ltszmax = evacond.getSettingLiuTongShiZhiMax().doubleValue() *  100000000;
+	    } catch (Exception e) { ltszmax = 10000000000000.0; }
+	    try { ltszmin = evacond.getSettingLiuTongShiZhiMin() * 100000000;
+	    } catch (Exception e) {ltszmin = 10000000000000.0;}
+	    
 	    LocalDate requireddate = evadate;
 	    String period = evaperiod;
 	    NodeXPeriodData nodexdata = evanode.getNodeXPeroidData(period);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
 	    Double curltsz = null;
-	    try {
-	    	 curltsz = ((StockNodesXPeriodData)nodexdata).getSpecificTimeLiuTongShiZhi(requireddate, 0);
-	    } catch (java.lang.ClassCastException e) {
-//    		e.printStackTrace();
-    		return false;
-    	}
+	    try {curltsz = ((StockNodesXPeriodData)nodexdata).getSpecificTimeLiuTongShiZhi(requireddate, 0);
+	    } catch (java.lang.ClassCastException e) {return false;}
 	    if(curltsz == null) //有时候周一网易的数据还没有导入，导致没有流通市值数据，先用上一周的数据顶一下，毕竟不会相差太大
 	    	curltsz = ((StockNodesXPeriodData)nodexdata).getSpecificTimeLiuTongShiZhi(requireddate, -1);
 	    try {
@@ -79,12 +70,10 @@ public class RuleOfLiuTongShiZhi //extends BasicRule //extends RuleOfNodeXdataBa
     public void execute(@Fact("evanode") TDXNodes evanode, 
     		@Fact("evadate") LocalDate evadate, @Fact("evadatedifference") Integer evadatedifference, 
     		@Fact("evaperiod") String evaperiod,
-    		@Fact("evacond") BanKuaiGeGuMatchCondition evacond )
+    		@Fact("evacond") BanKuaiAndGeGuMatchingConditions evacond )
     {
-    	if(specialarea)
-    		background = new Color(201,0,102) ;
-    	else
-    		background = Color.MAGENTA ;
+    	if(specialarea) background = new Color(201,0,102) ;
+    	else	background = Color.MAGENTA ;
     }
     
     @Priority //优先级注解：return 数值越小，优先级越高

@@ -9,7 +9,7 @@ import org.jeasy.rules.annotation.Fact;
 import org.jeasy.rules.annotation.Priority;
 import org.jeasy.rules.annotation.Rule;
 
-import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiGeGuMatchCondition;
+import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiAndGeGuMatchingConditions;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC.StockXPeriodDataForJFC;
@@ -26,7 +26,7 @@ public class RuleOfGeGuDailyHighestZhangFuInWeek
 	public boolean evaluate(@Fact("evanode") TDXNodes evanode,
 			@Fact("evadate") LocalDate evadate, @Fact("evadatedifference") Integer evadatedifference, 
 			@Fact("evaperiod") String evaperiod,
-    		@Fact("evacond") BanKuaiGeGuMatchCondition evacond ) 
+    		@Fact("evacond") BanKuaiAndGeGuMatchingConditions evacond ) 
 	{
 //		if(evanode.getType() == BkChanYeLianTreeNode.TDXBK )
 //			return false;
@@ -37,18 +37,13 @@ public class RuleOfGeGuDailyHighestZhangFuInWeek
     	if(zfmax == null && zfmin == null ) 
     		return false;
     	
-		if(zfmax == null  )
-	    		zfmax = 1000000.0;
-    	if( zfmin == null )
-    		zfmin = -1000000.0;
+		if(zfmax == null  ) zfmax = 1000000.0;
+    	if( zfmin == null ) zfmin = -1000000.0;
     	
     	StockXPeriodDataForJFC nodexdata = null;
-    	try {
-    		nodexdata = (StockXPeriodDataForJFC)evanode.getNodeXPeroidData(evaperiod);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
-    	} catch (java.lang.ClassCastException e) {
-//    		e.printStackTrace();
-    		return false;
-    	}
+    	try { nodexdata = (StockXPeriodDataForJFC)evanode.getNodeXPeroidData(evaperiod);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
+    	} catch (java.lang.ClassCastException e) {return false;}
+    	
 //		OHLCItem ohlcdata = ((TDXNodesXPeriodDataForJFC)nodexdata).getSpecificDateOHLCData (evadate,0);
     	Double wkzhangdiefu = nodexdata.getSpecificOHLCZhangDieFu (evadate, evadatedifference);
     	if(wkzhangdiefu != null)
@@ -60,14 +55,12 @@ public class RuleOfGeGuDailyHighestZhangFuInWeek
 		
 		Double wkhighzhangfu = nodexdata.getSpecificTimeHighestZhangDieFu(evadate, evadatedifference);
 		
-			if(wkhighzhangfu == null)
-		    	return false;
+			if(wkhighzhangfu == null) return false;
 		    else if( wkhighzhangfu >= zfmin && wkhighzhangfu <= zfmax ) {
 		    	analysisresultforvoice = analysisresultforvoice + "本周最高涨幅百分之" +  Math.floor(wkhighzhangfu * 100); 
 		    	return true;
 		    }
-		    else
-		    	return false;
+		    else return false;
 		 
 	}
 	
@@ -75,7 +68,7 @@ public class RuleOfGeGuDailyHighestZhangFuInWeek
     public void execute(@Fact("evanode") TDXNodes evanode, 
     		@Fact("evadate") LocalDate evadate,@Fact("evadatedifference") Integer evadatedifference, 
     		@Fact("evaperiod") String evaperiod,
-    		@Fact("evacond") BanKuaiGeGuMatchCondition evacond )
+    		@Fact("evacond") BanKuaiAndGeGuMatchingConditions evacond )
     {
 		background = Color.pink ;
 		isgeguzhangfumatched = true;

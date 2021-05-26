@@ -9,7 +9,7 @@ import org.jeasy.rules.annotation.Fact;
 import org.jeasy.rules.annotation.Priority;
 import org.jeasy.rules.annotation.Rule;
 
-import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiGeGuMatchCondition;
+import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiAndGeGuMatchingConditions;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
@@ -26,22 +26,18 @@ public class RuleOfHuanShouLv
 	public boolean evaluate(@Fact("evanode") TDXNodes evanode,
 			@Fact("evadate") LocalDate evadate, @Fact("evadatedifference") Integer evadatedifference, 
 			@Fact("evaperiod") String evaperiod,
-    		@Fact("evacond") BanKuaiGeGuMatchCondition evacond ) 
+    		@Fact("evacond") BanKuaiAndGeGuMatchingConditions evacond ) 
 	{
-		if(evacond == null)
-			return false;
+		if(evacond == null) return false;
 		
-		if(evanode.getType() != BkChanYeLianTreeNode.TDXGG)
-			return false;
+		if(evanode.getType() != BkChanYeLianTreeNode.TDXGG) return false;
 		
-		Double shouldhsl = evacond.getSettingHuanShouLv();
-		if(shouldhsl == null)
-			return false;
+		Double shouldhsl = evacond.getSettingHuanShouLvMin();
+		if(shouldhsl == null) return false;
 
 		StockXPeriodDataForJFC nodexdata = (StockXPeriodDataForJFC) evanode.getNodeXPeroidData(evaperiod);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
 	    Double hsl = nodexdata.getSpecificTimeHuanShouLv(evadate, 0);
-    	if(hsl != null && hsl >= shouldhsl)
-    		return true;
+    	if(hsl != null && hsl >= shouldhsl) return true;
     	
     	return false;
 	}
@@ -50,7 +46,7 @@ public class RuleOfHuanShouLv
     public void execute(@Fact("evanode") TDXNodes evanode, 
     		@Fact("evadate") LocalDate evadate, @Fact("evadatedifference") Integer evadatedifference, 
     		@Fact("evaperiod") String evaperiod,
-    		@Fact("evacond") BanKuaiGeGuMatchCondition evacond )
+    		@Fact("evacond") BanKuaiAndGeGuMatchingConditions evacond )
     {
 		iszjezbdpmatched  = true;
 		background = Color.BLUE.brighter() ;

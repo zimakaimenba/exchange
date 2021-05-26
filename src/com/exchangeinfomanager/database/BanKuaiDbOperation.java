@@ -4479,13 +4479,10 @@ public class BanKuaiDbOperation
 	public void refreshExtraStockDataFromTushare (LocalDate start, LocalDate end)
 	{
 		LocalDate ldlastestdbrecordsdate = null;
-		   if(start == null)
-			   ldlastestdbrecordsdate =  LocalDate.parse("2019-12-29"); //当前数据的起点
-		   else
-			   ldlastestdbrecordsdate = start; //从最新数据的后一天开始导入数据
+		   if(start == null)		   ldlastestdbrecordsdate =  LocalDate.parse("2019-12-29"); //当前数据的起点
+		   else			   ldlastestdbrecordsdate = start; //从最新数据的后一天开始导入数据
 		   
-		   if(end == null)
-			   end = LocalDate.now().plusDays(1);
+		   if(end == null)   end = LocalDate.now().plusDays(1);
 		   
 		while(ldlastestdbrecordsdate.isBefore( end.plusDays(1) )) {
 			if( ldlastestdbrecordsdate.getDayOfWeek() == DayOfWeek.SUNDAY || ldlastestdbrecordsdate.getDayOfWeek() == DayOfWeek.SATURDAY  ) { //开始导入数据日期一直到今天是周末，肯定不需要导入
@@ -4602,7 +4599,6 @@ public class BanKuaiDbOperation
 								int result = connectdb.sqlUpdateStatExecute(sqlupdate);
 							} catch (MysqlDataTruncation e) {e.printStackTrace();
 							} catch (SQLException e) {e.printStackTrace();}
-
 		            	}
 		        }
 			} catch (IOException e) {e.printStackTrace();}
@@ -6896,27 +6892,18 @@ public class BanKuaiDbOperation
 			    while(rssh.next()) {
 			    	dapanjyrsm = rssh.getInt("JIAOYIRISHUMU");
 			    }
-			} catch(java.lang.NullPointerException e) { 
-		    	e.printStackTrace();
-			} catch (SQLException e) {
-		    	e.printStackTrace();
-			}catch(Exception e){
-		    	e.printStackTrace();
+			} catch(java.lang.NullPointerException e) {   	e.printStackTrace();
+			} catch (SQLException e) { 	e.printStackTrace();
+			} catch(Exception e){   	e.printStackTrace();
 			} finally {
 		    	if(rssh != null)
-				try {
-					rssh.close();
-					rssh = null;
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
+				try {	rssh.close();	rssh = null;
+				} catch (SQLException e) {	e.printStackTrace();}
 			}
 			try {
 				String checkresult = "上证999999本周交易数据有" + dapanjyrsm + "天"; 
 				Files.append(checkresult +  System.getProperty("line.separator"),filefmxx, charset);
-			 } catch (IOException e) {
-					e.printStackTrace();
-			 }
+			 } catch (IOException e) {e.printStackTrace();	 }
 
 			try {
 				String sqlquerystat = "SELECT  COUNT(1) AS JIAOYIRISHUMU FROM 通达信交易所指数每日交易信息  \r\n" +
@@ -6929,27 +6916,18 @@ public class BanKuaiDbOperation
 			    while(rssh.next()) {
 			    	dapanjyrsm = rssh.getInt("JIAOYIRISHUMU");
 			    }
-			} catch(java.lang.NullPointerException e) { 
-		    	e.printStackTrace();
-			} catch (SQLException e) {
-		    	e.printStackTrace();
-			}catch(Exception e){
-		    	e.printStackTrace();
+			} catch(java.lang.NullPointerException e) { e.printStackTrace();
+			} catch (SQLException e) { e.printStackTrace();
+			} catch(Exception e){e.printStackTrace();
 			} finally {
 		    	if(rssh != null)
-				try {
-					rssh.close();
-					rssh = null;
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
+				try {rssh.close();rssh = null;
+				} catch (SQLException e) {e.printStackTrace();}
 			}
 			try {
 				String checkresult = "深证399001本周交易数据有" + dapanjyrsm + "天"; 
 				Files.append(checkresult +  System.getProperty("line.separator"),filefmxx, charset);
-			 } catch (IOException e) {
-					e.printStackTrace();
-			 }
+			 } catch (IOException e) {e.printStackTrace();}
 			//检查个股板块记录条数和大盘记录条数是否一致
 //			List<BanKuai> allbklist = this.getTDXBanKuaiList("sh"); 
 			Collection<BkChanYeLianTreeNode> requiredbk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getRequiredSubSetOfTheNodesByJiaoYiSuo(BkChanYeLianTreeNode.TDXBK,"SH");
@@ -6971,28 +6949,19 @@ public class BanKuaiDbOperation
 				    while(rssh.next()) {
 				    	bkjiaoyirishumu = rssh.getInt("JIAOYIRISHUMU");
 				    }
-				} catch(java.lang.NullPointerException e) { 
-			    	e.printStackTrace();
-				} catch (SQLException e) {
-			    	e.printStackTrace();
-				}catch(Exception e){
-			    	e.printStackTrace();
+				} catch(java.lang.NullPointerException e) { e.printStackTrace();
+				} catch (SQLException e) {e.printStackTrace();
+				}catch(Exception e){e.printStackTrace();
 				} finally {
 			    	if(rssh != null)
-					try {
-						rssh.close();
-						rssh = null;
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
+					try {rssh.close();rssh = null;
+					} catch (SQLException e) {e.printStackTrace();}
 				}
 				if(bkjiaoyirishumu != dapanjyrsm) {
 					try {
 						String checkresult = "注意：板块" +  tmpbkcode + "交易数据条目有" + bkjiaoyirishumu + "天,与大盘交易数据条目数据不符合！"; 
 						Files.append(checkresult +  System.getProperty("line.separator"),filefmxx, charset);
-					 } catch (IOException e) {
-							e.printStackTrace();
-					 }
+					 } catch (IOException e) {e.printStackTrace();}
 				}
 				
 			}
@@ -7017,28 +6986,19 @@ public class BanKuaiDbOperation
 				    while(rssh.next()) {
 				    	bkjiaoyirishumu = rssh.getInt("JIAOYIRISHUMU");
 				    }
-				} catch(java.lang.NullPointerException e) { 
-			    	e.printStackTrace();
-				} catch (SQLException e) {
-			    	e.printStackTrace();
-				}catch(Exception e){
-			    	e.printStackTrace();
+				} catch(java.lang.NullPointerException e) { e.printStackTrace();
+				} catch (SQLException e) {e.printStackTrace();
+				}catch(Exception e){e.printStackTrace();
 				} finally {
 			    	if(rssh != null)
-					try {
-						rssh.close();
-						rssh = null;
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
+					try {rssh.close();rssh = null;
+					} catch (SQLException e) {e.printStackTrace();}
 				}
 				if(bkjiaoyirishumu != dapanjyrsm) {
 					try {
 						String checkresult = "注意：板块" +  tmpbkcode + "交易数据条目有" + bkjiaoyirishumu + "天,与大盘交易数据条目数据不符合！"; 
 						Files.append(checkresult + System.getProperty("line.separator"),filefmxx, charset);
-					 } catch (IOException e) {
-							e.printStackTrace();
-					 }
+					 } catch (IOException e) {e.printStackTrace();}
 				}
 			}
 			//检查型个股数据中从网易导入的数据是否完整   

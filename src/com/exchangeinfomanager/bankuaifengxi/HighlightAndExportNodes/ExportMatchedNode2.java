@@ -37,12 +37,12 @@ import com.udojava.evalex.Expression;
 
 public class ExportMatchedNode2
 {
-	private BanKuaiGeGuMatchCondition cond;
+	private BanKuaiAndGeGuMatchingConditions cond;
 //	private SvsForNodeOfBanKuai svsbk;
 //	private SvsForNodeOfStock svsstk;
 	private LocalDate exportdate;
 
-	public ExportMatchedNode2 (BanKuaiGeGuMatchCondition cond) 
+	public ExportMatchedNode2 (BanKuaiAndGeGuMatchingConditions cond) 
 	{
 		this.cond = cond;
 	}
@@ -167,63 +167,7 @@ public class ExportMatchedNode2
 		
 		checkresult = node.checkNodeDataMatchedWithFormula(formula);
 		
-//		List<String> exportfactors = Splitter.on("AND").omitEmptyStrings().splitToList(formula);
-//		for(String factor : exportfactors) {
-//			String factoreq = factor.replaceAll(" ", "");
-//			
-//			ArrayList<String> vars = new ArrayList<String>();
-//            Pattern p = Pattern.compile("\'.*?\'", Pattern.CASE_INSENSITIVE);
-//            Matcher m = p.matcher(factor);
-//            while (m.find()) {
-//                vars.add(m.group());
-//            }
-//            
-//            String checkedvar = "";
-//            for(String var : vars) {
-//            	if(var.equals(checkedvar))	continue;
-//            	else  checkedvar = var;
-//            		
-//            	LocalDate sltdate = null ; String datestr = null;
-//            	Pattern pdate = Pattern.compile("\\d+", Pattern.CASE_INSENSITIVE);
-//                Matcher mdate = pdate.matcher(var);
-//                while (mdate.find()) {
-//                	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-//                	sltdate = LocalDate.parse(mdate.group(), formatter);
-//                	datestr = mdate.group();
-//                }
-//                int indexofdate = var.indexOf(datestr);
-//            	String kw = var.substring(1, indexofdate);
-//            	String period = var.substring(indexofdate+8, var.length()-1);
-//            	if(period.isEmpty()) period = "WEEK";
-//            	
-//                String sltvalue = getKeywordValue (node, kw,sltdate, period, factor);
-//                if(sltvalue == null) {
-//                	System.out.println(node.getMyOwnCode() + node.getMyOwnName() +  factoreq + "没有获取计算结果\n");
-//                	checkresult = null;
-//                	break;
-//                }
-//                	
-//                if(kw.equals("CLOSEVSMA") ) {
-//                	if(sltvalue.equals("true"))  checkresult = true;
-//                	else	checkresult = false;
-//                }
-//                else factoreq = factoreq.replace(var, sltvalue);
-//            }
-//            
-//            if(!factoreq.contains("CLOSEVSMA") && checkresult != null) 
-//            	try{
-//    		    	BigDecimal result = null; 
-//    		    	result = new Expression(factoreq).eval(); //https://github.com/uklimaschewski/EvalEx
-//    		    	String sesultstr = result.toString();
-//    			    if(sesultstr.equals("0"))   	checkresult = false;
-//    			    else   	checkresult = true;
-//    		    } catch (com.udojava.evalex.Expression.ExpressionException e) {e.printStackTrace();return false;}
-//            
-//            if(checkresult == null || checkresult == false  ) 
-//            	break;
-//		}
-//		
-//		svsnode = null;
+
 		return checkresult;
 	}
 	private String getKeywordValue(TDXNodes node, String kw, LocalDate selectdate, String curperiod,String factor)

@@ -10,7 +10,7 @@ import org.jeasy.rules.annotation.Priority;
 import org.jeasy.rules.annotation.Rule;
 import org.jfree.data.time.ohlc.OHLCItem;
 
-import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiGeGuMatchCondition;
+import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiAndGeGuMatchingConditions;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC.StockXPeriodDataForJFC;
@@ -27,7 +27,7 @@ public class RuleOfGeGuPrice
 	public boolean evaluate(@Fact("evanode") TDXNodes evanode, 
 			@Fact("evadate") LocalDate evadate, @Fact("evadatedifference") Integer evadatedifference, 
 			@Fact("evaperiod") String evaperiod,
-    		@Fact("evacond") BanKuaiGeGuMatchCondition evacond ) 
+    		@Fact("evacond") BanKuaiAndGeGuMatchingConditions evacond ) 
 	{
 		if(evanode.getType() == BkChanYeLianTreeNode.TDXBK)
 			return false;
@@ -35,33 +35,21 @@ public class RuleOfGeGuPrice
 		Double pricemin = evacond.getSettingSotckPriceMin();
     	Double pricemax = evacond.getSettingSotckPriceMax();
     	
-    	if(pricemin == null && pricemax == null ) {
-    		return false;
-    	} else
-		if(pricemax == null && pricemin != null )
-			pricemax = 1000000.0;
+    	if(pricemin == null && pricemax == null )  return false;
+    	else
+		if(pricemax == null && pricemin != null ) pricemax = 1000000.0;
     	else 
-    	if(pricemax != null && pricemin == null )
-    		pricemin = -1000000.0;
-//    	else
-//    	if(pricemax == null && pricemin == null ) {
-//    		pricemin = 1000000.0;
-//    		pricemax = -1000000.0;
-//    	}
+    	if(pricemax != null && pricemin == null ) pricemin = -1000000.0;
+
     	StockXPeriodDataForJFC nodexdata = null;
-    	try {
-    		 nodexdata = (StockXPeriodDataForJFC)evanode.getNodeXPeroidData(evaperiod);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
-    	} catch (java.lang.ClassCastException e) {
-//    		e.printStackTrace();
-    		return false;
-    	}
+    	try { nodexdata = (StockXPeriodDataForJFC)evanode.getNodeXPeroidData(evaperiod);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
+    	} catch (java.lang.ClassCastException e) {return false;}
+    	
 		OHLCItem ohlcdata = ((TDXNodesXPeriodDataForJFC)nodexdata).getSpecificDateOHLCData (evadate,0);
 	    Double close = ohlcdata.getCloseValue();
 	    if(pricemin != null || pricemax != null ) {
-			if(close >= pricemin && close <= pricemax)
-				return true;
-			else
-				return false;
+			if(close >= pricemin && close <= pricemax) return true;
+			else return false;
 		} 
 	    
 	    return false;
@@ -71,7 +59,7 @@ public class RuleOfGeGuPrice
     public void execute(@Fact("evanode") TDXNodes evanode,
     		@Fact("evadate") LocalDate evadate,@Fact("evadatedifference") Integer evadatedifference,  
     		@Fact("evaperiod") String evaperiod,
-    		@Fact("evacond") BanKuaiGeGuMatchCondition evacond )
+    		@Fact("evacond") BanKuaiAndGeGuMatchingConditions evacond )
     {
 		background = Color.blue;
 		analysisresult = true;

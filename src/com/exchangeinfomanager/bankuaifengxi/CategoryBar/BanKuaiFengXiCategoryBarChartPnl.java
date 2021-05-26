@@ -33,9 +33,9 @@ import org.jfree.ui.RectangleAnchor;
 import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.TextAnchor;
 
-import com.exchangeinfomanager.bankuaifengxi.BanKuaiGeGuMatchConditionListener;
 import com.exchangeinfomanager.bankuaifengxi.BarChartPanelDataChangedListener;
 import com.exchangeinfomanager.bankuaifengxi.BarChartPanelHightLightColumnListener;
+import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiAndGeGuMatchingConditionListener;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.TDXNodes;
@@ -67,7 +67,7 @@ import javax.swing.JMenuItem;
 
 
 public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel 
-	implements BarChartPanelDataChangedListener, BarChartPanelHightLightColumnListener , BanKuaiGeGuMatchConditionListener
+	implements BarChartPanelDataChangedListener, BarChartPanelHightLightColumnListener , BanKuaiAndGeGuMatchingConditionListener
 {
 	/**
 	 * 

@@ -10,7 +10,7 @@ import org.jeasy.rules.annotation.Fact;
 import org.jeasy.rules.annotation.Priority;
 import org.jeasy.rules.annotation.Rule;
 
-import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiGeGuMatchCondition;
+import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiAndGeGuMatchingConditions;
 import com.exchangeinfomanager.bankuaifengxi.bankuaigegutable.BanKuaiGeGuBasicTable;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
@@ -28,16 +28,14 @@ public class RuleOfCjeZbDpMaxWk
 	public boolean evaluate(@Fact("evanode") TDXNodes evanode,
 			@Fact("evadate") LocalDate evadate, @Fact("evadatedifference") Integer evadatedifference, 
 			@Fact("evaperiod") String evaperiod,
-    		@Fact("evacond") BanKuaiGeGuMatchCondition evacond ) 
+    		@Fact("evacond") BanKuaiAndGeGuMatchingConditions evacond ) 
 	{
 		NodeXPeriodData nodexdata = evanode.getNodeXPeroidData(evaperiod);
 		Integer cjedpmaxwk = nodexdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai (evadate,evadatedifference);
 		if(cjedpmaxwk!= null && cjedpmaxwk > 0 ) {
     		int settingmaxfazhi;
-	    	try { settingmaxfazhi = evacond.getSettingDpMaxWk();
-	    	} catch (java.lang.NullPointerException e) {
-	    		settingmaxfazhi = 100000000;
-	    	}
+	    	try { settingmaxfazhi = evacond.getSettingCjeZbDpMaxWkMin();
+	    	} catch (java.lang.NullPointerException e) { 		settingmaxfazhi = 100000000;}
 	    	
 	    	Integer lianxuflnum = nodexdata.getCjeDpMaxLianXuFangLiangPeriodNumber (evadate,evadatedifference, settingmaxfazhi);
 	    	 
@@ -57,28 +55,16 @@ public class RuleOfCjeZbDpMaxWk
     	
     	if(cjedpmaxwk == null || cjedpmaxwk <= 0 ) {
     		Integer cjedpminwk = null;
-    		try {
-    			cjedpminwk = 0- nodexdata.getChenJiaoErZhanBiMinWeekOfSuperBanKuai(evadate,evadatedifference);
-    		} catch (java.lang.NullPointerException ex) {
-//    			ex.printStackTrace();
-    			logger.info(evanode.getMyOwnName() + "reach the oldest data!");
-    			return false;
-    		}
+    		try { cjedpminwk = 0- nodexdata.getChenJiaoErZhanBiMinWeekOfSuperBanKuai(evadate,evadatedifference);
+    		} catch (java.lang.NullPointerException ex) { logger.info(evanode.getMyOwnName() + "reach the oldest data!");return false;}
     		
     		int minfazhi;
-	    	try {
-	    		minfazhi = evacond.getSettingDpMinWk();
-	    	} catch (java.lang.NullPointerException e) {
-	    		minfazhi = 100000000;
-	    	}
+	    	try {		minfazhi = evacond.getSettingCjeZbDpMinWkMax();
+	    	} catch (java.lang.NullPointerException e) {minfazhi = 100000000;}
 	    	
     		minfazhi = 0 - minfazhi; //min都用负数表示
-    		if(cjedpminwk <= minfazhi) {
-    			background = Color.GREEN ;
-    			return true;
-    		}
-    		else 
-    			return false;
+    		if(cjedpminwk <= minfazhi) { background = Color.GREEN ; return true;}
+    		else return false;
     	}
     	
     	return false;
@@ -88,7 +74,7 @@ public class RuleOfCjeZbDpMaxWk
     public void execute(@Fact("evanode") TDXNodes evanode, 
     		@Fact("evadate") LocalDate evadate, @Fact("evadatedifference") Integer evadatedifference, 
     		@Fact("evaperiod") String evaperiod,
-    		@Fact("evacond") BanKuaiGeGuMatchCondition evacond )
+    		@Fact("evacond") BanKuaiAndGeGuMatchingConditions evacond )
     {
 		iszjezbdpmatched  = true;
     }
