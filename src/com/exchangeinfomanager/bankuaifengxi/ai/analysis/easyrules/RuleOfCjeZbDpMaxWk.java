@@ -60,9 +60,9 @@ public class RuleOfCjeZbDpMaxWk
     		
     		int minfazhi;
 	    	try {		minfazhi = evacond.getSettingCjeZbDpMinWkMax();
-	    	} catch (java.lang.NullPointerException e) {minfazhi = 100000000;}
+	    	} catch (java.lang.NullPointerException e) {minfazhi = -100000000;}
 	    	
-    		minfazhi = 0 - minfazhi; //min都用负数表示
+//    		minfazhi = 0 - minfazhi; //min都用负数表示
     		if(cjedpminwk <= minfazhi) { background = Color.GREEN ; return true;}
     		else return false;
     	}

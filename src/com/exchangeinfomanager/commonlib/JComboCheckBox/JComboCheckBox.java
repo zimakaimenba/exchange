@@ -94,6 +94,8 @@ public class JComboCheckBox extends JComboBox
                                                     boolean isSelected, boolean cellHasFocus) 
       {
     	 Component com =  super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus); 
+    	 if(value == null)
+    		 return com;
          if (value instanceof JCheckBox) {
         	 Component c = (Component)value;
            
@@ -118,13 +120,10 @@ public class JComboCheckBox extends JComboBox
               
             return c;
          } else {
-            if (label ==null) {
-               label = new JLabel(value.toString());
-            }
-            else {
+            if (label ==null)             label = new JLabel(value.toString());
+            else 
                label.setText(value.toString());
-            }
-                
+
             return label;
          }
       }

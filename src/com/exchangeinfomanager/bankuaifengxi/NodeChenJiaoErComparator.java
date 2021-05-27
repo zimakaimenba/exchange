@@ -12,7 +12,7 @@ import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.TDXNodes;
 
-public class NodeChenJiaoErComparator implements Comparator<TDXNodes> 
+class NodeChenJiaoErComparator implements Comparator<TDXNodes> 
 {
 	private String period;
 	private LocalDate compareDate;

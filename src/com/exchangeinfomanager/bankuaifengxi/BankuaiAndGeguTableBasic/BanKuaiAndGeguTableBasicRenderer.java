@@ -420,19 +420,19 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 		case "ExtremeCjlZhanbi" :
 			Double[] extremecjl = node.getNodeCjlZhanbiLevel();
 			Double zhanbi = nodexdata.getChenJiaoLiangZhanBi(requireddate, 0);
-			if(extremecjl[0] != null && zhanbi < extremecjl[0])
+			if(extremecjl[0] != null && zhanbi < extremecjl[0] && matchcond.getHighlightExtremeCjlZhanbiBenchMark())
 				foreground = Color.RED;
 			else
-			if(extremecjl[1] != null && zhanbi > extremecjl[1])
+			if(extremecjl[1] != null && zhanbi > extremecjl[1] && matchcond.getHighlightExtremeCjlZhanbiBenchMark())
 				foreground = Color.GREEN;
 			break;
 		case "ExtremeCjeZhanbi" :
 			Double[] extremecje = node.getNodeCjeZhanbiLevel();
 			Double cjezhanbi = nodexdata.getChenJiaoErZhanBi(requireddate, 0);
-			if(extremecje[0] != null && cjezhanbi < extremecje[0])
+			if(extremecje[0] != null && cjezhanbi < extremecje[0] && matchcond.getHighlightExtremeCjeZhanbiBenchMark())
 				foreground = Color.RED;
 			else
-			if(extremecje[1] != null && cjezhanbi > extremecje[1])
+			if(extremecje[1] != null && cjezhanbi > extremecje[1] && matchcond.getHighlightExtremeCjeZhanbiBenchMark())
 				foreground = Color.GREEN;
 			break;
         case "QuanZhongInBankuai":
@@ -499,20 +499,20 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 		case "ExtremeCjlZhanbi" :
 			Double[] extremecjl = node.getNodeCjlZhanbiLevel();
 			Double zhanbi = nodexdata.getChenJiaoLiangZhanBi(requireddate, 0);
-			if(extremecjl[0] != null && zhanbi < extremecjl[0])
+			if(extremecjl[0] != null && zhanbi < extremecjl[0] && matchcond.getHighlightExtremeCjlZhanbiBenchMark())
 				background = Color.RED;
 			else
-			if(extremecjl[1] != null && zhanbi > extremecjl[1])
+			if(extremecjl[1] != null && zhanbi > extremecjl[1] && matchcond.getHighlightExtremeCjlZhanbiBenchMark())
 				background = Color.GREEN;
 			break;
 			
 		case "ExtremeCjeZhanbi" :
 			Double[] extremecje = node.getNodeCjeZhanbiLevel();
 			Double cjezhanbi = nodexdata.getChenJiaoErZhanBi(requireddate, 0);
-			if(extremecje[0] != null && cjezhanbi < extremecje[0])
+			if(extremecje[0] != null && cjezhanbi < extremecje[0] && matchcond.getHighlightExtremeCjeZhanbiBenchMark())
 				background = Color.RED;
 			else
-			if(extremecje[1] != null && cjezhanbi > extremecje[1])
+			if(extremecje[1] != null && cjezhanbi > extremecje[1] && matchcond.getHighlightExtremeCjeZhanbiBenchMark())
 				background = Color.GREEN;
 			break;
 			
@@ -531,12 +531,9 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	
         case "InFengXiFile":
         	NodesTreeRelated stofbktree ;
-        	if(node instanceof StockOfBanKuai)
-        		stofbktree = ((StockOfBanKuai)node).getStock().getNodeTreeRelated();
-        	else
-        		stofbktree = node.getNodeTreeRelated();
-        	if(stofbktree == null)
-        		background = Color.WHITE;
+        	if(node instanceof StockOfBanKuai) stofbktree = ((StockOfBanKuai)node).getStock().getNodeTreeRelated();
+        	else	stofbktree = node.getNodeTreeRelated();
+        	if(stofbktree == null) background = Color.WHITE;
         	else {
         		Boolean isin = stofbktree.selfIsMatchModel(requireddate);
     	    	if(isin != null && isin  ) 

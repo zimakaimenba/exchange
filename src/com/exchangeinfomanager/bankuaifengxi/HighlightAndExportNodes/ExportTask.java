@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.bankuaifengxi;
+package com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,8 +13,7 @@ import java.util.concurrent.ExecutionException;
 
 import javax.swing.SwingWorker;
 
-import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiAndGeGuMatchingConditions;
-import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.ExportMatchedNode2;
+import com.exchangeinfomanager.bankuaifengxi.BankuaiAndGeguTableBasic.SortByKeyWords.NodeChenJiaoErComparator;
 import com.exchangeinfomanager.commonlib.SystemAudioPlayed;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.TDXNodes;
@@ -77,10 +76,8 @@ public class ExportTask extends SwingWorker<Integer, String>
 		for(BkChanYeLianTreeNode node : outputnodeslist) {
 			 String outputstock;
 			 String cjs = ((TDXNodes)node).getNodeJiBenMian().getSuoShuJiaoYiSuo();
-			 if(cjs.trim().toLowerCase().equals("sh"))
-				outputstock= "1" + node.getMyOwnCode().trim();
-			else
-				outputstock ="0" + node.getMyOwnCode().trim();
+			 if(cjs.trim().toLowerCase().equals("sh"))	outputstock= "1" + node.getMyOwnCode().trim();
+			 else	outputstock ="0" + node.getMyOwnCode().trim();
 			
 			 outputstock = outputstock +  System.getProperty("line.separator");
 			 try {

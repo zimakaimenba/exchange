@@ -228,20 +228,7 @@ public class BanKuaiAndGeGuMatchingConditions implements Cloneable {
 		public void setExportOnlyCurrentBanKuai (boolean exportOnlyCurrentBanKuai) {
 			this.exportOnlyCurrentBanKuai = exportOnlyCurrentBanKuai;
 		}
-		
-//		public boolean shouldExportChenJiaoErZhanbiUpBanKuai () {
-//			return exportCjeZhanbiUp;
-//		}
-//		public void setExportChenJiaoErZhanbiUpBanKuai (boolean exportCjeZhanbiUp) {
-//			this.exportCjeZhanbiUp = exportCjeZhanbiUp;
-//		}
-		
-//		public boolean shouldExportYangXianBanKuai () {
-//			return exportYangXianBanKuai;
-//		}
-//		public void setExportYangXianBanKuai(boolean exportYangXianBanKuai) {
-//			this.exportYangXianBanKuai = exportYangXianBanKuai;
-//		}
+
 		boolean exportOnlyBankuaiNotGeGu;
 		public boolean shouldExportOnlyBankuaiNotGeGu() {
 			return exportOnlyBankuaiNotGeGu;
@@ -285,39 +272,7 @@ public class BanKuaiAndGeGuMatchingConditions implements Cloneable {
 			this.exportYinXianGeGumin = min;
 			this.exportYinXianGeGumax = max;
 		}
-		
-//		Double cjebottomforyangxianlevle;
-		//成交额低于
-//		public Double getChenJiaoErBottomForYangXianLevle() {
-//			return cjebottomforyangxianlevle;
-//		}
-//		public void setChenJiaoErBottomForYangXianLevle(Double cjebottomforyangxianlevle) {
-//			this.cjebottomforyangxianlevle = cjebottomforyangxianlevle;
-//		}
-		//成交额低于水平必须有阳线
-//		Double cjeyangxianlevel;
-//		public Double getChenJiaoErBottomYangXianLevel() {
-//			return cjeyangxianlevel;
-//		}
-//		public void setChenJiaoErBottomYangXianLevel(Double cjeyangxianlevel) {
-//			this.cjeyangxianlevel = cjeyangxianlevel;
-//		}
-		//成交额低于
-//		Double cjebottomforfanglianglevle;
-//		public Double getChenJiaoErBottomForFangLiangLevle() {
-//			return cjebottomforfanglianglevle;
-//		}
-//		public void setChenJiaoErBottomForFangLiangLevle(Double cjebottomforfanglianglevle) {
-//			this.cjebottomforfanglianglevle = cjebottomforfanglianglevle;
-//		}
-		//成交额低于水平必须有放量
-//		Integer cjefanglianglevel;
-//		public Integer getChenJiaoErFangLiangLevel() {
-//			return cjefanglianglevel;
-//		}
-//		public void setChenJiaoErFangLiangLevel(Integer cjefanglianglevel) {
-//			this.cjefanglianglevel = cjefanglianglevel;
-//		}
+
 		Boolean exportST;
 		public Boolean shouldExportST() {
 			return exportST;
@@ -355,6 +310,8 @@ public class BanKuaiAndGeGuMatchingConditions implements Cloneable {
 		{
 			setttinglastwkcjezbgrowingratemin = min;
 			setttinglastwkcjezbgrowingratemax = max;
+			
+			bkfxhighlightvaluesoftableslisteners.forEach(l -> l.BanKuaiAndGeGuMatchingConditionValuesChanges( this ) );
 		}
 		public Double getCjezbGrowingRateMin()	{
 			return setttinglastwkcjezbgrowingratemin;
@@ -372,9 +329,7 @@ public class BanKuaiAndGeGuMatchingConditions implements Cloneable {
 			return this.settinglastwkcjezbmaxkwk ;
 		}
 		private Integer settinglastwkcjemaxkwk;
-//		private Boolean shouldExportDpCjeZbGrowingRate;
-//		private Double exportDpCjeZbGrowingRatemin;
-//		private Double exportDpCjeZbGrowingRatemax;
+
 		public void setLastWkCjemaxkwk (Integer maxwk) 
 		{
 			this.settinglastwkcjemaxkwk = maxwk;
@@ -383,49 +338,53 @@ public class BanKuaiAndGeGuMatchingConditions implements Cloneable {
 		{
 			return this.settinglastwkcjezbmaxkwk ;
 		}
-//		public Boolean shouldExportAverageWkCjeMaxWk() {
-//			return exportAverageWkCjeMaxWk;
+		Boolean highlightExtremeCjlZhanbiBenchMark;
+		public void setHighlightExtremeCjlZhanbiBenchMark(Boolean tf) {
+			highlightExtremeCjlZhanbiBenchMark = tf;
+			
+			bkfxhighlightvaluesoftableslisteners.forEach(l -> l.BanKuaiAndGeGuMatchingConditionValuesChanges( this ) );
+		}
+		public Boolean getHighlightExtremeCjlZhanbiBenchMark() {
+			return highlightExtremeCjlZhanbiBenchMark;
+		} 
+		Boolean highlightExtremeCjeZhanbiBenchMark;
+		public void setHighlightExtremeCjeZhanbiBenchMark(Boolean tf) {
+			highlightExtremeCjeZhanbiBenchMark = tf;
+			
+			bkfxhighlightvaluesoftableslisteners.forEach(l -> l.BanKuaiAndGeGuMatchingConditionValuesChanges( this ) );
+		}
+		public Boolean getHighlightExtremeCjeZhanbiBenchMark() {
+			return highlightExtremeCjeZhanbiBenchMark;
+		}
+//		Double settingExtremeCjlZhanbiLowerBenchMark;
+//		Double settingExtremeCjlZhanbiUpBenchMark;
+//		public Double getExtremeCjlZhanBiLowerBenchMark () {
+//			return settingExtremeCjlZhanbiLowerBenchMark;
 //		}
-//
-//		public void setExportAverageWkCjeMaxWk(Boolean exportAverageWkCjeMaxWk) {
-//			this.exportAverageWkCjeMaxWk = exportAverageWkCjeMaxWk;
+//		public Double getExtremeCjlZhanBiUpBenchMark () {
+//			return settingExtremeCjlZhanbiUpBenchMark;
 //		}
-//
-//		public Integer getAverageWkCjeMaxWkLevel() 
-//		{
-//			return averageWkCjeMaxWkLevel;
+//		public void setExtremeCjlZhanbi (Double low, Double up)	{
+//			settingExtremeCjlZhanbiLowerBenchMark = low;
+//			settingExtremeCjlZhanbiUpBenchMark = up;
 //		}
-//
-//		public void setAverageWkCjeMaxWkLevel(Integer averageWkCjeMaxWkLevel) 
-//		{
-//			this.averageWkCjeMaxWkLevel = averageWkCjeMaxWkLevel;
+//		Double settingExtremeCjeZhanbiLowerBenchMark;
+//		Double settingExtremeCjeZhanbiUpBenchMark;
+//		public Double getExtremeCjeZhanBiLowerBenchMark () {
+//			return settingExtremeCjeZhanbiLowerBenchMark;
+//		}
+//		public Double getExtremeCjeZhanBiUpBenchMark () {
+//			return settingExtremeCjeZhanbiUpBenchMark;
+//		}
+//		public void setExtremeCjeZhanbi (Double low, Double up)	{
+//			settingExtremeCjeZhanbiLowerBenchMark = low;
+//			settingExtremeCjeZhanbiUpBenchMark = up;
 //		}
 		
 		public Object clone() throws CloneNotSupportedException {
 	        return super.clone();
 	    }
 
-//		public void setExportDpCjeZbGrowingRate(Boolean b) 
-//		{
-//			this.shouldExportDpCjeZbGrowingRate = b;
-//		}
-//		public Boolean shouldExportDpCjeZbGrowingRate ()
-//		{
-//			return this.shouldExportDpCjeZbGrowingRate;
-//		}
-//
-//		public void setExportDpCjeZbGrowingRateQuJian(Double min, Double max) 
-//		{
-//			this.exportDpCjeZbGrowingRatemin = min;
-//			this.exportDpCjeZbGrowingRatemax = max;
-//		}
-//		public Double getExportDpCjeZbGrowingRateQuJianMin ()
-//		{
-//			return this.exportDpCjeZbGrowingRatemin;
-//		}
-//		public Double getExportDpCjeZbGrowingRateQuJianMax ()
-//		{
-//			return this.exportDpCjeZbGrowingRatemax;
-//		}
+
 
 }

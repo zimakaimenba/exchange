@@ -82,8 +82,9 @@ import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBa
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiNodeCombinedCategoryPnl;
 import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiAndGeGuMatchingConditions;
 import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BkfxHightLightForGeGuPropertyFilePnl;
-import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BkfxHightLightPnl;
+import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.ExportTask;
 import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.ExtraExportConditionsPnl;
+import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.SetExportNodeConditionPnl;
 import com.exchangeinfomanager.bankuaifengxi.PieChart.BanKuaiFengXiPieChartCjePnl;
 
 import com.exchangeinfomanager.bankuaifengxi.PieChart.BanKuaiFengXiPieChartPnl;
@@ -225,7 +226,7 @@ public class BanKuaiFengXi extends JDialog
 		this.globecalwholeweek = true; //计算整周
 		
 		setupBkfxSettingProperties ();
-		setupBkfxHighLightSettingProperties ();
+		setupPredefinedExportFormula ();
 		
 		initializeGuiOf2560Resolution ();
 
@@ -242,7 +243,6 @@ public class BanKuaiFengXi extends JDialog
 	private static Logger logger = Logger.getLogger(BanKuaiFengXi.class);
  	
 	private Properties bkfxsettingprop;
-	private Properties highlightpnlprop;
 	private String globeperiod;
 	private Boolean globecalwholeweek; //计算整周
 	private BanKuaiFengXiRemindXmlHandler bkfxremind;
@@ -266,27 +266,27 @@ public class BanKuaiFengXi extends JDialog
 	private Set<BanKuaiGeGuBasicTable> tablebkggtablesetWithoutTemp;
 	private Set<BanKuaiGeGuBasicTable> tablebkggtableset;
 
-	private void setupBkfxHighLightSettingProperties ()
-	{
-		// TODO Auto-generated method stub
-//		File directory = new File("");//设定为当前文件夹
-//		String systeminstalledpath = null;
-//		try{
-//		    Properties properties = System.getProperties();
-//		    systeminstalledpath = toUNIXpath(properties.getProperty("user.dir")+ "\\"); //用户运行程序的当前目录
-//		} catch(Exception e) {System.exit(0);}
-		
-		try {
-			highlightpnlprop = new Properties();
-			String propFileName =   (new SetupSystemConfiguration()).getSystemInstalledPath() + "/config/" +  bkfxsettingprop.getProperty ("BkfxHighlightPnlInfoSettingFile")  + "/";
-			FileInputStream inputStream = new FileInputStream(propFileName);
-			if (inputStream != null) 
-				highlightpnlprop.load(inputStream);
-			 
-			inputStream.close();
-			
-		} catch (Exception e) {	e.printStackTrace();} finally {}
-	}
+//	private void setupBkfxHighLightSettingProperties ()
+//	{
+//		// TODO Auto-generated method stub
+////		File directory = new File("");//设定为当前文件夹
+////		String systeminstalledpath = null;
+////		try{
+////		    Properties properties = System.getProperties();
+////		    systeminstalledpath = toUNIXpath(properties.getProperty("user.dir")+ "\\"); //用户运行程序的当前目录
+////		} catch(Exception e) {System.exit(0);}
+//		
+//		try {
+//			highlightpnlprop = new Properties();
+//			String propFileName =   (new SetupSystemConfiguration()).getSystemInstalledPath() + "/config/" +  bkfxsettingprop.getProperty ("BkfxHighlightPnlInfoSettingFile")  + "/";
+//			FileInputStream inputStream = new FileInputStream(propFileName);
+//			if (inputStream != null) 
+//				highlightpnlprop.load(inputStream);
+//			 
+//			inputStream.close();
+//			
+//		} catch (Exception e) {	e.printStackTrace();} finally {}
+//	}
 	
 	private void setupBkfxSettingProperties() 
 	{
@@ -747,12 +747,12 @@ public class BanKuaiFengXi extends JDialog
 	 */
 	protected void unifiedOperationsAfterUserSelectAStock(StockOfBanKuai selectstockofbankuai, Boolean readinfoout) 
 	{
-		//如果用户选择的和上次选择的个股一样，不重复做板块查找
-		Object selecteditem = combxstockcode.getSelectedItem(); 
-		if(selecteditem != null ) {
-			String stockcodeincbx = ((Stock)selecteditem).getMyOwnCode();
-			if(selectstockofbankuai.getMyOwnCode().equals( stockcodeincbx ) )			return;
-		}
+//		//如果用户选择的和上次选择的个股一样，不重复做板块查找
+//		Object selecteditem = combxstockcode.getSelectedItem(); 
+//		if(selecteditem != null ) {
+//			String stockcodeincbx = ((Stock)selecteditem).getMyOwnCode();
+//			if(selectstockofbankuai.getMyOwnCode().equals( stockcodeincbx ) )			return;
+//		}
 		
 			Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
 			setCursor(hourglassCursor);
@@ -1898,7 +1898,7 @@ public class BanKuaiFengXi extends JDialog
 			    		if(lastselecteddate != null)  		lbllastselect.setText(lastselecteddate.toString());
 			    		lastselecteddate = newdate;
 			    		bkhlpnl.setCurrentDisplayDate(lastselecteddate );
-			    		
+			    		pnlsetexportcond.setCurrentDisplayDate(lastselecteddate );
 			    		hourglassCursor = null;
 			    		Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
 						setCursor(hourglassCursor2);
@@ -2948,6 +2948,8 @@ public class BanKuaiFengXi extends JDialog
 	private BanKuaiFengXiCandlestickPnl pnlBanKuaiCandle;
 
 	private JProgressBar progressBarExport;
+
+	private SetExportNodeConditionPnl pnlsetexportcond;
 	
 	private void initializeGuiOf2560Resolution ()
 	{
@@ -3381,8 +3383,10 @@ public class BanKuaiFengXi extends JDialog
 			//high light panel
 			String ggzbtablepropFileName1 =   (new SetupSystemConfiguration()).getSystemInstalledPath() + "/config/" +  bkfxsettingprop.getProperty ("BkfxGeGuTableInfoSettingFile")  + "/";
 			String ggexternaltablepropFileName1 =   (new SetupSystemConfiguration()).getSystemInstalledPath() + "/config/" +  bkfxsettingprop.getProperty ("BkfxGeGuExternalTableInfoSettingFile")  + "/";
-			bkhlpnl = new BkfxHightLightForGeGuPropertyFilePnl (ggzbtablepropFileName1,ggexternaltablepropFileName1,this.bkggmatchcondition);
+			String bkzbtablepropFileName1 =   (new SetupSystemConfiguration()).getSystemInstalledPath() + "/config/" +  bkfxsettingprop.getProperty ("BkfxBanKuaiTableInfoSettingFile")  + "/";
+			bkhlpnl = new BkfxHightLightForGeGuPropertyFilePnl (this.bkggmatchcondition,ggzbtablepropFileName1,ggexternaltablepropFileName1,bkzbtablepropFileName1);
 			bkhlpnl.setCurrentDisplayDate(this.dateChooser.getLocalDate() );
+			
 //			bkhlpnl.setCurrentExportPeriod(this.globeperiod);
 			buttonPane.add(bkhlpnl);
 			
@@ -3390,54 +3394,19 @@ public class BanKuaiFengXi extends JDialog
 
 	            public void propertyChange(PropertyChangeEvent evt) {
 
-	                if (evt.getPropertyName().equals(BkfxHightLightPnl.TIMESHOULDCHANGE_PROPERTY)) {
+	                if (evt.getPropertyName().equals(BkfxHightLightForGeGuPropertyFilePnl.TIMESHOULDCHANGE_PROPERTY)) {
 	                    @SuppressWarnings("unchecked")
 	                    LocalDate newdata = (LocalDate) evt.getNewValue();
 	                    LocalDate curselectdate = dateChooser.getLocalDate();
-	    				if(!curselectdate.equals(newdata) ) 
-	    					dateChooser.setLocalDate(newdata);
+	    				if(!curselectdate.equals(newdata) ) dateChooser.setLocalDate(newdata);
 	                } 
 	             }
 	        });
-			//Export data
-			JLabel btnaddexportcond = JLabelFactory.createButton("",35, 25);
-			btnaddexportcond.setHorizontalAlignment(SwingConstants.LEFT);
-			btnaddexportcond.setToolTipText("<html>\u5BFC\u51FA\u6761\u4EF6\u8BBE\u7F6E(\u659C\u4F53\u9009\u9879\u4E0D\u5728\u5BFC\u51FA\u8303\u56F4\u5185):<br></html>");
-			btnaddexportcond.setIcon(new ImageIcon(BanKuaiFengXi.class.getResource("/images/add-circular-outlined-button.png")));
-			btnaddexportcond.addMouseListener(new MouseAdapter() {
-				@Override
-				public void mouseClicked(MouseEvent arg0) 
-				{
-					if(SwingUtilities.isLeftMouseButton(arg0) ) 
-						initializeExportConditions (btnaddexportcond);
-					else if (SwingUtilities.isRightMouseButton(arg0)) {
-						if( exportcond != null) { 
-							exportcond.clear();
-							
-							btnaddexportcond.setText(String.valueOf(0));
-							btnaddexportcond.setToolTipText("<html>导出条件设置(鼠标右键删除设置)<br></html>");
-						}
-					} else if (SwingUtilities.isMiddleMouseButton(arg0)) {}
-				}
-			});
-			
-			buttonPane.add(btnaddexportcond);
-			
-			progressBarExport = new JProgressBar();
-			progressBarExport.setPreferredSize(new Dimension(85, 25));
-			progressBarExport.addMouseListener(new MouseAdapter() {
-				@Override
-				public void mouseClicked(MouseEvent arg0) {
-					if (exporttask == null)   	exportBanKuaiWithGeGuOnCondition();
-			        else exporttask.cancel(true);
-				}
-			});
-			progressBarExport.setString("点击导出条件个股");
-			progressBarExport.setToolTipText("点击导出条件个股");
-	        progressBarExport.setStringPainted(true);
-			
-	        buttonPane.add(progressBarExport);
-	        
+			//Export data			
+			pnlsetexportcond = new SetExportNodeConditionPnl (this.bkggmatchcondition);
+			pnlsetexportcond.setStockInfoManager(this.stockmanager );
+			buttonPane.add(pnlsetexportcond);
+			//
 			JLabel holdbackgrounddownload = JLabelFactory.createButton("",25, 25);
 			holdbackgrounddownload.setHorizontalAlignment(SwingConstants.LEFT);
 			holdbackgrounddownload.setToolTipText("后台下载数据暂停,点击重启下载。");
@@ -3470,132 +3439,6 @@ public class BanKuaiFengXi extends JDialog
 		
 		reFormatGui ();
 	}
-	/*
-	 * 
-	 */
-	protected void initializeExportConditions (JLabel btnaddexportcond) 
-	{
-		if( exportcond == null)
-			exportcond = new ArrayList<> ();
-		
-		try {
-			BanKuaiAndGeGuMatchingConditions expcCloned =  (BanKuaiAndGeGuMatchingConditions) this.bkggmatchcondition.clone();
-			ExtraExportConditionsPnl extraexportcondition = new ExtraExportConditionsPnl (expcCloned,this.dateChooser.getLocalDate());
-			int extraresult = JOptionPane.showConfirmDialog(null,extraexportcondition , "附加导出条件:", JOptionPane.OK_CANCEL_OPTION);
-			if(extraresult == JOptionPane.OK_OPTION) { //其他导出条件 
-				
-				expcCloned = extraexportcondition.getSettingCondition ();
-				if( expcCloned.shouldExportOnlyCurrentBanKuai() ) {
-//					expcCloned.setSettingBanKuai(exportbk);
-				}
-				exportcond.add(expcCloned);
-				
-				btnaddexportcond.setText(String.valueOf(exportcond.size() ));
-				String tooltips = btnaddexportcond.getToolTipText() + "<html>" + expcCloned.getConditionsDescriptions() + "<br></html>";
-				btnaddexportcond.setToolTipText(tooltips);
-			}
-		} catch (CloneNotSupportedException e) {e.printStackTrace();}
-
-		return;
-	}
-	
-	/*
-	 * 把当前的板块当周符合条件的导出
-	 */
-	private void exportBanKuaiWithGeGuOnCondition ()
-	{
-		if(exportcond == null || exportcond.size() == 0) {	JOptionPane.showMessageDialog(null,"未设置导出条件，请先设置导出条件！");
-			return;
-		}
-
-		String msg =  "导出耗时较长，请先确认条件是否正确。\n是否导出？";
-		int exchangeresult = JOptionPane.showConfirmDialog(null,msg , "确实导出？", JOptionPane.OK_CANCEL_OPTION);
-		if(exchangeresult == JOptionPane.CANCEL_OPTION)			return;
-
-		LocalDate curselectdate = null;
-		if(this.dateChooser.getLocalDate() == null)			curselectdate = LocalDate.now();
-		
-		String dateshowinfilename = null;
-		if(globeperiod == null  || globeperiod.equals(NodeGivenPeriodDataItem.WEEK))
-			dateshowinfilename = "week" + curselectdate.with(DayOfWeek.FRIDAY).toString().replaceAll("-","");
-		else if(globeperiod.equals(NodeGivenPeriodDataItem.DAY))
-			dateshowinfilename = "day" + curselectdate.toString().replaceAll("-","");
-		else if(globeperiod.equals(NodeGivenPeriodDataItem.MONTH))
-			dateshowinfilename = "month" +  curselectdate.withDayOfMonth(curselectdate.lengthOfMonth()).toString().replaceAll("-","");
-		String exportfilename = (new SetupSystemConfiguration()).getTDXModelMatchExportFile () + "TDX模型个股" + dateshowinfilename + ".EBK";
-		File filefmxx = new File( exportfilename );
-		if( !filefmxx.getParentFile().exists() ) {  
-            //如果目标文件所在的目录不存在，则创建父目录  
-            if(!filefmxx.getParentFile().mkdirs()) {   System.out.println("创建目标文件所在目录失败！");  
-                return ;  
-            }  
-        }  
-		
-		try {	if (filefmxx.exists()) {
-					filefmxx.delete();
-					filefmxx.createNewFile();
-				} else filefmxx.createNewFile();
-		} catch (Exception e) {		e.printStackTrace();return ;}
-		
-		if(this.stockmanager != null)	this.stockmanager.setGetNodeDataFromDbWhenSystemIdleThreadStatus(false);
-		if(globeperiod == null) 	globeperiod = NodeGivenPeriodDataItem.WEEK;
-		
-		exporttask = new ExportTask(exportcond, curselectdate,globeperiod,filefmxx);
-		exporttask.addPropertyChangeListener(new PropertyChangeListener() {
-		      @Override
-		      public void propertyChange(final PropertyChangeEvent eventexport) 
-		      {  
-			      	switch (eventexport.getPropertyName()) {
-			        case "progress":
-			        	progressBarExport.setIndeterminate(false);
-			        	progressBarExport.setString("正在导出..." + (Integer) eventexport.getNewValue() + "%(,点击取消导出)");
-			        	progressBarExport.setToolTipText("点击取消导出");
-			          break;
-			        case "state":
-			          switch ((StateValue) eventexport.getNewValue()) {
-			          case DONE:
-//			        	exportCancelAction.putValue(Action.NAME, "导出条件个股");
-			            try {
-			              final int count = exporttask.get();
-			              int exchangeresult = JOptionPane.showConfirmDialog(null, "导出完成，是否打开" + filefmxx.getAbsolutePath() + "查看","导出完成", JOptionPane.OK_CANCEL_OPTION);
-			      		  if(exchangeresult == JOptionPane.CANCEL_OPTION) {
-			      			  progressBarExport.setString(" ");
-			      			  return;
-			      		  }
-			      		  try {
-			      			String path = filefmxx.getAbsolutePath();
-			      			Runtime.getRuntime().exec("explorer.exe /select," + path);
-			      		  } catch (IOException e1) {	e1.printStackTrace();}
-			      		  
-			      		  progressBarExport.setString(" ");
-			      		  stockmanager.setGetNodeDataFromDbWhenSystemIdleThreadStatus(true);
-			      		  System.gc();
-			            } catch (final CancellationException e) {
-			            	try {	exporttask.get();	} catch (InterruptedException | ExecutionException | CancellationException e1) {e1.printStackTrace();	}
-			            	progressBarExport.setIndeterminate(false);
-			            	progressBarExport.setValue(0);
-			            	JOptionPane.showMessageDialog(null, "导出条件个股被终止！", "导出条件个股",JOptionPane.WARNING_MESSAGE);
-			            	progressBarExport.setString("导出设置条件个股");
-			            	stockmanager.setGetNodeDataFromDbWhenSystemIdleThreadStatus(true);
-			            } catch (final Exception e) {  }
-	
-			            exporttask = null;
-			            break;
-			          case STARTED:
-			          case PENDING:
-//			        	  exportCancelAction.putValue(Action.NAME, "取消导出");
-			        	  progressBarExport.setVisible(true);
-			        	  progressBarExport.setIndeterminate(true);
-			            break;
-			          }
-			          break;
-			        }
-			      }
-		    });
-		
-		exporttask.execute();
-	}
-
 	/*
 	 * 
 	 */
@@ -3713,6 +3556,25 @@ public class BanKuaiFengXi extends JDialog
        JSeparator separator = new JSeparator ();
        tableTempGeGu.getTableHeader().getComponentPopupMenu().add(separator,4);
 	}
+	/*
+	 * 
+	 */
+	private void setupPredefinedExportFormula() {
+		String PreSetExportConditionFormulaCount = bkfxsettingprop.getProperty("PreSetExportConditionFormulaCount");
+		if(PreSetExportConditionFormulaCount == null  || Integer.parseInt(PreSetExportConditionFormulaCount) == 0)
+			return ;
+		List<String> formula = new ArrayList<> ();
+		for(int i=0;i<Integer.parseInt(PreSetExportConditionFormulaCount);i++) {
+			String PreSetExportConditionFormula  = bkfxsettingprop.getProperty ("PreSetExportConditionFormula" + String.valueOf(i+1) );
+			if(PreSetExportConditionFormula != null)
+				formula.add(PreSetExportConditionFormula);
+		}
+		if(!formula.isEmpty())
+			this.bkggmatchcondition.setPredefinedExportConditionFormula (formula);
+	}
+	/*
+	 * 
+	 */
 	private void initializeKuaiJieZhishuPnl ()
 	{
 		String zhishunumber  = bkfxsettingprop.getProperty ("kuaijiezhishunumber");

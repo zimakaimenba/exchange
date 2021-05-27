@@ -59,20 +59,19 @@ public class BkfxHightLightForGeGuPropertyFilePnl extends JPanel {
 	private SetupSystemConfiguration sysconfig;
 	private JTextField tfldextramin;
 	private JTextField tfldextramax;
+	private String[] propertiesfile;
 
 	public static final String TIMESHOULDCHANGE_PROPERTY = "timeshouldchange";
 	/**
 	 * Create the panel.
 	 */
-	public BkfxHightLightForGeGuPropertyFilePnl(String mainboardpropertiesfile,String secondboardpropertiesfile, BanKuaiAndGeGuMatchingConditions expc1) 
+	public BkfxHightLightForGeGuPropertyFilePnl(BanKuaiAndGeGuMatchingConditions expc1, String... propertiesfile1) 
 	{
-//		this.mbpropfile = mainboardpropertiesfile;
-//		this.sbpropfile = secondboardpropertiesfile;
 		this.globeexpc = expc1;
 		this.sysconfig = new SetupSystemConfiguration();
+		this.propertiesfile = propertiesfile1;
 		
-		this.mainboardprop = setupBkfxSettingProperties ( mainboardpropertiesfile);
-		this.secondboardprop = setupBkfxSettingProperties ( secondboardpropertiesfile);
+		this.mainboardprop = setupBkfxSettingProperties ( propertiesfile[0]);
 		createMainBorardGui ();
 		createSecondBorardGui ();
 	}
@@ -91,14 +90,11 @@ public class BkfxHightLightForGeGuPropertyFilePnl extends JPanel {
 		
 		return null;
 	}
-	
+	/*
+	 * 
+	 */
 	private void createSecondBorardGui() 
 	{
-		String HightLightSecondBoradItemCount  = this.secondboardprop.getProperty ("columnmaxnumber");
-		int itemCount;
-		if(HightLightSecondBoradItemCount == null)			return ;
-		else	itemCount = Integer.parseInt(HightLightSecondBoradItemCount);
-		
 		JLabel morelabel = new JLabel("¸ü¶à:  " );
 		this.add(morelabel);
 		
@@ -107,20 +103,17 @@ public class BkfxHightLightForGeGuPropertyFilePnl extends JPanel {
 		tfldextramax = new JTextField();
 		tfldextramax.setPreferredSize(new Dimension(30, 25));
 		
+		
 		Vector<JCheckBox> v = new Vector<>();
-		for(int i=0;i<itemCount;i++) {
-			String proptpnl = String.valueOf(i) + "column_background_highlight_tohighlightpnl";
-			String topnl = secondboardprop.getProperty (proptpnl);
-			if(topnl != null && !topnl.equalsIgnoreCase("false"))	createBackGroundComponentsforSecondBoard(v, i);
-			
-			proptpnl = String.valueOf(i) + "column_foreground_highlight_tohighlightpnl";
-			topnl = secondboardprop.getProperty (proptpnl);
-			if(topnl != null && !topnl.equalsIgnoreCase("false"))	createForeGroundComponentsforSecondBoard(v, i);
+		for(int i=1;i<propertiesfile.length;i++) {
+			this.secondboardprop = setupBkfxSettingProperties ( propertiesfile[i]);
+			Vector<JCheckBox> result = createSecondBorardGuiComponents ();
+			v.addAll(result);
 		}
 		
 		JComboCheckBox cbbxmore = new JComboCheckBox(v);
 		cbbxmore.setPreferredSize(new Dimension(120, 25));
-		setupSecondBoardTextfieldValues((JCheckBox) cbbxmore.getSelectedItem());
+//		setupSecondBoardTextfieldValues((JCheckBox) cbbxmore.getSelectedItem());
 		cbbxmore.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
             	SwingUtilities.invokeLater(new Runnable()
@@ -146,6 +139,8 @@ public class BkfxHightLightForGeGuPropertyFilePnl extends JPanel {
 			        {
 			        	JComboCheckBox check = ( JComboCheckBox ) e.getSource();
                     	JCheckBox selectitem = (JCheckBox)check.getSelectedItem();
+                    	tfldextramax.setEnabled(true);tfldextramin.setEditable(true);
+                    	tfldextramax.setText("");tfldextramin.setText("");
                     	setupSecondBoardTextfieldValues (selectitem);
 			        }
 			    });
@@ -155,6 +150,28 @@ public class BkfxHightLightForGeGuPropertyFilePnl extends JPanel {
 		this.add(cbbxmore);
 		this.add(tfldextramin);
 		this.add(tfldextramax);
+		
+	}
+	private Vector<JCheckBox> createSecondBorardGuiComponents() 
+	{
+		String HightLightSecondBoradItemCount  = this.secondboardprop.getProperty ("columnmaxnumber");
+		int itemCount;
+		if(HightLightSecondBoradItemCount == null)			return null ;
+		else	itemCount = Integer.parseInt(HightLightSecondBoradItemCount);
+		
+		Vector<JCheckBox> v = new Vector<>();
+		for(int i=0;i<itemCount;i++) {
+			String proptpnl = String.valueOf(i) + "column_background_highlight_tohighlightpnl";
+			String topnl = secondboardprop.getProperty (proptpnl);
+			if(topnl != null && !topnl.equalsIgnoreCase("false"))	createBackGroundComponentsforSecondBoard(v, i);
+			
+			proptpnl = String.valueOf(i) + "column_foreground_highlight_tohighlightpnl";
+			topnl = secondboardprop.getProperty (proptpnl);
+			if(topnl != null && !topnl.equalsIgnoreCase("false"))	createForeGroundComponentsforSecondBoard(v, i);
+		}
+		
+		return v;
+		
 	}
 	private void createBackGroundComponentsforSecondBoard(Vector<JCheckBox> v, int i)
 	{
@@ -162,8 +179,8 @@ public class BkfxHightLightForGeGuPropertyFilePnl extends JPanel {
 		String keyword = secondboardprop.getProperty (propkw);
 		if(keyword == null)	return;
 		
-		String propname = String.valueOf(i) + "column_background_highlight_info";
-		String name  = secondboardprop.getProperty (propname);
+//		String propname = String.valueOf(i) + "column_background_highlight_info";
+//		String name  = secondboardprop.getProperty (propname);
 		String propcolor = String.valueOf(i) + "column_background_highlight_color";
 		String color = secondboardprop.getProperty (propcolor);
 		
@@ -191,13 +208,14 @@ public class BkfxHightLightForGeGuPropertyFilePnl extends JPanel {
 			ckbxhighlight.setForeground(new Color(0, 0, 0) );
 			ckbxhighlight.setSelected(true);
 			
+			v.add(ckbxhighlight);
+			
 			String propoperator  = String.valueOf(i) + "column_background_highlight_" + ckbkey +  "_operator"; 
 			String operator = secondboardprop.getProperty (propoperator);
-			if(operator == null || operator.equalsIgnoreCase("NONE")) 		continue;
+			if(operator == null || operator.equalsIgnoreCase("NONE") ) 		{refreshHightLightValueBasedOnBoardInput (ckbxhighlight,null,null);	continue;}
 				
 			String prophighvalue = String.valueOf(i) + "column_background_highlight_" + ckbkey +  "_value";
 			String highlightvalue = secondboardprop.getProperty (prophighvalue);
-//			List<String> valuelist = Splitter.on(",").omitEmptyStrings().splitToList(highlightvalue);
 			List<String> valuelist = new ArrayList<>(Splitter.on(",").omitEmptyStrings().splitToList(highlightvalue));
 			ListIterator<String> iter = valuelist.listIterator();
 			while(iter.hasNext()) {
@@ -222,7 +240,6 @@ public class BkfxHightLightForGeGuPropertyFilePnl extends JPanel {
 			String min = null; if(!Strings.isNullOrEmpty(tfldextramin.getText()  ))  {min =tfldextramin.getText() ;tfldextramin.setToolTipText(tfldextramin.getText());}
 			String max = null; if(!Strings.isNullOrEmpty(tfldextramax.getText()  ) ) {max = tfldextramax.getText(); tfldextramax.setToolTipText(tfldextramax.getText());}  
 			refreshHightLightValueBasedOnBoardInput (ckbxhighlight,min,max);
-			v.add(ckbxhighlight);
 		}
 	
 	}
@@ -262,9 +279,11 @@ public class BkfxHightLightForGeGuPropertyFilePnl extends JPanel {
 			ckbxhighlight.setForeground(new Color(0, 0, 0) );
 			ckbxhighlight.setSelected(true);
 			
+			v.add(ckbxhighlight);
+			
 			String propoperator  = String.valueOf(i) + "column_foreground_highlight_" + ckbkey +  "_operator"; 
 			String operator = secondboardprop.getProperty (propoperator);
-			if(operator == null || operator.equalsIgnoreCase("NONE")) 		continue;
+			if(operator == null || operator.equalsIgnoreCase("NONE") ) 	{refreshHightLightValueBasedOnBoardInput (ckbxhighlight,null,null);	continue;}
 				
 			String prophighvalue = String.valueOf(i) + "column_foreground_highlight_" + ckbkey +  "_value";
 			String highlightvalue = secondboardprop.getProperty (prophighvalue);
@@ -294,7 +313,6 @@ public class BkfxHightLightForGeGuPropertyFilePnl extends JPanel {
 			String min = null; if(!Strings.isNullOrEmpty(tfldextramin.getText()  ))  {min = tfldextramin.getText(); tfldextramin.setToolTipText(tfldextramin.getText()); }
 			String max = null; if(!Strings.isNullOrEmpty(tfldextramax.getText()  ) ) {max = tfldextramax.getText(); tfldextramax.setToolTipText(tfldextramax.getText());} 
 			refreshHightLightValueBasedOnBoardInput (ckbxhighlight,min,max);
-			v.add(ckbxhighlight);
 		}
 	}
 	/*
@@ -363,7 +381,7 @@ public class BkfxHightLightForGeGuPropertyFilePnl extends JPanel {
 			
 			String propoperator  = String.valueOf(i) + "column_foreground_highlight_" + ckbkey +  "_operator"; 
 			String operator = mainboardprop.getProperty (propoperator);
-			if(operator == null   || operator.equalsIgnoreCase("NONE"))			continue;
+			if(operator == null   || operator.equalsIgnoreCase("NONE"))	{refreshHightLightValueBasedOnBoardInput (ckbxhighlight,null,null);	continue;}
 				
 			String prophighvalue = String.valueOf(i) + "column_foreground_highlight_" + ckbkey +  "_value";
 			String highlightvalue = mainboardprop.getProperty (prophighvalue);
@@ -449,7 +467,7 @@ public class BkfxHightLightForGeGuPropertyFilePnl extends JPanel {
 			
 			String propoperator  = String.valueOf(i) + "column_background_highlight_" + ckbkey +  "_operator"; 
 			String operator = mainboardprop.getProperty (propoperator);
-			if(operator == null) continue;
+			if(operator == null || operator.equalsIgnoreCase("NONE")) {refreshHightLightValueBasedOnBoardInput (ckbxhighlight,null,null);	continue;};
 			
 			String prophighvalue = String.valueOf(i) + "column_background_highlight_" + ckbkey +  "_value";
 			String highlightvalue = mainboardprop.getProperty (prophighvalue);
@@ -545,14 +563,16 @@ public class BkfxHightLightForGeGuPropertyFilePnl extends JPanel {
 		ckbkey = ckbkey.trim();
 		Color color = Color.WHITE;
 		switch(ckbkey) {
-		case "CjeZbDpMaxWk": 
-			color = new Color(255,0,0) ;
+		case "CjeZbDpMaxWk": color = new Color(255,0,0) ;
 	     	break;
-		case "CjeZbDpMinWk":
-			color = Color.GREEN ;
+		case "CjeZbDpMinWk":	color = Color.GREEN ;
 	     	break;
-		case "AverageChenJiaoErMaxWeek":
-			color = Color.decode("#00FFFF");
+		case "AverageChenJiaoErMaxWeek": color = Color.decode("#00FFFF"); 
+			break;
+		case"ExtremeCjlZhanbi":  color = Color.BLUE;
+			break;
+		case"ExtremeCjeZhanbi":  color = Color.BLUE;
+			break;
 		}
 	 
 		return color;
@@ -648,6 +668,14 @@ public class BkfxHightLightForGeGuPropertyFilePnl extends JPanel {
 			} 
 			this.globeexpc.setSettingStockPriceLevel(pricemin,pricemax);
 			break;
+		case "ExtremeCjlZhanbi":
+			if(ckbxhighlight.isSelected()) globeexpc.setHighlightExtremeCjlZhanbiBenchMark(true);	
+			else  globeexpc.setHighlightExtremeCjlZhanbiBenchMark(false);
+			break;
+		case "ExtremeCjeZhanbi":
+			if(ckbxhighlight.isSelected()) globeexpc.setHighlightExtremeCjeZhanbiBenchMark(true);	
+			else  globeexpc.setHighlightExtremeCjeZhanbiBenchMark(false);
+			break;
 		}
 	}
 	/*
@@ -712,13 +740,15 @@ public class BkfxHightLightForGeGuPropertyFilePnl extends JPanel {
 	
 	private void setupSecondBoardTextfieldValues (JCheckBox ckbxhighlight)
 	{
-		Color bg = ckbxhighlight.getBackground();
-		tfldextramin.setBackground(bg); tfldextramax.setBackground(bg); 
+		try {	Color bg = ckbxhighlight.getBackground();
+			tfldextramin.setBackground(bg); tfldextramax.setBackground(bg);
+		} catch(java.lang.NullPointerException e) {return;}
+		
+		tfldextramin.setEnabled(true);tfldextramax.setEnabled(true);
 		
 		String keyword = ckbxhighlight.getName() ;
 		switch (keyword) {
 		case "GuJiaCLOSE": 
-			tfldextramin.setEnabled(true); tfldextramax.setEnabled(true);
 			if(this.globeexpc.getSettingSotckPriceMax() == null || this.globeexpc.getSettingSotckPriceMax() >100000) 
 					tfldextramax.setText("");
 			else tfldextramax.setText(this.globeexpc.getSettingSotckPriceMax().toString());
@@ -729,7 +759,6 @@ public class BkfxHightLightForGeGuPropertyFilePnl extends JPanel {
 		
 			break;
 		case "ChenJiaoEr":
-			tfldextramin.setEnabled(true);tfldextramax.setEnabled(true);
 			if(this.globeexpc.getSettingChenJiaoErMin() == null) 	tfldextramin.setText("5");
 			else	tfldextramin.setText(this.globeexpc.getSettingChenJiaoErMin().toString());
 			
@@ -737,7 +766,6 @@ public class BkfxHightLightForGeGuPropertyFilePnl extends JPanel {
     		else tfldextramax.setText(this.globeexpc.getSettingChenJiaoErMax().toString());
 			break;
 		case "LastWkDpcjezbGrowingRate" :
-			tfldextramin.setEnabled(true);tfldextramax.setEnabled(true);
 			if(this.globeexpc.getCjezbGrowingRateMin() == null) tfldextramin.setText("");
 			else tfldextramin.setText(this.globeexpc.getCjezbGrowingRateMin().toString());
 			
@@ -745,20 +773,24 @@ public class BkfxHightLightForGeGuPropertyFilePnl extends JPanel {
     		else tfldextramax.setText(this.globeexpc.getCjezbGrowingRateMax().toString());
 			break;
 		case "HuanShouLv":
-			tfldextramin.setEnabled(true);tfldextramax.setEnabled(true);
 			if(this.globeexpc.getSettingHuanShouLvMin() == null) tfldextramin.setText("");
 			else tfldextramin.setText(this.globeexpc.getSettingHuanShouLvMin().toString());
 			if(this.globeexpc.getSettingHuanShouLvMax() == null) tfldextramax.setText("");
 			else tfldextramax.setText(this.globeexpc.getSettingHuanShouLvMax().toString());
 			break;
 		case "LiuTongShiZhi":
-			tfldextramin.setEnabled(true);tfldextramax.setEnabled(true);
 			if(this.globeexpc.getSettingLiuTongShiZhiMin() == null) 	tfldextramin.setText("200");
 			else	tfldextramin.setText(this.globeexpc.getSettingLiuTongShiZhiMin().toString());
 			
     		if(this.globeexpc.getSettingLiuTongShiZhiMax() == null) tfldextramax.setText(" ");
     		else tfldextramax.setText(this.globeexpc.getSettingLiuTongShiZhiMax().toString());
     		break;
+		case "ExtremeCjeZhanbi":
+			tfldextramax.setEnabled(false);tfldextramin.setEditable(false);
+        	tfldextramax.setText("");tfldextramin.setText("");
+		case "ExtremeCjlZhanbi":
+			tfldextramax.setEnabled(false);tfldextramin.setEditable(false);
+        	tfldextramax.setText("");tfldextramin.setText("");
 		}
 	}
 	/*

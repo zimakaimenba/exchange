@@ -7684,8 +7684,7 @@ public class BanKuaiDbOperation
 			List<QueKou> qklist = stockdailyxdate.getPeriodQueKou();
 			
 			qklist = checkQueKouForAGivenPeriod ( stock, requiredstartday, requiredendday,qklist,NodeGivenPeriodDataItem.DAY );
-			try {
-				Collections.sort(qklist, new NodeLocalDateComparator() );
+			try {		Collections.sort(qklist, new NodeLocalDateComparator() );
 			} catch ( java.lang.IllegalArgumentException e) {e.printStackTrace();}
 			stockdailyxdate.setPeriodQueKou(qklist);
 			
@@ -7933,12 +7932,8 @@ class NodeLocalDateComparator implements Comparator<QueKou>
     	LocalDate qk2date = qk2.getQueKouDate();
        
         try{
-        	if(qk1date.isBefore(qk2date))
-        		return -1;
-        	else
-        		return 1;
-        } catch (java.lang.NullPointerException e) {
-        	return -1;
-        }
+        	if(qk1date.isBefore(qk2date))	return -1;
+        	else return 1;
+        } catch (java.lang.NullPointerException e) { return -1;}
     }
 }
