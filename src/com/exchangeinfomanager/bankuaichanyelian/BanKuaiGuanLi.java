@@ -138,12 +138,7 @@ public class BanKuaiGuanLi extends JDialog
 	 */
 	public BanKuaiGuanLi() 
 	{
-//		sysconfig = SystemConfigration.getInstance();
 		this.bkdbopt = new BanKuaiDbOperation ();
-		
-//		this.allbkstks = AllCurrentTdxBKAndStoksTree.getInstance();
-		
-		
 		initializeBaiKuaiOfNoGeGuWithSelfCJLTree ();
 		initializeGui2 ();
 		
@@ -153,7 +148,6 @@ public class BanKuaiGuanLi extends JDialog
 		
 	private BanKuaiDbOperation bkdbopt;
 	private HashMap<String,BanKuai> zhishulist;
-//	private SystemConfigration sysconfig;
 	private BanKuaiAndStockTree treebkonlynoggwithselfcjl;
 	
 	private Border outsidepos = new MatteBorder(1, 0, 1, 0, Color.RED);
@@ -239,20 +233,14 @@ public class BanKuaiGuanLi extends JDialog
 					updateNodeSocialFriend ( (BanKuai)mainnode, (BanKuai)friend, false);
 					tablenoggbk.repaint();
 				}
-				
-				
 			}
-			
 		});
 		
 		menuItemSocialFriendPostiveformiddletable.addActionListener(new ActionListener() {
 			@Override
-
 			public void actionPerformed(ActionEvent evt) {
-				
 				int row = tablenoggbk.getSelectedRow();
-				if(row <0) {
-					JOptionPane.showMessageDialog(null,"请选择一个板块！","Warning",JOptionPane.WARNING_MESSAGE);
+				if(row <0) { JOptionPane.showMessageDialog(null,"请选择一个板块！","Warning",JOptionPane.WARNING_MESSAGE);
 					return;
 				}
 				int  model_row = tablenoggbk.convertRowIndexToModel(row);//将视图中的行索引转化为数据模型中的行索引
@@ -277,10 +265,8 @@ public class BanKuaiGuanLi extends JDialog
 			@Override
 
 			public void actionPerformed(ActionEvent evt) {
-				
 				int row = tableBkfriends.getSelectedRow();
-				if(row <0) {
-					JOptionPane.showMessageDialog(null,"请选择一个板块！","Warning",JOptionPane.WARNING_MESSAGE);
+				if(row <0) {	JOptionPane.showMessageDialog(null,"请选择一个板块！","Warning",JOptionPane.WARNING_MESSAGE);
 					return;
 				}
 				
@@ -410,8 +396,7 @@ public class BanKuaiGuanLi extends JDialog
 	protected void bankuaiSelectedSocialOperations(BanKuai selectnode) 
 	{
 		// TODO Auto-generated method stub
-		if(selectnode.getType() != BkChanYeLianTreeNode.TDXBK) 
-			return;
+		if(selectnode.getType() != BkChanYeLianTreeNode.TDXBK) 	return;
 		
 		Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
 		setCursor(hourglassCursor);
@@ -456,7 +441,6 @@ public class BanKuaiGuanLi extends JDialog
 	}
 
 	private final ButtonGroup buttonGroup = new ButtonGroup();
-	private JButton okButton;
 	private JTreeTable tableSysBk;
 	private final JPanel contentPanel = new JPanel();
 //	private AllCurrentTdxBKAndStoksTree allbkstks;
@@ -512,10 +496,8 @@ public class BanKuaiGuanLi extends JDialog
 	                int rowIndex = rowAtPoint(p);
 	                int colIndex = columnAtPoint(p);
 
-	                try {
-	                    tip = getValueAt(rowIndex, colIndex).toString();
-	                } catch (RuntimeException e1) {
-	                    //catch null pointer exception if mouse is over an empty line
+	                try { tip = getValueAt(rowIndex, colIndex).toString();
+	                } catch (RuntimeException e1) {//catch null pointer exception if mouse is over an empty line
 	                }
 
 	                return tip;
@@ -537,16 +519,12 @@ public class BanKuaiGuanLi extends JDialog
 				        String socialbkcode =  (String) this.getValueAt(row, 0);
 				        BanKuai mainbankuai = tablemodel.getMainBanKuai();
 				        Set<String> socialsetpos = mainbankuai.getSocialFriendsSetPostive();
-				        if(socialsetpos.contains(socialbkcode)) {
-				        		jc.setBorder( highlightpos );
-			        	}
+				        if(socialsetpos.contains(socialbkcode)) jc.setBorder( highlightpos );
+			        	
 				        Set<String> socialsetneg = mainbankuai.getSocialFriendsSetNegtive();
-				        if(socialsetneg.contains(socialbkcode)) {
-				        		jc.setBorder( highlightneg );
-			        	}
+				        if(socialsetneg.contains(socialbkcode)) jc.setBorder( highlightneg );
 
-				        
-						return comp;
+				        return comp;
 				}
 				
 			};
@@ -582,10 +560,8 @@ public class BanKuaiGuanLi extends JDialog
                 int rowIndex = rowAtPoint(p);
                 int colIndex = columnAtPoint(p);
 
-                try {
-                    tip = getValueAt(rowIndex, colIndex).toString();
-                } catch (RuntimeException e1) {
-                    //catch null pointer exception if mouse is over an empty line
+                try {   tip = getValueAt(rowIndex, colIndex).toString();
+                } catch (RuntimeException e1) {//catch null pointer exception if mouse is over an empty line
                 }
 
                 return tip;
@@ -611,18 +587,14 @@ public class BanKuaiGuanLi extends JDialog
 				
 				int rowofsysbk = tableSysBk.getSelectedRow();
 				if(rowofsysbk <0) {
-					
 				} else {
 					String socialbkcode =  node.getMyOwnCode();
 					BanKuai sysbk = (BanKuai) ( tableSysBk.getModel().getValueAt(rowofsysbk, 0) );
 			        Set<String> socialsetpos = sysbk.getSocialFriendsSetPostive();
-			        if(socialsetpos.contains(socialbkcode)) {
-			        		jc.setBorder( highlightpos );
-		        	}
+			        if(socialsetpos.contains(socialbkcode))	jc.setBorder( highlightpos );
+		        	
 			        Set<String> socialsetneg = sysbk.getSocialFriendsSetNegtive();
-			        if(socialsetneg.contains(socialbkcode)) {
-			        		jc.setBorder( highlightneg );
-		        	}				
+			        if(socialsetneg.contains(socialbkcode))	jc.setBorder( highlightneg );
 			    }
 				
 		        return comp;
@@ -660,11 +632,8 @@ public class BanKuaiGuanLi extends JDialog
                 int rowIndex = rowAtPoint(p);
                 int colIndex = columnAtPoint(p);
 
-                try {
-                    tip = getValueAt(rowIndex, colIndex).toString();
-                } catch (RuntimeException e1) {
-                	e1.printStackTrace();
-                }
+                try { tip = getValueAt(rowIndex, colIndex).toString();
+                } catch (RuntimeException e1) {e1.printStackTrace();}
                 return tip;
             } 
 			
@@ -705,10 +674,8 @@ public class BanKuaiGuanLi extends JDialog
 	                int rowIndex = rowAtPoint(p);
 	                int colIndex = columnAtPoint(p);
 
-	                try {
-	                    tip = getValueAt(rowIndex, colIndex).toString();
-	                } catch (RuntimeException e1) {
-	                    //catch null pointer exception if mouse is over an empty line
+	                try {   tip = getValueAt(rowIndex, colIndex).toString();
+	                } catch (RuntimeException e1) {   //catch null pointer exception if mouse is over an empty line
 	                }
 
 	                return tip;
@@ -757,10 +724,8 @@ public class BanKuaiGuanLi extends JDialog
                 int rowIndex = rowAtPoint(p);
                 int colIndex = columnAtPoint(p);
 
-                try {
-                    tip = getValueAt(rowIndex, colIndex).toString();
-                } catch (RuntimeException e1) {
-                    //catch null pointer exception if mouse is over an empty line
+                try { tip = getValueAt(rowIndex, colIndex).toString();
+                } catch (RuntimeException e1) {//catch null pointer exception if mouse is over an empty line
                 }
 
                 return tip;

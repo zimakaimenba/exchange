@@ -187,12 +187,12 @@ public class SvsForNodeOfDZHBanKuai implements ServicesForNode ,ServicesForNodeB
 			boolean showinbkfx,boolean showincyltree, boolean exporttowkfile, boolean importbkgg)
 	{
 		dzhbkdbopt.updateBanKuaiOperationsSettings (node,importdailydata,exporttogephi,showinbkfx,showincyltree,exporttowkfile,importbkgg);
-		((BanKuai)node).setImportdailytradingdata(importdailydata);
-		((BanKuai)node).setExporttogehpi(exporttogephi);
-		((BanKuai)node).setShowinbkfxgui(showinbkfx);
-		((BanKuai)node).setShowincyltree(showincyltree);
-		((BanKuai)node).setExportTowWlyFile(exporttowkfile);
-		((BanKuai)node).setImportBKGeGu(importbkgg);
+		((BanKuai)node).getBanKuaiOperationSetting().setImportdailytradingdata(importdailydata);
+		((BanKuai)node).getBanKuaiOperationSetting().setExporttogehpi(exporttogephi);
+		((BanKuai)node).getBanKuaiOperationSetting().setShowinbkfxgui(showinbkfx);
+		((BanKuai)node).getBanKuaiOperationSetting().setShowincyltree(showincyltree);
+		((BanKuai)node).getBanKuaiOperationSetting().setExportTowWlyFile(exporttowkfile);
+		((BanKuai)node).getBanKuaiOperationSetting().setImportBKGeGu(importbkgg);
 		
 		return node;
 	}

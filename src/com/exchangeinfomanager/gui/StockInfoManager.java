@@ -175,6 +175,7 @@ import javax.swing.table.TableCellRenderer;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Logger;
 import java.beans.PropertyChangeListener;
+import java.io.Console;
 import java.io.File;
 import java.io.IOException;
 import java.lang.Thread.State;
@@ -3046,11 +3047,20 @@ public class StockInfoManager
 					UIManager.setLookAndFeel(MetalLookAndFeel.class.getName());
 					JFrame.setDefaultLookAndFeelDecorated(true);
 					StockInfoManager window = new StockInfoManager();
-//					showOnScreen(2,window.frame);
-					
 					window.frame.setVisible(true);
-//					Toolkit.getDefaultToolkit().beep();
-					SystemAudioPlayed.playSound();
+					
+//					Console console = System.console();
+//			        if(console == null && !GraphicsEnvironment.isHeadless()){
+//			            String filename = Main.class.getProtectionDomain().getCodeSource().getLocation().toString().substring(6);
+//			            Runtime.getRuntime().exec(new String[]{"cmd","/c","start","cmd","/k","java -jar \"" + filename + "\""});
+//			        }else{
+//			        	StockInfoManager.main(new String[0]);
+//			            System.out.println("Program has ended, please type 'exit' to close the console");
+//			        }
+//					CommonUtility.playSound("E:\\stock\\stockmanager\\audio\\Windows Notify Calendar.wav");
+					final Runnable runnable =
+						     (Runnable) Toolkit.getDefaultToolkit().getDesktopProperty("win.sound.exclamation");
+					if (runnable != null) runnable.run();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

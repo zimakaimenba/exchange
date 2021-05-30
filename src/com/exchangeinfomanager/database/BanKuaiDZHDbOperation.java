@@ -61,7 +61,7 @@ public class BanKuaiDZHDbOperation
 			List<BanKuai> dzhbklist = this.getDZHBanKuaiList ();
 			
 			for(BanKuai dzhbk : dzhbklist ) {
-				if(!dzhbk.isImportBKGeGu() )
+				if(!dzhbk.getBanKuaiOperationSetting().isImportBKGeGu() )
 					continue;
 				
 				String dzhbkcode = dzhbk.getMyOwnCode();
@@ -306,12 +306,12 @@ public class BanKuaiDZHDbOperation
 				BanKuai dzhbk = new BanKuai(dzhbkcode,dzhbkname, "DZH");
 //				dzhbk.setSuoShuJiaoYiSuo(rs.getString("指数所属交易所"));
 //				dzhbk.setBanKuaiLeiXing( rs.getString("板块类型描述") );
-				dzhbk.setExporttogehpi(rs.getBoolean("导出Gephi"));
-				dzhbk.setImportdailytradingdata(rs.getBoolean("导入交易数据"));
-				dzhbk.setShowinbkfxgui(rs.getBoolean("板块分析"));
-				dzhbk.setShowincyltree(rs.getBoolean("产业链树"));
-				dzhbk.setExportTowWlyFile(rs.getBoolean("周分析文件"));
-				dzhbk.setImportBKGeGu(rs.getBoolean("导入板块个股"));
+				dzhbk.getBanKuaiOperationSetting().setExporttogehpi(rs.getBoolean("导出Gephi"));
+				dzhbk.getBanKuaiOperationSetting().setImportdailytradingdata(rs.getBoolean("导入交易数据"));
+				dzhbk.getBanKuaiOperationSetting().setShowinbkfxgui(rs.getBoolean("板块分析"));
+				dzhbk.getBanKuaiOperationSetting().setShowincyltree(rs.getBoolean("产业链树"));
+				dzhbk.getBanKuaiOperationSetting().setExportTowWlyFile(rs.getBoolean("周分析文件"));
+				dzhbk.getBanKuaiOperationSetting().setImportBKGeGu(rs.getBoolean("导入板块个股"));
 
 				dzhbkset.add(dzhbk);
 			}

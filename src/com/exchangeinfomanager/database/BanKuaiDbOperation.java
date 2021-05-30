@@ -173,12 +173,12 @@ public class BanKuaiDbOperation
 	        	BanKuai tmpbk = new BanKuai (rs.getString("板块ID"),rs.getString("板块名称"),"TDX" );
 	        	tmpbk.getNodeJiBenMian().setSuoShuJiaoYiSuo(rs.getString("指数所属交易所"));
 	        	tmpbk.setBanKuaiLeiXing( rs.getString("板块类型描述") );
-	        	tmpbk.setImportBKGeGu(rs.getBoolean("导入板块个股"));
-	        	tmpbk.setExporttogehpi(rs.getBoolean("导出Gephi"));
-	        	tmpbk.setImportdailytradingdata(rs.getBoolean("导入交易数据"));
-	        	tmpbk.setShowinbkfxgui(rs.getBoolean("板块分析"));
-	        	tmpbk.setShowincyltree(rs.getBoolean("产业链树"));
-	        	tmpbk.setExportTowWlyFile(rs.getBoolean("周分析文件"));
+	        	tmpbk.getBanKuaiOperationSetting().setImportBKGeGu(rs.getBoolean("导入板块个股"));
+	        	tmpbk.getBanKuaiOperationSetting().setExporttogehpi(rs.getBoolean("导出Gephi"));
+	        	tmpbk.getBanKuaiOperationSetting().setImportdailytradingdata(rs.getBoolean("导入交易数据"));
+	        	tmpbk.getBanKuaiOperationSetting().setShowinbkfxgui(rs.getBoolean("板块分析"));
+	        	tmpbk.getBanKuaiOperationSetting().setShowincyltree(rs.getBoolean("产业链树"));
+	        	tmpbk.getBanKuaiOperationSetting().setExportTowWlyFile(rs.getBoolean("周分析文件"));
 	        	tmpbk.setNodeCjlZhanbiLevel (rs.getDouble("成交量占比下限"), rs.getDouble("成交量占比上限"));
 	        	tmpbk.setNodeCjeZhanbiLevel (rs.getDouble("成交额占比下限"), rs.getDouble("成交额占比上限"));
 	        	
@@ -219,16 +219,11 @@ public class BanKuaiDbOperation
 				String friendcodeleft = rsagu.getString("板块左"); 
 				String friendcoderight = rsagu.getString("板块右");
 				Boolean relationship = rsagu.getBoolean("关系");
-				if(relationship == null)
-					relationship = true;
-				if(!friendcodeleft.equals(bkcode) && relationship )
-					bk.addSocialFriendsPostive(friendcodeleft);
-				if(!friendcoderight.equals(bkcode) && relationship )
-					bk.addSocialFriendsPostive(friendcoderight);
-				if(!friendcodeleft.equals(bkcode) && !relationship )
-					bk.addSocialFriendsNegtive(friendcodeleft);
-				if(!friendcoderight.equals(bkcode) && !relationship )
-					bk.addSocialFriendsNegtive(friendcoderight);	
+				if(relationship == null)					relationship = true;
+				if(!friendcodeleft.equals(bkcode) && relationship )					    bk.addSocialFriendsPostive(friendcodeleft);
+				if(!friendcoderight.equals(bkcode) && relationship )					bk.addSocialFriendsPostive(friendcoderight);
+				if(!friendcodeleft.equals(bkcode) && !relationship )					bk.addSocialFriendsNegtive(friendcodeleft);
+				if(!friendcoderight.equals(bkcode) && !relationship )					bk.addSocialFriendsNegtive(friendcoderight);	
 			}
 		} catch (Exception e) { e.printStackTrace();
 		} finally {
@@ -542,7 +537,7 @@ public class BanKuaiDbOperation
 	   			        	bkcode = rspd.getString("板块ID");
 	   			        
 	   			        	BkChanYeLianTreeNode bankuai = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode(bkcode, BkChanYeLianTreeNode.TDXBK);
-		   			        if( bankuai != null && !((BanKuai)bankuai).isImportBKGeGu()   ) 
+		   			        if( bankuai != null && !((BanKuai)bankuai).getBanKuaiOperationSetting().isImportBKGeGu()   ) 
 		            		   continue;
 	   			    } catch(java.lang.NullPointerException e){ e.printStackTrace();
 	   			    } catch (SQLException e) {e.printStackTrace();
@@ -920,7 +915,7 @@ public class BanKuaiDbOperation
 	   			        	bkcode = rspd.getString("板块ID");
 	   			        
 	   			        	BkChanYeLianTreeNode bankuai = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode(bkcode, BkChanYeLianTreeNode.TDXBK);
-		   			        if( bankuai != null && !((BanKuai)bankuai).isImportBKGeGu()   ) 
+		   			        if( bankuai != null && !((BanKuai)bankuai).getBanKuaiOperationSetting().isImportBKGeGu()   ) 
 		            		   continue;
 	   			    } catch(java.lang.NullPointerException e){ e.printStackTrace();
 	   			    } catch (SQLException e) {e.printStackTrace();
@@ -1125,7 +1120,7 @@ public class BanKuaiDbOperation
 	   			        if(bkcode == null)	hasbkcode = false;
 	   			        else {
 	   			        	BkChanYeLianTreeNode bankuai = treeofbkstk.getSpecificNodeByHypyOrCode(bkcode, BkChanYeLianTreeNode.TDXBK);
-		   			        if( bankuai != null && !((BanKuai)bankuai).isImportBKGeGu()   ) 
+		   			        if( bankuai != null && !((BanKuai)bankuai).getBanKuaiOperationSetting().isImportBKGeGu()   ) 
 		            		   continue;
 	   			        }
 	   			    } catch(java.lang.NullPointerException e){ e.printStackTrace();
@@ -1319,7 +1314,7 @@ public class BanKuaiDbOperation
 				        	bkcode = rspd.getString("板块ID");
 				        
 				        BkChanYeLianTreeNode bankuai = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode(bkcode, BkChanYeLianTreeNode.TDXBK);
-		   			    if( bankuai != null && !((BanKuai)bankuai).isImportBKGeGu()   ) 
+		   			    if( bankuai != null && !((BanKuai)bankuai).getBanKuaiOperationSetting().isImportBKGeGu()   ) 
 		            		   continue;
 				    } catch(java.lang.NullPointerException e){ e.printStackTrace();
 				    } catch (SQLException e) {e.printStackTrace();
@@ -1910,8 +1905,7 @@ public class BanKuaiDbOperation
 		 Collection<BkChanYeLianTreeNode> requiredbk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getRequiredSubSetOfTheNodesByJiaoYiSuo(BkChanYeLianTreeNode.TDXBK,jiaoyisuo);
 		 for(BkChanYeLianTreeNode tmpnode :  requiredbk ) {
 			BanKuai bk = (BanKuai) tmpnode;
-			if(!bk.isImportdailytradingdata())
-				continue;
+			if(!bk.getBanKuaiOperationSetting().isImportdailytradingdata())				continue;
 			
 			String tmpbkcode = bk.getMyOwnCode();
 			File tmpbkfile = null; String bkfilename = null;
@@ -4419,8 +4413,7 @@ public class BanKuaiDbOperation
 			 }
 			 
 			BanKuai bk = (BanKuai) tmpnode;
-			if(!bk.isImportdailytradingdata())
-				continue;
+			if(!bk.getBanKuaiOperationSetting().isImportdailytradingdata())			continue;
 			
 			String tmpbkcode = bk.getMyOwnCode();
 			File tmpbkfile = null; String bkfilename = null;
@@ -6933,7 +6926,7 @@ public class BanKuaiDbOperation
 			Collection<BkChanYeLianTreeNode> requiredbk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getRequiredSubSetOfTheNodesByJiaoYiSuo(BkChanYeLianTreeNode.TDXBK,"SH");
 			for( BkChanYeLianTreeNode tmpnode: requiredbk ) {
 				BanKuai bk = (BanKuai) tmpnode;
-				if(!bk.isImportdailytradingdata()) //这样可以判断哪些板块无需导入每日数据
+				if(!bk.getBanKuaiOperationSetting().isImportdailytradingdata()) //这样可以判断哪些板块无需导入每日数据
 					continue;
 				
 				int bkjiaoyirishumu = 0;
@@ -6969,7 +6962,7 @@ public class BanKuaiDbOperation
 			for(BkChanYeLianTreeNode tmpnode:  requiredszbk ) {
 				BanKuai bk = (BanKuai) tmpnode;
 
-				if(!bk.isImportdailytradingdata()) //这样可以判断哪些板块无需导入每日数据
+				if(!bk.getBanKuaiOperationSetting().isImportdailytradingdata()) //这样可以判断哪些板块无需导入每日数据
 					continue;
 				
 				int bkjiaoyirishumu = 0;
@@ -7684,7 +7677,7 @@ public class BanKuaiDbOperation
 			List<QueKou> qklist = stockdailyxdate.getPeriodQueKou();
 			
 			qklist = checkQueKouForAGivenPeriod ( stock, requiredstartday, requiredendday,qklist,NodeGivenPeriodDataItem.DAY );
-			try {		Collections.sort(qklist, new NodeLocalDateComparator() );
+			try {	Collections.sort(qklist, new NodeLocalDateComparator() );
 			} catch ( java.lang.IllegalArgumentException e) {e.printStackTrace();}
 			stockdailyxdate.setPeriodQueKou(qklist);
 			
@@ -7781,10 +7774,8 @@ public class BanKuaiDbOperation
 				} catch(Exception e){e.printStackTrace();
 				} finally {}
 				
-				if(relationship)
-					friendsetpostive.add(friendcode );
-				else
-					friendsetnegtive.add(friendcode );
+				if(relationship)					friendsetpostive.add(friendcode );
+				else					friendsetnegtive.add(friendcode );
 			}
 			
 			return null;
@@ -7935,5 +7926,6 @@ class NodeLocalDateComparator implements Comparator<QueKou>
         	if(qk1date.isBefore(qk2date))	return -1;
         	else return 1;
         } catch (java.lang.NullPointerException e) { return -1;}
+    	  catch (java.lang.Exception e) { return -1;}
     }
 }

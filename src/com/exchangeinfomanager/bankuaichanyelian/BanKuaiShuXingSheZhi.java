@@ -68,12 +68,12 @@ public class BanKuaiShuXingSheZhi extends JPanel
 	
 	private void initializeGuiValue()
 	{
-		cbxnotimport.setSelected( ! ((BanKuai)settingnode).isImportdailytradingdata() );
-		cbxnotgephi.setSelected( ! ((BanKuai)settingnode).isExporttogehpi() );
-		cbxnotbkfx.setSelected( ! ((BanKuai)settingnode).isShowinbkfxgui() );
-		cbxnotshowincyltree.setSelected( ! ((BanKuai)settingnode).isShowincyltree() );
-		chkbxnotexportwklyfile.setSelected( ! ((BanKuai)settingnode).isExportTowWlyFile() );
-		chbxnotimportgegu.setSelected( ! ((BanKuai)settingnode).isImportBKGeGu() );
+		cbxnotimport.setSelected( ! ((BanKuai)settingnode).getBanKuaiOperationSetting().isImportdailytradingdata() );
+		cbxnotgephi.setSelected( ! ((BanKuai)settingnode).getBanKuaiOperationSetting().isExporttogehpi() );
+		cbxnotbkfx.setSelected( ! ((BanKuai)settingnode).getBanKuaiOperationSetting().isShowinbkfxgui() );
+		cbxnotshowincyltree.setSelected( ! ((BanKuai)settingnode).getBanKuaiOperationSetting().isShowincyltree() );
+		chkbxnotexportwklyfile.setSelected( ! ((BanKuai)settingnode).getBanKuaiOperationSetting().isExportTowWlyFile() );
+		chbxnotimportgegu.setSelected( ! ((BanKuai)settingnode).getBanKuaiOperationSetting().isImportBKGeGu() );
 		
 		if( ((BanKuai)settingnode).getBanKuaiLeiXing().equals(BanKuai.NOGGNOSELFCJL)) { //没有个股没有成交量的板块肯定不做板块分析等动作
 			cbxnotimport.setSelected(true);

@@ -19,8 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutionException;
+
 import java.util.stream.Collectors;
 
 import javax.swing.JButton;
@@ -29,7 +28,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JProgressBar;
 import javax.swing.border.EmptyBorder;
-import javax.swing.tree.DefaultTreeModel;
+
 
 import javax.swing.tree.TreePath;
 
@@ -82,8 +81,7 @@ import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBa
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiNodeCombinedCategoryPnl;
 import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiAndGeGuMatchingConditions;
 import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BkfxHightLightForGeGuPropertyFilePnl;
-import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.ExportTask;
-import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.ExtraExportConditionsPnl;
+
 import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.SetExportNodeConditionPnl;
 import com.exchangeinfomanager.bankuaifengxi.PieChart.BanKuaiFengXiPieChartCjePnl;
 
@@ -95,12 +93,12 @@ import com.exchangeinfomanager.bankuaifengxi.bankuaigegutable.BanKuaiGeGuBasicTa
 import com.exchangeinfomanager.bankuaifengxi.bankuaigegutable.BanKuaiGeGuExternalInfoTableFromPropertiesFile;
 import com.exchangeinfomanager.bankuaifengxi.bankuaiinfotable.BanKuaiInfoTable;
 import com.exchangeinfomanager.bankuaifengxi.bankuaiinfotable.BanKuaiInfoTableModel;
-import com.exchangeinfomanager.bankuaifengxi.xmlhandlerforbkfx.ServicesForBkfxEbkOutPutFileDirectRead;
+
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.commonlib.ParseBanKuaiWeeklyFielGetStocksProcessor;
 import com.exchangeinfomanager.commonlib.ReminderPopToolTip;
 import com.exchangeinfomanager.commonlib.ScrollUtil;
-import com.exchangeinfomanager.commonlib.SystemAudioPlayed;
+
 
 import com.exchangeinfomanager.commonlib.jstockcombobox.JStockComboBox;
 import com.exchangeinfomanager.commonlib.jstockcombobox.JStockComboBoxModel;
@@ -142,7 +140,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
 import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.SwingWorker.StateValue;
+
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 
@@ -152,7 +150,7 @@ import javax.swing.JComponent;
 
 import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.io.FileFilter;
+
 import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -171,7 +169,8 @@ import java.beans.PropertyChangeEvent;
 import java.awt.event.MouseAdapter;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
-
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.plaf.metal.MetalScrollBarUI;
 
 import javax.swing.UIManager;
@@ -181,6 +180,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JFileChooser;
 import javax.swing.JTabbedPane;
+
+import javax.swing.JViewport;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
@@ -196,9 +197,6 @@ import com.exchangeinfomanager.bankuaifengxi.BankuaiAndGeguTableBasic.BandKuaiAn
 
 
 import java.awt.Graphics;
-import java.awt.Point;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import javax.swing.BoxLayout;
 import java.awt.FlowLayout;
 
@@ -222,7 +220,6 @@ public class BanKuaiFengXi extends JDialog
 		this.nodeinfotocsv = new NodeInfoToCsv ();
 		this.bkfxremind = new BanKuaiFengXiRemindXmlHandler ();
 		this.bkggmatchcondition = new BanKuaiAndGeGuMatchingConditions ();
-		this.exportcond = new ArrayList<>();
 		this.globecalwholeweek = true; //计算整周
 		
 		setupBkfxSettingProperties ();
@@ -251,11 +248,7 @@ public class BanKuaiFengXi extends JDialog
 	private StockInfoManager stockmanager;
 	
 	private BanKuaiAndGeGuMatchingConditions bkggmatchcondition;
-	private List<BanKuaiAndGeGuMatchingConditions> exportcond;
-	private ExportTask exporttask;
-	
 	private VoiceEngine readengine;
-	
 	private NodeInfoToCsv nodeinfotocsv;
 
 	private Set<BarChartPanelHightLightColumnListener> chartpanelhighlightlisteners;
@@ -418,8 +411,10 @@ public class BanKuaiFengXi extends JDialog
 			((BanKuaiGeGuBasicTableModel)this.tableTempGeGu.getModel()).refresh((BanKuai)tmpbk, curselectdate, globeperiod);
 		}
 		
-		curselectdate = null;
-		SystemAudioPlayed.playSound();
+//		curselectdate = null;
+//		SystemAudioPlayed.playSound();
+		playAnaylsisFinishNoticeSound();
+		
 	}
 	/*
 	 * 
@@ -439,7 +434,7 @@ public class BanKuaiFengXi extends JDialog
 			if(childnode.getType() != BkChanYeLianTreeNode.TDXBK) 
 				continue;
 			
-			if( !((BanKuai)childnode).isShowinbkfxgui() )
+			if( !((BanKuai)childnode).getBanKuaiOperationSetting().isShowinbkfxgui() )
 				continue;
 			
 			if( ((BanKuai)childnode).getBanKuaiLeiXing().equals(BanKuai.HASGGNOSELFCJL) 
@@ -454,6 +449,7 @@ public class BanKuaiFengXi extends JDialog
 				bkwithcje.add( (BanKuai)childnode );
 		}
 		
+		svsbk = null;
 		return bkwithcje;
 	}
 	/*
@@ -471,7 +467,7 @@ public class BanKuaiFengXi extends JDialog
 			if(childnode.getType() != BkChanYeLianTreeNode.DZHBK) 
 				continue;
 			
-			if( !((BanKuai)childnode).isShowinbkfxgui() )
+			if( !((BanKuai)childnode).getBanKuaiOperationSetting().isShowinbkfxgui() )
 				continue;
 			
 			if( ((BanKuai)childnode).getBanKuaiLeiXing().equals(BanKuai.HASGGNOSELFCJL) 
@@ -737,7 +733,8 @@ public class BanKuaiFengXi extends JDialog
 			}
 		} 
 		
-		SystemAudioPlayed.playSound();
+		playAnaylsisFinishNoticeSound();
+//		SystemAudioPlayed.playSound();
 	}
 
 	/**
@@ -922,6 +919,7 @@ public class BanKuaiFengXi extends JDialog
 //		tfldparsedfile.setText("");
 		
 		pnlStockCandle.resetDate();
+		pnlBanKuaiCandle.resetDate();
 	}
 	private void clearTheGuiBeforDisplayNewInfoSection2 ()
 	{
@@ -1041,7 +1039,8 @@ public class BanKuaiFengXi extends JDialog
     					Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
     					setCursor(hourglassCursor2);
     					
-    					SystemAudioPlayed.playSound();
+    					playAnaylsisFinishNoticeSound();
+//    					SystemAudioPlayed.playSound();
             	}
             }
 		});
@@ -1569,10 +1568,8 @@ public class BanKuaiFengXi extends JDialog
         });
 
 		tabbedPanegegu.addMouseListener(new MouseAdapter() {
-
             @Override
             public void mouseClicked(MouseEvent e) {
-
                 if (e.getButton() == MouseEvent.BUTTON1) {
 //                    pane.setSelectedComponent(panel);
                 } else if (e.getButton() == MouseEvent.BUTTON3) {
@@ -1582,13 +1579,21 @@ public class BanKuaiFengXi extends JDialog
 //                    menuItemzongshizhi.setEnabled(false);
 //                    jPopupMenu.add(menuItemliutong);
 //                    jPopupMenu.add(menuItemchengjiaoer);
-                    
-                   
                 	jPopupMenuoftabbedpane.show(tabbedPanegegu, e.getX(),   e.getY());
                 }
             }
-
         });
+		tabbedPanegegu.addChangeListener(new ChangeListener() {
+	        public void stateChanged(ChangeEvent e) {
+	            int i = tabbedPanegegu.getSelectedIndex();
+	            Component sclp = tabbedPanegegu.getComponentAt (i);
+	            JViewport viewport = ((JScrollPane)sclp).getViewport(); 
+	            BanKuaiGeGuBasicTable tblgg = (BanKuaiGeGuBasicTable)viewport.getView(); 
+	            LocalDate selectdate = ((BandKuaiAndGeGuTableBasicModel)tblgg.getModel()).getCurDisplayedDate();
+	            if(selectdate != null && !CommonUtility.isInSameWeek(selectdate,dateChooser.getLocalDate() ) )
+	            	chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(selectdate));
+	        }
+	    });
 		
 		
 		cyltreecopy.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -1630,8 +1635,9 @@ public class BanKuaiFengXi extends JDialog
     				hourglassCursor = null;
     				Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
         			setCursor(hourglassCursor2);
-
-    				SystemAudioPlayed.playSound();
+        			
+        			playAnaylsisFinishNoticeSound();
+//    				SystemAudioPlayed.playSound();
     	    	}
     	        
             }
@@ -1658,10 +1664,7 @@ public class BanKuaiFengXi extends JDialog
 			public void propertyChange(PropertyChangeEvent evt) 
 			{
 				int rowbk = tableBkZhanBi.getSelectedRow();
-				if(rowbk <0) 
-					return;
-				
-				String nodecode = evt.getOldValue().toString();
+				if(rowbk <0) 	return;
 				
 				Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
 				setCursor(hourglassCursor);
@@ -1673,17 +1676,15 @@ public class BanKuaiFengXi extends JDialog
                     @SuppressWarnings("unchecked")
                     String selectedinfo = evt.getNewValue().toString();
                     refreshAfterUserSelectBanKuaiColumn (bkcur,selectedinfo);
-                    
                 } else if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.MOUSEDOUBLECLICK_PROPERTY)) {
                 	String key = evt.getNewValue().toString();
-                	List<String> tmpbkinfo = Splitter.on(",").omitEmptyStrings().splitToList(key); //内蒙板块|880232|3|1|0|32
-                	try{
-                		displayNodeLargerPeriodData (bkcur,LocalDate.parse(tmpbkinfo.get(1)),tmpbkinfo.get(0));
+                	List<String> tmpbkinfo = Splitter.on(",").omitEmptyStrings().splitToList(key); 
+                	try{  displayNodeLargerPeriodData (bkcur, LocalDate.parse(tmpbkinfo.get(1)), tmpbkinfo.get(0));
                 	} catch (java.time.format.DateTimeParseException e) { displayNodeLargerPeriodData (bkcur,null,tmpbkinfo.get(0)); }
                 }
                 
-                SystemAudioPlayed.playSound();
-                
+                playAnaylsisFinishNoticeSound();
+               
                 hourglassCursor = null;
 				Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
 				setCursor(hourglassCursor2);
@@ -2107,7 +2108,8 @@ public class BanKuaiFengXi extends JDialog
 				Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
 				setCursor(hourglassCursor2);
 //				Toolkit.getDefaultToolkit().beep();
-				SystemAudioPlayed.playSound();
+//				SystemAudioPlayed.playSound();
+				playAnaylsisFinishNoticeSound();
 
 			}
 		});
@@ -2132,7 +2134,8 @@ public class BanKuaiFengXi extends JDialog
 				Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
 				setCursor(hourglassCursor2);
 //				Toolkit.getDefaultToolkit().beep();
-				SystemAudioPlayed.playSound();
+//				SystemAudioPlayed.playSound();
+				playAnaylsisFinishNoticeSound();
 
 			}
 		});
@@ -2376,7 +2379,8 @@ public class BanKuaiFengXi extends JDialog
 		Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
 		setCursor(hourglassCursor2);
 
-		SystemAudioPlayed.playSound();
+//		SystemAudioPlayed.playSound();
+		playAnaylsisFinishNoticeSound();
 	}
 	
 	
@@ -2392,23 +2396,15 @@ public class BanKuaiFengXi extends JDialog
 		
 		String filename;
 		if(chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-			if(chooser.getSelectedFile().isDirectory())
-		    	filename = (chooser.getSelectedFile()+ "\\").replace('\\', '/');
-		    else
-		    	filename = (chooser.getSelectedFile()).toString().replace('\\', '/');
-		} else
-			return;
+			if(chooser.getSelectedFile().isDirectory())    	filename = (chooser.getSelectedFile()+ "\\").replace('\\', '/');
+		    else  filename = (chooser.getSelectedFile()).toString().replace('\\', '/');
+		} else	return;
 		
 		File fileebk = null;
 		if(filename.endsWith("EBK")) {
 			fileebk = new File( filename );
-			try {
-					if (!fileebk.exists()) 
-						return ;
-			} catch (Exception e) {
-					e.printStackTrace();
-					return ;
-			}
+			try {	if (!fileebk.exists()) 	return ;
+			} catch (Exception e) {	e.printStackTrace();	return ;	}
 		}
 		
 		List<String> readparsefileLines = null;
@@ -2419,44 +2415,8 @@ public class BanKuaiFengXi extends JDialog
 		}
 		
 		parseTempGeGeFromList (readparsefileLines);
-//		LocalDate curselectdate = null;
-//		try{
-//			curselectdate = dateChooser.getLocalDate();// dateChooser.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-//		} catch (java.lang.NullPointerException e) {
-//			JOptionPane.showMessageDialog(null,"日期有误!","Warning",JOptionPane.WARNING_MESSAGE);
-//			return;
-//		}
-//		
-//		BanKuai tempbankuai = new BanKuai ("TEMPBANKUAI","TEMPBANKUAI");
-//		SvsForNodeOfStock svstock = new SvsForNodeOfStock ();
-//		for(String tmpgegu : readparsefileLines) {
-//			Stock tmpstock = (Stock) treeofbkstk.getSpecificNodeByHypyOrCode(tmpgegu, BkChanYeLianTreeNode.TDXGG);
-//			try {
-//				tmpstock = (Stock) svstock.getNodeData( tmpstock , CommonUtility.getSettingRangeDate(curselectdate,"middle"), curselectdate,
-//						globeperiod,this.globecalwholeweek);
-//				svstock.syncNodeData(tmpstock);
-//			} catch (java.lang.NullPointerException e) {
-//				logger.info(tmpgegu + "数据有误！");
-//				e.printStackTrace();
-//			}
-//
-//			StockOfBanKuai bkofst = new StockOfBanKuai(tempbankuai,tmpstock);
-//			LocalDate joindate = LocalDate.parse("1997-01-01");
-//			LocalDate leftdate = LocalDate.parse("3000-01-01");
-//			DateTime joindt= new DateTime(joindate.getYear(), joindate.getMonthValue(), joindate.getDayOfMonth(), 0, 0, 0, 0);
-//			DateTime leftdt = new DateTime(leftdate.getYear(), leftdate.getMonthValue(), leftdate.getDayOfMonth(), 0, 0, 0, 0);
-//			Interval joinleftinterval = new Interval(joindt, leftdt);
-//			bkofst.addInAndOutBanKuaiInterval(joinleftinterval);
-//			
-//			tempbankuai.addNewBanKuaiGeGu(bkofst);
-//		}
-//		
-//		setExportMainConditionBasedOnUserSelection (bkggmatchcondition);
-//		((BanKuaiGeGuTableModel)tableTempGeGu.getModel()).refresh(tempbankuai, curselectdate,globeperiod);
 		
 		tabbedPanegegu.setToolTipTextAt(6,filename);
-		
-//		svstock = null;
 	}
 	/*
 	 * 
@@ -2631,7 +2591,6 @@ public class BanKuaiFengXi extends JDialog
 			}
 		}
 	}
-	
 	/*
 	 * 
 	 */
@@ -2648,7 +2607,6 @@ public class BanKuaiFengXi extends JDialog
 		hourglassCursor = null;
 		Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
 		setCursor(hourglassCursor2);
-//		
 	}
 	/*
 	 * 
@@ -2783,10 +2741,8 @@ public class BanKuaiFengXi extends JDialog
 					largeinfo = new BanKuaiFengXiLargePnl ( treeroot , node, requirestartd, requireend, globeperiod,guitype,this.bkfxsettingprop);
 				}
 				
-				if(datekey != null)
-					largeinfo.highLightSpecificBarColumn(datekey);
-				else
-					largeinfo.highLightSpecificBarColumn(curselectdate);
+				if(datekey != null)	largeinfo.highLightSpecificBarColumn(datekey);
+				else	largeinfo.highLightSpecificBarColumn(curselectdate);
 				
 				largeinfo.nodecombinedpnl.setProperties(this.bkfxsettingprop);
 				JOptionPane.showMessageDialog(null, largeinfo, node.getMyOwnCode()+node.getMyOwnName()+ "大周期分析结果", JOptionPane.OK_CANCEL_OPTION);
@@ -2794,32 +2750,6 @@ public class BanKuaiFengXi extends JDialog
 				largeinfo = null;
 				System.gc();
 	}
-	/*
-	 * 每周都要导出的条件在这里设置，一次设置节约时间
-	 */
-	
-//	protected void initializeNormalExportConditions()
-//	{
-//		if( exportcond == null)
-//			exportcond = new ArrayList<ExportCondition> ();
-//		else
-//			exportcond.clear();
-//		
-//		ExportCondition expc1 = new ExportCondition ("5.8",null,"4",null,null,null);
-//		exportcond.add(expc1);
-//
-//		ExportCondition expc2 = new ExportCondition ("5.8","7",null,"5",null,null);
-//		exportcond.add(expc2);
-//		
-//		ExportCondition expc3 = new ExportCondition ("2.8",null,"4",null,"30","880529");
-//		exportcond.add(expc3);
-//		
-//		btnaddexportcond.setToolTipText("");
-//		decrorateExportButton (expc1);
-//		decrorateExportButton (expc2);
-//		decrorateExportButton (expc3);
-//	}
-	
 	/*
 	 * 跑马灯
 	 */
@@ -2842,8 +2772,7 @@ public class BanKuaiFengXi extends JDialog
 	        }
 		}
 		
-		if(!displayinfo.isEmpty())
-			pnl_paomd.refreshMessage(displayinfo);
+		if(!displayinfo.isEmpty())	pnl_paomd.refreshMessage(displayinfo);
 	}
 	/*
 	 * 在本周各個股票占比的餅圖顯示選中的股票
@@ -3571,6 +3500,17 @@ public class BanKuaiFengXi extends JDialog
 		}
 		if(!formula.isEmpty())
 			this.bkggmatchcondition.setPredefinedExportConditionFormula (formula);
+	}
+	/*
+	 * 
+	 */
+	private void playAnaylsisFinishNoticeSound ()
+	{
+		String prop_analysisfinishnoticesoundfile = bkfxsettingprop.getProperty("analysisfinishnoticesoundfile");
+		if(prop_analysisfinishnoticesoundfile == null) return;
+		
+		String analysisfinishnoticesoundfile = (new SetupSystemConfiguration()).getSystemInstalledPath() + "\\audio\\" + prop_analysisfinishnoticesoundfile;
+		CommonUtility.playSound(analysisfinishnoticesoundfile);
 	}
 	/*
 	 * 

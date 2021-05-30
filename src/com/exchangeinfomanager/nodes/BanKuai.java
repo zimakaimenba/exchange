@@ -45,7 +45,9 @@ public class BanKuai extends TDXNodes
 	private static final long serialVersionUID = 1L;
 	
 	public static String  HASGGWITHSELFCJL = "HASGGWITHSELFCJL" , HASGGNOSELFCJL = "HASGGNOSELFCJL"
-						, NOGGWITHSELFCJL = "NOGGWITHSELFCJL" , NOGGNOSELFCJL = "NOGGNOSELFCJL"; 
+						, NOGGWITHSELFCJL = "NOGGWITHSELFCJL" , NOGGNOSELFCJL = "NOGGNOSELFCJL";
+
+	private BanKuaiOperationSetting bkoptsetting; 
 	
 	public BanKuai(String bkcode,String name ) 
 	{
@@ -56,6 +58,8 @@ public class BanKuai extends TDXNodes
 		super.nodedaydata = new BanKuaiXPeriodDataForJFC (bkcode,NodeGivenPeriodDataItem.DAY) ;
 
 		super.nodetreerelated = new BanKuaiTreeRelated (this);
+		
+		bkoptsetting = new BanKuaiOperationSetting ();
 	}
 	
 	public BanKuai(String bkcode,String name,String vendor) 
@@ -72,23 +76,33 @@ public class BanKuai extends TDXNodes
 		super.nodedaydata = new BanKuaiXPeriodDataForJFC (bkcode,NodeGivenPeriodDataItem.DAY) ;
 
 		super.nodetreerelated = new BanKuaiTreeRelated (this);
+		
+		bkoptsetting = new BanKuaiOperationSetting ();
 	}
 	
 //	private static Logger logger = Logger.getLogger(BanKuai.class);
-//	private HashMap<String, Stock> allbkge;
-	private String bankuaileixing; // 通达信里面定义的板块有几种：1.有个股自身有成交量数据 2. 有个股自身无成交量数据 3.无个股自身有成交量数据 
-	private Boolean exporttogehpi = true;
-	private Boolean importdailytradingdata = true;
-	private Boolean showinbkfxgui = true;
-	private Boolean showincyltree = true;
-	private Boolean exporttowklyfile ;
+
+	private String bankuaileixing; // 通达信里面定义的板块有几种：1.有个股自身有成交量数据 2. 有个股自身无成交量数据 3.无个股自身有成交量数据
+	
+//	private Boolean exporttogehpi = true;
+//	private Boolean importdailytradingdata = true;
+//	private Boolean showinbkfxgui = true;
+//	private Boolean showincyltree = true;
+//	private Boolean exporttowklyfile ;
+//	private Boolean importbkgegu;
+	
 	private List<BkChanYeLianTreeNode> stockofbklist; //存放所有的个股
+	
 	private Set<String> socialfriendspos;
 	private Set<String> socialfriendsneg;
-	private Interval bkgegusearchtimerange;
-	private String bkvendor; // dazhihui, tondaxin;
-	private Boolean importbkgegu;
 	
+	private Interval bkgegusearchtimerange;
+	
+	private String bkvendor; // dazhihui, tondaxin;
+	
+	public BanKuaiOperationSetting getBanKuaiOperationSetting ()	{
+		return bkoptsetting;
+	}
 	public void setBanKuaiVendor (String vendor)
 	{
 		this.bkvendor = vendor;
@@ -96,19 +110,13 @@ public class BanKuai extends TDXNodes
 	public String getBanKuaiVendor ()
 	{
 		if(this.bkvendor == null) {
-			if(this.getMyOwnCode().startsWith("99"))
-				return "DZH";
-			else
-				return "TDX";
-
-		} else
-			return this.bkvendor;
+			if(this.getMyOwnCode().startsWith("99")) return "DZH";
+			else return "TDX";
+		} else	return this.bkvendor;
 	}
 	public void addSocialFriendsPostive (String friend)
 	{
-		if(socialfriendspos == null)
-			socialfriendspos = new HashSet<String> ();
-		
+		if(socialfriendspos == null)	socialfriendspos = new HashSet<String> ();
 		socialfriendspos.add(friend);
 	}
 	public Set<String> getSocialFriendsSetPostive ()
@@ -120,86 +128,79 @@ public class BanKuai extends TDXNodes
 	}
 	public void addSocialFriendsNegtive (String friend)
 	{
-		if(socialfriendsneg == null)
-			socialfriendsneg = new HashSet<String> ();
-		
+		if(socialfriendsneg == null)	socialfriendsneg = new HashSet<String> ();
 		socialfriendsneg.add(friend);
 	}
-	public Set<String> getSocialFriendsSetNegtive ()
-	{
-		if(this.socialfriendsneg == null)
-			this.socialfriendsneg = new HashSet<String> ();
-		
+	public Set<String> getSocialFriendsSetNegtive ()	{
+		if(this.socialfriendsneg == null)	this.socialfriendsneg = new HashSet<String> ();
 		return this.socialfriendsneg;
 	}
-	public  Boolean isExportTowWlyFile ()
-	{
-		if(exporttowklyfile == null)
-			return true;
-		else
-			return this.exporttowklyfile;
-	}
-	public void setExportTowWlyFile (Boolean exporttofile)
-	{
-		if(exporttofile != null)
-			this.exporttowklyfile = exporttofile;
-	}
-	
-	public Boolean isShowincyltree () {
-		if(this.showincyltree != null)
-			return this.showincyltree;
-		else
-			return true;
-	}
-	public void setShowincyltree (Boolean showincyltree) {
-		if(showincyltree != null)
-			this.showincyltree = showincyltree;
-	}
-	public boolean isExporttogehpi() {
-		if(exporttogehpi != null)
-			return exporttogehpi;
-		else
-			return true;
-	}
-	/*
-	 * 设置是否导出数据到Gephi
-	 */
-	public void setExporttogehpi(Boolean exporttogehpi) {
-		if(exporttogehpi != null)
-			this.exporttogehpi = exporttogehpi;
-	}
-	/*
-	 * 设置是否要每天导入交易数据，设置为false的则在每天导入数据的时候跳过
-	 */
-	public boolean isImportdailytradingdata() {
-		if(importdailytradingdata != null)
-			return importdailytradingdata;
-		else
-			return true;
-	}
-	/*
-	 * 设置是否导入每日交易数据
-	 */
-	public void setImportdailytradingdata(Boolean importdailytradingdata) {
-		if(importdailytradingdata != null)
-			this.importdailytradingdata = importdailytradingdata;
-	}
-	/*
-	 * 
-	 */
-	public boolean isShowinbkfxgui() {
-		if(showinbkfxgui != null)
-			return showinbkfxgui;
-		else
-			return true;
-	}
-	/*
-	 * 设置是否显示在板块分析窗口
-	 */
-	public void setShowinbkfxgui(Boolean showinbkfxgui) {
-		if(showinbkfxgui != null)
-			this.showinbkfxgui = showinbkfxgui;
-	}
+//	public  Boolean isExportTowWlyFile ()	{
+//		if(exporttowklyfile == null)	return true;
+//		else	return this.exporttowklyfile;
+//	}
+//	public void setExportTowWlyFile (Boolean exporttofile)
+//	{
+//		if(exporttofile != null)	this.exporttowklyfile = exporttofile;
+//	}
+//	
+//	public Boolean isShowincyltree () {
+//		if(this.showincyltree != null)	return this.showincyltree;
+//		else	return true;
+//	}
+//	public void setShowincyltree (Boolean showincyltree) {
+//		if(showincyltree != null)	this.showincyltree = showincyltree;
+//	}
+//	public boolean isExporttogehpi() {
+//		if(exporttogehpi != null)	return exporttogehpi;
+//		else	return true;
+//	}
+//	/*
+//	 * 设置是否导出数据到Gephi
+//	 */
+//	public void setExporttogehpi(Boolean exporttogehpi) {
+//		if(exporttogehpi != null)	this.exporttogehpi = exporttogehpi;
+//	}
+//	/*
+//	 * 设置是否要每天导入交易数据，设置为false的则在每天导入数据的时候跳过
+//	 */
+//	public boolean isImportdailytradingdata() {
+//		if(importdailytradingdata != null)
+//			return importdailytradingdata;
+//		else
+//			return true;
+//	}
+//	/*
+//	 * 设置是否导入每日交易数据
+//	 */
+//	public void setImportdailytradingdata(Boolean importdailytradingdata) {
+//		if(importdailytradingdata != null)
+//			this.importdailytradingdata = importdailytradingdata;
+//	}
+//	/*
+//	 * 
+//	 */
+//	public boolean isShowinbkfxgui() {
+//		if(showinbkfxgui != null)
+//			return showinbkfxgui;
+//		else
+//			return true;
+//	}
+//	/*
+//	 * 设置是否显示在板块分析窗口
+//	 */
+//	public void setShowinbkfxgui(Boolean showinbkfxgui) {
+//		if(showinbkfxgui != null)
+//			this.showinbkfxgui = showinbkfxgui;
+//	}
+//	public void setImportBKGeGu(Boolean importgegu) 	{
+//		if(importgegu != null)			this.importbkgegu = importgegu;
+//		
+//	}
+//	public  Boolean isImportBKGeGu ()	{
+//		if(importbkgegu == null)			return true;
+//		else			return this.importbkgegu;
+//	}
 	/*
 	 * 
 	 */
@@ -218,18 +219,15 @@ public class BanKuai extends TDXNodes
 		
 	}
 	public String getBanKuaiLeiXing ()	{
-		if(bankuaileixing == null)
-			return BanKuai.HASGGWITHSELFCJL;
-		else
-			return this.bankuaileixing;
+		if(bankuaileixing == null)		return BanKuai.HASGGWITHSELFCJL;
+		else		return this.bankuaileixing;
 	}
 	/*
 	 * 
 	 */
 	public void addNewBanKuaiGeGu (StockOfBanKuai stockofbk) 
 	{
-		if(this.stockofbklist == null) 
-			this.stockofbklist = new ArrayList<> ();
+		if(this.stockofbklist == null) 	this.stockofbklist = new ArrayList<> ();
 
 		if( this.stockofbklist.indexOf(stockofbk) < 0 )
 			this.stockofbklist.add(stockofbk);
@@ -244,8 +242,7 @@ public class BanKuai extends TDXNodes
     }
 	public List<BkChanYeLianTreeNode> getAllGeGuOfBanKuaiInHistoryByJiaoYiSuo(String jiaoyisuo) 
 	{
-		if(stockofbklist == null)
-			return null;
+		if(stockofbklist == null)		return null;
 		
 		List<BkChanYeLianTreeNode> gegubyjys = new ArrayList<> ();
 		for(BkChanYeLianTreeNode tmpgg : this.stockofbklist )
@@ -270,11 +267,9 @@ public class BanKuai extends TDXNodes
 	public Set<BkChanYeLianTreeNode> getSpecificPeriodStockOfBanKuai(LocalDate requireddate,int difference) 
 	{
 		Set<BkChanYeLianTreeNode> result = new HashSet<> ();
-		if(this.stockofbklist == null)
-			return result;
+		if(this.stockofbklist == null)	return result;
 		
 		for(BkChanYeLianTreeNode stockofbk : this.stockofbklist) {
-		
 			if(  ((StockOfBanKuai)stockofbk).isInBanKuaiAtSpecificDate(requireddate)) 
 					result.add(stockofbk);
 		}
@@ -286,8 +281,7 @@ public class BanKuai extends TDXNodes
 	 */
 	public Collection<BkChanYeLianTreeNode> getSpecificPeriodBanKuaiGeGu(LocalDate requireddate,int difference)
 	{
-		if(this.stockofbklist == null)
-			return null;
+		if(this.stockofbklist == null)		return null;
 		
 		Collection<BkChanYeLianTreeNode> nodefortags = new HashSet<> ();
 		for(BkChanYeLianTreeNode tmpstkofbks :  this.stockofbklist) {
@@ -353,19 +347,6 @@ public class BanKuai extends TDXNodes
 			}
 		}
 	}
-	public void setImportBKGeGu(Boolean importgegu) 
-	{
-		if(importgegu != null)
-			this.importbkgegu = importgegu;
-		
-	}
-	public  Boolean isImportBKGeGu ()
-	{
-		if(importbkgegu == null)
-			return true;
-		else
-			return this.importbkgegu;
-	}
 	
 	public ServicesForNodeBanKuai getBanKuaiService (Boolean getorreset)
 	{
@@ -399,4 +380,76 @@ public class BanKuai extends TDXNodes
 	
 	private SvsForNodeOfBanKuai svsofnode;
 	private ServicesForNodeBanKuai svsofnodeofbk;
+	
+	public class BanKuaiOperationSetting 
+	{
+		private Boolean exporttogehpi = true;
+		private Boolean importdailytradingdata = true;
+		private Boolean showinbkfxgui = true;
+		private Boolean showincyltree = true;
+		private Boolean exporttowklyfile ;
+		private Boolean importbkgegu;
+		
+		public void setImportBKGeGu(Boolean importgegu) 	{
+			if(importgegu != null)			this.importbkgegu = importgegu;
+			
+		}
+		public  Boolean isImportBKGeGu ()	{
+			if(importbkgegu == null)			return true;
+			else			return this.importbkgegu;
+		}
+		public  Boolean isExportTowWlyFile ()	{
+			if(exporttowklyfile == null)	return true;
+			else	return this.exporttowklyfile;
+		}
+		public void setExportTowWlyFile (Boolean exporttofile)
+		{
+			if(exporttofile != null)	this.exporttowklyfile = exporttofile;
+		}
+		public Boolean isShowincyltree () {
+			if(this.showincyltree != null)	return this.showincyltree;
+			else	return true;
+		}
+		public void setShowincyltree (Boolean showincyltree) {
+			if(showincyltree != null)	this.showincyltree = showincyltree;
+		}
+		public boolean isExporttogehpi() {
+			if(exporttogehpi != null)	return exporttogehpi;
+			else	return true;
+		}
+		/*
+		 * 设置是否导出数据到Gephi
+		 */
+		public void setExporttogehpi(Boolean exporttogehpi) {
+			if(exporttogehpi != null)	this.exporttogehpi = exporttogehpi;
+		}
+		/*
+		 * 设置是否要每天导入交易数据，设置为false的则在每天导入数据的时候跳过
+		 */
+		public boolean isImportdailytradingdata() {
+			if(importdailytradingdata != null)			return importdailytradingdata;
+			else	return true;
+		}
+		/*
+		 * 设置是否导入每日交易数据
+		 */
+		public void setImportdailytradingdata(Boolean importdailytradingdata) {
+			if(importdailytradingdata != null)	this.importdailytradingdata = importdailytradingdata;
+		}
+		/*
+		 * 
+		 */
+		public boolean isShowinbkfxgui() {
+			if(showinbkfxgui != null)	return showinbkfxgui;
+			else	return true;
+		}
+		/*
+		 * 设置是否显示在板块分析窗口
+		 */
+		public void setShowinbkfxgui(Boolean showinbkfxgui) {
+			if(showinbkfxgui != null) this.showinbkfxgui = showinbkfxgui;
+		}
+	}
 }
+
+

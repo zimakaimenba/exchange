@@ -208,7 +208,7 @@ public class ExportMatchedNode2
 			}
 			
 			if( this.cond.shouldExportBankuaiInConfig ()) //只导出板块设置允许的
-				if( !((BanKuai)node).isExportTowWlyFile() )
+				if( !((BanKuai)node).getBanKuaiOperationSetting().isExportTowWlyFile() )
 					return "UNMATCH";
 			
 			if(this.cond.shouldExportOnlyGeGuNotBanKuai() && ! this.cond.shouldExportAllBanKuai() )

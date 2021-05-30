@@ -222,7 +222,7 @@ public class GetNodeDataFromDbWhenSystemIdle implements Runnable
 		LocalDate requirestart = CommonUtility.getSettingRangeDate(exportdate,"large");
 		
 		if(node.getType() == BkChanYeLianTreeNode.TDXBK) {
-			if( !((BanKuai)node).isShowinbkfxgui() )
+			if( !((BanKuai)node).getBanKuaiOperationSetting().isShowinbkfxgui() )
 				return;
 			
 			if( ((BanKuai)node).getBanKuaiLeiXing().equals(BanKuai.HASGGNOSELFCJL) 
@@ -248,7 +248,7 @@ public class GetNodeDataFromDbWhenSystemIdle implements Runnable
 		LocalDate requirestart = CommonUtility.getSettingRangeDate(exportdate,"large");
 		
 		if(node.getType() == BkChanYeLianTreeNode.TDXBK) {
-			if( !((BanKuai)node).isShowinbkfxgui() )
+			if( !((BanKuai)node).getBanKuaiOperationSetting().isShowinbkfxgui() )
 				return;
 			
 			if( ((BanKuai)node).getBanKuaiLeiXing().equals(BanKuai.HASGGNOSELFCJL) 

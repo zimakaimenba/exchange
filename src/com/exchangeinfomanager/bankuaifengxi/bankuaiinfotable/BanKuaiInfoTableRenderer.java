@@ -78,8 +78,7 @@ public class BanKuaiInfoTableRenderer extends BanKuaiAndGeguTableBasicRenderer
         
       //为不同情况突出显示不同的颜色
         Color foreground = super.getForeground(), background = Color.white;
-        if(!bankuai.isExportTowWlyFile() )
-    		foreground = Color.GRAY;
+        if(!bankuai.getBanKuaiOperationSetting().isExportTowWlyFile() )	foreground = Color.GRAY;
         
         int rowcurselected = table.getSelectedRow();
         if(rowcurselected != -1) {
@@ -87,13 +86,11 @@ public class BanKuaiInfoTableRenderer extends BanKuaiAndGeguTableBasicRenderer
         	String bkcode = bankuai.getMyOwnCode();
 			BanKuai bkcurselected = (BanKuai) ((BanKuaiInfoTableModel)tablemodel).getNode(modelRowcurselected);  
 	        Set<String> socialsetpos = bkcurselected.getSocialFriendsSetPostive();
-	        if(socialsetpos.contains(bkcode)) {
-	        		jc.setBorder( highlightpos );
-        	}
+	        if(socialsetpos.contains(bkcode))  	jc.setBorder( highlightpos );
+        	
 	        Set<String> socialsetneg = bkcurselected.getSocialFriendsSetNegtive();
-	        if(socialsetneg.contains(bkcode)) {
-	        		jc.setBorder( highlightneg );
-        	}	
+	        if(socialsetneg.contains(bkcode))    jc.setBorder( highlightneg );
+        		
         }
        
        

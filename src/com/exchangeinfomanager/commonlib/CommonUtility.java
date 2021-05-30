@@ -2,6 +2,8 @@ package com.exchangeinfomanager.commonlib;
 
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DateFormat;
@@ -21,6 +23,12 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
+
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
@@ -216,6 +224,21 @@ public class CommonUtility {
 		else 
 			return false;
 
+	}
+	
+	public static synchronized void playSound(String soundFile) {
+	    File f = new File(soundFile);
+	    AudioInputStream audioIn = null;
+		try {
+			audioIn = AudioSystem.getAudioInputStream(f.toURI().toURL());
+		} catch (UnsupportedAudioFileException | IOException e) {}  
+	    Clip clip;
+		try {
+			clip = AudioSystem.getClip();
+			clip.open(audioIn);
+		    clip.start();
+		} catch (LineUnavailableException | IOException e) {e.printStackTrace();}
+	    
 	}
 	
 //	public static Date getDateFromYearAndWeek (int weeknum)
