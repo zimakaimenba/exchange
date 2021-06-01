@@ -312,6 +312,7 @@ public class BanKuaiDZHDbOperation
 				dzhbk.getBanKuaiOperationSetting().setShowincyltree(rs.getBoolean("产业链树"));
 				dzhbk.getBanKuaiOperationSetting().setExportTowWlyFile(rs.getBoolean("周分析文件"));
 				dzhbk.getBanKuaiOperationSetting().setImportBKGeGu(rs.getBoolean("导入板块个股"));
+				dzhbk.getBanKuaiOperationSetting().setBanKuaiLabelColor(rs.getString("DefaultCOLOUR"));
 
 				dzhbkset.add(dzhbk);
 			}

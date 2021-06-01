@@ -72,12 +72,8 @@ public class GetNodeDataFromDbWhenSystemIdle implements Runnable
 			                }
 			            }
 
-			            try {
-							Thread.sleep(sleepcount);
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
+			            try {	Thread.sleep(sleepcount);
+						} catch (InterruptedException e) {e.printStackTrace();}
 			            
 			            synchronized (GetNodeDataFromDbWhenSystemIdle.class) {
 				        	    Point newLocation = MouseInfo.getPointerInfo().getLocation();
@@ -138,21 +134,15 @@ public class GetNodeDataFromDbWhenSystemIdle implements Runnable
 			                            // can acquire the lock to call notifyAll()
 			                            // (link with explanation below this code)
 			                        }
-			                    } catch (InterruptedException ex) {
-			                        break;
-			                    }
+			                    } catch (InterruptedException ex) {break; }
 			                    if (!running) { // running might have changed since we paused
 			                        break;
 			                    }
 			                }
 			            }
 
-			            try {
-							Thread.sleep(sleepcount);
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
+			            try {  Thread.sleep(sleepcount);
+						} catch (InterruptedException e) {e.printStackTrace();}
 			            
 			            synchronized (GetNodeDataFromDbWhenSystemIdle.class) {
 				        	    Point newLocation = MouseInfo.getPointerInfo().getLocation();
@@ -191,8 +181,9 @@ public class GetNodeDataFromDbWhenSystemIdle implements Runnable
 				        }
 			        }
 		    }
-		    
 		    System.out.printf(" \n Done! Gotten All Nodes K Data.  \n");
+		    
+		    
 	 }
 	 
 	 public void stop() {
@@ -254,7 +245,7 @@ public class GetNodeDataFromDbWhenSystemIdle implements Runnable
 			if( ((BanKuai)node).getBanKuaiLeiXing().equals(BanKuai.HASGGNOSELFCJL) 
 					||  ((BanKuai)node).getBanKuaiLeiXing().equals(BanKuai.NOGGNOSELFCJL)  ) //有些指数是没有个股和成交量的，不列入比较范围
 				return;
-
+			
 			animation ();
 //			System.out.print("bk" + node.getMyOwnName() + "\n");
 			SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai  ();
@@ -262,7 +253,6 @@ public class GetNodeDataFromDbWhenSystemIdle implements Runnable
 			
 		} else if(node.getType() == BkChanYeLianTreeNode.TDXGG) {
 			animation ();
-			
 //			System.out.print("stock" + node.getMyOwnName() + "\n");
 			SvsForNodeOfStock svsstk = new SvsForNodeOfStock  ();
 			node = (Stock) svsstk.getNodeKXian( (Stock)node,requirestart,exportdate,NodeGivenPeriodDataItem.DAY,true);

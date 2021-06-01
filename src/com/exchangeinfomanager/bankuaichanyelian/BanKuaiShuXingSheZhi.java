@@ -100,12 +100,12 @@ public class BanKuaiShuXingSheZhi extends JPanel
 			
 			initializeGuiValue ();
 						
-			if(cbxnotimport.isSelected()) {
-				cbxnotbkfx.setEnabled(false);
-				cbxnotgephi.setEnabled(false);
-				cbxnotshowincyltree.setEnabled(false);
-				chkbxnotexportwklyfile.setEnabled(false);
-			}
+//			if(cbxnotimport.isSelected()) {
+//				cbxnotbkfx.setEnabled(false);
+//				cbxnotgephi.setEnabled(false);
+//				cbxnotshowincyltree.setEnabled(false);
+//				chkbxnotexportwklyfile.setEnabled(false);
+//			}
 				
 		} else { //个股，不能设置
 			cbxnotimport.setSelected(false);
@@ -150,21 +150,7 @@ public class BanKuaiShuXingSheZhi extends JPanel
 					cbxnotgephi.setSelected(true);
 					cbxnotshowincyltree.setSelected(true);
 					chkbxnotexportwklyfile.setSelected(true);
-					chbxnotimportgegu.setSelected(true);
-					
-					cbxnotbkfx.setEnabled(false);
-					cbxnotgephi.setEnabled(false);
-					cbxnotshowincyltree.setEnabled(false);
-					chkbxnotexportwklyfile.setEnabled(false);
-					chbxnotimportgegu.setEnabled(false);
-				} else {
-					cbxnotbkfx.setEnabled(true);
-					cbxnotgephi.setEnabled(true);
-					cbxnotshowincyltree.setEnabled(true);
-					chkbxnotexportwklyfile.setEnabled(true);
-					chbxnotimportgegu.setEnabled(true);
-					buttonapplybksetting.setEnabled(true);
-				}
+				} 
 			}
 		});
 		
@@ -172,7 +158,6 @@ public class BanKuaiShuXingSheZhi extends JPanel
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 					applaySetttingToDb ();
-
 			}
 		});
 		
@@ -204,14 +189,14 @@ public class BanKuaiShuXingSheZhi extends JPanel
 	private void initializeGui() {
 		// TODO Auto-generated method stub
 		this.setBorder(new TitledBorder(new CompoundBorder(new BevelBorder(BevelBorder.RAISED, new Color(240, 240, 240), new Color(255, 255, 255), new Color(105, 105, 105), new Color(160, 160, 160)), new LineBorder(new Color(180, 180, 180), 5)), "\u677F\u5757\u5C5E\u6027\u8BBE\u7F6E", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-		
-		cbxnotimport = new JCheckBox("\u4E0D\u5BFC\u5165\u6BCF\u65E5\u4EA4\u6613\u6570\u636E");
 		setLayout(new MigLayout("", "[133px,grow][]", "[23px][][23px][23px][][][][]"));
 		cbxnotshowincyltree =  new JCheckBox("不出现在产业链树");
-		add(cbxnotimport, "cell 0 0,alignx left,aligny top");
 		
 		chbxnotimportgegu = new JCheckBox("\u4E0D\u5BFC\u5165\u677F\u5757\u4E2A\u80A1");
-		add(chbxnotimportgegu, "cell 0 1");
+		add(chbxnotimportgegu, "cell 0 0");
+		
+		cbxnotimport = new JCheckBox("\u4E0D\u5BFC\u5165\u6BCF\u65E5\u4EA4\u6613\u6570\u636E");
+		add(cbxnotimport, "cell 0 1,alignx left,aligny top");
 		
 		cbxnotbkfx = new JCheckBox("\u4E0D\u505A\u677F\u5757\u5206\u6790");
 		add(cbxnotbkfx, "cell 0 2,alignx left,aligny top");

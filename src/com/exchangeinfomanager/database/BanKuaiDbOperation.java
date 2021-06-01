@@ -179,6 +179,7 @@ public class BanKuaiDbOperation
 	        	tmpbk.getBanKuaiOperationSetting().setShowinbkfxgui(rs.getBoolean("板块分析"));
 	        	tmpbk.getBanKuaiOperationSetting().setShowincyltree(rs.getBoolean("产业链树"));
 	        	tmpbk.getBanKuaiOperationSetting().setExportTowWlyFile(rs.getBoolean("周分析文件"));
+	        	tmpbk.getBanKuaiOperationSetting().setBanKuaiLabelColor(rs.getString("DefaultCOLOUR"));
 	        	tmpbk.setNodeCjlZhanbiLevel (rs.getDouble("成交量占比下限"), rs.getDouble("成交量占比上限"));
 	        	tmpbk.setNodeCjeZhanbiLevel (rs.getDouble("成交额占比下限"), rs.getDouble("成交额占比上限"));
 	        	

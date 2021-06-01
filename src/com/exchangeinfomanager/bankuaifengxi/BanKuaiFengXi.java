@@ -744,13 +744,6 @@ public class BanKuaiFengXi extends JDialog
 	 */
 	protected void unifiedOperationsAfterUserSelectAStock(StockOfBanKuai selectstockofbankuai, Boolean readinfoout) 
 	{
-//		//如果用户选择的和上次选择的个股一样，不重复做板块查找
-//		Object selecteditem = combxstockcode.getSelectedItem(); 
-//		if(selecteditem != null ) {
-//			String stockcodeincbx = ((Stock)selecteditem).getMyOwnCode();
-//			if(selectstockofbankuai.getMyOwnCode().equals( stockcodeincbx ) )			return;
-//		}
-		
 			Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
 			setCursor(hourglassCursor);
 			
@@ -767,6 +760,7 @@ public class BanKuaiFengXi extends JDialog
 			
 			this.panelGgDpCjeZhanBi.setDrawAverageDailyCjeOfWeekLine(true); //保证个股显示是上边是日均成交额，下边是占比线
 			selectstock.getShuJuJiLuInfo().setHasReviewedToday(true);
+			
 			DaPan treeroot = (DaPan) treeofbkstk.getModel().getRoot();
 			panelGgDpCjeZhanBi.setDisplayBarOfSpecificBanKuaiCjeCjlInsteadOfSelfCjeCjl (treeroot); 
 			
@@ -791,7 +785,7 @@ public class BanKuaiFengXi extends JDialog
 			cyltreecopy.searchAndLocateNodeInTree (selectstock);
 			
 			String ShouwGeGuRemindInfo     = bkfxsettingprop.getProperty ("ShouwGeGuRemindInfo");
-			if(ShouwGeGuRemindInfo    != null && ShouwGeGuRemindInfo   .toUpperCase().equals("TRUE") )
+			if(ShouwGeGuRemindInfo    != null && ShouwGeGuRemindInfo.toUpperCase().equals("TRUE") )
 				showReminderMessage (bkfxremind.getStockremind());
 			//语言播报
 			String readingsettinginprop  = bkfxsettingprop.getProperty ("readoutfxresultinvoice");
@@ -826,20 +820,7 @@ public class BanKuaiFengXi extends JDialog
 		
 		if(!Strings.isNullOrEmpty(anaresult) ) {
 			readengine = new VoiceEngine (anaresult);
-//			readengin.readInformation (anaresult); //for testing
 			readengine.execute();
-			
-//			if( readengine == null) {
-//				readengine = new VoiceEngine (anaresult);
-////				readengin.readInformation (anaresult); //for testing
-//				readengine.execute();
-//			} else {
-//				readengine.cancel(true);
-//				readengine = null;
-//				readengine = new VoiceEngine (anaresult);
-////				readengin.readInformation (anaresult); //for testing
-//				readengine.execute();
-//			}
 		}
 	}
 	private void refreshCurrentStockTags(Stock selectedstock) 
@@ -854,8 +835,7 @@ public class BanKuaiFengXi extends JDialog
 	/*
 	 * 
 	 */
-	private void clearGeGuTablesFilter ()
-	{
+	private void clearGeGuTablesFilter ()	{
 		tablebkggtableset.forEach(l -> l.resetTableHeaderFilter());
 	}
 	/*
@@ -1063,12 +1043,8 @@ public class BanKuaiFengXi extends JDialog
 		tfldselectedmsg.repaint();
 		
 		nodedatapnl.addPropertyChangeListener(new PropertyChangeListener() {
-
             public void propertyChange(PropertyChangeEvent evt) {
-
                 if (evt.getPropertyName().equals(DisplayNodeExchangeDataServicesPanel.EXPORTCSV_PROPERTY)) {
-
-
                 }
             }
 		});
@@ -2689,7 +2665,7 @@ public class BanKuaiFengXi extends JDialog
 		}
 		//保证显示时间范围为当前日期前后有数据的36个月(3年)
 		LocalDate curselectdate = dateChooser.getLocalDate().with(DayOfWeek.FRIDAY);
-		long numberOfMonthBetweenCurrentSelectionWithNow = ChronoUnit.MONTHS.between(curselectdate, LocalDate.now() );
+		long numberOfMonthBetweenCurrentSelectionWithNow = ChronoUnit.MONTHS.between(curselectdate, LocalDate.now() ) + 1;
 		long n=0; if(numberOfMonthBetweenCurrentSelectionWithNow >=18) n=18; else n = numberOfMonthBetweenCurrentSelectionWithNow;
 		long m = 12 * 3  - n; 
 		LocalDate requireend = curselectdate.plus(n,ChronoUnit.MONTHS).with(DayOfWeek.FRIDAY);
@@ -2826,10 +2802,10 @@ public class BanKuaiFengXi extends JDialog
 	private PaoMaDeng2 pnl_paomd;
 	private JTabbedPane tabbedPanebk;
 	private JButton btnexportcsv;
-	private Action exportCancelAction;
+//	private Action exportCancelAction;
 	private Action bkfxCancelAction;
 	private BanKuaiAndStockTree cyltreecopy;
-	private JMenuItem menuItemRmvNodeFmFile;
+//	private JMenuItem menuItemRmvNodeFmFile;
 	private JPopupMenu jPopupMenuoftabbedpane;
 //	private JMenuItem menuItemliutong ; //系统默认按流通市值排名
 //	private JMenuItem menuItemzongshizhi ;
@@ -2876,7 +2852,7 @@ public class BanKuaiFengXi extends JDialog
 	private JTabbedPane tabpnlKxian;
 	private BanKuaiFengXiCandlestickPnl pnlBanKuaiCandle;
 
-	private JProgressBar progressBarExport;
+//	private JProgressBar progressBarExport;
 
 	private SetExportNodeConditionPnl pnlsetexportcond;
 	

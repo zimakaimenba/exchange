@@ -110,11 +110,13 @@ public class BanKuaiPopUpMenuForTable extends BanKuaiPopUpMenu
 					bkgldialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 				} 
 				
-				if(!bkgldialog.isVisible() ) {
-					bkgldialog.toFront();
-					bkgldialog.setVisible(true);
-				 } 
-
+				bkgldialog.toFront();
+				bkgldialog.setVisible(true);
+				
+//				if(!bkgldialog.isVisible() ) {
+//					bkgldialog.toFront();
+//					bkgldialog.setVisible(true);
+//				 } 
 			}
 			
 		});

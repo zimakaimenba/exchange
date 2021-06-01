@@ -286,8 +286,7 @@ public class SvsForNodeOfStock implements ServicesForNode, ServicesOfNodeStock
 		LocalDate bkamostartday = stock.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK).getAmoRecordsStartDate();
 		LocalDate bkamoendday = stock.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK).getAmoRecordsEndDate();
 		
-		if(bkohlcstartday == null && bkamostartday == null) 
-			return ;
+		if(bkohlcstartday == null && bkamostartday == null) return ;
 		
 		this.getNodeSuoShuBanKuaiList(stock); //先取得板块信息，可以用来在TABLE过滤
 		this.getStockGuDong( stock, "LIUTONG", bkamostartday, bkamoendday);
@@ -317,7 +316,6 @@ public class SvsForNodeOfStock implements ServicesForNode, ServicesOfNodeStock
 				LocalDate requiredendday = LocalDate.of(newenddt.getYear(), newenddt.getMonthOfYear(), newenddt.getDayOfMonth()).with(DayOfWeek.FRIDAY);
 				
 				this.getNodeKXian(stock, requiredstartday, requiredendday, NodeGivenPeriodDataItem.DAY, true);
-//				this.getStockGuDong( stock, "LIUTONG", requiredstartday, requiredendday);
 				
 				if( !stock.isNodeDataAtNotCalWholeWeekMode() )
 					this.getNodeQueKouInfo(stock, requiredstartday, requiredendday, NodeGivenPeriodDataItem.DAY);

@@ -36,7 +36,6 @@ public class DisPlayNodeSuoShuBanKuaiListServices implements ServicesOfNodeJiBen
 	{
 		Set<BkChanYeLianTreeNode> suosutdxbankuai = ((Stock)node).getGeGuCurSuoShuTDXSysBanKuaiList();
 		Set<BkChanYeLianTreeNode> suosudzhbankuai = ((Stock)node).getGeGuCurSuoShuDZHSysBanKuaiList();
-//		suosutdxbankuai.addAll(suosudzhbankuai);
 		
 		DuanQiGuanZhuServices svsdqgz = new DuanQiGuanZhuServices ();
 		Collection<News> curdqgz = svsdqgz.getCurrentNews( LocalDate.now() );
@@ -56,7 +55,6 @@ public class DisPlayNodeSuoShuBanKuaiListServices implements ServicesOfNodeJiBen
 		 		+ "<body>"
 		 		);
 		 
-//		 boolean shuyuruoshibankuai = false;
 		 for ( java.util.Iterator<BkChanYeLianTreeNode> it = suosutdxbankuai.iterator(); it.hasNext(); ) {
 			 BkChanYeLianTreeNode f = it.next();
 			 BanKuai bk = (BanKuai)f;
@@ -66,14 +64,11 @@ public class DisPlayNodeSuoShuBanKuaiListServices implements ServicesOfNodeJiBen
 	    	 try {
 	    		 boolean inrsbk = false; 
     			 if(  gzbkcodeset.contains(bk.getMyOwnCode() ) && bkquanzhong >=5 ) { //是当前关注的板块，并且权重大于5用红色标记，权重太小，说明没有什么业务
-    				 
     				 content.append("<a style=\"color:red\" href=\"openBanKuaiAndChanYeLianDialog\">  " + displayedbkformate + "</a>   " );
 //	    			 shuyuruoshibankuai = true ;
 	    		 } else
 	    			 content.append("<a href=\"openBanKuaiAndChanYeLianDialog\"> " + displayedbkformate + "</a>   ");
-	    	 } catch (java.lang.NullPointerException e) {
-	    		 content.append("<a href=\"openBanKuaiAndChanYeLianDialog\"> " + displayedbkformate + "</a>   ");
-	    	 }
+	    	 } catch (java.lang.NullPointerException e) { content.append("<a href=\"openBanKuaiAndChanYeLianDialog\"> " + displayedbkformate + "</a>   "); }
 	     }
 		 for ( java.util.Iterator<BkChanYeLianTreeNode> it = suosudzhbankuai.iterator(); it.hasNext(); ) {
 			 BkChanYeLianTreeNode f = it.next();
@@ -89,9 +84,7 @@ public class DisPlayNodeSuoShuBanKuaiListServices implements ServicesOfNodeJiBen
 //	    			 shuyuruoshibankuai = true ;
 	    		 } else
 	    			 content.append("<a style=\"color:SlateBlue font-family:STHeiti \" href=\"openBanKuaiAndChanYeLianDialog\"> " + displayedbkformate + "</a>   ");
-	    	 } catch (java.lang.NullPointerException e) {
-	    		 content.append("<a style=\"color:SlateBlue font-family:STHeiti \" href=\"openBanKuaiAndChanYeLianDialog\"> " + displayedbkformate + "</a>   ");
-	    	 }
+	    	 } catch (java.lang.NullPointerException e) { content.append("<a style=\"color:SlateBlue font-family:STHeiti \" href=\"openBanKuaiAndChanYeLianDialog\"> " + displayedbkformate + "</a>   ");}
 	     } 
 	     
 	     content.append( "</body>"

@@ -55,9 +55,8 @@ public class DisPlayNodeSuoShuBanKuaiListPanel  extends DisplayNodeInfoPanel
             while(stok.hasMoreTokens()){ 
                 String token = stok.nextToken(); 
             }
-        } catch(BadLocationException ex){ 
-            ex.printStackTrace(); 
-        }
+        } catch(BadLocationException ex){  ex.printStackTrace();}
+        
         if(!selectstring.equals(link.trim())) {
         	selectstring = link;
             firePropertyChange(URLSELECTED_PROPERTY, "", link);

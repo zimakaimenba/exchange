@@ -1,5 +1,6 @@
 package com.exchangeinfomanager.nodes;
 
+import java.awt.Color;
 import java.sql.SQLException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -389,6 +390,15 @@ public class BanKuai extends TDXNodes
 		private Boolean showincyltree = true;
 		private Boolean exporttowklyfile ;
 		private Boolean importbkgegu;
+		private String bankuailabelcolor;
+		
+		public void setBanKuaiLabelColor(String colorstr) {
+			this.bankuailabelcolor = colorstr;
+		}
+		public Color getBanKuaiLabelColor () {
+			if(this.bankuailabelcolor == null) return null; 
+			else return Color.decode(this.bankuailabelcolor);
+		}
 		
 		public void setImportBKGeGu(Boolean importgegu) 	{
 			if(importgegu != null)			this.importbkgegu = importgegu;
