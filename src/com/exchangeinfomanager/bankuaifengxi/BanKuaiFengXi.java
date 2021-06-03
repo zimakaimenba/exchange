@@ -8,6 +8,8 @@ import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -174,6 +176,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.plaf.metal.MetalScrollBarUI;
 
 import javax.swing.UIManager;
+import javax.swing.WindowConstants;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import java.awt.event.ActionListener;
@@ -2885,16 +2888,10 @@ public class BanKuaiFengXi extends JDialog
 	private JLabel lbllastselect;
 	private JTabbedPane tabpnlKxian;
 	private BanKuaiFengXiCandlestickPnl pnlBanKuaiCandle;
-
-//	private JProgressBar progressBarExport;
-
-	private SetExportNodeConditionPnl pnlsetexportcond;
-
-private JPopupMenu jPopupMenuoftabbedpanebk;
-
-private JMenuItem menuItemcancelBanKaiReviewedtoday;
-
-private JMenuItem menuItemAddRmvBkToRedSign;
+	public SetExportNodeConditionPnl pnlsetexportcond;
+	private JPopupMenu jPopupMenuoftabbedpanebk;
+	private JMenuItem menuItemcancelBanKaiReviewedtoday;
+	private JMenuItem menuItemAddRmvBkToRedSign;
 	
 	private void initializeGuiOf2560Resolution ()
 	{
@@ -3411,7 +3408,7 @@ private JMenuItem menuItemAddRmvBkToRedSign;
 	     menuItemcancelBanKaiReviewedtoday = new JMenuItem("取消已经阅读状态"); //系统默认按成交额排名
 	     jPopupMenuoftabbedpanebk.add(menuItemcancelBanKaiReviewedtoday);
 	       
-		   JMenu biaojiMenu = new JMenu("标记个股");
+		   JMenu biaojiMenu = new JMenu("标记板块");
 	       menuItemAddRmvBkToRedSign = new JMenuItem("设置/取消红标");
 	       biaojiMenu.add(menuItemAddRmvBkToRedSign );
 	       menuItemAddRmvBkToYellow = new JMenuItem("设置/取消黄标");

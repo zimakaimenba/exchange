@@ -496,13 +496,11 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 	
 		if(bk.getBanKuaiLeiXing().equals(BanKuai.HASGGWITHSELFCJL)) {
 			int bkggbefore = 0;
-			try {
-				bkggbefore = bk.getAllGeGuOfBanKuaiInHistory().size();
+			try {	bkggbefore = bk.getAllGeGuOfBanKuaiInHistory().size();
 			} catch (java.lang.NullPointerException e) {}
 			bk = this.getAllGeGuOfBanKuai (bk);
 			int bkggafter = 0;
-			try {
-				bkggafter = bk.getAllGeGuOfBanKuaiInHistory().size();
+			try {	bkggafter = bk.getAllGeGuOfBanKuaiInHistory().size();
 			} catch (java.lang.NullPointerException e) {}
 			
 			if( bkggafter != bkggbefore ) { //说明板块个股有了变化，需要重新计算，否则无需再此计算，浪费时间,其实这里应该是计算板块的数据是否有变化，单比较难，就暂时用这个方法来避免重复计算
@@ -581,14 +579,14 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 	@Override
 	public void setNodeCjeExtremeUpDownZhanbiLevel(BkChanYeLianTreeNode node, Double min, Double max) {
 		node = this.bkdbopt.setNodeCjeExtremeZhanbiUpDownLevel( (TDXNodes)node, min, max);
-		((BanKuai)node).setNodeCjeZhanbiLevel (min,max);
+		((BanKuai)node).getNodeJiBenMian().setNodeCjeZhanbiLevel (min,max);
 		
 	}
 
 	@Override
 	public void setNodeCjlExtremeUpDownZhanbiLevel(BkChanYeLianTreeNode node, Double min, Double max) {
 		node = this.bkdbopt.setNodeCjlExtremeZhanbiUpDownLevel( (TDXNodes)node, min, max);
-		((BanKuai)node).setNodeCjlZhanbiLevel (min,max);
+		((BanKuai)node).getNodeJiBenMian().setNodeCjlZhanbiLevel (min,max);
 	}
 	
 	public BkChanYeLianTreeNode updateBanKuaiBasicOperationsSettings(BkChanYeLianTreeNode node, boolean importdailydata, boolean exporttogephi, 

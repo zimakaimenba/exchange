@@ -8,6 +8,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
+import java.lang.Thread.State;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -53,6 +54,11 @@ public class SetExportNodeConditionPnl extends JPanel {
 		
 		createMainBorardGui ();
 	}
+	
+	public List<BanKuaiAndGeGuMatchingConditions> getCurrentSettingCondition ()
+	{
+		return this.exportcond;
+	}
 
 	private void createMainBorardGui() 
 	{
@@ -85,7 +91,7 @@ public class SetExportNodeConditionPnl extends JPanel {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				if (exporttask == null)   	exportBanKuaiWithGeGuOnCondition();
-		        else exporttask.cancel(true);
+				else exporttask.cancel(true);
 			}
 		});
 		progressBarExport.setString("点击导出条件个股");
@@ -143,8 +149,7 @@ public class SetExportNodeConditionPnl extends JPanel {
 	 */
 	private void exportBanKuaiWithGeGuOnCondition ()
 	{
-		if(exportcond == null || exportcond.size() == 0) {
-			JOptionPane.showMessageDialog(null,"未设置导出条件，请先设置导出条件！");
+		if(exportcond == null || exportcond.size() == 0) {	JOptionPane.showMessageDialog(null,"未设置导出条件，请先设置导出条件！");
 			return;
 		}
 
@@ -153,7 +158,6 @@ public class SetExportNodeConditionPnl extends JPanel {
 		if(exchangeresult == JOptionPane.CANCEL_OPTION)			return;
 
 		if(curselectdate == null)	curselectdate = LocalDate.now();
-		
 		String dateshowinfilename = null;
 		if(globeperiod == null  || globeperiod.equals(NodeGivenPeriodDataItem.WEEK)) dateshowinfilename = "week" + curselectdate.with(DayOfWeek.FRIDAY).toString().replaceAll("-","");
 		else if(globeperiod.equals(NodeGivenPeriodDataItem.DAY))	dateshowinfilename = "day" + curselectdate.toString().replaceAll("-","");
@@ -194,28 +198,26 @@ public class SetExportNodeConditionPnl extends JPanel {
 			            try {
 			              final int count = exporttask.get();
 			              int exchangeresult = JOptionPane.showConfirmDialog(null, "导出完成，是否打开" + filefmxx.getAbsolutePath() + "查看","导出完成", JOptionPane.OK_CANCEL_OPTION);
-			      		  if(exchangeresult == JOptionPane.CANCEL_OPTION) {
-			      			  progressBarExport.setString(" ");
-			      			  return;
+			      		  if(exchangeresult != JOptionPane.CANCEL_OPTION) {
+			      			try {	String path = filefmxx.getAbsolutePath();
+				      				Runtime.getRuntime().exec("explorer.exe /select," + path);
+				      		  } catch (IOException e1) {	e1.printStackTrace();}
+				      		  
+				      		  progressBarExport.setString("点击导出条件个股");
+				      		  exporttask = null;
+				      		  System.gc();
+			      		  } else {
+			      			  progressBarExport.setString("点击导出条件个股");exporttask = null;
+			      			  System.gc();
 			      		  }
-			      		  try {
-			      			String path = filefmxx.getAbsolutePath();
-			      			Runtime.getRuntime().exec("explorer.exe /select," + path);
-			      		  } catch (IOException e1) {	e1.printStackTrace();}
-			      		  
-			      		  progressBarExport.setString(" ");
-
-			      		  System.gc();
 			            } catch (final CancellationException e) {
-//			            	try { exporttask.get();	} catch (InterruptedException | ExecutionException | CancellationException e1) {e1.printStackTrace();	}
 			            	try { exporttask.get();	} catch (Exception e1) {e1.printStackTrace();	}
-			            	
 			            	progressBarExport.setIndeterminate(false);  progressBarExport.setValue(0);
 			            	JOptionPane.showMessageDialog(null, "导出条件个股被终止！", "导出条件个股",JOptionPane.WARNING_MESSAGE);
+			            	exporttask = null;
 			            	progressBarExport.setString("导出设置条件个股");
+			            	System.gc();
 			            } catch (final Exception e) { e.printStackTrace(); }
-	
-			            exporttask = null;
 			            break;
 			          case STARTED:
 			          case PENDING:

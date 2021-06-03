@@ -288,9 +288,6 @@ public class SvsForNodeOfStock implements ServicesForNode, ServicesOfNodeStock
 		
 		if(bkohlcstartday == null && bkamostartday == null) return ;
 		
-		this.getNodeSuoShuBanKuaiList(stock); //先取得板块信息，可以用来在TABLE过滤
-		this.getStockGuDong( stock, "LIUTONG", bkamostartday, bkamoendday);
-		
 		if(bkohlcstartday == null) {
 			bkohlcstartday = bkamostartday;
 			bkohlcendday = bkamoendday;
@@ -299,6 +296,8 @@ public class SvsForNodeOfStock implements ServicesForNode, ServicesOfNodeStock
 			if( !stock.isNodeDataAtNotCalWholeWeekMode() )
 				this.getNodeQueKouInfo(stock, bkohlcstartday, bkohlcendday, NodeGivenPeriodDataItem.DAY);
 			
+			this.getStockGuDong( stock, "LIUTONG", bkamostartday, bkamoendday);
+			this.getNodeSuoShuBanKuaiList(stock); //先取得板块信息，可以用来在TABLE过滤
 			return;
 		}
 		
@@ -462,12 +461,15 @@ public class SvsForNodeOfStock implements ServicesForNode, ServicesOfNodeStock
 
 	public BkChanYeLianTreeNode getNodeSuoShuBanKuaiList (BkChanYeLianTreeNode node)
 	{
-		bkdbopt.getTDXBanKuaiSetForStock ((Stock)node ); //通达信板块信息
+		if(  ((Stock)node).getGeGuCurSuoShuTDXSysBanKuaiList() == null ||  ((Stock)node).getGeGuCurSuoShuTDXSysBanKuaiList().isEmpty() )
+			bkdbopt.getTDXBanKuaiSetForStock ((Stock)node ); //通达信板块信息
 		
-		BanKuaiDZHDbOperation dzhdbopt = new BanKuaiDZHDbOperation ();
-		dzhdbopt.getDZHBanKuaiForAStock((Stock)node);
-		dzhdbopt = null;
-		
+		if( ((Stock)node).getGeGuCurSuoShuDZHSysBanKuaiList() == null || ((Stock)node).getGeGuCurSuoShuDZHSysBanKuaiList().isEmpty() ) {
+			BanKuaiDZHDbOperation dzhdbopt = new BanKuaiDZHDbOperation ();
+			dzhdbopt.getDZHBanKuaiForAStock((Stock)node);
+			dzhdbopt = null;
+		}
+
 		return node;
 	}
 
@@ -492,13 +494,13 @@ public class SvsForNodeOfStock implements ServicesForNode, ServicesOfNodeStock
 	@Override
 	public void setNodeCjeExtremeUpDownZhanbiLevel(BkChanYeLianTreeNode node, Double min, Double max) {
 		node = this.bkdbopt.setNodeCjeExtremeZhanbiUpDownLevel( (TDXNodes)node, min, max);
-		((Stock)node).setNodeCjeZhanbiLevel (min,max);
+		((Stock)node).getNodeJiBenMian().setNodeCjeZhanbiLevel (min,max);
 	}
 
 	@Override
 	public void setNodeCjlExtremeUpDownZhanbiLevel(BkChanYeLianTreeNode node, Double min, Double max) {
 		node = this.bkdbopt.setNodeCjlExtremeZhanbiUpDownLevel( (TDXNodes)node, min, max);
-		((Stock)node).setNodeCjlZhanbiLevel (min,max);
+		((Stock)node).getNodeJiBenMian().setNodeCjlZhanbiLevel (min,max);
 		
 	}
 

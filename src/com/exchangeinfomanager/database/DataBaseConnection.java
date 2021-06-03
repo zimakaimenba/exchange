@@ -130,8 +130,9 @@ public class DataBaseConnection
 	{
 		if(this.con != null )
 			try {con.close();
-			} catch (SQLException e1) {e1.printStackTrace();return false;}
-		
+			} catch (SQLException e1) {e1.printStackTrace();return false;
+			} finally {this.con = null;}
+			
 		databaseconnected = false;
 		return true;
 	}

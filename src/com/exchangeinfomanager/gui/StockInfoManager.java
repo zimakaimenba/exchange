@@ -79,6 +79,7 @@ import javax.swing.JCheckBox;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingWorker.StateValue;
 import javax.swing.UIManager;
+import javax.swing.WindowConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.TableModelEvent;
@@ -200,7 +201,7 @@ import javax.swing.ListSelectionModel;
 
 public class StockInfoManager 
 {
-	private ConnectDZHDataBase connectdzhdb;
+//	private ConnectDZHDataBase connectdzhdb;
 
 	/**
 	 * Create the application.
@@ -220,8 +221,7 @@ public class StockInfoManager
 			                         JOptionPane.OK_OPTION, JOptionPane.PLAIN_MESSAGE,
 			                         null, options, options[1]);
 			String adminpw = null;
-			if(option == 0) // pressing OK button
-			{
+			if(option == 0) {// pressing OK button
 			    char[] password = pass.getPassword();
 			    adminpw = new String(password);
 			}
@@ -237,8 +237,7 @@ public class StockInfoManager
 
 		connectdb = ConnectDataBase.getInstance();
 		boolean localconnect = connectdb.isLocalDatabaseconnected();
-		if(localconnect == false) {
-			JOptionPane.showMessageDialog(null,"数据库连接失败！再见！");
+		if(localconnect == false) {	JOptionPane.showMessageDialog(null,"数据库连接失败！再见！");
 			System.exit(0);
 		}
 	
@@ -813,14 +812,6 @@ public class StockInfoManager
 			}
 		});
 		
-		btnXueQiu.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent arg0) 
-			{
-				
-			}
-		});
-		
 		btnEnableChklsts.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent arg0) 
@@ -934,7 +925,6 @@ public class StockInfoManager
 //				}
 //			}
 //		});
-		
 		/*
 		 * 加入重点关注
 		 */
@@ -1302,16 +1292,6 @@ public class StockInfoManager
 			
 		});
 		
-		btnXueqiu.addMouseListener(new MouseAdapter() 
-		{
-			@Override
-			public void mousePressed(MouseEvent arg0) 
-			{
-
-			}
-			
-		});
-		
 		btnhudongyi.addMouseListener(new MouseAdapter() 
 		{
 			@Override
@@ -1501,19 +1481,26 @@ public class StockInfoManager
 			}
 			
 		});
+		
+		frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		frame.addWindowListener(new WindowAdapter() 
 		{
 			@Override
 			public void windowClosing(WindowEvent arg0)
 			{
+				if(bkfx != null && bkfx.pnlsetexportcond.getCurrentSettingCondition().size() >0 ) {
+		    	 	int action = JOptionPane.showConfirmDialog(null, "板块分析已设置导出个股条件，关闭后数据将丢失！是否继续？","警告", JOptionPane.YES_NO_OPTION);
+					if(1 == action) return;
+				}
+				
 				accountschicangconfig.SaveAccountsInfo ();
 				connectdb.closeConnectedDb();
-				if(connectdzhdb != null)
-					connectdzhdb.closeConnectedDb();
+//				if(connectdzhdb != null)	connectdzhdb.closeConnectedDb();
+				
+				frame.dispose();
+		        System.exit(0);
 			}
 		});
-		
-		
 		
 		txtareagainiants.getDocument().addDocumentListener(new DocumentListener()  
 		{
@@ -1522,7 +1509,6 @@ public class StockInfoManager
 			{
 				btngengxinxx.setEnabled(true);
 				dateChsgainian.setDate(new Date());
-
 	        }
 			
 			@Override
