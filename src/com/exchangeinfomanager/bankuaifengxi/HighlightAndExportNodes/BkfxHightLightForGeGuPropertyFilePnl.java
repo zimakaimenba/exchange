@@ -188,6 +188,10 @@ public class BkfxHightLightForGeGuPropertyFilePnl extends JPanel {
 		for(int m=0;m< kwinfolist.size(); m++) {
 			String ckbkey =  kwinfolist.get(m);
 			
+			Color backgroundcolor = null;
+			if(color != null && !color.equalsIgnoreCase("SYSTEM"))	backgroundcolor = Color.decode(color) ;
+			else if(color != null && color.equalsIgnoreCase("SYSTEM")) backgroundcolor = getSystemColorForHighLight(ckbkey);
+			
 //			if(ckbkey.equalsIgnoreCase("InFengXiFile")) {
 //				String propckbname  = String.valueOf(i) + "column_background_highlight_" + ckbkey +  "_Label";
 //				String ckbname  = secondboardprop.getProperty (propckbname);
@@ -197,13 +201,11 @@ public class BkfxHightLightForGeGuPropertyFilePnl extends JPanel {
 			
 			String propckbname  = String.valueOf(i) + "column_background_highlight_" + ckbkey +  "_Label";
 			String ckbname  = secondboardprop.getProperty (propckbname);
+			if(Strings.isNullOrEmpty(ckbname)) continue;
+			
 			JCheckBox ckbxhighlight = new JCheckBox(ckbname);
 			ckbxhighlight.setName(ckbkey);
-			
-			if(color != null && !color.equalsIgnoreCase("SYSTEM"))	ckbxhighlight.setBackground(Color.decode(color) );
-			else if(color != null && color.equalsIgnoreCase("SYSTEM")) { Color systemcolor = getSystemColorForHighLight(ckbkey);  ckbxhighlight.setBackground(systemcolor);}
-			else color = "#FF33FF";
-			
+			ckbxhighlight.setBackground(backgroundcolor );
 			ckbxhighlight.setFont(new Font("宋体", Font.PLAIN, 12));
 			ckbxhighlight.setForeground(new Color(0, 0, 0) );
 			ckbxhighlight.setSelected(true);
@@ -259,6 +261,10 @@ public class BkfxHightLightForGeGuPropertyFilePnl extends JPanel {
 		for(int m=0;m< kwinfolist.size(); m++) {
 			String ckbkey =  kwinfolist.get(m);
 			
+			Color backgroundcolor = null;
+			if(color != null && !color.equalsIgnoreCase("SYSTEM"))	backgroundcolor = Color.decode(color) ;
+			else if(color != null && color.equalsIgnoreCase("SYSTEM")) backgroundcolor = getSystemColorForHighLight(ckbkey);
+			
 //			if(ckbkey.equalsIgnoreCase("InFengXiFile")) {
 //				String propckbname  = String.valueOf(i) + "column_foreground_highlight_" + ckbkey +  "_Label";
 //				String ckbname  = secondboardprop.getProperty (propckbname);
@@ -268,13 +274,10 @@ public class BkfxHightLightForGeGuPropertyFilePnl extends JPanel {
 			
 			String propckbname  = String.valueOf(i) + "column_background_highlight_" + ckbkey +  "_Label";
 			String ckbname  = secondboardprop.getProperty (propckbname);
+			if(Strings.isNullOrEmpty(ckbname)) continue;
 			JCheckBox ckbxhighlight = new JCheckBox(ckbname);
 			ckbxhighlight.setName(ckbkey);
-			
-			if(color != null && !color.equalsIgnoreCase("SYSTEM"))	ckbxhighlight.setBackground(Color.decode(color) );
-			else if(color != null && color.equalsIgnoreCase("SYSTEM")) { Color systemcolor = getSystemColorForHighLight(ckbkey);  ckbxhighlight.setBackground(systemcolor);}
-			else color = "#FF33FF";
-			
+			ckbxhighlight.setBackground(backgroundcolor );
 			ckbxhighlight.setFont(new Font("宋体", Font.PLAIN, 12));
 			ckbxhighlight.setForeground(new Color(0, 0, 0) );
 			ckbxhighlight.setSelected(true);
@@ -348,21 +351,23 @@ public class BkfxHightLightForGeGuPropertyFilePnl extends JPanel {
 		for(int m=0;m< kwinfolist.size(); m++) {
 			String ckbkey =  kwinfolist.get(m);
 			
+			Color backgroundcolor = null;
+			if(color != null && !color.equalsIgnoreCase("SYSTEM"))	backgroundcolor = Color.decode(color) ;
+			else if(color != null && color.equalsIgnoreCase("SYSTEM")) backgroundcolor = getSystemColorForHighLight(ckbkey);
+			
 			if(ckbkey.equalsIgnoreCase("InFengXiFile")) { 
 				String propckbname  = String.valueOf(i) + "column_foreground_highlight_" + ckbkey +  "_Label";
 				String ckbname  = mainboardprop.getProperty (propckbname);
-				createBackGroundComponentsforHighLightOfInFengXiFile (ckbname, keyword, color); 
+				createBackGroundComponentsforHighLightOfInFengXiFile (ckbname, keyword, backgroundcolor); 
 				continue;
 			}
 			
 			String propckbname  = String.valueOf(i) + "column_foreground_highlight_" + ckbkey +  "_Label";
 			String ckbname  = mainboardprop.getProperty (propckbname);
+			if(Strings.isNullOrEmpty(ckbname)) continue;
 			JCheckBox ckbxhighlight = new JCheckBox(ckbname);
 			ckbxhighlight.setName(ckbkey);
-			
-			if(color != null && !color.equalsIgnoreCase("SYSTEM"))	ckbxhighlight.setBackground(Color.decode(color) );
-			else if(color != null && color.equalsIgnoreCase("SYSTEM")) { Color systemcolor = getSystemColorForHighLight(ckbkey);  ckbxhighlight.setBackground(systemcolor);}
-			
+			ckbxhighlight.setBackground(backgroundcolor );
 			ckbxhighlight.setFont(new Font("宋体", Font.PLAIN, 12));
 			ckbxhighlight.setForeground(new Color(0, 0, 0) );
 			ckbxhighlight.setSelected(true);
@@ -434,21 +439,23 @@ public class BkfxHightLightForGeGuPropertyFilePnl extends JPanel {
 		for(int m=0;m< kwinfolist.size(); m++) {
 			String ckbkey =  kwinfolist.get(m).trim();
 			
+			Color backgroundcolor = null;
+			if(color != null && !color.equalsIgnoreCase("SYSTEM"))	backgroundcolor = Color.decode(color) ;
+			else if(color != null && color.equalsIgnoreCase("SYSTEM")) backgroundcolor = getSystemColorForHighLight(ckbkey);  
+			
 			if(ckbkey.equalsIgnoreCase("InFengXiFile")) {
 				String propckbname  = String.valueOf(i) + "column_background_highlight_" + ckbkey +  "_Label";
 				String ckbname  = mainboardprop.getProperty (propckbname);
-				createBackGroundComponentsforHighLightOfInFengXiFile (ckbname, keyword, color); 
+				createBackGroundComponentsforHighLightOfInFengXiFile (ckbname, keyword, backgroundcolor); 
 				continue;
 			}
 			
 			String propckbname  = String.valueOf(i) + "column_background_highlight_" + ckbkey +  "_Label";
 			String ckbname  = mainboardprop.getProperty (propckbname.trim());
+			if(Strings.isNullOrEmpty(ckbname))		continue;
 			JCheckBox ckbxhighlight = new JCheckBox(ckbname);
 			ckbxhighlight.setName(ckbkey);
-			
-			if(color != null && !color.equalsIgnoreCase("SYSTEM"))	ckbxhighlight.setBackground(Color.decode(color) );
-			else if(color != null && color.equalsIgnoreCase("SYSTEM")) { Color systemcolor = getSystemColorForHighLight(ckbkey);  ckbxhighlight.setBackground(systemcolor);}
-			
+			ckbxhighlight.setBackground(backgroundcolor);
 			ckbxhighlight.setFont(new Font("宋体", Font.PLAIN, 12));
 			ckbxhighlight.setForeground(new Color(0, 0, 0) );
 			ckbxhighlight.setSelected(true);
@@ -514,14 +521,14 @@ public class BkfxHightLightForGeGuPropertyFilePnl extends JPanel {
 			refreshHightLightValueBasedOnBoardInput (ckbxhighlight, min, max);
 		}
 	}
-	private void createBackGroundComponentsforHighLightOfInFengXiFile( String ckbname, String keyword, String color) 
+	private void createBackGroundComponentsforHighLightOfInFengXiFile( String ckbname, String keyword, Color backgroundcolor) 
 	{
 		JCheckBox ckboxparsefile = new JCheckBox(ckbname);
 		ckboxparsefile.setName(keyword);
 		ckboxparsefile.setToolTipText(ckbname);
 		ckboxparsefile.setFont(new Font("宋体", Font.PLAIN, 12));
 		ckboxparsefile.setForeground(Color.BLACK);
-		if(color != null)	ckboxparsefile.setBackground(Color.decode(color) );
+		if(backgroundcolor != null)	ckboxparsefile.setBackground(backgroundcolor );
 		ckboxparsefile.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) 
 			{
@@ -547,8 +554,7 @@ public class BkfxHightLightForGeGuPropertyFilePnl extends JPanel {
 		
 		JTextField tfldparsedfile = new JTextField();
 		tfldparsedfile.setName(keyword);
-		if(color != null)
-			tfldparsedfile.setBackground(Color.decode(color) );
+		if(backgroundcolor != null)		tfldparsedfile.setBackground(backgroundcolor );
 		tfldparsedfile.setColumns(12);
 		tfldparsedfile.setToolTipText(tfldparsedfile.getText());
 		
@@ -572,6 +578,10 @@ public class BkfxHightLightForGeGuPropertyFilePnl extends JPanel {
 		case"ExtremeCjlZhanbi":  color = Color.BLUE;
 			break;
 		case"ExtremeCjeZhanbi":  color = Color.BLUE;
+			break;
+		case"InFengXiFile":  color = Color.YELLOW;
+			break;
+		case"RedSignHighLight":  color = Color.RED;
 			break;
 		}
 	 

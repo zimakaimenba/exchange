@@ -41,10 +41,10 @@ public abstract class TDXNodes extends BkChanYeLianTreeNode
 	private List<Range<LocalDate>> ruoshirange;
 	private List<Range<LocalDate>> dqguangzhurange;
 	
-	private Double nodecjezhanbiuplevel;
-	private Double nodecjezhanbidownlevel;
-	private Double nodecjlzhanbiuplevel;
-	private Double nodecjlzhanbidownlevel;
+//	private Double nodecjezhanbiuplevel;
+//	private Double nodecjezhanbidownlevel;
+//	private Double nodecjlzhanbiuplevel;
+//	private Double nodecjlzhanbidownlevel;
 	private ShuJuJiLuInfo ShuJuJiLu;
 	
 	public ShuJuJiLuInfo getShuJuJiLuInfo ()
@@ -54,31 +54,31 @@ public abstract class TDXNodes extends BkChanYeLianTreeNode
 		
 		return ShuJuJiLu;
 	}
-	public void setNodeCjeZhanbiLevel (Double min, Double max)
-	{
-		if(min == null || min == 0.0) min = null;
-		if(max == null || max == 0.0) max = null;
-		
-		this.nodecjezhanbidownlevel = min;
-		this.nodecjezhanbiuplevel = max;
-	}
-	public Double[] getNodeCjeZhanbiLevel ()
-	{
-		Double[] zblevel =  {nodecjezhanbidownlevel,nodecjezhanbiuplevel};
-		return zblevel;
-	}
-	public void setNodeCjlZhanbiLevel (Double min, Double max)
-	{
-		if(min == null || min == 0.0) min = null;
-		if(max == null || max == 0.0) max = null;
-		this.nodecjlzhanbidownlevel = min;
-		this.nodecjlzhanbiuplevel = max;
-	}
-	public Double[] getNodeCjlZhanbiLevel ()
-	{
-		Double[] zblevel =  {nodecjlzhanbidownlevel,nodecjlzhanbiuplevel};
-		return zblevel;
-	}
+//	public void setNodeCjeZhanbiLevel (Double min, Double max)
+//	{
+//		if(min == null || min == 0.0) min = null;
+//		if(max == null || max == 0.0) max = null;
+//		
+//		this.nodecjezhanbidownlevel = min;
+//		this.nodecjezhanbiuplevel = max;
+//	}
+//	public Double[] getNodeCjeZhanbiLevel ()
+//	{
+//		Double[] zblevel =  {nodecjezhanbidownlevel,nodecjezhanbiuplevel};
+//		return zblevel;
+//	}
+//	public void setNodeCjlZhanbiLevel (Double min, Double max)
+//	{
+//		if(min == null || min == 0.0) min = null;
+//		if(max == null || max == 0.0) max = null;
+//		this.nodecjlzhanbidownlevel = min;
+//		this.nodecjlzhanbiuplevel = max;
+//	}
+//	public Double[] getNodeCjlZhanbiLevel ()
+//	{
+//		Double[] zblevel =  {nodecjlzhanbidownlevel,nodecjlzhanbiuplevel};
+//		return zblevel;
+//	}
 	
 	public void addNewDuanQiGuanZhuRange (Range<LocalDate> inter) 
 	{

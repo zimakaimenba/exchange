@@ -180,8 +180,8 @@ public class BanKuaiDbOperation
 	        	tmpbk.getBanKuaiOperationSetting().setShowincyltree(rs.getBoolean("产业链树"));
 	        	tmpbk.getBanKuaiOperationSetting().setExportTowWlyFile(rs.getBoolean("周分析文件"));
 	        	tmpbk.getBanKuaiOperationSetting().setBanKuaiLabelColor(rs.getString("DefaultCOLOUR"));
-	        	tmpbk.setNodeCjlZhanbiLevel (rs.getDouble("成交量占比下限"), rs.getDouble("成交量占比上限"));
-	        	tmpbk.setNodeCjeZhanbiLevel (rs.getDouble("成交额占比下限"), rs.getDouble("成交额占比上限"));
+	        	tmpbk.getNodeJiBenMian().setNodeCjlZhanbiLevel (rs.getDouble("成交量占比下限"), rs.getDouble("成交量占比上限"));
+	        	tmpbk.getNodeJiBenMian().setNodeCjeZhanbiLevel (rs.getDouble("成交额占比下限"), rs.getDouble("成交额占比上限"));
 	        	
 	        	tmpsysbankuailiebiaoinfo.add(tmpbk);
 	        }
@@ -1055,8 +1055,7 @@ public class BanKuaiDbOperation
 		BanKuaiAndStockTree treeofbkstk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks();
 		
 		File file = new File(sysconfig.getTDXFengGeBanKuaiToGeGuFile() );
-		 if(!file.exists() ) {	 logger.debug("File not exist");	return;	 
-		 }
+		 if(!file.exists() ) {	 logger.debug("File not exist");	return;	 }
 		 
 		 FileInputStream in = null;  
 		 BufferedInputStream dis = null;
@@ -1641,8 +1640,8 @@ public class BanKuaiDbOperation
 	        			if(!shangshiriqi.equals(LocalDate.parse("1992-01-01"))) //通达信把所有暂时没有上市交易的股票上市日期都定义为1992-0101
 	        				tmpbk.getNodeJiBenMian().setShangShiRiQi( shangshiriqi );
 	        		} catch (java.lang.NullPointerException e) {}
-	        		tmpbk.setNodeCjeZhanbiLevel(rs.getDouble("成交额占比下限"), rs.getDouble("成交额占比上限"));
-	        		tmpbk.setNodeCjlZhanbiLevel(rs.getDouble("成交量占比下限"), rs.getDouble("成交量占比上限"));
+	        		tmpbk.getNodeJiBenMian().setNodeCjeZhanbiLevel(rs.getDouble("成交额占比下限"), rs.getDouble("成交额占比上限"));
+	        		tmpbk.getNodeJiBenMian().setNodeCjlZhanbiLevel(rs.getDouble("成交量占比下限"), rs.getDouble("成交量占比上限"));
 	        		if(nodename != null && nodename.toUpperCase().contains("ST"))
 	        			tmpbk.getShuJuJiLuInfo().setHasReviewedToday(true);
 		        	tmpsysbankuailiebiaoinfo.add(tmpbk);
@@ -7798,8 +7797,8 @@ public class BanKuaiDbOperation
 			        	Double cjlzbmax =  rspd.getDouble("成交量占比上限");
 			        	Double cjlzbmin =  rspd.getDouble("成交量占比下限");
 			        	
-			        	node.setNodeCjlZhanbiLevel(cjlzbmin, cjlzbmax);
-			        	node.setNodeCjeZhanbiLevel(cjezbmin, cjezbmax);
+			        	node.getNodeJiBenMian().setNodeCjlZhanbiLevel(cjlzbmin, cjlzbmax);
+			        	node.getNodeJiBenMian().setNodeCjeZhanbiLevel(cjezbmin, cjezbmax);
 			        }
 			} catch(java.lang.NullPointerException e){ e.printStackTrace();
 			} catch (SQLException e) {e.printStackTrace();

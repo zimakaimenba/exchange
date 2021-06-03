@@ -304,6 +304,13 @@ public class BanKuaiAndGeGuMatchingConditions implements Cloneable {
 		public Boolean shouldExportOnlyYellowSignBkStk() {
 			return this.onlyexportyellowsignbkstk ;
 		} 
+		private boolean onlyexportredsignbkstk;
+		public void setExportOnlyRedSignBkStk(boolean export) 	{
+			this.onlyexportredsignbkstk = export;
+		}
+		public Boolean shouldExportOnlyRedSignBkStk() {
+			return this.onlyexportredsignbkstk ;
+		}
 		private Double setttinglastwkcjezbgrowingratemin;
 		private Double setttinglastwkcjezbgrowingratemax;
 		public void setCjezbGrowingRate(Double min, Double max)

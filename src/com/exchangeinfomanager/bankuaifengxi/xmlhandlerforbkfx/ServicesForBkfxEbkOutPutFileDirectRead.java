@@ -1,5 +1,6 @@
 package com.exchangeinfomanager.bankuaifengxi.xmlhandlerforbkfx;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.time.DayOfWeek;
@@ -105,9 +106,9 @@ public class ServicesForBkfxEbkOutPutFileDirectRead implements ServicesForBkfxEb
 		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)treeModel.getRoot();
 		patchParsedFileToTrees(treeroot,this.edbfiledate,stockinfile,bkinfile);
 	}
-	
-	
-	
+	/*
+	 * 
+	 */
 	private void patchParsedFileToTrees (BkChanYeLianTreeNode treeroot, LocalDate localDate, Set<String> stockinfile, Set<String> bkinfile)
 	{
 		BkChanYeLianTreeNode treeChild;
@@ -121,20 +122,15 @@ public class ServicesForBkfxEbkOutPutFileDirectRead implements ServicesForBkfxEb
             int nodetype = treeChild.getType();
             if( nodetype == BkChanYeLianTreeNode.TDXBK) {
             	BanKuaiTreeRelated treerelated = (BanKuaiTreeRelated)treeChild.getNodeTreeRelated ();
-            	treerelated.setStocksNumInParsedFile (localDate, 0);
-            	
-            	if(!bkinfile.contains(nodecode))
-            		treerelated.setSelfIsMatchModel(localDate, false);
-            	else
-            		treerelated.setSelfIsMatchModel(localDate, true);
+            		String colorcode = String.format("#%02x%02x%02x", Color.YELLOW.getRed(), Color.YELLOW.getGreen(), Color.YELLOW.getGreen() );
+                	if(!bkinfile.contains(nodecode))		treerelated.setSelfIsMatchModel(localDate, colorcode, false);
+                	else   treerelated.setSelfIsMatchModel(localDate, colorcode,  true);
             } else 
             if( nodetype == BkChanYeLianTreeNode.TDXGG) {
             	NodesTreeRelated stofbktree = treeChild.getNodeTreeRelated();
-
-            	if(!stockinfile.contains(nodecode))
-            		stofbktree.setSelfIsMatchModel(localDate,false);
-            	else
-            		stofbktree.setSelfIsMatchModel(localDate,true);
+            		String colorcode = String.format("#%02x%02x%02x", Color.YELLOW.getRed(), Color.YELLOW.getGreen(), Color.YELLOW.getGreen() );
+                	if(!stockinfile.contains(nodecode))		stofbktree.setSelfIsMatchModel(localDate, colorcode, false);
+                	else   stofbktree.setSelfIsMatchModel(localDate, colorcode,  true);
             }
   	          
 	        patchParsedFileToTrees(treeChild,localDate,stockinfile,bkinfile);

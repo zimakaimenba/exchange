@@ -124,7 +124,7 @@ public class BanKuaiFengXiCategoryBarChartCjlZhanbiPnl extends BanKuaiFengXiCate
 	protected void setupNodeZhanbiDownLevel() 
 	{
 		TDXNodes node = super.getCurDisplayedNode();
-		Double[] zblevel = node.getNodeCjlZhanbiLevel();
+		Double[] zblevel = node.getNodeJiBenMian().getNodeCjlZhanbiLevel();
 		
 		ExtremeZhanbiSettingPnl zhanbisetting = new ExtremeZhanbiSettingPnl (zblevel,super.yaxisvaluewhenmouseclicked); 
 		JOptionPane.showMessageDialog(null, zhanbisetting,"设置占比上下限", JOptionPane.OK_CANCEL_OPTION);
@@ -134,7 +134,7 @@ public class BanKuaiFengXiCategoryBarChartCjlZhanbiPnl extends BanKuaiFengXiCate
 		svs.setNodeCjlExtremeUpDownZhanbiLevel (node,min,max);
 		svs = null;
 		
-		super.redecorateExtremeZhanbiLevel(node.getNodeCjlZhanbiLevel());
+		super.redecorateExtremeZhanbiLevel(node.getNodeJiBenMian().getNodeCjlZhanbiLevel());
 	}
 	public void reDisplayNodeDataOnDirection(String forwardbackward)
 	{
@@ -345,7 +345,7 @@ public class BanKuaiFengXiCategoryBarChartCjlZhanbiPnl extends BanKuaiFengXiCate
 		if(highestHigh == 0.0)
 			return;
 		
-		Double[] zblevel = super.getCurDisplayedNode().getNodeCjlZhanbiLevel();
+		Double[] zblevel = super.getCurDisplayedNode().getNodeJiBenMian().getNodeCjlZhanbiLevel();
 		if(zblevel[0] != null && zblevel[0] < lowestLow)
 			lowestLow = zblevel[0]; 
 		if(zblevel[1] != null && zblevel[1] > highestHigh)

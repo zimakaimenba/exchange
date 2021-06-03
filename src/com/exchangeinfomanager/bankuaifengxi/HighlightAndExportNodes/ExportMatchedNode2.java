@@ -1,5 +1,6 @@
 package com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes;
 
+import java.awt.Color;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -64,9 +65,15 @@ public class ExportMatchedNode2
 			Boolean yellowsignresult = checkNodeMatchedCurSettingConditonsOfYellowSign (childnode, exportdate, period);
 			if(yellowsignresult != null  ) {
 				if(!matchednodeset.contains(childnode)  && yellowsignresult ) matchednodeset.add((TDXNodes) childnode);
-				if(!checkednodesset.contains(childnode.getMyOwnCode()))  checkednodesset.add( childnode.getMyOwnCode() );
-				continue;
+//				if(!checkednodesset.contains(childnode.getMyOwnCode()))  checkednodesset.add( childnode.getMyOwnCode() );
 			} 
+			Boolean redsignresult = checkNodeMatchedCurSettingConditonsOfRedSign (childnode, exportdate, period);
+			if(redsignresult != null  ) {
+				if(!matchednodeset.contains(childnode)  && redsignresult ) matchednodeset.add((TDXNodes) childnode);
+//				if(!checkednodesset.contains(childnode.getMyOwnCode()))  checkednodesset.add( childnode.getMyOwnCode() );
+			}
+			
+			if(this.cond.shouldExportOnlyRedSignBkStk() || this.cond.shouldExportOnlyYellowSignBkStk() ) continue;
 			
 			//normal part
 			if(childnode.getType() == BkChanYeLianTreeNode.TDXBK ) {
@@ -138,12 +145,26 @@ public class ExportMatchedNode2
 	/*
 	 * 检查黄标
 	 */
-	private Boolean checkNodeMatchedCurSettingConditonsOfYellowSign(BkChanYeLianTreeNode childnode, LocalDate exportdate,
-			String period) 
+	private Boolean checkNodeMatchedCurSettingConditonsOfYellowSign(BkChanYeLianTreeNode childnode, LocalDate exportdate,	String period) 
 	{
 		if(this.cond.shouldExportOnlyYellowSignBkStk() ) {
 			NodesTreeRelated filetree = childnode.getNodeTreeRelated ();
-			if(!filetree.selfIsMatchModel(exportdate) )		return false;
+			String colorcode = String.format("#%02x%02x%02x", Color.YELLOW.getRed(), Color.YELLOW.getGreen(), Color.YELLOW.getGreen() );
+			if(!filetree.selfIsMatchModel(exportdate,colorcode) )		return false;
+			else	return true;
+		} 
+		
+		return null;
+	}
+	/*
+	 * 检查红标
+	 */
+	private Boolean checkNodeMatchedCurSettingConditonsOfRedSign(BkChanYeLianTreeNode childnode, LocalDate exportdate,	String period) 
+	{
+		if(this.cond.shouldExportOnlyRedSignBkStk() ) {
+			NodesTreeRelated filetree = childnode.getNodeTreeRelated ();
+			String colorcode = String.format("#%02x%02x%02x", Color.RED.getRed(), Color.RED.getGreen(), Color.RED.getGreen() );
+			if(!filetree.selfIsMatchModel(exportdate,colorcode) )		return false;
 			else	return true;
 		} 
 		

@@ -36,6 +36,38 @@ public class NodeJiBenMian
 			private LocalDate lastestcaibaoriqi;
 			private List<Interval> minxing;
 			
+			private Double nodecjezhanbiuplevel;
+			private Double nodecjezhanbidownlevel;
+			private Double nodecjlzhanbiuplevel;
+			private Double nodecjlzhanbidownlevel;
+			
+			
+			public void setNodeCjeZhanbiLevel (Double min, Double max)
+			{
+				if(min == null || min == 0.0) min = null;
+				if(max == null || max == 0.0) max = null;
+				
+				this.nodecjezhanbidownlevel = min;
+				this.nodecjezhanbiuplevel = max;
+			}
+			public Double[] getNodeCjeZhanbiLevel ()
+			{
+				Double[] zblevel =  {nodecjezhanbidownlevel,nodecjezhanbiuplevel};
+				return zblevel;
+			}
+			public void setNodeCjlZhanbiLevel (Double min, Double max)
+			{
+				if(min == null || min == 0.0) min = null;
+				if(max == null || max == 0.0) max = null;
+				this.nodecjlzhanbidownlevel = min;
+				this.nodecjlzhanbiuplevel = max;
+			}
+			public Double[] getNodeCjlZhanbiLevel ()
+			{
+				Double[] zblevel =  {nodecjlzhanbidownlevel,nodecjlzhanbiuplevel};
+				return zblevel;
+			}
+			
 			public void setLastestCaiBaoDate (LocalDate time)
 			{
 				if(lastestcaibaoriqi == null)

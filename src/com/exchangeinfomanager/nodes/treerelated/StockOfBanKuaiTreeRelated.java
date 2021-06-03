@@ -2,11 +2,15 @@ package com.exchangeinfomanager.nodes.treerelated;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 
 /*
  * 
@@ -19,33 +23,43 @@ public class StockOfBanKuaiTreeRelated implements NodesTreeRelated
 	}
 	
 	private BkChanYeLianTreeNode node;
-	private Set<LocalDate> isinparsedfile; //表明个股在指定日期是否在分析文件中
+	private Multimap<LocalDate, String> isinparsedfile; //表明个股在指定日期是否在分析文件中
 	
 	@Override
-	public void setSelfIsMatchModel(LocalDate selfinsetdate, Boolean inorout)
+	public void setSelfIsMatchModel (LocalDate selfinsetdate, String colorcode,  Boolean inorout)
 	{
-		if(isinparsedfile == null) 
-			isinparsedfile = new HashSet<LocalDate> ();
+		if(isinparsedfile == null)   isinparsedfile = HashMultimap.create();
 		
 		LocalDate friday = selfinsetdate.with(DayOfWeek.FRIDAY);
-		if(inorout && !isinparsedfile.contains(friday))
-			isinparsedfile.add(friday);
-		else 
-		if(!inorout)
-			isinparsedfile.remove(friday);
+		if(inorout) {
+			Collection<String> fruits = isinparsedfile.get(friday);
+			Boolean checkresult = fruits.contains(colorcode);
+			if(!checkresult) isinparsedfile.put(friday, colorcode);
+		} else  isinparsedfile.remove(friday, colorcode);
+		
 	}
 	@Override
-	public Boolean selfIsMatchModel(LocalDate selfinsetdate) 
+	public Boolean selfIsMatchModel (LocalDate selfinsetdate,String colorcode) 
 	{
+		if(isinparsedfile == null) return false;
+		
 		LocalDate friday = selfinsetdate.with(DayOfWeek.FRIDAY);
 		try {
-			 if( isinparsedfile.contains(friday) )
-				 return true;
-			 else
-				  return false;
-		} catch(java.lang.NullPointerException e) {
-			return false;
-		}
+			Collection<String> result = isinparsedfile.get(friday);
+			Boolean checkresult = result.contains(colorcode);
+			return checkresult;
+		} catch(java.lang.NullPointerException e) {return null;}
+	}
+	@Override
+	public Collection<String> selfIsMatchModelSet (LocalDate selfinsetdate) 
+	{
+		if(isinparsedfile == null) return null;
+		
+		LocalDate friday = selfinsetdate.with(DayOfWeek.FRIDAY);
+		try {
+			Collection<String> fruits = isinparsedfile.get(friday);
+			return fruits;
+		} catch(java.lang.NullPointerException e) {	return null;}
 	}
 	@Override
 	public void setStocksNumInParsedFile(LocalDate parsefiledate, Integer stocksnum) {

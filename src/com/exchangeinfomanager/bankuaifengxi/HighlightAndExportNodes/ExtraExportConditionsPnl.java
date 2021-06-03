@@ -85,6 +85,7 @@ public class ExtraExportConditionsPnl extends JPanel
 	private JButton btnimportsavedformula;
 	private JButton btnedit;
 	private JButton btndailykzhangfu;
+	private JCheckBox chckbxexportredbkstk;
 	/**
 	 * Create the panel.
 	 */
@@ -168,6 +169,12 @@ public class ExtraExportConditionsPnl extends JPanel
 			this.cond.setExportOnlyYellowSignBkStk (true);
 		else
 			this.cond.setExportOnlyYellowSignBkStk (false);
+		
+		if(chckbxexportredbkstk.isSelected())
+			this.cond.setExportOnlyRedSignBkStk (true);
+		else
+			this.cond.setExportOnlyRedSignBkStk (false);
+		
 		
 		this.cond.setExportConditionFormula(tfldexportformula.getText().trim());
 		
@@ -516,6 +523,29 @@ public class ExtraExportConditionsPnl extends JPanel
 				huchiOperationsForJCheckBox (huchixuanzeupdate,chckbxexportyellowbkstk);
 			}
 		});
+		
+		chckbxexportredbkstk.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				if(chckbxexportredbkstk.isSelected()) {
+					chkbxonlyexportbk.setEnabled(false);
+					chkbxonlyexportbk.setSelected(false);
+					
+					chkbxonlybkstock.setEnabled(false);
+					chkbxonlybkstock.setSelected(false);
+					
+					chkbxonlycurstock.setEnabled(false);
+					chkbxonlycurstock.setSelected(false);
+				} else {
+					chkbxonlyexportbk.setEnabled(true);
+					chkbxonlycurstock.setEnabled(true);
+					chkbxonlybkstock.setEnabled(true);
+				}
+				
+				huchiOperationsForJCheckBox (huchixuanzebasic,chckbxexportredbkstk);
+				huchiOperationsForJCheckBox (huchixuanzeupdate,chckbxexportredbkstk);
+			}
+		});
 
 		
 	}
@@ -648,6 +678,8 @@ btncjezbdpminwk.setEnabled(false);
 		btnedit = new JButton("\u7F16\u8F91");
 		
 		btndailykzhangfu = new JButton("\u5468\u5185\u65E5K\u6DA8\u5E45");
+		
+		chckbxexportredbkstk = new JCheckBox("\u5BFC\u51FA\u7EA2\u6807\u4E2A\u80A1\u548C\u677F\u5757");
 		GroupLayout groupLayout = new GroupLayout(this);
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
@@ -736,7 +768,10 @@ btncjezbdpminwk.setEnabled(false);
 							.addContainerGap()
 							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 								.addComponent(lblNewLabel_1)
-								.addComponent(chckbxexportyellowbkstk)))
+								.addGroup(groupLayout.createSequentialGroup()
+									.addComponent(chckbxexportyellowbkstk)
+									.addGap(29)
+									.addComponent(chckbxexportredbkstk))))
 						.addGroup(groupLayout.createSequentialGroup()
 							.addContainerGap()
 							.addComponent(lblNewLabel))
@@ -777,7 +812,9 @@ btncjezbdpminwk.setEnabled(false);
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(label_2)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(chckbxexportyellowbkstk)
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(chckbxexportyellowbkstk)
+						.addComponent(chckbxexportredbkstk))
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(lblNewLabel_1)
 					.addPreferredGap(ComponentPlacement.RELATED)

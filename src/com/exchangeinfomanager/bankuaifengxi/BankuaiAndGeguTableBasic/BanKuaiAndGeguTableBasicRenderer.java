@@ -60,11 +60,12 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 	{
 		String valuetext =""; Font font = this.getFont();Color foreground = Color.BLACK, background = Color.white;
 		
-	    String current_column_bg_kw = null; String column_info_valueformat ="";
+//	    String current_column_bg_kw = null; 
+//		String column_info_valueformat ="";
 	    switch (col) {
 	    case 0:
 	    	Object[] column0rendererresults = getRendererResultsByColumnIndex (node,value,row,col);
-	    	current_column_bg_kw = (String) column0rendererresults[0];
+//	    	current_column_bg_kw = (String) column0rendererresults[0];
 	    	valuetext = (String) column0rendererresults[1];
 	    	background = (Color)column0rendererresults[2];
 	    	foreground = (Color)column0rendererresults[3];
@@ -72,7 +73,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	break;
         case 1:
         	Object[] column0rendererresults1 = getRendererResultsByColumnIndex (node,value,row,col);
-	    	current_column_bg_kw = (String) column0rendererresults1[0];
+//	    	current_column_bg_kw = (String) column0rendererresults1[0];
 	    	valuetext = (String) column0rendererresults1[1];
 	    	background = (Color)column0rendererresults1[2];
 	    	foreground = (Color)column0rendererresults1[3];
@@ -80,7 +81,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	break;
         case 2:
         	Object[] column0rendererresults2 = getRendererResultsByColumnIndex (node,value,row,col);
-	    	current_column_bg_kw = (String) column0rendererresults2[0];
+//	    	current_column_bg_kw = (String) column0rendererresults2[0];
 	    	valuetext = (String) column0rendererresults2[1];
 	    	background = (Color)column0rendererresults2[2];
 	    	foreground = (Color)column0rendererresults2[3];
@@ -88,7 +89,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	break;
         case 3:
         	Object[] column0rendererresults3 = getRendererResultsByColumnIndex (node,value,row,col);
-	    	current_column_bg_kw = (String) column0rendererresults3[0];
+//	    	current_column_bg_kw = (String) column0rendererresults3[0];
 	    	valuetext = (String) column0rendererresults3[1];
 	    	background = (Color)column0rendererresults3[2];
 	    	foreground = (Color)column0rendererresults3[3];
@@ -96,7 +97,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	break;
         case 4:
         	Object[] column0rendererresults4 = getRendererResultsByColumnIndex (node,value,row,col);
-	    	current_column_bg_kw = (String) column0rendererresults4[0];
+//	    	current_column_bg_kw = (String) column0rendererresults4[0];
 	    	valuetext = (String) column0rendererresults4[1];
 	    	background = (Color)column0rendererresults4[2];
 	    	foreground = (Color)column0rendererresults4[3];
@@ -104,7 +105,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	break;
         case 5:
         	Object[] column0rendererresults5 = getRendererResultsByColumnIndex (node,value,row,col);
-	    	current_column_bg_kw = (String) column0rendererresults5[0];
+//	    	current_column_bg_kw = (String) column0rendererresults5[0];
 	    	valuetext = (String) column0rendererresults5[1];
 	    	background = (Color)column0rendererresults5[2];
 	    	foreground = (Color)column0rendererresults5[3];
@@ -112,7 +113,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	break;
         case 6:
         	Object[] column0rendererresults6 = getRendererResultsByColumnIndex (node,value,row,col);
-	    	current_column_bg_kw = (String) column0rendererresults6[0];
+//	    	current_column_bg_kw = (String) column0rendererresults6[0];
 	    	valuetext = (String) column0rendererresults6[1];
 	    	background = (Color)column0rendererresults6[2];
 	    	foreground = (Color)column0rendererresults6[3];
@@ -120,7 +121,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	break;
         case 7:
         	Object[] column0rendererresults7 = getRendererResultsByColumnIndex (node,value,row,col);
-	    	current_column_bg_kw = (String) column0rendererresults7[0];
+//	    	current_column_bg_kw = (String) column0rendererresults7[0];
 	    	valuetext = (String) column0rendererresults7[1];
 	    	background = (Color)column0rendererresults7[2];
 	    	foreground = (Color)column0rendererresults7[3];
@@ -128,7 +129,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	break;
         case 8:
         	Object[] column0rendererresults8 = getRendererResultsByColumnIndex (node,value,row,col);
-	    	current_column_bg_kw = (String) column0rendererresults8[0];
+//	    	current_column_bg_kw = (String) column0rendererresults8[0];
 	    	valuetext = (String) column0rendererresults8[1];
 	    	background = (Color)column0rendererresults8[2];
 	    	foreground = (Color)column0rendererresults8[3];
@@ -136,7 +137,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	break;
         case 9:
         	Object[] column0rendererresults9 = getRendererResultsByColumnIndex (node,value,row,col);
-	    	current_column_bg_kw = (String) column0rendererresults9[0];
+//	    	current_column_bg_kw = (String) column0rendererresults9[0];
 	    	valuetext = (String) column0rendererresults9[1];
 	    	background = (Color)column0rendererresults9[2];
 	    	foreground = (Color)column0rendererresults9[3];
@@ -144,7 +145,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	break;
         case 10:
         	Object[] column0rendererresults10 = getRendererResultsByColumnIndex (node,value,row,col);
-	    	current_column_bg_kw = (String) column0rendererresults10[0];
+//	    	current_column_bg_kw = (String) column0rendererresults10[0];
 	    	valuetext = (String) column0rendererresults10[1];
 	    	background = (Color)column0rendererresults10[2];
 	    	foreground = (Color)column0rendererresults10[3];
@@ -152,7 +153,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	break;
         case 11:
         	Object[] column0rendererresults11 = getRendererResultsByColumnIndex (node,value,row,col);
-	    	current_column_bg_kw = (String) column0rendererresults11[0];
+//	    	current_column_bg_kw = (String) column0rendererresults11[0];
 	    	valuetext = (String) column0rendererresults11[1];
 	    	background = (Color)column0rendererresults11[2];
 	    	foreground = (Color)column0rendererresults11[3];
@@ -173,17 +174,21 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         if(range != null)  
         	background = new Color(102,178,255);
 	    
-	    
+        String column_bg_hidekw  = prop.getProperty ( String.valueOf(col) + "column_background_highlight_neverhideafterreaded" );
+        Boolean shouldhidecol = true;
+        if(column_bg_hidekw != null && column_bg_hidekw.equalsIgnoreCase("TRUE"))
+        	shouldhidecol = false;
+        
 	    if(reviewedtoday && table.isRowSelected(row) ) 
         	font = new Font(font.getName(), font.getStyle() | Font.ITALIC,font.getSize());
         else
-        if(reviewedtoday && !table.isRowSelected(row) && ( current_column_bg_kw == null || !current_column_bg_kw.equalsIgnoreCase("infengxifile") ) ) { //已经浏览过的个股，全部灰色，不会混淆，更加清晰
+        if(reviewedtoday && !table.isRowSelected(row) && shouldhidecol ) { //已经浏览过的个股，全部灰色，不会混淆，更加清晰
             	font = new Font(font.getName(), font.getStyle() | Font.ITALIC,font.getSize());
             	background = Color.gray;
         } else
-        if (reviewedtoday && !table.isRowSelected(row) && current_column_bg_kw != null && current_column_bg_kw.equalsIgnoreCase("infengxifile") ) {//已经浏览过的个股，全部灰色，不会混淆，更加清晰
-        	font = new Font(font.getName(), font.getStyle() | Font.ITALIC,font.getSize());
-        	if(background == Color.WHITE)     		background = Color.gray;
+       	if(reviewedtoday && !table.isRowSelected(row) && !shouldhidecol && background.equals(Color.WHITE) ) { //已经浏览过的个股，全部灰色，不会混淆，更加清晰
+            	font = new Font(font.getName(), font.getStyle() | Font.ITALIC,font.getSize());
+            	background = Color.gray;
         }
 
 	    if(table.isRowSelected(row)) {
@@ -418,7 +423,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 			if(has) foreground = Color.RED;
 			break;
 		case "ExtremeCjlZhanbi" :
-			Double[] extremecjl = node.getNodeCjlZhanbiLevel();
+			Double[] extremecjl = node.getNodeJiBenMian().getNodeCjlZhanbiLevel();
 			Double zhanbi = nodexdata.getChenJiaoLiangZhanBi(requireddate, 0);
 			if(extremecjl[0] != null && zhanbi < extremecjl[0] && matchcond.getHighlightExtremeCjlZhanbiBenchMark())
 				foreground = Color.RED;
@@ -427,7 +432,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 				foreground = Color.GREEN;
 			break;
 		case "ExtremeCjeZhanbi" :
-			Double[] extremecje = node.getNodeCjeZhanbiLevel();
+			Double[] extremecje = node.getNodeJiBenMian().getNodeCjeZhanbiLevel();
 			Double cjezhanbi = nodexdata.getChenJiaoErZhanBi(requireddate, 0);
 			if(extremecje[0] != null && cjezhanbi < extremecje[0] && matchcond.getHighlightExtremeCjeZhanbiBenchMark())
 				foreground = Color.RED;
@@ -497,7 +502,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 		Color background = Color.WHITE;
 		switch (column_keyword) {
 		case "ExtremeCjlZhanbi" :
-			Double[] extremecjl = node.getNodeCjlZhanbiLevel();
+			Double[] extremecjl = node.getNodeJiBenMian().getNodeCjlZhanbiLevel();
 			Double zhanbi = nodexdata.getChenJiaoLiangZhanBi(requireddate, 0);
 			if(extremecjl[0] != null && zhanbi < extremecjl[0] && matchcond.getHighlightExtremeCjlZhanbiBenchMark())
 				background = Color.RED;
@@ -507,7 +512,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 			break;
 			
 		case "ExtremeCjeZhanbi" :
-			Double[] extremecje = node.getNodeCjeZhanbiLevel();
+			Double[] extremecje = node.getNodeJiBenMian().getNodeCjeZhanbiLevel();
 			Double cjezhanbi = nodexdata.getChenJiaoErZhanBi(requireddate, 0);
 			if(extremecje[0] != null && cjezhanbi < extremecje[0] && matchcond.getHighlightExtremeCjeZhanbiBenchMark())
 				background = Color.RED;
@@ -535,13 +540,32 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	else	stofbktree = node.getNodeTreeRelated();
         	if(stofbktree == null) background = Color.WHITE;
         	else {
-        		Boolean isin = stofbktree.selfIsMatchModel(requireddate);
+        		String colorcode = String.format("#%02x%02x%02x", Color.YELLOW.getRed(), Color.YELLOW.getGreen(), Color.YELLOW.getGreen() );
+        		Boolean isin = stofbktree.selfIsMatchModel(requireddate,colorcode);
     	    	if(isin != null && isin  ) 
     	    		if(predefinedcolor != null && !predefinedcolor.toUpperCase().equals("SYSTEM") )
     			    	background = Color.decode( predefinedcolor );
     	    		else if(predefinedcolor != null && predefinedcolor.toUpperCase().equals("SYSTEM") )
     	    			background = Color.ORANGE;
     			    else background = Color.ORANGE;  
+    	    	else 
+    	    		background = Color.WHITE;
+        	}
+        	break;
+        case "RedSignHighLight":
+        	NodesTreeRelated stofbktree1 ;
+        	if(node instanceof StockOfBanKuai) stofbktree1 = ((StockOfBanKuai)node).getStock().getNodeTreeRelated();
+        	else	stofbktree1 = node.getNodeTreeRelated();
+        	if(stofbktree1 == null) background = Color.WHITE;
+        	else {
+        		String colorcode = String.format("#%02x%02x%02x", Color.RED.getRed(), Color.RED.getGreen(), Color.RED.getGreen() );
+        		Boolean isin = stofbktree1.selfIsMatchModel(requireddate,colorcode);
+    	    	if(isin != null && isin  ) 
+    	    		if(predefinedcolor != null && !predefinedcolor.toUpperCase().equals("SYSTEM") )
+    			    	background = Color.decode( predefinedcolor );
+    	    		else if(predefinedcolor != null && predefinedcolor.toUpperCase().equals("SYSTEM") )
+    	    			background = Color.RED;
+    			    else background = Color.RED;  
     	    	else 
     	    		background = Color.WHITE;
         	}
