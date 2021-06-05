@@ -535,7 +535,6 @@ public class BkfxHightLightForGeGuPropertyFilePnl extends JPanel {
 				String keyword = ckboxparsefile.getName();
 				JTextField tmptfldparsedfile = getHighlightTextField(keyword);
 				if(ckboxparsefile.isSelected()) {
-					if( Strings.isNullOrEmpty(tmptfldparsedfile.getText() )) {
 						Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
 						setCursor(hourglassCursor);
 						
@@ -544,9 +543,7 @@ public class BkfxHightLightForGeGuPropertyFilePnl extends JPanel {
 						hourglassCursor = null;
 						Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
 						setCursor(hourglassCursor2);
-					}
-				} else
-					tmptfldparsedfile.setText("");
+				} 
 			}
 		});
 		
@@ -736,15 +733,21 @@ public class BkfxHightLightForGeGuPropertyFilePnl extends JPanel {
 			int exchangeresult = JOptionPane.showConfirmDialog(null,"文件指定日期是" + edbfiledate + "。是否更改到该日期？", "是否更改日期？", JOptionPane.OK_CANCEL_OPTION);
 			if(exchangeresult != JOptionPane.CANCEL_OPTION) {
 				bkfxfh.resetBkfxFileDate(edbfiledate);
-				try {
-					this.firePropertyChange(TIMESHOULDCHANGE_PROPERTY, "", edbfiledate);
+				try {	this.firePropertyChange(TIMESHOULDCHANGE_PROPERTY, "", edbfiledate);
 				} catch (Exception e) {	e.printStackTrace();}
 			 } else
 				 bkfxfh.resetBkfxFileDate(curselectdate);
+			
+			
+			exchangeresult = JOptionPane.showConfirmDialog(null, bkfxfh.getCurBkfxSettingDate ().toString() + "原有记录是否需要取消？", "是否取消？", JOptionPane.OK_CANCEL_OPTION);
+			if(exchangeresult == JOptionPane.OK_OPTION) { tfldparsedfile.setText(filename);	bkfxfh.resetOldRecord(true); }
+			else { tfldparsedfile.setText(filename+ ";" + tfldparsedfile.getText()) ;bkfxfh.resetOldRecord(false); }
 		}
 				
 		 bkfxfh.patchOutPutFileToTrees (CreateExchangeTree.CreateTreeOfBanKuaiAndStocks() );
-		 tfldparsedfile.setText(filename);
+		 
+		 tfldparsedfile.setToolTipText(tfldparsedfile.getText() );
+		 this.globeexpc.setHighLightDataWithFiles ( bkfxfh.getCurBkfxSettingDate (), filename );
 	}
 
 	

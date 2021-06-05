@@ -29,32 +29,23 @@ import com.google.common.io.Files;
 public class ServicesForBkfxEbkOutPutFileDirectRead implements ServicesForBkfxEbkOutPutFile 
 {
 	private File fileebk;
-//	private SystemConfigration sysconfig;
 	private LocalDate edbfiledate;
+	private Boolean resetoldrecord = true;
 
 	public ServicesForBkfxEbkOutPutFileDirectRead ()
-	{
-//		this.sysconfig = SystemConfigration.getInstance();
-	}
+	{}
 
 	@Override
 	public LocalDate setBkfeOutPutFile(String ebkfile) 
 	{
 		if(ebkfile.endsWith("EBK")) {
 			fileebk = new File( ebkfile );
-			try {
-					if (!fileebk.exists()) 
-						return null;
-			} catch (Exception e) {
-					e.printStackTrace();
-					return null;
-			}
+			try { if (!fileebk.exists())	return null;
+			} catch (Exception e) {	e.printStackTrace();	return null;}
 		}
 		
 		edbfiledate = this.getBkfxFileDate();
-		
 		return edbfiledate;
-		
 	}
 	public LocalDate getBkfxFileDate ()
 	{
@@ -63,26 +54,28 @@ public class ServicesForBkfxEbkOutPutFileDirectRead implements ServicesForBkfxEb
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 			
 			String filenamedate = null;
-			if(this.fileebk != null)
+			if(this.fileebk != null) {
 				filenamedate = fileebk.getName().replaceAll("\\D+","");
-			if(filenamedate.length() >8)
-				filenamedate = filenamedate.substring(0, 8);
-			
+				if(filenamedate.length() >8)	filenamedate = filenamedate.substring(0, 8);
+			}
+
 			localDate = LocalDate.parse(filenamedate, formatter);
-			
 			return localDate;
-		} catch (java.time.format.DateTimeParseException e) {
-				return null;
-		}
+		} catch (java.time.format.DateTimeParseException e) {return null;}
 	}
 	public void resetBkfxFileDate (LocalDate localDate)
 	{
-		if(localDate != null)
-			this.edbfiledate = localDate.with(DayOfWeek.FRIDAY);
-		else
-			this.edbfiledate = LocalDate.now().with(DayOfWeek.FRIDAY);
+		if(localDate != null)	this.edbfiledate = localDate.with(DayOfWeek.FRIDAY);
+		else	this.edbfiledate = LocalDate.now().with(DayOfWeek.FRIDAY);
 	}
-
+	public LocalDate getCurBkfxSettingDate ()
+	{
+		return this.edbfiledate;
+	}
+	public void resetOldRecord (Boolean reornot)
+	{
+		this.resetoldrecord = reornot;
+	}
 	@Override
 	public void patchOutPutFileToTrees(BanKuaiAndStockTree tree) 
 	{
@@ -104,12 +97,12 @@ public class ServicesForBkfxEbkOutPutFileDirectRead implements ServicesForBkfxEb
 		
 		InvisibleTreeModel treeModel = (InvisibleTreeModel)tree.getModel();
 		BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)treeModel.getRoot();
-		patchParsedFileToTrees(treeroot,this.edbfiledate,stockinfile,bkinfile);
+		patchParsedFileToTrees(treeroot,this.edbfiledate,stockinfile,bkinfile,this.resetoldrecord);
 	}
 	/*
 	 * 
 	 */
-	private void patchParsedFileToTrees (BkChanYeLianTreeNode treeroot, LocalDate localDate, Set<String> stockinfile, Set<String> bkinfile)
+	private void patchParsedFileToTrees (BkChanYeLianTreeNode treeroot, LocalDate localDate, Set<String> stockinfile, Set<String> bkinfile, boolean removeoldrecord)
 	{
 		BkChanYeLianTreeNode treeChild;
 		if(localDate == null) localDate  = LocalDate.now();
@@ -123,17 +116,21 @@ public class ServicesForBkfxEbkOutPutFileDirectRead implements ServicesForBkfxEb
             if( nodetype == BkChanYeLianTreeNode.TDXBK) {
             	BanKuaiTreeRelated treerelated = (BanKuaiTreeRelated)treeChild.getNodeTreeRelated ();
             		String colorcode = String.format("#%02x%02x%02x", Color.YELLOW.getRed(), Color.YELLOW.getGreen(), Color.YELLOW.getGreen() );
-                	if(!bkinfile.contains(nodecode))		treerelated.setSelfIsMatchModel(localDate, colorcode, false);
-                	else   treerelated.setSelfIsMatchModel(localDate, colorcode,  true);
+                	if(!bkinfile.contains(nodecode) && removeoldrecord)		treerelated.setSelfIsMatchModel(localDate, colorcode, false);
+                	else   if(bkinfile.contains(nodecode) ) treerelated.setSelfIsMatchModel(localDate, colorcode,  true);
+//                	else  treerelated.setSelfIsMatchModel(localDate, colorcode, false);
             } else 
             if( nodetype == BkChanYeLianTreeNode.TDXGG) {
             	NodesTreeRelated stofbktree = treeChild.getNodeTreeRelated();
             		String colorcode = String.format("#%02x%02x%02x", Color.YELLOW.getRed(), Color.YELLOW.getGreen(), Color.YELLOW.getGreen() );
-                	if(!stockinfile.contains(nodecode))		stofbktree.setSelfIsMatchModel(localDate, colorcode, false);
-                	else   stofbktree.setSelfIsMatchModel(localDate, colorcode,  true);
+                	if(!stockinfile.contains(nodecode) && removeoldrecord)		
+                		stofbktree.setSelfIsMatchModel(localDate, colorcode, false);
+                	else if(stockinfile.contains(nodecode) )  
+                		stofbktree.setSelfIsMatchModel(localDate, colorcode,  true);
+//                	else  stofbktree.setSelfIsMatchModel(localDate, colorcode, false);
             }
   	          
-	        patchParsedFileToTrees(treeChild,localDate,stockinfile,bkinfile);
+	        patchParsedFileToTrees(treeChild,localDate,stockinfile,bkinfile,removeoldrecord);
         }
 	}
 

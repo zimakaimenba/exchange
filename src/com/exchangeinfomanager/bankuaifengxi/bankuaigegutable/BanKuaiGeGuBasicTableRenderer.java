@@ -40,17 +40,8 @@ public class BanKuaiGeGuBasicTableRenderer extends BanKuaiAndGeguTableBasicRende
 	
 	protected BanKuaiGeGuBasicTableRenderer (Properties prop1) {
 		super (prop1);
-//		this.prop = prop1;
 	}
 	
-	private Border outsidefortag = new MatteBorder(1, 0, 1, 0, Color.RED);
-	private Border insidefortag = new EmptyBorder(0, 1, 0, 1);
-	private Border highlightfortag = new CompoundBorder(outsidefortag, insidefortag);
-	//
-	private Border outsideforintersectionbk = new MatteBorder(1, 0, 1, 0, Color.BLUE.brighter());
-	private Border insideforintersectionbk = new EmptyBorder(0, 1, 0, 1);
-	private Border highlightforintersectionbk = new CompoundBorder(outsideforintersectionbk, insideforintersectionbk);
-
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,int row,int col) 
 	{
 		Component comp = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
@@ -65,8 +56,16 @@ public class BanKuaiGeGuBasicTableRenderer extends BanKuaiAndGeguTableBasicRende
 	    //对于临时个股表，可以突出显示出正表中该板块的所有个股
 	    BanKuai interbk = ((BanKuaiGeGuBasicTableModel)tablemodel).getInterSetctionBanKuai();
 	    if(interbk!= null) {
-	    	if( interbk.getBanKuaiGeGu (stock.getMyOwnCode())  != null)
+	    	if( interbk.getBanKuaiGeGu (stock.getMyOwnCode())  != null) {
+	    		String IntersectionWithTempBanKuaiColor = prop.getProperty ("IntersectionWithTempBanKuaiColor");
+	    		Color intersectioncolor;									 
+	    		if(IntersectionWithTempBanKuaiColor != null)	intersectioncolor = Color.decode(IntersectionWithTempBanKuaiColor);
+	    		else 	intersectioncolor = Color.BLACK;
+	    		Border outsideforintersectionbk = new MatteBorder(1, 0, 1, 0, intersectioncolor.darker());
+	    		Border insideforintersectionbk = new EmptyBorder(0, 1, 0, 1);
+	    		Border highlightforintersectionbk = new CompoundBorder(outsideforintersectionbk, insideforintersectionbk);
 	    		jc.setBorder( highlightforintersectionbk );
+	    	}
 	    }
 	    //
 	    Collection<Tag> keywordsset = ((BanKuaiGeGuBasicTableModel)tablemodel).getCurrentHighlightKeyWords ();
@@ -74,6 +73,13 @@ public class BanKuaiGeGuBasicTableRenderer extends BanKuaiAndGeguTableBasicRende
 	    	Collection<Tag> curtags = stock.getNodeTags ();
 		    SetView<Tag> intersection = Sets.intersection((HashSet<Tag>)keywordsset, (HashSet<Tag>)curtags);
 		    if( !intersection.isEmpty() && intersection.size() == keywordsset.size() ) {
+		    	String IntersectionWithTagsColor = prop.getProperty ( "IntersectionWithTagsColor");
+	    		Color tagcolor;
+	    		if(IntersectionWithTagsColor != null)	tagcolor = Color.decode(IntersectionWithTagsColor);
+	    		else 	tagcolor = Color.RED;
+		    	Border outsidefortag = new MatteBorder(1, 0, 1, 0,tagcolor);
+		    	Border insidefortag = new EmptyBorder(0, 1, 0, 1);
+		    	Border highlightfortag = new CompoundBorder(outsidefortag, insidefortag);
 		    	jc.setBorder( highlightfortag );
 		    }
 	    }

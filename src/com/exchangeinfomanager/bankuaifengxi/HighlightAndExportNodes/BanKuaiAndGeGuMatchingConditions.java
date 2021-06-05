@@ -1,8 +1,13 @@
 package com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes;
 
+import java.time.LocalDate;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 
 public class BanKuaiAndGeGuMatchingConditions implements Cloneable {
 
@@ -363,35 +368,21 @@ public class BanKuaiAndGeGuMatchingConditions implements Cloneable {
 		public Boolean getHighlightExtremeCjeZhanbiBenchMark() {
 			return highlightExtremeCjeZhanbiBenchMark;
 		}
-//		Double settingExtremeCjlZhanbiLowerBenchMark;
-//		Double settingExtremeCjlZhanbiUpBenchMark;
-//		public Double getExtremeCjlZhanBiLowerBenchMark () {
-//			return settingExtremeCjlZhanbiLowerBenchMark;
-//		}
-//		public Double getExtremeCjlZhanBiUpBenchMark () {
-//			return settingExtremeCjlZhanbiUpBenchMark;
-//		}
-//		public void setExtremeCjlZhanbi (Double low, Double up)	{
-//			settingExtremeCjlZhanbiLowerBenchMark = low;
-//			settingExtremeCjlZhanbiUpBenchMark = up;
-//		}
-//		Double settingExtremeCjeZhanbiLowerBenchMark;
-//		Double settingExtremeCjeZhanbiUpBenchMark;
-//		public Double getExtremeCjeZhanBiLowerBenchMark () {
-//			return settingExtremeCjeZhanbiLowerBenchMark;
-//		}
-//		public Double getExtremeCjeZhanBiUpBenchMark () {
-//			return settingExtremeCjeZhanbiUpBenchMark;
-//		}
-//		public void setExtremeCjeZhanbi (Double low, Double up)	{
-//			settingExtremeCjeZhanbiLowerBenchMark = low;
-//			settingExtremeCjeZhanbiUpBenchMark = up;
-//		}
+		private Multimap<LocalDate, String> datamatchparsedfile; //表明个股在指定日期是否在分析文件中;
+		public void setHighLightDataWithFiles (LocalDate date, String filename)
+		{
+			if(datamatchparsedfile == null ) datamatchparsedfile = HashMultimap.create();
+			
+			Collection<String> fruits = this.datamatchparsedfile.get(date);
+			Boolean checkresult = fruits.contains(filename);
+			if(!checkresult) datamatchparsedfile.put(date, filename);
+		}
+		public Multimap<LocalDate, String> getHighLightDataWithFiles ()
+		{
+			return this.datamatchparsedfile;
+		}
 		
 		public Object clone() throws CloneNotSupportedException {
 	        return super.clone();
 	    }
-
-
-
 }

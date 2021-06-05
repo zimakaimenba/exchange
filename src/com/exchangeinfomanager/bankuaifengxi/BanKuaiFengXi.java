@@ -695,28 +695,35 @@ public class BanKuaiFengXi extends JDialog
 			
 			//显示板块个股
 			if( ((BanKuai)bkcur).getBanKuaiLeiXing().equals(BanKuai.HASGGWITHSELFCJL) ) {//应该是有个股的板块点击才显示她的个股，
-//				refreshSpecificBanKuaiFengXiResult (bkcur,selectdate,globeperiod);
+				BanKuai tmpbk = (BanKuai)((BanKuaiGeGuBasicTableModel)tableTempGeGu.getModel()).getCurDispalyBandKuai();
 				
 				LocalDate formerdate = ((BanKuaiGeGuBasicTableModel)tablexuandingzhou.getModel()).getCurDisplayedDate();
-				if(formerdate != null) { //前面有显示过，把她挪到tab 4
+				if(formerdate != null) { //上一次的选定周数据挪到tab 4
 					//显示选定周+1股票排名情况
 					((BanKuaiGeGuTableModelFromPropertiesFile)tablexuandingplusone.getModel()).refresh(((BanKuai)bkcur), formerdate,globeperiod);
+					if(tmpbk != null) 	((BanKuaiGeGuBasicTableModel)tablexuandingplusone.getModel()).setInterSectionBanKuai(tmpbk); //也突出和临时板块有交集的板块
+					else	((BanKuaiGeGuBasicTableModel)tablexuandingplusone.getModel()).setInterSectionBanKuai(null); 
 					tabbedPanegegu.setTitleAt(5,  formerdate.toString() );
 				}
 				
 				//显示选定周股票排名情况
 				((BanKuaiGeGuTableModelFromPropertiesFile)tablexuandingzhou.getModel()).refresh(((BanKuai)bkcur), selectdate,globeperiod);
+				if(tmpbk != null) 	((BanKuaiGeGuBasicTableModel)tablexuandingzhou.getModel()).setInterSectionBanKuai(tmpbk); //也突出和临时板块有交集的板块
+				else	((BanKuaiGeGuBasicTableModel)tablexuandingzhou.getModel()).setInterSectionBanKuai(null); 
 				tabbedPanegegu.setTitleAt(2, this.getTabbedPanegeguTabTiles(2) + selectdate);
 				
 				//显示选定周-1股票排名情况
 				LocalDate selectdate2 = selectdate.minus(1,ChronoUnit.WEEKS).with(DayOfWeek.FRIDAY);
 				((BanKuaiGeGuTableModelFromPropertiesFile)tablexuandingminusone.getModel()).refresh(((BanKuai)bkcur), selectdate2,globeperiod);
+				if(tmpbk != null) 	((BanKuaiGeGuBasicTableModel)tablexuandingminusone.getModel()).setInterSectionBanKuai(tmpbk); //也突出和临时板块有交集的板块
+				else	((BanKuaiGeGuBasicTableModel)tablexuandingminusone.getModel()).setInterSectionBanKuai(null); 
 				tabbedPanegegu.setTitleAt(3,  selectdate2 + "(-1)");
 
-				
 				//显示选定周-2股票排名情况
 				LocalDate selectdate3 = selectdate.plus(1,ChronoUnit.WEEKS).with(DayOfWeek.FRIDAY);
 				((BanKuaiGeGuTableModelFromPropertiesFile)tablexuandingminustwo.getModel()).refresh(((BanKuai)bkcur), selectdate3,globeperiod);
+				if(tmpbk != null) 	((BanKuaiGeGuBasicTableModel)tablexuandingminustwo.getModel()).setInterSectionBanKuai(tmpbk); //也突出和临时板块有交集的板块
+				else	((BanKuaiGeGuBasicTableModel)tablexuandingminustwo.getModel()).setInterSectionBanKuai(null); 
 				tabbedPanegegu.setTitleAt(4,  selectdate3 + "(+1)");
 				
 				panelLastWkGeGucjeZhanBi.updateDate(bkcur, selectdate, 0,globeperiod); //显示选定周PIE
@@ -1118,6 +1125,13 @@ public class BanKuaiFengXi extends JDialog
 			@Override
 			public void actionPerformed(ActionEvent evt) {
 				((BanKuaiGeGuBasicTableModel)tableTempGeGu.getModel()).deleteAllRows();
+				
+				((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).setInterSectionBanKuai(null); 
+				((BanKuaiGeGuBasicTableModel)tableExternalInfo.getModel()).setInterSectionBanKuai(null); 
+				((BanKuaiGeGuBasicTableModel)tablexuandingzhou.getModel()).setInterSectionBanKuai(null); 
+				((BanKuaiGeGuBasicTableModel)tablexuandingminusone.getModel()).setInterSectionBanKuai(null); 
+				((BanKuaiGeGuBasicTableModel)tablexuandingminustwo.getModel()).setInterSectionBanKuai(null); 
+				((BanKuaiGeGuBasicTableModel)tablexuandingplusone.getModel()).setInterSectionBanKuai(null); 
 			}
 		});
 		
@@ -1863,23 +1877,13 @@ public class BanKuaiFengXi extends JDialog
 						JOptionPane.showMessageDialog(null,"不是个股代码，重新输入！","Warning", JOptionPane.WARNING_MESSAGE);
 						return;
 					} else {
-//						if(userinputnode.getType() == BkChanYeLianTreeNode.TDXBK ) { //如果用户输入查出的是板块，
-//							JOptionPane.showMessageDialog(null,"不是个股代码，重新输入！","Warning", JOptionPane.WARNING_MESSAGE);
-//							return;
-//						}
-							
 						nodecode = userinputnode.getMyOwnCode();
 						try{ //如果用户选择的和上次选择的个股一样，不重复做板块查找
 //							String stockcodeincbx = ((BkChanYeLianTreeNode)combxstockcode.getSelectedItem()).getMyOwnCode();
 							displayStockSuoShuBanKuai((Stock)userinputnode);
-							
-						} catch (java.lang.NullPointerException e) {
-							e.printStackTrace();
+						} catch (java.lang.NullPointerException e) {		e.printStackTrace();
 //							cbxstockcode.updateUserSelectedNode (selectstock.getStock());
-						} catch (java.lang.StringIndexOutOfBoundsException e) {
-							logger.debug((String)combxstockcode.getSelectedItem());
-						}
-
+						} catch (java.lang.StringIndexOutOfBoundsException e) {	logger.debug((String)combxstockcode.getSelectedItem());}
 					}
 
 					if(findInputedNodeInTable (nodecode)) { 
@@ -2386,7 +2390,18 @@ public class BanKuaiFengXi extends JDialog
 			((BanKuaiGeGuBasicTableModel)tableTempGeGu.getModel()).setInterSectionBanKuai(curmainbk); 
 			((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).setInterSectionBanKuai(tempbankuai);
 		}
+		LocalDate xdzdate = ((BanKuaiGeGuBasicTableModel)tablexuandingzhou.getModel()).getCurDisplayedDate(); //突出和当前主板块的交集个股
+		if(xdzdate != null) ((BanKuaiGeGuBasicTableModel)tablexuandingzhou.getModel()).setInterSectionBanKuai(tempbankuai);
 		
+		xdzdate = ((BanKuaiGeGuBasicTableModel)tablexuandingminusone.getModel()).getCurDisplayedDate(); //突出和当前主板块的交集个股
+		if(xdzdate != null) ((BanKuaiGeGuBasicTableModel)tablexuandingminusone.getModel()).setInterSectionBanKuai(tempbankuai);
+		
+		xdzdate = ((BanKuaiGeGuBasicTableModel)tablexuandingminustwo.getModel()).getCurDisplayedDate(); //突出和当前主板块的交集个股
+		if(xdzdate != null) ((BanKuaiGeGuBasicTableModel)tablexuandingminustwo.getModel()).setInterSectionBanKuai(tempbankuai);
+		
+		xdzdate = ((BanKuaiGeGuBasicTableModel)tablexuandingplusone.getModel()).getCurDisplayedDate(); //突出和当前主板块的交集个股
+		if(xdzdate != null) ((BanKuaiGeGuBasicTableModel)tablexuandingplusone.getModel()).setInterSectionBanKuai(tempbankuai);
+				
 		svstock = null;
 		
 		hourglassCursor = null;

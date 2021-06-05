@@ -304,8 +304,7 @@ public class SvsForNodeOfStock implements ServicesForNode, ServicesOfNodeStock
 		List<Interval> timeintervallist = getTimeIntervalOfNodeTimeIntervalWithRequiredTimeInterval
 				(bkamostartday,bkamoendday, bkohlcstartday,bkohlcendday );
 		
-		if(timeintervallist == null)
-			return ;
+		if(timeintervallist == null)		return ;
 		
 		for(Interval tmpinterval : timeintervallist) {
 				DateTime newstartdt = tmpinterval.getStart();
@@ -315,7 +314,7 @@ public class SvsForNodeOfStock implements ServicesForNode, ServicesOfNodeStock
 				LocalDate requiredendday = LocalDate.of(newenddt.getYear(), newenddt.getMonthOfYear(), newenddt.getDayOfMonth()).with(DayOfWeek.FRIDAY);
 				
 				this.getNodeKXian(stock, requiredstartday, requiredendday, NodeGivenPeriodDataItem.DAY, true);
-				
+				this.getStockGuDong( stock, "LIUTONG", requiredstartday, requiredendday);
 				if( !stock.isNodeDataAtNotCalWholeWeekMode() )
 					this.getNodeQueKouInfo(stock, requiredstartday, requiredendday, NodeGivenPeriodDataItem.DAY);
 		}

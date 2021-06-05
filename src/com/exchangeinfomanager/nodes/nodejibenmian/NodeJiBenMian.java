@@ -250,7 +250,18 @@ public class NodeJiBenMian
 				return gudonginfo;
 			}
 			public void setGuDongInfo(List<Object[]> gdRecords) {
-				this.gudonginfo = gdRecords;
+				if(gdRecords.isEmpty() ) return;
+				
+				if(this.gudonginfo == null) {	this.gudonginfo = gdRecords; return; }
+				
+				LocalDate lastestgddate = (LocalDate) this.gudonginfo.get(0)[1];
+				LocalDate firstgddate =   (LocalDate) this.gudonginfo.get(this.gudonginfo.size()-1)[1];
+				for(Object[] tmpgd : gdRecords) {
+					LocalDate recordgddate = (LocalDate) tmpgd[1];
+					if(recordgddate.isAfter(lastestgddate) )	this.gudonginfo.add(0,tmpgd);
+					else if(recordgddate.isBefore(firstgddate) )	this.gudonginfo.add(this.gudonginfo.size()-1,tmpgd);
+					
+				}
 			}
 			
 			public void setChanYeLianInfo(List<BkChanYeLianTreeNode> result)
