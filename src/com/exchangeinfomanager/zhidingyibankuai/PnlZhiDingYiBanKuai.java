@@ -12,8 +12,8 @@ import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import com.exchangeinfomanager.NodesServices.ServicesForZhiDingYiBanKuai;
 import com.exchangeinfomanager.commonlib.WrapLayout;
-import com.exchangeinfomanager.nodes.ServicesForZhiDingYiBanKuai;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;

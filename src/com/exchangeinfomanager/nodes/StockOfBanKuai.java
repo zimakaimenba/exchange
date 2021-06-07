@@ -12,6 +12,7 @@ import org.joda.time.DateTime;
 import org.joda.time.Interval;
 
 import com.exchangeinfomanager.nodes.treerelated.StockOfBanKuaiTreeRelated;
+import com.exchangeinfomanager.NodesServices.ServicesForNode;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC.StockOfBanKuaiXPeriodDataForJFC;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 /*

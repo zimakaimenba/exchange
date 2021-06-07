@@ -1,5 +1,6 @@
 package com.exchangeinfomanager.database;
 
+import java.awt.Color;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
@@ -6435,19 +6436,21 @@ public class BanKuaiDbOperation
 		 * 设置板块的属性: 是否导入数据，是否出现在板块分析界面中，是否导出到Gephi
 		 */
 		public void updateBanKuaiOperationsSettings(BkChanYeLianTreeNode node, boolean importdailydata, boolean exporttogephi, 
-				boolean showinbkfx,boolean showincyltree, boolean exporttowkfile, boolean importbkgg)
+				boolean showinbkfx,boolean showincyltree, boolean exporttowkfile, boolean importbkgg, Color bkcolor)
 		{
+			String colorcode = String.format("#%02x%02x%02x", bkcolor.getRed(), bkcolor.getGreen(), bkcolor.getGreen() );
+			
 			String sqlupdatestat = "UPDATE 通达信板块列表 SET " +
 								" 导入交易数据=" + importdailydata  + "," +
 								" 导出Gephi=" + exporttogephi +  ","  +
 								" 板块分析=" + showinbkfx +  ","  +
 								" 产业链树=" + showincyltree + ","  +
 								" 周分析文件 = " + exporttowkfile + ","  +
+								" DefaultCOLOUR = '" + colorcode + "',"  +
 								" 导入板块个股 = " + importbkgg +
 								" WHERE 板块ID='" + node.getMyOwnCode() + "'"
 								;
-	   		try {
-				int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqlupdatestat);
+	   		try {	int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqlupdatestat);
 			} catch (MysqlDataTruncation e) {e.printStackTrace();
 			} catch (SQLException e) {e.printStackTrace();}
 	   		
@@ -7721,18 +7724,12 @@ public class BanKuaiDbOperation
 						;
 				try {
 					int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqlupdatestat);
-				} catch(java.lang.NullPointerException e){ 
-				    	e.printStackTrace();
-				} catch(Exception e){
-				    	e.printStackTrace();
-				} finally {
-				    
-				}
+				} catch(java.lang.NullPointerException e){ e.printStackTrace();
+				} catch(Exception e){e.printStackTrace();
+				} finally {}
 				
-				if(alreadyinpostive)
-					friendsetpostive.remove(friendcode );
-				if(alreadyinnegtive)
-					friendsetnegtive.remove(friendcode );
+				if(alreadyinpostive)	friendsetpostive.remove(friendcode );
+				if(alreadyinnegtive)	friendsetnegtive.remove(friendcode );
 			} else 
 			if( (alreadyinpostive && !relationship) || (alreadyinnegtive && relationship) ) { //已经是朋友,要取反
 				String sqlupdatestat = "UPDATE  通达信板块社交关系表  SET 关系= " + relationship
@@ -7747,9 +7744,7 @@ public class BanKuaiDbOperation
 					int autoIncKeyFromApi = connectdb.sqlUpdateStatExecute(sqlupdatestat);
 				} catch(java.lang.NullPointerException e){e.printStackTrace();
 				} catch(Exception e){e.printStackTrace();
-				} finally {
-				    
-				}
+				} finally {}
 				if(alreadyinpostive) {
 					friendsetpostive.remove(friendcode );
 					friendsetnegtive.add(friendcode );
@@ -7758,7 +7753,6 @@ public class BanKuaiDbOperation
 					friendsetpostive.add(friendcode );
 					friendsetnegtive.remove(friendcode );
 				}
-				
 			}
 			else { //不是朋友，要加入
 				String sqlinsertstat =  "INSERT INTO  通达信板块社交关系表(板块左,板块右,关系) values ("
@@ -7774,8 +7768,8 @@ public class BanKuaiDbOperation
 				} catch(Exception e){e.printStackTrace();
 				} finally {}
 				
-				if(relationship)					friendsetpostive.add(friendcode );
-				else					friendsetnegtive.add(friendcode );
+				if(relationship) friendsetpostive.add(friendcode );
+				else	friendsetnegtive.add(friendcode );
 			}
 			
 			return null;

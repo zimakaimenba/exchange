@@ -1,5 +1,6 @@
 package com.exchangeinfomanager.database;
 
+import java.awt.Color;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
@@ -57,9 +58,7 @@ public class BanKuaiDZHDbOperation
 	 */
 	public void refreshDZHGaiNianBanKuaiGeGu ()
 	{
-		try {
-			List<BanKuai> dzhbklist = this.getDZHBanKuaiList ();
-			
+		List<BanKuai> dzhbklist = this.getDZHBanKuaiList ();
 			for(BanKuai dzhbk : dzhbklist ) {
 				if(!dzhbk.getBanKuaiOperationSetting().isImportBKGeGu() )
 					continue;
@@ -72,13 +71,14 @@ public class BanKuaiDZHDbOperation
 				SetView<String> differencebankuaiold = Sets.difference(tmpstockcodesetold,tmpstockcodesetnew  );
 	   	        for (String stockcode : differencebankuaiold) {
 	   	        	String sqlupdatestat = 
-	   	        	"UPDATE 股票通达信概念板块对应表  \r\n" + 
-	   	        	"SET 移除时间 =  " + "'" +  CommonUtility.formatDateYYYY_MM_DD_HHMMSS(LocalDateTime.now() ) + "'" +  
-	   	        	"WHERE 板块代码 = '' \r\n" + 
-	   	        	"AND 股票代码 = '' \r\n" + 
-	   	        	"AND isnull(移除时间)"
+	   	        	" UPDATE 大智慧股票概念板块对应表  \r\n" + 
+	   	        	" SET 移除时间 =  " + "'" +  CommonUtility.formatDateYYYY_MM_DD_HHMMSS(LocalDateTime.now() ) + "'\r\n" +  
+	   	        	" WHERE 板块代码 = '" + dzhbkcode + "' \r\n" + 
+	   	        	" AND 股票代码 = '" + stockcode + "' \r\n" + 
+	   	        	" AND isnull(移除时间)"
 	   	        	;
-			   		int autoIncKeyFromApi = tdxconnectdb.sqlUpdateStatExecute(sqlupdatestat);
+			   		try { int autoIncKeyFromApi = tdxconnectdb.sqlUpdateStatExecute(sqlupdatestat);
+					} catch (SQLException e) { e.printStackTrace();}
 	   	        }
 	   	        differencebankuaiold = null;
 	   	        
@@ -94,11 +94,12 @@ public class BanKuaiDZHDbOperation
 	   		    						   	+ ")"   
 	   		    							;
 	   				
-	   				int autoIncKeyFromApi = tdxconnectdb.sqlInsertStatExecute(sqlinsertstat);
+	   				try {	int autoIncKeyFromApi = tdxconnectdb.sqlInsertStatExecute(sqlinsertstat);
+					} catch (SQLException e) { e.printStackTrace();}
 	   			}
 	   		    differencebankuainew = null;
 			}
-		} catch (Exception e) { e.printStackTrace();	} 
+		 
 		
 		return;
 	}
@@ -107,13 +108,14 @@ public class BanKuaiDZHDbOperation
 	 */
 	public Set<String> getDZHGaiNianBanKuaiGeGuSetFromDZHFiles(String dzhbk) 
 	{
+		Set<String> dzhbkstock = new HashSet<> ();
+		
 		String dzhfilepath = sysconfig.getDaZhiHuiBanKuaiFilePath ();
 		String bkfilename = dzhbk + ".BLK";
 		File dzhbkfile = new File(dzhfilepath + "/" + bkfilename);
 		if (!dzhbkfile.exists() || dzhbkfile.isDirectory() || !dzhbkfile.canRead())   
-		    return null;
+		    return dzhbkstock;
 		
-		Set<String> dzhbkstock = new HashSet<> ();
 		BufferedInputStream dis = null;
 		FileInputStream in = null;
 		try {
@@ -226,7 +228,7 @@ public class BanKuaiDZHDbOperation
 
            		try {
 	            			String bkcode = tmplinelist.get(0);
-	            			String bkname = tmplinelist.get(1);
+	            			String bkname=null ; if(tmplinelist.size() >1 ) bkname = tmplinelist.get(1);
 	            			if(bkcode.startsWith("99")) {
 	            				String sqlinsertstat = "INSERT INTO  大智慧板块列表(板块ID,板块名称) values ("
 	        	   						+ " '" + bkcode.trim() + "'" + ","
@@ -272,8 +274,7 @@ public class BanKuaiDZHDbOperation
 		CachedRowSetImpl rsagu = null;
 		Set<String> dzhbkset = new HashSet<> ();
 		try {
-			 String sqlquerystat = "select *  FROM 大智慧板块列表   "
-		 			;
+			 String sqlquerystat = "select *  FROM 大智慧板块列表   "		;
 			rsagu = tdxconnectdb.sqlQueryStatExecute(sqlquerystat);
 			while(rsagu.next()) {
 				String dzhbk = rsagu.getString("板块ID"); 
@@ -349,13 +350,14 @@ public class BanKuaiDZHDbOperation
 	        	String bkcode = rs_gn.getString("板块代码");
 	        	Integer quanzhong = rs_gn.getInt("股票权重");
 	        	BanKuai bk = (BanKuai)treeofstkbk.getSpecificNodeByHypyOrCode(bkcode, BkChanYeLianTreeNode.DZHBK);
-//	        	Stock tmpstock = (Stock)treeofstkbk.getSpecificNodeByHypyOrCode (stock.getMyOwnCode(),BkChanYeLianTreeNode.TDXGG);
-				StockOfBanKuai bkofst = new StockOfBanKuai(bk,stock);
-				bkofst.setStockQuanZhong (quanzhong);
-				bk.addNewBanKuaiGeGu(bkofst);
-	        	stockbanks.add(bk);
+	        	if(bk == null) continue;
+	        	try {
+	        		StockOfBanKuai bkofst = new StockOfBanKuai(bk,stock);
+	        		bkofst.setStockQuanZhong (quanzhong);
+					bk.addNewBanKuaiGeGu(bkofst);
+		        	stockbanks.add(bk);
+	        	} catch(java.lang.NullPointerException e) { 		e.printStackTrace();}
 	        } 
-	        
 	    } catch(java.lang.NullPointerException e){	e.printStackTrace();
 	    } catch(Exception e) {e.printStackTrace();
 	    } finally {
@@ -371,19 +373,21 @@ public class BanKuaiDZHDbOperation
 	 * 
 	 */
 	public void updateBanKuaiOperationsSettings(BkChanYeLianTreeNode node, boolean importdailydata, boolean exporttogephi, 
-			boolean showinbkfx,boolean showincyltree, boolean exporttowkfile, boolean importbkgg)
+			boolean showinbkfx,boolean showincyltree, boolean exporttowkfile, boolean importbkgg, Color bkcolor)
 	{
+		String colorcode = String.format("#%02x%02x%02x", bkcolor.getRed(), bkcolor.getGreen(), bkcolor.getGreen() );
+		
 		String sqlupdatestat = "UPDATE 大智慧板块列表  SET " +
 							" 导入交易数据=" + importdailydata  + "," +
 							" 导出Gephi=" + exporttogephi +  ","  +
 							" 板块分析=" + showinbkfx +  ","  +
 							" 产业链树=" + showincyltree + ","  +
 							" 周分析文件 = " + exporttowkfile + ","  +
+							" DefaultCOLOUR = '" + colorcode + "',"  +
 							" 导入板块个股 = " + importbkgg +
 							" WHERE 板块ID='" + node.getMyOwnCode() + "'"
 							;
-   		try {
-			int autoIncKeyFromApi = tdxconnectdb.sqlUpdateStatExecute(sqlupdatestat);
+   		try {	int autoIncKeyFromApi = tdxconnectdb.sqlUpdateStatExecute(sqlupdatestat);
 		} catch (MysqlDataTruncation e) {e.printStackTrace();
 		} catch (SQLException e) {e.printStackTrace();}
 	}
@@ -404,39 +408,23 @@ public class BanKuaiDZHDbOperation
 		try  {     
 	        while(rs1.next()) {
 	        	String tmpstockcode = rs1.getString("股票代码");
-
 	        	Integer weight = rs1.getInt("股票权重");
-				
 				Boolean longtou;
-				try{
-					longtou = rs1.getBoolean("板块龙头");
-				} catch (java.sql.SQLException e) {
-//					e.printStackTrace();
-					longtou = false;
-				}
+				try{	longtou = rs1.getBoolean("板块龙头");
+				} catch (java.sql.SQLException e) {longtou = false;}
 				
 				LocalDate joindate = null;
-				try{
-					joindate = rs1.getDate("加入时间").toLocalDate();
-				} catch (java.sql.SQLException ex1) {
-					continue; //
-//					ex1.printStackTrace();
-				}
+				try{	joindate = rs1.getDate("加入时间").toLocalDate();
+				} catch (java.sql.SQLException ex1) {continue; }
 				LocalDate leftdate;
-				try {
-					leftdate = rs1.getDate("移除时间").toLocalDate().with(DayOfWeek.FRIDAY); //周线都是以周五为计算的，任何个股移出都调整到周五
-				} catch (java.lang.NullPointerException e) {
-					leftdate = LocalDate.parse("3000-01-01");
-				}
+				try {		leftdate = rs1.getDate("移除时间").toLocalDate().with(DayOfWeek.FRIDAY); //周线都是以周五为计算的，任何个股移出都调整到周五
+				} catch (java.lang.NullPointerException e) {leftdate = LocalDate.parse("3000-01-01");}
+				
 				DateTime joindt= new DateTime(joindate.getYear(), joindate.getMonthValue(), joindate.getDayOfMonth(), 0, 0, 0, 0);
 				DateTime leftdt = new DateTime(leftdate.getYear(), leftdate.getMonthValue(), leftdate.getDayOfMonth(), 0, 0, 0, 0);
 				Interval joinleftinterval = null ;
-				try {
-					joinleftinterval = new Interval(joindt, leftdt);
-				} catch (Exception e) {
-//					e.printStackTrace();
-					joinleftinterval = new Interval(leftdt,joindt );
-				}
+				try {		joinleftinterval = new Interval(joindt, leftdt);
+				} catch (Exception e) {joinleftinterval = new Interval(leftdt,joindt );}
 	        	
 	        	if(bankuai.getStockOfBanKuai(tmpstockcode) != null ) {//已经有了
 	        		StockOfBanKuai bkofst =  bankuai.getStockOfBanKuai(tmpstockcode);
@@ -445,7 +433,9 @@ public class BanKuaiDZHDbOperation
 					bkofst.addInAndOutBanKuaiInterval(joinleftinterval);
 	        	} else {
 	        		BanKuai bk = (BanKuai)CreateExchangeTree.CreateTreeOfDZHBanKuaiAndStocks().getSpecificNodeByHypyOrCode(bkcode, BkChanYeLianTreeNode.DZHBK);
+	        		if(bk == null) continue;
 		        	Stock stock = (Stock)CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode(tmpstockcode,BkChanYeLianTreeNode.TDXGG);
+		        	if(stock == null) continue;
 					StockOfBanKuai bkofst = new StockOfBanKuai(bk,stock);
 					bkofst.setStockQuanZhong (weight);
 					bkofst.addInAndOutBanKuaiInterval(joinleftinterval);

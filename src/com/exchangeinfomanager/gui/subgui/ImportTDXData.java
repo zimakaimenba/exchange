@@ -247,13 +247,10 @@ public class ImportTDXData extends JDialog {
 						System.out.println("......导入股票的基本面信息结束" + LocalTime.now() + "....导入耗费时间： "+(end-start)+"ms \r\n");
 						
 						List<String> lines = Files.readLines(resultimporttdxgegutinfo, sysconfig.charSet());
-						for (String line : lines) {
+						for (String line : lines) 
 				        	tfldresult.append(line+"\n");
-				        }
-					} catch (IOException e) {
-//						e.printStackTrace();
-					} catch (java.lang.NullPointerException e) {
-					} 
+					} catch (IOException e) {//						e.printStackTrace();
+					} catch (java.lang.NullPointerException e) {		} 
 					
 					cbximporttdxgeguinfo.setEnabled(false);
 		 }
@@ -272,10 +269,8 @@ public class ImportTDXData extends JDialog {
 				for (String line : lines) {
 		        	tfldresult.append(line+"\n");
 		        }
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (java.lang.NullPointerException e) {
-			}
+			} catch (IOException e) {	e.printStackTrace();
+			} catch (java.lang.NullPointerException e) {}
 		}
 		
 		//同步通达信板块成交量成交额
@@ -432,6 +427,7 @@ public class ImportTDXData extends JDialog {
 			System.out.println("------导入大智慧板块信息开始" + LocalTime.now() );
 			long start=System.currentTimeMillis(); //获取开始时间
 			BanKuaiDZHDbOperation dzhdbopt = new BanKuaiDZHDbOperation ();
+			dzhdbopt.refreshDZHGaiNianBanKuaiFromExportFileToDatabase ();
 			dzhdbopt.refreshDZHGaiNianBanKuaiGeGu ();
 			dzhdbopt = null;
 			long end=System.currentTimeMillis(); //获取结束时间

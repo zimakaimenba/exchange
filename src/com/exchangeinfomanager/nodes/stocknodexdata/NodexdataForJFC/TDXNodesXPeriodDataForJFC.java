@@ -1031,10 +1031,8 @@ import com.udojava.evalex.Expression;
 					return maxweek;
 				
 				Double lastcje = lastcjlrecord.getValue().doubleValue();
-				if(curcje > lastcje)
-					maxweek ++;
-				else
-					break;
+				if(curcje > lastcje)	maxweek ++;
+				else	break;
 			}
 
 			return maxweek;
@@ -1089,40 +1087,28 @@ import com.udojava.evalex.Expression;
 		public Double getChenJiaoLiangChangeGrowthRateOfSuperBanKuaiOnDailyAverage (TDXNodes superbk, LocalDate requireddate,int difference) 
 		{	
 			RegularTimePeriod curperiod = super.getJFreeChartFormateTimePeriodForAMO(requireddate,difference) ;
-			if(curperiod == null)
-				return null;
+			if(curperiod == null) return null;
 			
 			TimeSeriesDataItem curcjlrecord = this.nodevol.getDataItem( curperiod );
-			if( curcjlrecord == null) 
-				return null;
-			
-//			Double curavecje = this.getAverageDailyChengJiaoErOfWeek(requireddate, difference);
-//			if( curavecje == null) 
-//				return null;
+			if( curcjlrecord == null) return null;
 			
 			//判断上级板块(大盘或者板块)是否缩量,所以了没有比较的意义，直接返回-100；
 			String nodept = getNodeperiodtype();
 			NodeXPeriodData bkxdata = superbk.getNodeXPeroidData(nodept);
 			Double bkcjediff = bkxdata.getChengJiaoLiangDailyAverageDifferenceWithLastPeriod(requireddate,difference);
-			if(bkcjediff == null )
-				return null;
-			if(  bkcjediff < 0   ) {//板块缩量，
-				return -100.0;
-			}
+			if(bkcjediff == null )	return null;
+			if(  bkcjediff < 0   )  return -100.0;//板块缩量，
 			
 			TimeSeriesDataItem lastcjlrecord = null;
 			int index = this.nodevol.getIndex( curperiod );
-			try{
-				lastcjlrecord = nodevol.getDataItem( index - 1);
+			try{ lastcjlrecord = nodevol.getDataItem( index - 1);
 			}	catch (java.lang.IndexOutOfBoundsException ex) {
 				logger.debug("index = 0，可能是新股第一周，可能是数据记录最早记录周，无法判断");
 				Boolean reachfirstday = super.isLocalDateReachFristDayInHistory (requireddate,difference); 
-				if(reachfirstday != null && reachfirstday == true)
-					return null;
+				if(reachfirstday != null && reachfirstday == true)	return null;
 			}
 			if(this.isNodeDataFuPaiAfterTingPai(superbk,requireddate,0)) { //说明是停牌后复牌了，或者新股
-				try {
-					Double curggcje = this.getAverageDailyChengJiaoLiangOfWeek(requireddate, difference); //新板块所有成交量都应该计算入
+				try {	Double curggcje = this.getAverageDailyChengJiaoLiangOfWeek(requireddate, difference); //新板块所有成交量都应该计算入
 					return curggcje/bkcjediff;
 				} catch (java.lang.ArrayIndexOutOfBoundsException e) {	e.printStackTrace();}
 			}

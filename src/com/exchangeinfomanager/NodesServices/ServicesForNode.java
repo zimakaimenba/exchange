@@ -1,9 +1,11 @@
-package com.exchangeinfomanager.nodes;
+package com.exchangeinfomanager.NodesServices;
 
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
 public interface ServicesForNode 
 {

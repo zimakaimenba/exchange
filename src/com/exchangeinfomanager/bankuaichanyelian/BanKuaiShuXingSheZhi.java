@@ -16,10 +16,12 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
+import com.exchangeinfomanager.News.Labels.ColorChooser;
+import com.exchangeinfomanager.NodesServices.ServicesForNodeBanKuai;
 import com.exchangeinfomanager.database.BanKuaiDZHDbOperation;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
+import com.exchangeinfomanager.guifactory.JLabelFactory;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.nodes.ServicesForNodeBanKuai;
 import com.google.common.collect.Multimap;
 import com.exchangeinfomanager.nodes.BanKuai;
 
@@ -28,9 +30,11 @@ import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import net.miginfocom.swing.MigLayout;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
+import java.awt.Font;
 
 
 public class BanKuaiShuXingSheZhi extends JPanel 
@@ -44,7 +48,8 @@ public class BanKuaiShuXingSheZhi extends JPanel
 //	private BanKuaiDbOperation bkdbopt;
 	private JCheckBox chkbxnotexportwklyfile;
 	private JCheckBox chbxnotimportgegu;
-	
+	protected ColorChooser colorChooser = new ColorChooser();
+	private JLabel colorButton;
 
 	/**
 	 * Create the panel.
@@ -74,6 +79,10 @@ public class BanKuaiShuXingSheZhi extends JPanel
 		cbxnotshowincyltree.setSelected( ! ((BanKuai)settingnode).getBanKuaiOperationSetting().isShowincyltree() );
 		chkbxnotexportwklyfile.setSelected( ! ((BanKuai)settingnode).getBanKuaiOperationSetting().isExportTowWlyFile() );
 		chbxnotimportgegu.setSelected( ! ((BanKuai)settingnode).getBanKuaiOperationSetting().isImportBKGeGu() );
+		
+		Color bg = ((BanKuai)settingnode).getBanKuaiOperationSetting().getBanKuaiLabelColor() ;
+		if(bg != null)	colorButton.setBackground(bg);
+		else	colorButton.setBackground(Color.BLUE );
 		
 		if( ((BanKuai)settingnode).getBanKuaiLeiXing().equals(BanKuai.NOGGNOSELFCJL)) { //没有个股没有成交量的板块肯定不做板块分析等动作
 			cbxnotimport.setSelected(true);
@@ -171,7 +180,8 @@ public class BanKuaiShuXingSheZhi extends JPanel
 					!cbxnotgephi.isSelected(),!cbxnotbkfx.isSelected(),
 					!cbxnotshowincyltree.isSelected(),
 					!chkbxnotexportwklyfile.isSelected(),
-					!chbxnotimportgegu.isSelected()
+					!chbxnotimportgegu.isSelected(),
+					colorButton.getBackground()
 					);
 		((BanKuai)settingnode).getBanKuaiService (false);
 //		((BanKuai)settingnode).setImportdailytradingdata(!cbxnotimport.isSelected());
@@ -182,35 +192,57 @@ public class BanKuaiShuXingSheZhi extends JPanel
 //		((BanKuai)settingnode).setImportBKGeGu(!chbxnotimportgegu.isSelected());
 		 
 		buttonapplybksetting.setEnabled(false);
-		
 	}
 
 
 	private void initializeGui() {
 		// TODO Auto-generated method stub
 		this.setBorder(new TitledBorder(new CompoundBorder(new BevelBorder(BevelBorder.RAISED, new Color(240, 240, 240), new Color(255, 255, 255), new Color(105, 105, 105), new Color(160, 160, 160)), new LineBorder(new Color(180, 180, 180), 5)), "\u677F\u5757\u5C5E\u6027\u8BBE\u7F6E", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-		setLayout(new MigLayout("", "[133px,grow][]", "[23px][][23px][23px][][][][]"));
 		cbxnotshowincyltree =  new JCheckBox("不出现在产业链树");
+		cbxnotshowincyltree.setFont(new Font("宋体", Font.PLAIN, 11));
 		
 		chbxnotimportgegu = new JCheckBox("\u4E0D\u5BFC\u5165\u677F\u5757\u4E2A\u80A1");
-		add(chbxnotimportgegu, "cell 0 0");
+		chbxnotimportgegu.setFont(new Font("宋体", Font.PLAIN, 11));
 		
 		cbxnotimport = new JCheckBox("\u4E0D\u5BFC\u5165\u6BCF\u65E5\u4EA4\u6613\u6570\u636E");
-		add(cbxnotimport, "cell 0 1,alignx left,aligny top");
+		cbxnotimport.setFont(new Font("宋体", Font.PLAIN, 11));
 		
 		cbxnotbkfx = new JCheckBox("\u4E0D\u505A\u677F\u5757\u5206\u6790");
-		add(cbxnotbkfx, "cell 0 2,alignx left,aligny top");
+		cbxnotbkfx.setFont(new Font("宋体", Font.PLAIN, 11));
 		
 		cbxnotgephi = new JCheckBox("\u4E0D\u5BFC\u51FA\u5230Gephi");
-		add(cbxnotgephi, "cell 0 3,alignx left,aligny top");
-		add(cbxnotshowincyltree, "cell 0 4,alignx left,aligny top");
+		cbxnotgephi.setFont(new Font("宋体", Font.PLAIN, 11));
 		
 		chkbxnotexportwklyfile = new JCheckBox("\u4E0D\u5BFC\u51FA\u5230\u6BCF\u5468\u5206\u6790\u6587\u4EF6");
+		chkbxnotexportwklyfile.setFont(new Font("宋体", Font.PLAIN, 11));
 		
-		
-		add(chkbxnotexportwklyfile, "cell 0 5");
-		
+		colorButton = JLabelFactory.createLabel("", 40, 50);
+		colorButton.setBackground(Color.BLUE);
+        colorButton.addMouseListener(new ColorChooserController());
+        
 		buttonapplybksetting = new JButton("\u5E94\u7528");
-		add(buttonapplybksetting, "cell 0 6");
+		
+		JLabel lblbkcolor = new JLabel("\u677F\u5757\u663E\u793A\u989C\u8272");
+		lblbkcolor.setFont(new Font("宋体", Font.PLAIN, 11));
+		setLayout(new MigLayout("", "[145px][48px]", "[23px][23px][23px][23px][23px][23px][15px][1px][23px]"));
+		add(chbxnotimportgegu, "cell 0 0,alignx left,aligny top");
+		add(cbxnotimport, "cell 0 1,alignx left,aligny top");
+		add(cbxnotbkfx, "cell 0 2,alignx left,aligny top");
+		add(cbxnotgephi, "cell 0 3,alignx left,aligny top");
+		add(cbxnotshowincyltree, "cell 0 4,alignx left,aligny top");
+		add(chkbxnotexportwklyfile, "cell 0 5,alignx left,aligny top");
+		add(colorButton, "cell 1 6,alignx left,aligny top");
+		add(buttonapplybksetting, "cell 0 8,alignx left,aligny top");
+		add(lblbkcolor, "cell 0 6,alignx left,aligny top");
 	}
+	
+	private class ColorChooserController extends MouseAdapter {
+
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            super.mouseClicked(e);
+            colorChooser.setVisible(true);
+            colorButton.setBackground(colorChooser.getColor());
+        }
+    }
 }

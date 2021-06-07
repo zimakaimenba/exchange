@@ -3,6 +3,7 @@ package com.exchangeinfomanager.bankuaifengxi;
 import java.awt.MouseInfo;
 import java.awt.Point;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -40,10 +41,148 @@ public class GetNodeDataFromDbWhenSystemIdle implements Runnable
 			TDXNodes treeroot = (TDXNodes)bkcyltree.getModel().getRoot();
 			int bankuaicount = bkcyltree.getModel().getChildCount(treeroot);
 			
-			int sleepcount = 250; int mousenotmoverange = 50;
+			int sleepcount = 15; int mousenotmoverange = 50;
 			long idleTime = 0 ;
 		    long start = System.currentTimeMillis();
 		    Point currLocation = MouseInfo.getPointerInfo().getLocation();
+		    
+		    for(int i = 0;i <= bankuaicount-1  ; i++) {
+		    	 while (running) {
+			            synchronized (pauseLock) {
+			                if (!running) { // may have changed while waiting to
+			                    // synchronize on pauseLock
+			                    break;
+			                }
+			                if (paused) {
+			                    try {
+			                        synchronized (pauseLock) {
+			                            pauseLock.wait(); // will cause this Thread to block until 
+			                            // another thread calls pauseLock.notifyAll()
+			                            // Note that calling wait() will 
+			                            // relinquish the synchronized lock that this 
+			                            // thread holds on pauseLock so another thread
+			                            // can acquire the lock to call notifyAll()
+			                            // (link with explanation below this code)
+			                        }
+			                    } catch (InterruptedException ex) {
+			                        break;
+			                    }
+			                    if (!running) { // running might have changed since we paused
+			                        break;
+			                    }
+			                }
+			            }
+
+			            try {	Thread.sleep(sleepcount);
+						} catch (InterruptedException e) {e.printStackTrace();}
+			            
+			            synchronized (GetNodeDataFromDbWhenSystemIdle.class) {
+				        	    Point newLocation = MouseInfo.getPointerInfo().getLocation();
+						        if(newLocation.equals(currLocation)){
+						            //not moved
+						            idleTime = System.currentTimeMillis() - start;
+						            long seconds = TimeUnit.MILLISECONDS.toSeconds(idleTime);
+//						            System.out.printf(" I am sleeping %s %s \n", seconds, i);
+						            if( seconds > mousenotmoverange ) {
+						            	if(restartscreentips) {
+						            		System.out.printf(" \n System slept long enough. Getting BanKuai Weekly Zhanbi Data from Database starting... \n");
+						            		restartscreentips = false;
+						            	}
+						            	
+						            	synchronized (GetNodeDataFromDbWhenSystemIdle.class) {
+						            		BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode)bkcyltree.getModel().getChild(treeroot, i);
+						            		if(childnode.getType() == BkChanYeLianTreeNode.TDXBK) 
+						            				getNodeZhanbiData (childnode);
+							            	break;
+						            	}
+						            }
+						        } else {
+						        	long seconds = TimeUnit.MILLISECONDS.toSeconds(idleTime);
+//						            System.out.printf("Idle time was: %s seconds \n", seconds);
+						            synchronized (GetNodeDataFromDbWhenSystemIdle.class) {
+						            	idleTime=0;
+						            	start =  System.currentTimeMillis();
+						            	
+						            	restartscreentips = true; counttoentertonewline = 0;
+						            }
+						        }
+						        
+						        synchronized (GetNodeDataFromDbWhenSystemIdle.class) {
+						        	currLocation = newLocation;
+//						        	globlenodeindex = i;
+						        }
+				        }
+			        }
+		    }
+		    
+		    for(int i = 0;i <=bankuaicount-1  ; i++) {
+		    	 while (running) {
+			            synchronized (pauseLock) {
+			                if (!running) { // may have changed while waiting to
+			                    // synchronize on pauseLock
+			                    break;
+			                }
+			                if (paused) {
+			                    try {
+			                        synchronized (pauseLock) {
+			                            pauseLock.wait(); // will cause this Thread to block until 
+			                            // another thread calls pauseLock.notifyAll()
+			                            // Note that calling wait() will 
+			                            // relinquish the synchronized lock that this 
+			                            // thread holds on pauseLock so another thread
+			                            // can acquire the lock to call notifyAll()
+			                            // (link with explanation below this code)
+			                        }
+			                    } catch (InterruptedException ex) {break; }
+			                    if (!running) { // running might have changed since we paused
+			                        break;
+			                    }
+			                }
+			            }
+
+			            try {  Thread.sleep(sleepcount);
+						} catch (InterruptedException e) {e.printStackTrace();}
+			            
+			            synchronized (GetNodeDataFromDbWhenSystemIdle.class) {
+				        	    Point newLocation = MouseInfo.getPointerInfo().getLocation();
+						        if(newLocation.equals(currLocation)){
+						            //not moved
+						            idleTime = System.currentTimeMillis() - start;
+						            long seconds = TimeUnit.MILLISECONDS.toSeconds(idleTime);
+//						            System.out.printf(" I am sleeping %s %s \n", seconds, i);
+						            if( seconds > mousenotmoverange ) {
+						            	if(restartscreentips) {
+						            		System.out.printf(" \n System slept long enough. Getting BanKuai K Data from Database starting... \n");
+						            		restartscreentips = false;
+						            	}
+						            	
+						            	synchronized (GetNodeDataFromDbWhenSystemIdle.class) {
+						            		BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode)bkcyltree.getModel().getChild(treeroot, i);
+						            		if(childnode.getType() == BkChanYeLianTreeNode.TDXBK)
+						            				getNodeKxianData (childnode);
+							            	break;
+						            	}
+						            }
+						        } else {
+						        	long seconds = TimeUnit.MILLISECONDS.toSeconds(idleTime);
+//						            System.out.printf("Idle time was: %s seconds \n", seconds);
+						            synchronized (GetNodeDataFromDbWhenSystemIdle.class) {
+						            	idleTime=0;
+						            	start =  System.currentTimeMillis();
+						            	
+						            	restartscreentips = true; counttoentertonewline = 0;
+						            }
+						        }
+						        
+						        synchronized (GetNodeDataFromDbWhenSystemIdle.class) {
+						        	currLocation = newLocation;
+//						        	globlenodeindex = i;
+						        }
+				        }
+			        }
+		    }
+		    
+		    System.out.println("......\n Done! Gotten All BanKuai Nodes ZhanBi And K Data At " + LocalTime.now() + "\r\n");
 		    
 		    for(int i = bankuaicount-1 ;i >=0  ; i--) {
 		    	 while (running) {
@@ -84,13 +223,14 @@ public class GetNodeDataFromDbWhenSystemIdle implements Runnable
 //						            System.out.printf(" I am sleeping %s %s \n", seconds, i);
 						            if( seconds > mousenotmoverange ) {
 						            	if(restartscreentips) {
-						            		System.out.printf(" \n System slept long enough. Getting Node Weekly Zhanbi Data from Database starting... \n");
+						            		System.out.printf(" \n System slept long enough. Getting Stock Weekly Zhanbi Data from Database starting... \n");
 						            		restartscreentips = false;
 						            	}
 						            	
 						            	synchronized (GetNodeDataFromDbWhenSystemIdle.class) {
 						            		BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode)bkcyltree.getModel().getChild(treeroot, i);
-							            	getNodeZhanbiData (childnode);
+						            		if(childnode.getType() == BkChanYeLianTreeNode.TDXGG)
+						            			getNodeZhanbiData (childnode);
 							            	break;
 						            	}
 						            }
@@ -112,9 +252,6 @@ public class GetNodeDataFromDbWhenSystemIdle implements Runnable
 				        }
 			        }
 		    }
-		    
-		    System.out.printf(" \n Done! Gotten All Nodes Zhanbi Data.  \n");
-		    
 		    
 		    for(int i = bankuaicount-1 ;i >=0  ; i--) {
 		    	 while (running) {
@@ -153,13 +290,14 @@ public class GetNodeDataFromDbWhenSystemIdle implements Runnable
 //						            System.out.printf(" I am sleeping %s %s \n", seconds, i);
 						            if( seconds > mousenotmoverange ) {
 						            	if(restartscreentips) {
-						            		System.out.printf(" \n System slept long enough. Getting Node K Data from Database starting... \n");
+						            		System.out.printf(" \n System slept long enough. Getting Stock K Data from Database starting... \n");
 						            		restartscreentips = false;
 						            	}
 						            	
 						            	synchronized (GetNodeDataFromDbWhenSystemIdle.class) {
 						            		BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode)bkcyltree.getModel().getChild(treeroot, i);
-						            		getNodeKxianData (childnode);
+						            		if(childnode.getType() == BkChanYeLianTreeNode.TDXGG)
+						            			getNodeKxianData (childnode);
 							            	break;
 						            	}
 						            }
@@ -181,9 +319,7 @@ public class GetNodeDataFromDbWhenSystemIdle implements Runnable
 				        }
 			        }
 		    }
-		    System.out.printf(" \n Done! Gotten All Nodes K Data.  \n");
-		    
-		    
+		    System.out.println("......\n Done! Gotten All Stock Nodes ZhanBi And K Data At " + LocalTime.now() + "\r\n");
 	 }
 	 
 	 public void stop() {
@@ -221,17 +357,20 @@ public class GetNodeDataFromDbWhenSystemIdle implements Runnable
 				return;
 
 			animation ();
-//			System.out.print("bk" + node.getMyOwnName() + "\n");
+			System.out.print("Buffering BanKuai" + node.getMyOwnCode() + node.getMyOwnName() + " Zhanbi\n");
 			SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai  ();
 			node = svsbk.getNodeData( node, requirestart, exportdate,NodeGivenPeriodDataItem.WEEK,true);
+			svsbk = null;
 		} else if(node.getType() == BkChanYeLianTreeNode.TDXGG) {
 			
 			animation ();
 			
-//			System.out.print("stock" + node.getMyOwnName() + "\n");
+			System.out.print("Buffering Stock" + node.getMyOwnName() + " Zhanbi \n");
 			SvsForNodeOfStock svsstk = new SvsForNodeOfStock  ();
 			node = (Stock) svsstk.getNodeData( (Stock)node,requirestart,exportdate,NodeGivenPeriodDataItem.WEEK,true);
+			svsstk = null;
 		}
+		System.gc();
 	}
 	
 	private synchronized void getNodeKxianData (BkChanYeLianTreeNode node) 
@@ -247,16 +386,18 @@ public class GetNodeDataFromDbWhenSystemIdle implements Runnable
 				return;
 			
 			animation ();
-//			System.out.print("bk" + node.getMyOwnName() + "\n");
+			System.out.print("Buffering BanKuai" + node.getMyOwnCode() + node.getMyOwnName() + " KXian\n");
 			SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai  ();
 			node = svsbk.getNodeKXian( node, requirestart, exportdate,NodeGivenPeriodDataItem.DAY,true);
-			
+			svsbk = null;
 		} else if(node.getType() == BkChanYeLianTreeNode.TDXGG) {
 			animation ();
-//			System.out.print("stock" + node.getMyOwnName() + "\n");
+			System.out.print("Buffering Stock" + node.getMyOwnName() + " KXian\n");
 			SvsForNodeOfStock svsstk = new SvsForNodeOfStock  ();
 			node = (Stock) svsstk.getNodeKXian( (Stock)node,requirestart,exportdate,NodeGivenPeriodDataItem.DAY,true);
+			svsstk = null;
 		}
+		System.gc(); 
 	}
 	
 	private void animation ()
@@ -278,7 +419,6 @@ public class GetNodeDataFromDbWhenSystemIdle implements Runnable
 			System.out.print("/" );
 			counttoentertonewline = 0;
 		}
-		
 	}
 			
 

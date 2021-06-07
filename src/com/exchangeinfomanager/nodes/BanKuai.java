@@ -30,6 +30,8 @@ import org.joda.time.DateTime;
 //import org.jfree.data.time.Week;
 import org.joda.time.Interval;
 
+import com.exchangeinfomanager.NodesServices.ServicesForNode;
+import com.exchangeinfomanager.NodesServices.ServicesForNodeBanKuai;
 import com.exchangeinfomanager.NodesServices.SvsForNodeOfBanKuai;
 import com.exchangeinfomanager.NodesServices.SvsForNodeOfDZHBanKuai;
 import com.exchangeinfomanager.NodesServices.SvsForNodeOfStock;
@@ -392,6 +394,10 @@ public class BanKuai extends TDXNodes
 		private Boolean importbkgegu;
 		private String bankuailabelcolor;
 		
+		public void setBanKuaiLabelColor(Color color) {
+			String colorcode = String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getGreen() );
+			this.bankuailabelcolor = colorcode;
+		}
 		public void setBanKuaiLabelColor(String colorstr) {
 			this.bankuailabelcolor = colorstr;
 		}

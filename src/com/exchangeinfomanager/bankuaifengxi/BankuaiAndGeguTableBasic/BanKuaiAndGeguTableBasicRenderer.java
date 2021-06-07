@@ -320,17 +320,18 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 	private String rendererOperationForPercent (Object value) {
 		
 		String  valuepect = null;
+		
 		 //用百分比显示
-    	try {
-    		 double formatevalue = NumberFormat.getInstance(Locale.CHINA).parse(value.toString()).doubleValue();
-    		 
-    		 NumberFormat percentFormat = NumberFormat.getPercentInstance(Locale.CHINA);
-    	     percentFormat.setMinimumFractionDigits(2);
-        	 valuepect = percentFormat.format (formatevalue );
-    	} catch (java.lang.NullPointerException e) {		valuepect = null;
-    	} catch (java.lang.NumberFormatException e)  { e.printStackTrace(); valuepect = null;
-    	} catch (ParseException e) {e.printStackTrace();valuepect = null; }
-    	
+	    	try {
+	    		 double formatevalue = NumberFormat.getInstance(Locale.CHINA).parse(value.toString()).doubleValue();
+	    		 
+	    		 NumberFormat percentFormat = NumberFormat.getPercentInstance(Locale.CHINA);
+	    	     percentFormat.setMinimumFractionDigits(2);
+	        	 valuepect = percentFormat.format (formatevalue );
+	    	} catch (java.lang.NullPointerException e) {		valuepect = null;
+	    	} catch (java.lang.NumberFormatException e)  { e.printStackTrace(); valuepect = null;
+	    	} catch (ParseException e) {e.printStackTrace();valuepect = null; }
+	    	
     	return valuepect;
 	}
 	/*

@@ -77,10 +77,8 @@ public class TagsPanel extends JPanel implements TagCacheListener
 	{
 		this.title = title;
 		
-		if(displaymode == null)
-			this.displaymode = "displayhead";
-		else
-			this.displaymode = displaymode;
+		if(displaymode == null) 	this.displaymode = "displayhead";
+		else this.displaymode = displaymode;
 		
 		this.controlmode = controlmode;
 		

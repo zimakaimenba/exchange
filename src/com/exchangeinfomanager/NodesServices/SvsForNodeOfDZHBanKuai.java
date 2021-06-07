@@ -1,5 +1,6 @@
 package com.exchangeinfomanager.NodesServices;
 
+import java.awt.Color;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Collection;
@@ -10,8 +11,6 @@ import com.exchangeinfomanager.database.BanKuaiDZHDbOperation;
 
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.nodes.ServicesForNode;
-import com.exchangeinfomanager.nodes.ServicesForNodeBanKuai;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
 
@@ -184,15 +183,16 @@ public class SvsForNodeOfDZHBanKuai implements ServicesForNode ,ServicesForNodeB
 	}
 	
 	public BkChanYeLianTreeNode updateBanKuaiBasicOperationsSettings(BkChanYeLianTreeNode node, boolean importdailydata, boolean exporttogephi, 
-			boolean showinbkfx,boolean showincyltree, boolean exporttowkfile, boolean importbkgg)
+			boolean showinbkfx,boolean showincyltree, boolean exporttowkfile, boolean importbkgg, Color bkcolor)
 	{
-		dzhbkdbopt.updateBanKuaiOperationsSettings (node,importdailydata,exporttogephi,showinbkfx,showincyltree,exporttowkfile,importbkgg);
+		dzhbkdbopt.updateBanKuaiOperationsSettings (node,importdailydata,exporttogephi,showinbkfx,showincyltree,exporttowkfile,importbkgg,bkcolor);
 		((BanKuai)node).getBanKuaiOperationSetting().setImportdailytradingdata(importdailydata);
 		((BanKuai)node).getBanKuaiOperationSetting().setExporttogehpi(exporttogephi);
 		((BanKuai)node).getBanKuaiOperationSetting().setShowinbkfxgui(showinbkfx);
 		((BanKuai)node).getBanKuaiOperationSetting().setShowincyltree(showincyltree);
 		((BanKuai)node).getBanKuaiOperationSetting().setExportTowWlyFile(exporttowkfile);
 		((BanKuai)node).getBanKuaiOperationSetting().setImportBKGeGu(importbkgg);
+		((BanKuai)node).getBanKuaiOperationSetting().setBanKuaiLabelColor (bkcolor);
 		
 		return node;
 	}

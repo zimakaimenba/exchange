@@ -213,17 +213,13 @@ public class BanKuaiGuanLi extends JDialog
 		
 		menuItemSocialFriendNegtiveformiddletable.addActionListener(new ActionListener() {
 			@Override
-
 			public void actionPerformed(ActionEvent evt) {
-				
 				int row = tablenoggbk.getSelectedRow();
-				if(row <0) {
-					JOptionPane.showMessageDialog(null,"请选择一个板块！","Warning",JOptionPane.WARNING_MESSAGE);
+				if(row <0) {	JOptionPane.showMessageDialog(null,"请选择一个板块！","Warning",JOptionPane.WARNING_MESSAGE);
 					return;
 				}
 				int  model_row = tablenoggbk.convertRowIndexToModel(row);//将视图中的行索引转化为数据模型中的行索引
 				BkChanYeLianTreeNode friend = (BkChanYeLianTreeNode) ( tablenoggbk.getModel().getValueAt(model_row, 0) );
-				
 				
 				row = tableSysBk.getSelectedRow();
 				model_row = tableSysBk.convertRowIndexToModel(row);//将视图中的行索引转化为数据模型中的行索引
@@ -234,6 +230,49 @@ public class BanKuaiGuanLi extends JDialog
 					tablenoggbk.repaint();
 				}
 			}
+		});
+		
+		menuItemSocialFriendNegtiveformiddletablefordzh.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent evt) {
+				int row = tabledazsocial.getSelectedRow();
+				if(row <0) {	JOptionPane.showMessageDialog(null,"请选择一个板块！","Warning",JOptionPane.WARNING_MESSAGE);
+					return;
+				}
+				int  model_row = tabledazsocial.convertRowIndexToModel(row);//将视图中的行索引转化为数据模型中的行索引
+				BkChanYeLianTreeNode friend = (BkChanYeLianTreeNode) ( tabledazsocial.getModel().getValueAt(model_row, 0) );
+				
+				row = tableSysBk.getSelectedRow();
+				model_row = tableSysBk.convertRowIndexToModel(row);//将视图中的行索引转化为数据模型中的行索引
+				BkChanYeLianTreeNode mainnode = (BkChanYeLianTreeNode) ( tableSysBk.getModel().getValueAt(model_row, 0) );
+				
+				if(!mainnode.getMyOwnCode().equals(friend.getMyOwnCode()  ) ) {
+					updateNodeSocialFriend ( (BanKuai)mainnode, (BanKuai)friend, false);
+					tablenoggbk.repaint();
+				}
+			}
+		});
+		
+		menuItemSocialFriendPostiveformiddletablefordzh.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent evt) {
+				int row = tabledazsocial.getSelectedRow();
+				if(row <0) { JOptionPane.showMessageDialog(null,"请选择一个板块！","Warning",JOptionPane.WARNING_MESSAGE);
+					return;
+				}
+				int  model_row = tabledazsocial.convertRowIndexToModel(row);//将视图中的行索引转化为数据模型中的行索引
+				BkChanYeLianTreeNode friend = (BkChanYeLianTreeNode) ( tabledazsocial.getModel().getValueAt(model_row, 0) );
+				
+				row = tableSysBk.getSelectedRow();
+				model_row = tableSysBk.convertRowIndexToModel(row);//将视图中的行索引转化为数据模型中的行索引
+				BkChanYeLianTreeNode mainnode = (BkChanYeLianTreeNode) ( tableSysBk.getModel().getValueAt(model_row, 0) );
+				
+				if(!mainnode.getMyOwnCode().equals(friend.getMyOwnCode()  ) ) {
+					updateNodeSocialFriend ( (BanKuai)mainnode, (BanKuai)friend, true);
+					tablenoggbk.repaint();
+				}
+			}
+			
 		});
 		
 		menuItemSocialFriendPostiveformiddletable.addActionListener(new ActionListener() {
@@ -255,8 +294,6 @@ public class BanKuaiGuanLi extends JDialog
 					updateNodeSocialFriend ( (BanKuai)mainnode, (BanKuai)friend, true);
 					tablenoggbk.repaint();
 				}
-				
-				
 			}
 			
 		});
@@ -333,6 +370,7 @@ public class BanKuaiGuanLi extends JDialog
 				
 				tablenoggbk.repaint();
 				tableBkfriends.repaint();
+				tabledazsocial.repaint();
 				
 				svsbk = null;
 			}
@@ -364,9 +402,9 @@ public class BanKuaiGuanLi extends JDialog
 
 				panelsetting.setSettingNode(selectnode);
 				
-//				tablenoggbk.repaint();
-//				tableBkfriends.repaint();
-				
+				tablenoggbk.repaint();
+				tableBkfriends.repaint();
+				tabledazsocial.repaint();
 //				svsbk = null;
 			}
 		});
@@ -382,14 +420,6 @@ public class BanKuaiGuanLi extends JDialog
 	protected void updateNodeSocialFriend(BanKuai mainnode, BanKuai friend, Boolean relationship)
 	{
 		bkdbopt.updateNodeSocialFriendShips (mainnode,friend, relationship);
-		
-//		Set<String> friendset = mainnode.getSocialFriendsSet();
-//		if( friendset.contains(friend.getMyOwnCode() ) ) { //已经是朋友了要取消
-//			bkdbopt.updateNodeSocialFriendShips (mainnode,friend);
-//		} else { //不是朋友，要加入
-//			kk
-//		}
-		
 	}
 
 
@@ -460,6 +490,9 @@ public class BanKuaiGuanLi extends JDialog
 	private JMenuItem menuItemrelatedbk;
 	private JTabbedPane tabbedPaneBk;
 	private JTreeTable tableDzhBk;
+	private JTreeTable tabledazsocial;
+	private JMenuItem menuItemSocialFriendPostiveformiddletablefordzh;
+	private JMenuItem menuItemSocialFriendNegtiveformiddletablefordzh;
 	
 	private void initializeGui2() 
 	{
@@ -480,6 +513,9 @@ public class BanKuaiGuanLi extends JDialog
 		JPanel allbkfriendspnl = JPanelFactory.createPanel(); //板块的social friend pnl
 		allbkfriendspnl.setLayout(new GridLayout(3, 1));
 		allbkfriendspnl.setPreferredSize(new Dimension(300, 988));
+		
+		JTabbedPane tabbedPaneSocialBk =  new JTabbedPane (JTabbedPane.TOP);
+		allbkfriendspnl.add(tabbedPaneSocialBk);
 		
 		 JScrollPane scrollPanebkfriends = new JScrollPane (); //bankuai's related bankuai/social friends
 //			初始化jtreetable
@@ -529,27 +565,25 @@ public class BanKuaiGuanLi extends JDialog
 				
 			};
 		scrollPanebkfriends.setViewportView(tableBkfriends);
-//		scrollPanebkfriends.setPreferredSize(new Dimension(250, 600));
 		allbkfriendspnl.add(scrollPanebkfriends);
+		
 		JPopupMenu popupMenusocial = new JPopupMenu();
 		this.addPopup (tableBkfriends,popupMenusocial);
-		
 		menuItemSocialFriendNegtivefortoppesttable = new JMenuItem("设置/取消好友负相关关系");
 		menuItemSocialFriendNegtivefortoppesttable.setOpaque(true);
 		menuItemSocialFriendNegtivefortoppesttable.setBackground(Color.GREEN);
-		
 		menuItemSocialFriendPostivefortoppesttable = new JMenuItem("设置/取消好友正相关关系");
 		menuItemSocialFriendPostivefortoppesttable.setOpaque(true);
 		menuItemSocialFriendPostivefortoppesttable.setBackground(Color.RED);
-		
 		popupMenusocial.add(menuItemSocialFriendPostivefortoppesttable);
 		popupMenusocial.add(menuItemSocialFriendNegtivefortoppesttable);
+		
 		TableRowSorter<TableModel> sorterofbkfriends = new TableRowSorter<TableModel> (tableBkfriends.getModel() );
 		tableBkfriends.setRowSorter(sorterofbkfriends);
-
+		
+		////////////////////////////////////////////////////////////////////////
 		JScrollPane scrollPanenoggbk = new JScrollPane (); //板块列表
 		BanKuaiDetailTableModel ggbktreetablemodel = new BanKuaiDetailTableModel ( treebkonlynoggwithselfcjl );
-//		JTable tableSysBk = new JTable();
 		tablenoggbk = new JTreeTable(ggbktreetablemodel) {
 
 			private static final long serialVersionUID = 1L;
@@ -603,21 +637,92 @@ public class BanKuaiGuanLi extends JDialog
 		TableRowSorter<TableModel> sorterofnoggbk = new TableRowSorter<TableModel>(tablenoggbk.getModel());
 		tablenoggbk.setRowSorter(sorterofnoggbk);
 		scrollPanenoggbk.setViewportView(tablenoggbk);
-//		scrollPanesysbk.setPreferredSize(new Dimension(200, 615));
-		allbkfriendspnl.add(scrollPanenoggbk);
+		tabbedPaneSocialBk.addTab("通达信板块", null, scrollPanenoggbk, null);
+		
 		JPopupMenu popupMenunogegubk = new JPopupMenu();
 		this.addPopup (tablenoggbk,popupMenunogegubk);
 		menuItemSocialFriendNegtiveformiddletable = new JMenuItem("设置/取消好友负相关关系");
 		menuItemSocialFriendNegtiveformiddletable.setOpaque(true);
 		menuItemSocialFriendNegtiveformiddletable.setBackground(Color.GREEN);
-		
 		menuItemSocialFriendPostiveformiddletable = new JMenuItem("设置/取消好友正相关关系");
 		menuItemSocialFriendPostiveformiddletable.setOpaque(true);
 		menuItemSocialFriendPostiveformiddletable.setBackground(Color.RED);
-		
 		popupMenunogegubk.add(menuItemSocialFriendPostiveformiddletable);
 		popupMenunogegubk.add(menuItemSocialFriendNegtiveformiddletable);
+		
+		
+		
+		//////////////////////////////////////////////////
+		JScrollPane scrollPanesocialdzhbk   = new JScrollPane (); //板块列表
+		BanKuaiDetailTableModel socialdzhtreetablemodel = new BanKuaiDetailTableModel ( CreateExchangeTree.CreateTreeOfDZHBanKuaiAndStocks()  );
+		tabledazsocial = new JTreeTable(socialdzhtreetablemodel) {
 
+			private static final long serialVersionUID = 1L;
+			
+			public String getToolTipText(MouseEvent e) {
+                String tip = null;
+                java.awt.Point p = e.getPoint();
+                int rowIndex = rowAtPoint(p);
+                int colIndex = columnAtPoint(p);
+
+                try {   tip = getValueAt(rowIndex, colIndex).toString();
+                } catch (RuntimeException e1) {//catch null pointer exception if mouse is over an empty line
+                }
+
+                return tip;
+            }
+			
+			public Component prepareRenderer(TableCellRenderer renderer, int row, int col) 
+			{
+				
+		        Component comp = super.prepareRenderer(renderer, row, col);
+		        JComponent jc = (JComponent)comp;
+		        
+				BkChanYeLianTreeNode node = (BkChanYeLianTreeNode) ( this.getModel().getValueAt(row, 0) );
+				if(node.getType() ==  BkChanYeLianTreeNode.TDXBK ) {
+					
+					String bktype = ((BanKuai)node).getBanKuaiLeiXing();
+			        if(bktype.equals(BanKuai.NOGGWITHSELFCJL)) {
+			        	Font defaultFont = this.getFont();
+			        	Font font = new Font(defaultFont.getName(),Font.ITALIC,defaultFont.getSize());
+			        	comp.setFont(font);
+			        }
+				}
+				
+				
+				int rowofsysbk = tableSysBk.getSelectedRow();
+				if(rowofsysbk <0) {
+				} else {
+					String socialbkcode =  node.getMyOwnCode();
+					BanKuai sysbk = (BanKuai) ( tableSysBk.getModel().getValueAt(rowofsysbk, 0) );
+			        Set<String> socialsetpos = sysbk.getSocialFriendsSetPostive();
+			        if(socialsetpos.contains(socialbkcode))	jc.setBorder( highlightpos );
+		        	
+			        Set<String> socialsetneg = sysbk.getSocialFriendsSetNegtive();
+			        if(socialsetneg.contains(socialbkcode))	jc.setBorder( highlightneg );
+			    }
+				
+		        return comp;
+			}
+		};
+		scrollPanesocialdzhbk.setViewportView(tabledazsocial);
+		JPopupMenu popupMenunodzhsocial = new JPopupMenu();
+		this.addPopup (tabledazsocial,popupMenunodzhsocial);
+		menuItemSocialFriendNegtiveformiddletablefordzh = new JMenuItem("设置/取消好友负相关关系");
+		menuItemSocialFriendNegtiveformiddletablefordzh.setOpaque(true);
+		menuItemSocialFriendNegtiveformiddletablefordzh.setBackground(Color.GREEN);
+		
+		menuItemSocialFriendPostiveformiddletablefordzh = new JMenuItem("设置/取消好友正相关关系");
+		menuItemSocialFriendPostiveformiddletablefordzh.setOpaque(true);
+		menuItemSocialFriendPostiveformiddletablefordzh.setBackground(Color.RED);
+		
+		popupMenunodzhsocial.add(menuItemSocialFriendNegtiveformiddletablefordzh);
+		popupMenunodzhsocial.add(menuItemSocialFriendPostiveformiddletablefordzh);
+		
+		tabbedPaneSocialBk.addTab("大智慧板块", null, scrollPanesocialdzhbk, null);
+		allbkfriendspnl.add(tabbedPaneSocialBk);
+
+		/////////////////////////////////////////////////
 		
 		JScrollPane scrollPanebkgegu = new JScrollPane (); //bankuai's 个股
 		BkChanYeLianTreeNodeListTableModel bkstmodel = new BkChanYeLianTreeNodeListTableModel ();
@@ -639,9 +744,7 @@ public class BanKuaiGuanLi extends JDialog
 			
 		};
 		scrollPanebkgegu.setViewportView(tablebkgegu);
-//		scrollPanebkgegu.setPreferredSize(new Dimension(250, 340));
 		allbkfriendspnl.add(scrollPanebkgegu);
-
 		
 		JPanel allbkskpnl = JPanelFactory.createPanel(); //所有板块及板块设置窗口
 		allbkskpnl.setLayout(new FlowLayout() );
@@ -738,7 +841,6 @@ public class BanKuaiGuanLi extends JDialog
 		        
 				BkChanYeLianTreeNode node = (BkChanYeLianTreeNode) ( this.getModel().getValueAt(row, 0) );
 				if(node.getType() ==  BkChanYeLianTreeNode.DZHBK ) {
-					
 					String bktype = ((BanKuai)node).getBanKuaiLeiXing();
 			        if(bktype!= null && bktype.equals(BanKuai.NOGGWITHSELFCJL)) {
 			        	Font defaultFont = this.getFont();
@@ -751,8 +853,7 @@ public class BanKuaiGuanLi extends JDialog
 		};
 		scrollPanedzhsysbk.setViewportView(tableDzhBk);
 		scrollPanedzhsysbk.setPreferredSize(new Dimension(200, 615));
-		
-		
+
 		panelsetting = new BanKuaiShuXingSheZhi();
 		allbkskpnl.add( panelsetting);
 		
@@ -760,12 +861,6 @@ public class BanKuaiGuanLi extends JDialog
 		westbankuaipnl.add(allbkfriendspnl);
 		
 		layoutPanel.add(westbankuaipnl, BorderLayout.WEST);
-//		layoutPanel.setPreferredSize(new Dimension(751, 677));
-		
-		
-//		BanKuaiAndChanYeLianGUI bkcylpnl = new BanKuaiAndChanYeLianGUI() ;
-//		bkcylpnl.setPreferredSize(new Dimension(751, 677));
-//		layoutPanel.add(bkcylpnl, BorderLayout.CENTER);
 		
 		menuBar = new JMenuBar();
 		menuBar.setBorderPainted(false);

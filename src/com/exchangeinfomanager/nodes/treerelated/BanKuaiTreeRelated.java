@@ -1,5 +1,6 @@
 package com.exchangeinfomanager.nodes.treerelated;
 
+import java.awt.Color;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.Collection;
@@ -39,12 +40,41 @@ public class BanKuaiTreeRelated implements NodesTreeRelated
 		} else  isinparsedfile.remove(friday, colorcode);
 		
 	}
+	
+	public void setSelfIsMatchModel (LocalDate selfinsetdate, Color color,  Boolean inorout)
+	{
+		if(isinparsedfile == null)   isinparsedfile = HashMultimap.create();
+		
+		String colorcode = String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getGreen() );
+		LocalDate friday = selfinsetdate.with(DayOfWeek.FRIDAY);
+		
+		if(inorout) {
+			Collection<String> fruits = isinparsedfile.get(friday);
+			Boolean checkresult = fruits.contains(colorcode);
+			if(!checkresult) isinparsedfile.put(friday, colorcode);
+		} else  isinparsedfile.remove(friday, colorcode);
+		
+	}
 	@Override
 	public Boolean selfIsMatchModel (LocalDate selfinsetdate,String colorcode) 
 	{
 		if(isinparsedfile == null) return false;
 		
 		LocalDate friday = selfinsetdate.with(DayOfWeek.FRIDAY);
+		try {
+			Collection<String> result = isinparsedfile.get(friday);
+			Boolean checkresult = result.contains(colorcode);
+			return checkresult;
+		} catch(java.lang.NullPointerException e) {return null;}
+	}
+	
+	public Boolean selfIsMatchModel (LocalDate selfinsetdate,Color color) 
+	{
+		if(isinparsedfile == null) return false;
+		
+		String colorcode = String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getGreen() );
+		LocalDate friday = selfinsetdate.with(DayOfWeek.FRIDAY);
+		
 		try {
 			Collection<String> result = isinparsedfile.get(friday);
 			Boolean checkresult = result.contains(colorcode);

@@ -153,8 +153,7 @@ public class SetExportNodeConditionPnl extends JPanel {
 			return;
 		}
 
-		String msg =  "导出耗时较长，请先确认条件是否正确。\n是否导出？";
-		int exchangeresult = JOptionPane.showConfirmDialog(null,msg , "确实导出？", JOptionPane.OK_CANCEL_OPTION);
+		int exchangeresult = JOptionPane.showConfirmDialog(null,"导出耗时较长，请先确认条件是否正确。\n是否导出？" , "确实导出？", JOptionPane.OK_CANCEL_OPTION);
 		if(exchangeresult == JOptionPane.CANCEL_OPTION)			return;
 
 		if(curselectdate == null)	curselectdate = LocalDate.now();
@@ -170,7 +169,7 @@ public class SetExportNodeConditionPnl extends JPanel {
                 return ;  
             }  
         }  
-		try {	if (filefmxx.exists()) {
+		try {	if (filefmxx.exists()) { //In future, should add new function for if file exists, backup the old one.
 					filefmxx.delete();
 					filefmxx.createNewFile();
 				} else
