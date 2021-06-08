@@ -296,13 +296,23 @@ public class SvsForNodeOfStock implements ServicesForNode, ServicesOfNodeStock
 			
 			this.getStockGuDong( stock, "LIUTONG", bkamostartday, bkamoendday);
 			this.getNodeSuoShuBanKuaiList(stock); //先取得板块信息，可以用来在TABLE过滤
+
 			return;
 		}
+		
+		if(stock.getNodeJiBenMian().getGuDongInfo () == null || stock.getNodeJiBenMian().getGuDongInfo ().isEmpty() )
+			this.getStockGuDong( stock, "LIUTONG", bkamostartday, bkamoendday);
+		
+		if(stock.getNodeJiBenMian().getGuDongInfo () == null || stock.getNodeJiBenMian().getGuDongInfo ().isEmpty() )
+			this.getStockGuDong( stock, "LIUTONG", bkamostartday, bkamoendday);
+		
+		if(  stock.getGeGuCurSuoShuTDXSysBanKuaiList() == null ||  stock.getGeGuCurSuoShuTDXSysBanKuaiList().isEmpty() )
+			this.getNodeSuoShuBanKuaiList(stock); //先取得板块信息，可以用来在TABLE过滤
 		
 		List<Interval> timeintervallist = getTimeIntervalOfNodeTimeIntervalWithRequiredTimeInterval
 				(bkamostartday,bkamoendday, bkohlcstartday,bkohlcendday );
 		
-		if(timeintervallist == null)		return ;
+		if(timeintervallist == null || timeintervallist.isEmpty())		return ;
 		
 		for(Interval tmpinterval : timeintervallist) {
 				DateTime newstartdt = tmpinterval.getStart();

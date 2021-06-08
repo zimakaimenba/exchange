@@ -4961,19 +4961,6 @@ public class BanKuaiDbOperation
 	{
 		File tmpreportfolder = Files.createTempDir();
 		File tmprecordfile = new File(tmpreportfolder + "同步通达信自定义板块报告.txt");
-		
-		 //准备XML文件
-//		File sysconfigfile = new File(bankuaichanyelianxml );
-//		if(!sysconfigfile.exists()) { //不存在，创建该文件	
-//			try {
-//				sysconfigfile.createNewFile();
-//				logger.debug(bankuaichanyelianxml + "不存在，已经创建");
-//			} catch (IOException e) {
-//				logger.debug(bankuaichanyelianxml + "不存在，创建失败！");
-//			}
-//		}
-		
-		
 		this.refreshTDXZiDingYiBanKuaiToGeGu(neededimportedzdybkmap, tmprecordfile);
 		
 		return tmprecordfile;
@@ -4991,15 +4978,11 @@ public class BanKuaiDbOperation
 			String filename = neededimportedzdybkmap.get(newzdybk); //str是自定义板块的名称
 			File zdybk = new File(filename);
 			List<String> readLines = null;
-			try {
-				readLines = Files.readLines(zdybk,Charsets.UTF_8,new ParseBanKuaiWeeklyFielGetStocksProcessor ());
+			try {	readLines = Files.readLines(zdybk,Charsets.UTF_8,new ParseBanKuaiWeeklyFielGetStocksProcessor ());
 			} catch (java.io.FileNotFoundException e) {
 				logger.info("自定义板块文件没有找到，导入自定义板块失败！");
 				return null;
-			} catch (IOException e) {
-				e.printStackTrace();
-				return null;
-			}
+			} catch (IOException e) {	e.printStackTrace();	return null;}
 			Set<String> stocknamesnew = new HashSet<String>(readLines);
 			
 			//找出数据库中现有的该板块个股
@@ -5016,20 +4999,13 @@ public class BanKuaiDbOperation
 			        	tmpstockcodesetold.add(stockcode);
 			        }
 			       
-			    }catch(java.lang.NullPointerException e){ 
-			    	e.printStackTrace();
-			    } catch (SQLException e) {
-			    	e.printStackTrace();
-			    }catch(Exception e){
-			    	e.printStackTrace();
+			    }catch(java.lang.NullPointerException e){    	e.printStackTrace();
+			    } catch (SQLException e) { 	e.printStackTrace();
+			    }catch(Exception e){  	e.printStackTrace();
 			    } finally {
 			    	if(rs != null)
-						try {
-							rs.close();
-							rs = null;
-						} catch (SQLException e) {
-							e.printStackTrace();
-						}
+						try {	rs.close();	rs = null;
+						} catch (SQLException e) {	e.printStackTrace();	}
 			    }
 			
 			 //把tmpstockcodesetnew里面有的，tmpstockcodesetold没有的选出，这是新的，要加入数据库
@@ -5042,15 +5018,9 @@ public class BanKuaiDbOperation
    						+ ")"
    						;
    				//logger.debug(sqlinsertstat);
-   				try {
-					int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
-				} catch (MysqlDataTruncation e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+   				try {	int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
+				} catch (MysqlDataTruncation e) {e.printStackTrace();
+				} catch (SQLException e) {e.printStackTrace();	}
    				
    			}
    		    differencebankuainew = null;
@@ -5066,23 +5036,15 @@ public class BanKuaiDbOperation
 						+ "  AND isnull(移除时间)"
 						;
    	        	//logger.debug(sqldeletetstat);
-   	    		try {
-					int autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqlupdatestat);
-				} catch (MysqlDataTruncation e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
+   	    		try {	int autoIncKeyFromApi = connectdb.sqlDeleteStatExecute(sqlupdatestat);
+				} catch (MysqlDataTruncation e) {e.printStackTrace();
+				} catch (SQLException e) {e.printStackTrace();	}
    	        }
    	        
    	     differencebankuaiold = null;
    	     stocknamesnew = null;
 		}
-		
-		
+	
 		neededimportzdybknames = null;
 		return tmprecordfile;
 	}
@@ -5123,23 +5085,12 @@ public class BanKuaiDbOperation
                zdybkmap.put(zdybankuainame, bkfilename );
                
               }
-		 } catch (Exception e) {
-			 e.printStackTrace();
-			 return null;
+		 } catch (Exception e) { e.printStackTrace();	 return null;
 		 } finally {
 			 if(in != null)
-				try {
-					in.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				try {	in.close();	} catch (IOException e) {	e.printStackTrace();	}
 			 if(dis != null)
-				try {
-					dis.close();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				try {	dis.close();} catch (IOException e) {e.printStackTrace();		}
 		 }
 		
 		 this.refreshTDXZiDingYiBanKuai (zdybkmap);
@@ -5172,19 +5123,11 @@ public class BanKuaiDbOperation
 	        	BanKuai tmpbk = new BanKuai (rs.getString("ID"),rs.getString("板块名称") );
 	        	tmpsysbankuailiebiaoinfo.put(rs.getString("板块名称"), tmpbk);
 	        }
-	    }catch(java.lang.NullPointerException e){ 
-	    	e.printStackTrace();
-	    } catch (SQLException e) {
-	    	e.printStackTrace();
-	    }catch(Exception e){
-	    	e.printStackTrace();
+	    }catch(java.lang.NullPointerException e){e.printStackTrace();
+	    } catch (SQLException e) {   	e.printStackTrace();
+	    }catch(Exception e){  	e.printStackTrace();
 	    } finally {
-	    	try {
-				rs.close ();
-				rs = null;
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
+	    	try {	rs.close ();	rs = null;	} catch (SQLException e) {	e.printStackTrace();	}
 	    }
 	    
 	    return  tmpsysbankuailiebiaoinfo;
@@ -5207,15 +5150,9 @@ public class BanKuaiDbOperation
 						+ ")"
 						;
 				//logger.debug(sqlinsertstat);
-				try {
-					int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
-				} catch (MysqlDataTruncation e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				try {	int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
+				} catch (MysqlDataTruncation e) {e.printStackTrace();
+				} catch (SQLException e) {e.printStackTrace();s		}
 
 			}
 		    differencebankuainew = null;
