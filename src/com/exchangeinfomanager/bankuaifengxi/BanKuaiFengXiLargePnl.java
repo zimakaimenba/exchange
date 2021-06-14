@@ -2,7 +2,7 @@ package com.exchangeinfomanager.bankuaifengxi;
 
 import java.awt.AWTException;
 import java.awt.BorderLayout;
-import java.awt.Color;
+
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Rectangle;
@@ -15,26 +15,23 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
-import java.time.DayOfWeek;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
-import java.util.Collection;
+
 import java.util.Properties;
 
 import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
-import javax.swing.JButton;
+
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-import javax.swing.JScrollBar;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 
-import org.jsoup.Jsoup;
+import javax.swing.JScrollPane;
+
+
 
 import com.exchangeinfomanager.News.NewsCache;
 import com.exchangeinfomanager.News.NewsLabelServices;
@@ -73,10 +70,7 @@ import com.exchangeinfomanager.systemconfigration.SetupSystemConfiguration;
 public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHightLightColumnListener
 {
 	private TDXNodes displaynode;
-//	private SystemConfigration sysconfig;
 	private TDXNodes nodebankuai;
-//	private AllCurrentTdxBKAndStoksTree allbksks;
-//	private Boolean exportuserselectedinfotocsv;
 	private String globeperiod;
 
 	public BanKuaiFengXiLargePnl (TDXNodes nodebkbelonged, TDXNodes node, LocalDate displayedstartdate1,LocalDate displayedenddate1,String period,String guitype, Properties prop)
@@ -84,13 +78,11 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 		this.nodebankuai = nodebkbelonged;
 		this.displaynode = node;
 		this.globeperiod = period;
-//		initialzieSysconf ();
 
 		createGui (nodebkbelonged, guitype);
 		this.nodecombinedpnl.setProperties(prop);
 		
 		createEvents ();
-
 
 		updateData (nodebkbelonged, node,displayedstartdate1,displayedenddate1,period);
 	}
@@ -154,50 +146,33 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 		nodecombinedpnl.setChangeNodeDisplayDateRange(true);
 		
 		tfldselectedmsg.addPropertyChangeListener(new PropertyChangeListener() {
-
-            public void propertyChange(PropertyChangeEvent evt) {
-
-                if (evt.getPropertyName().equals(DisplayNodeExchangeDataServicesPanel.EXPORTCSV_PROPERTY)) {
-//            		exportuserselectedinfotocsv = true;
-                }
-                	
+			public void propertyChange(PropertyChangeEvent evt) {
+				if (evt.getPropertyName().equals(DisplayNodeExchangeDataServicesPanel.EXPORTCSV_PROPERTY)) {
+                }	
             }
 		});
 
 		nodekpnl.addPropertyChangeListener(new PropertyChangeListener() {
-
             public void propertyChange(PropertyChangeEvent evt) {
-
                 if (evt.getPropertyName().equals(BanKuaiFengXiCandlestickPnl.ZHISHU_PROPERTY)) {
                     @SuppressWarnings("unchecked")
-                    String zhishuinfo = evt.getNewValue().toString();
-                    
-                    if(zhishuinfo.toLowerCase().equals("bankuaizhisu") ) {
-                		
+                    String zhishuinfo = evt.getNewValue().toString();                    
+                    if(zhishuinfo.toLowerCase().equals("bankuaizhisu") ) {               		
                 		nodekpnl.displayQueKou(true);
-                    	refreshTDXGeGuAndBanKuaiKXian ( displaynode, nodebankuai );
-                		
-                		
+                    	refreshTDXGeGuAndBanKuaiKXian ( displaynode, nodebankuai );             		                		
                     } else if(zhishuinfo.toLowerCase().equals("dapanzhishu") ) {
                     	String danpanzhishu = JOptionPane.showInputDialog(null,"请输入叠加的大盘指数", "999999");
                     	BanKuai zhishubk =  (BanKuai) CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode(danpanzhishu.toLowerCase(),BkChanYeLianTreeNode.TDXBK);
-//                    	BanKuai zhishubk =  (BanKuai) allbksks.getAllBkStocksTree().getSpecificNodeByHypyOrCode(danpanzhishu.toLowerCase(),BkChanYeLianTreeNode.TDXBK);
-                    	if(zhishubk == null)  {
-        					JOptionPane.showMessageDialog(null,"指数代码有误！","Warning",JOptionPane.WARNING_MESSAGE);
+                    	if(zhishubk == null)  {			JOptionPane.showMessageDialog(null,"指数代码有误！","Warning",JOptionPane.WARNING_MESSAGE);
         					return;
         				}
 
                     	if(nodekpnl.getCurDisplayedNode().getType() == BkChanYeLianTreeNode.TDXGG || nodekpnl.getCurDisplayedNode().getType() == BkChanYeLianTreeNode.BKGEGU )
                     		nodekpnl.displayQueKou(true);
-                    	else
-                    		nodekpnl.displayQueKou(false);
+                    	else    nodekpnl.displayQueKou(false);
                     	
-                    	refreshTDXGeGuAndBanKuaiKXian ( displaynode, zhishubk );
-//                    	nodekpnl.updatedDate(zhishubk,displaynode,displayedstartdate,displayedenddate,NodeGivenPeriodDataItem.DAY);
-                		
-                    	
+                    	refreshTDXGeGuAndBanKuaiKXian ( displaynode, zhishubk );                  	
                     }
-
                 } 
              }
         });
@@ -205,7 +180,6 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 		 * 
 		 */
 		mntmsaveimage.addMouseListener(new MouseAdapter() {
-
 			public void mousePressed(MouseEvent arg0)
 			{
 				String image = (new SetupSystemConfiguration()).getSavedImageStoredPath () + displaynode.getMyOwnCode()+ displaynode.getMyOwnName() + LocalDateTime.now().toString();
@@ -216,36 +190,20 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 				File filefmxx = new File( image );
 				if(!filefmxx.getParentFile().exists()) {  
 		            //如果目标文件所在的目录不存在，则创建父目录  
-//		            logger.debug("目标文件所在目录不存在，准备创建它！");  
-		            if(!filefmxx.getParentFile().mkdirs()) {  
-		                System.out.println("创建目标文件所在目录失败！");  
+		            if(!filefmxx.getParentFile().mkdirs()) {    System.out.println("创建目标文件所在目录失败！");  
 		                return ;  
 		            }  
 		        } 
-				try {
-					if (filefmxx.exists()) {
-						filefmxx.delete();
-						filefmxx.createNewFile();
-					} else
-						filefmxx.createNewFile();
-				} catch (Exception e) {
-						e.printStackTrace();
-						return ;
-				}
+				try { if (filefmxx.exists()) {filefmxx.delete();filefmxx.createNewFile();} 
+				      else filefmxx.createNewFile();
+				} catch (Exception e) {	e.printStackTrace();return ;}
 
 				Rectangle screenRect = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
 				BufferedImage capture;
-				try {
-					capture = new Robot().createScreenCapture(screenRect);
+				try {capture = new Robot().createScreenCapture(screenRect);
 					ImageIO.write(capture, "bmp", filefmxx);
-				} catch (AWTException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				
+				} catch (AWTException e) {e.printStackTrace();
+				} catch (IOException e) {e.printStackTrace();}
 			}
 		});
 
@@ -267,21 +225,6 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
             	case BanKuaiFengXiCategoryBarChartPnl.AVERAGEDAILYCJE:
             		break;
             	}
-//                if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.SELECTED_PROPERTY)) {
-//                    @SuppressWarnings("unchecked")
-//                    String selectedinfo = evt.getNewValue().toString();
-//            		LocalDate datekey = LocalDate.parse(selectedinfo);
-//
-//    				nodebkcjezblargepnl.highLightSpecificBarColumn(datekey);
-//    				nodecombinedpnl.highLightSpecificBarColumn(datekey);
-//    				nodekpnl.highLightSpecificBarColumn(datekey);
-//    				
-//    				setUserSelectedColumnMessage(nodebankuai,selectedinfo);
-//                } else if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.AVERAGEDAILYCJE ) ) {
-////                	nodebkcjezblargepnl.resetLineDate ();
-////                	NodeXPeriodData dpnodexdata = nodebankuai.getNodeXPeroidData (NodeGivenPeriodDataItem.WEEK);
-////        			((BanKuaiFengXiCategoryBarChartCjePnl)nodebkcjezblargepnl).displayAverageDailyCjeOfWeekLineDataToGuiUsingLeftAxis(dpnodexdata,NodeGivenPeriodDataItem.WEEK);
-//        		}
             }
         });
 		
@@ -305,17 +248,6 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 	        		nodekpnl.reDisplayNodeDataOnDirection (direction);
 	    			break;
             	}
-        	
-//            	if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.SELECTED_PROPERTY)) {
-//                    @SuppressWarnings("unchecked")
-//                    String selectedinfo = evt.getNewValue().toString();
-//            		LocalDate datekey = LocalDate.parse(selectedinfo);
-//            		
-//            		nodebkcjezblargepnl.highLightSpecificBarColumn(datekey);
-//    				nodekpnl.highLightSpecificBarColumn(datekey);
-//    				
-//    				setUserSelectedColumnMessage(displaynode,selectedinfo);
-//                }
             }
         });
 		
@@ -383,12 +315,9 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 
 	@Override
 	public void highLightSpecificBarColumn(Integer columnindex) {
-		// TODO Auto-generated method stub
-		
 	}
 
 
-//	private BanKuaiFengXiNodeCombinedCategoryPnl centerPanel;
 	private JPanel centerPanel;
 	public BanKuaiFengXiNodeCombinedCategoryPnl nodecombinedpnl;
 	private BanKuaiFengXiCategoryBarChartPnl nodebkcjezblargepnl;

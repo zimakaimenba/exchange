@@ -21,18 +21,13 @@ public class DuanQiGuanZhu extends ExternalNewsType
 	{
 		super(node, description, starttime, endtime, detail, keywords, labels, newsUrl);
 		
-//		if(changqiorduanqi)
-//			this.guanzhutype = "CHANGQI";
-//		else
-//			this.guanzhutype = "DUANQI";
-		
-		Range<LocalDate> range;
-		try {
-			range = Range.closed(starttime, endtime);
-		} catch (java.lang.IllegalArgumentException e) {
-			range = Range.closed(endtime, starttime);
-		}
-		((TDXNodes)node).addNewDuanQiGuanZhuRange (range);
+//		Range<LocalDate> range;
+//		try {
+//			range = Range.closed(starttime, endtime);
+//		} catch (java.lang.IllegalArgumentException e) {
+//			range = Range.closed(endtime, starttime);
+//		}
+		((TDXNodes)node).addNewDuanQiGuanZhuRange (starttime,endtime);
 	}
 	
 	public void setDqgzGuPiaoChi (String gpc)

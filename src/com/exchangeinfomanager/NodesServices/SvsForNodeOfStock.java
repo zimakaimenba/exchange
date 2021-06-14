@@ -248,10 +248,7 @@ public class SvsForNodeOfStock implements ServicesForNode, ServicesOfNodeStock
 							}
 						}
 						
-						if(index == qklist.size() -1) {
-							readytojumpoutloop = true;
-						}
-						
+						if(index == qklist.size() -1) 			readytojumpoutloop = true;
 					} else {
 						tmpdate = tmpqkdate;
 						indexstart = index;

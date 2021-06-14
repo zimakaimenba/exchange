@@ -10,6 +10,8 @@ import java.util.Set;
 import javax.swing.JList;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
 
+import org.joda.time.Interval;
+
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.google.common.collect.Range;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
@@ -39,9 +41,8 @@ public class JStockComboBoxNodeRenderer extends BasicComboBoxRenderer
 	          LocalDate curdisplaydate = model.getCurrentDataDate ();
 	          if(curdisplaydate == null)
 	        	  curdisplaydate = LocalDate.now();
-	          Range<LocalDate> range = ((TDXNodes)node).isInDuanQiGuanZhuRange (curdisplaydate); 
-	          if(range != null)  
-	        	  comp.setBackground(new Color(102,178,255));
+	           Interval range = ((TDXNodes)node).isInDuanQiGuanZhuRange (curdisplaydate); 
+	          if(range != null)  	  comp.setBackground(new Color(102,178,255));
 	          
 	           if(this.chicanggegulist !=null && (this.chicanggegulist.contains(stockcode) || this.chicanggegulist.contains(value.toString()) )) {
 	          	  comp.setForeground(Color.red);

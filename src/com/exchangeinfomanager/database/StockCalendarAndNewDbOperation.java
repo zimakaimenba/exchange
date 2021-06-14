@@ -140,21 +140,12 @@ public final class StockCalendarAndNewDbOperation
 	            set = null;
 	        }
 			
-		 }catch(java.lang.NullPointerException e){ 
-	    	e.printStackTrace();
-	    } catch (SQLException e) {
-	    	e.printStackTrace();
-	    }catch(Exception e){
-	    	e.printStackTrace();
+		 }catch(java.lang.NullPointerException e){ 	    	e.printStackTrace();
+	    } catch (SQLException e) {	    	e.printStackTrace();
+	    }catch(Exception e){	    	e.printStackTrace();
 	    }  finally {
 	    	if(rspd != null)
-				try {
-					rspd.close();
-					rspd = null;
-					
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
+				try {rspd.close();	rspd = null;} catch (SQLException e) {e.printStackTrace();}
 	    }
 	    
 		 
@@ -460,21 +451,12 @@ public final class StockCalendarAndNewDbOperation
                 set = null;
             }
         	
-        }catch(java.lang.NullPointerException e){ 
-	    	e.printStackTrace();
-	    } catch (SQLException e) {
-	    	e.printStackTrace();
-	    }catch(Exception e){
-	    	e.printStackTrace();
+        }catch(java.lang.NullPointerException e){ e.printStackTrace();
+	    } catch (SQLException e) {e.printStackTrace();
+	    }catch(Exception e){e.printStackTrace();
 	    }  finally {
 	    	if(rspd != null)
-				try {
-					rspd.close();
-					rspd = null;
-					
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
+				try {rspd.close();rspd = null;} catch (SQLException e) {e.printStackTrace();}
 	    }
 		
 		logger.debug("Database: query was successful [SELECT * FROM MEETING]");
@@ -579,21 +561,12 @@ public final class StockCalendarAndNewDbOperation
                 set = null;
             }
         	
-        }catch(java.lang.NullPointerException e){ 
-	    	e.printStackTrace();
-	    } catch (SQLException e) {
-	    	e.printStackTrace();
-	    }catch(Exception e){
-	    	e.printStackTrace();
+        } catch(java.lang.NullPointerException e){ e.printStackTrace();
+	    } catch (SQLException e) {e.printStackTrace();
+	    } catch(Exception e){e.printStackTrace();
 	    }  finally {
 	    	if(rspd != null)
-				try {
-					rspd.close();
-					rspd = null;
-					
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
+				try {rspd.close();rspd = null;} catch (SQLException e) {e.printStackTrace();}
 	    }
 		
 //		logger.debug("Database: query was successful [SELECT * FROM MEETING]");
@@ -612,11 +585,13 @@ public final class StockCalendarAndNewDbOperation
 		
 		String timerangesql = null ;
 		if(startdate == null && enddate != null) {
-			timerangesql = "WHERE 日期  < '" + enddate + "' \r\n" ;
+			timerangesql = "WHERE 日期  < '" + enddate + "' OR  截至日期 < ' " + enddate + "' \r\n" ;
 		} else if(startdate != null && enddate == null) {
-			timerangesql = "WHERE 日期 > '" + startdate + "' \r\n" ;
+			timerangesql = "WHERE 日期 > '" + startdate + "' OR  截至日期 < ' " + startdate + "' \r\n";
 		} else if(startdate != null && enddate != null) {
-			timerangesql = " WHERE 日期  BETWEEN '" + startdate + "' AND '" + enddate + "' \r\n";
+			timerangesql = " WHERE( (日期  BETWEEN '" + startdate + "' AND '" + enddate + "' )"
+					+ " OR (截至日期  BETWEEN '" + startdate + "' AND '" + enddate + "' ) )"
+					+ " \r\n";
 		}
 		
 		String sqlquerystat = 	" SELECT * FROM 关注个股板块表"
@@ -682,21 +657,12 @@ public final class StockCalendarAndNewDbOperation
 	             set.close();
 	             set = null;
 	         }
-		} catch(java.lang.NullPointerException e){ 
-	    	e.printStackTrace();
-	    } catch (SQLException e) {
-	    	e.printStackTrace();
-	    }catch(Exception e){
-	    	e.printStackTrace();
+		} catch(java.lang.NullPointerException e){ e.printStackTrace();
+	    } catch (SQLException e) {e.printStackTrace();
+	    } catch(Exception e){e.printStackTrace();
 	    }  finally {
 	    	if(result != null)
-				try {
-					result.close();
-					result = null;
-					
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
+				try {result.close();result = null;} catch (SQLException e) {e.printStackTrace();}
 	    }
 		
 //		logger.debug("Database: query was successful [SELECT * FROM MEETING]");
@@ -711,24 +677,26 @@ public final class StockCalendarAndNewDbOperation
 		
 		String timerangesql = null ;
 		if(startdate == null && enddate != null) {
-			timerangesql = "WHERE 日期  < '" + enddate + "' \r\n" ;
+			timerangesql = "WHERE 日期  < '" + enddate + "' OR  截至日期 < ' " + enddate + "' \r\n" ;
 		} else if(startdate != null && enddate == null) {
-			timerangesql = "WHERE 日期 > '" + startdate + "' \r\n" ;
+			timerangesql = "WHERE 日期 > '" + startdate + "' OR  截至日期 < ' " + startdate + "' \r\n";
 		} else if(startdate != null && enddate != null) {
-			timerangesql = " WHERE 日期  BETWEEN '" + startdate + "' AND '" + enddate + "' \r\n";
+			timerangesql = " WHERE( (日期  BETWEEN '" + startdate + "' AND '" + enddate + "' )"
+					+ " OR (截至日期  BETWEEN '" + startdate + "' AND '" + enddate + "' ) )"
+					+ " \r\n";
 		}
 		
 		String sqlquerystat;
 		if(nodeid.toUpperCase().equals("ALL")) 
 			sqlquerystat = 	" SELECT * FROM 关注个股板块表"
 									+ timerangesql
-									+ "  AND  关注类型 = false " //长期记录
+									+ "  AND  关注类型 = false " 
 									+ " ORDER BY 日期 DESC"
 									;
 		else
 			sqlquerystat = 	" SELECT * FROM 关注个股板块表"
 					+ timerangesql
-					+ "  AND  关注类型 = false " //长期记录
+					+ "  AND  关注类型 = false " 
 					+ "  AND 代码 = '" + nodeid + "'"
 					+ " ORDER BY 日期 DESC"
 					;
@@ -741,15 +709,13 @@ public final class StockCalendarAndNewDbOperation
 	   		 	int meetingID = result.getInt("ID");
 	   		 	LocalDate start  = result.getDate("日期").toLocalDate(); 
 	   		 	LocalDate end;
-	   		 	try {
-	   		 		end  = result.getDate("截至日期").toLocalDate();
+	   		 	try {	end  = result.getDate("截至日期").toLocalDate();
 	   		 	} catch (java.lang.NullPointerException e) {
 	   		 		end = LocalDate.parse("3000-01-01");
 	   		 	}
 	            String description = result.getString("说明");
 	            String detail = result.getString("具体描述");
-	            if(Strings.isNullOrEmpty(detail))
-	            	description = "";
+	            if(Strings.isNullOrEmpty(detail))         	description = "";
 	            String keywords = result.getString("关键词");
 	            String slackurl = result.getString("URL");
 	            String ownercodes = result.getString("代码");
@@ -792,21 +758,12 @@ public final class StockCalendarAndNewDbOperation
 	             set.close();
 	             set = null;
 	         }
-		} catch(java.lang.NullPointerException e){ 
-	    	e.printStackTrace();
-	    } catch (SQLException e) {
-	    	e.printStackTrace();
-	    }catch(Exception e){
-	    	e.printStackTrace();
+		} catch(java.lang.NullPointerException e){  	e.printStackTrace();
+	    } catch (SQLException e) {   	e.printStackTrace();
+	    } catch(Exception e){   	e.printStackTrace();
 	    }  finally {
 	    	if(result != null)
-				try {
-					result.close();
-					result = null;
-					
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
+				try {	result.close();		result = null;} catch (SQLException e) {e.printStackTrace();}
 	    }
 		
 		logger.debug("Database: query was successful [SELECT * FROM MEETING]");
@@ -823,14 +780,14 @@ public final class StockCalendarAndNewDbOperation
 		
 		Collection<News> cqjllist = new ArrayList<>();
 		
-		String timerangesql = null ;
-		if(startdate == null && enddate != null) {
-			timerangesql = "WHERE 日期  < '" + enddate + "' \r\n" ;
-		} else if(startdate != null && enddate == null) {
-			timerangesql = "WHERE 日期 > '" + startdate + "' \r\n" ;
-		} else if(startdate != null && enddate != null) {
-			timerangesql = " WHERE 日期  BETWEEN '" + startdate + "' AND '" + enddate + "' \r\n";
-		}
+		String timerangesql = " WHERE 日期 IS NOT NULL " ;
+//		if(startdate == null && enddate != null) {
+//			timerangesql = "WHERE 日期  < '" + enddate + "' \r\n" ;
+//		} else if(startdate != null && enddate == null) {
+//			timerangesql = "WHERE 日期 > '" + startdate + "' \r\n" ;
+//		} else if(startdate != null && enddate != null) {
+//			timerangesql = " WHERE 日期  BETWEEN '" + startdate + "' AND '" + enddate + "' \r\n";
+//		}
 		
 		String sqlquerystat = 	" SELECT * FROM 关注个股板块表"
 								+ timerangesql
@@ -891,21 +848,12 @@ public final class StockCalendarAndNewDbOperation
 	             set.close();
 	             set = null;
 	         }
-		} catch(java.lang.NullPointerException e){ 
-	    	e.printStackTrace();
-	    } catch (SQLException e) {
-	    	e.printStackTrace();
-	    }catch(Exception e){
-	    	e.printStackTrace();
+		} catch(java.lang.NullPointerException e){     	e.printStackTrace();
+	    } catch (SQLException e) {   	e.printStackTrace();
+	    }catch(Exception e){   	e.printStackTrace();
 	    }  finally {
 	    	if(result != null)
-				try {
-					result.close();
-					result = null;
-					
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
+				try {	result.close();		result = null;} catch (SQLException e) {e.printStackTrace();	}
 	    }
 		
 		logger.debug("Database: query was successful [SELECT * FROM MEETING]");
@@ -919,14 +867,15 @@ public final class StockCalendarAndNewDbOperation
 			
 		Collection<News> cqjllist = new ArrayList<>();
 		
-		String timerangesql = null ;
-		if(startdate == null && enddate != null) {
-			timerangesql = "WHERE 日期  < '" + enddate + "' \r\n" ;
-		} else if(startdate != null && enddate == null) {
-			timerangesql = "WHERE 日期 > '" + startdate + "' \r\n" ;
-		} else if(startdate != null && enddate != null) {
-			timerangesql = " WHERE 日期  BETWEEN '" + startdate + "' AND '" + enddate + "' \r\n";
-		}
+		String timerangesql = " WHERE 日期 IS NOT NULL " ;
+//		String timerangesql = null ;
+//		if(startdate == null && enddate != null) {
+//			timerangesql = "WHERE 日期  < '" + enddate + "' \r\n" ;
+//		} else if(startdate != null && enddate == null) {
+//			timerangesql = "WHERE 日期 > '" + startdate + "' \r\n" ;
+//		} else if(startdate != null && enddate != null) {
+//			timerangesql = " WHERE 日期  BETWEEN '" + startdate + "' AND '" + enddate + "' \r\n";
+//		}
 		
 		String sqlquerystat;
 		if(nodeid.toUpperCase().equals("ALL"))
@@ -1001,21 +950,12 @@ public final class StockCalendarAndNewDbOperation
 	             set.close();
 	             set = null;
 	         }
-		} catch(java.lang.NullPointerException e){ 
-	    	e.printStackTrace();
-	    } catch (SQLException e) {
-	    	e.printStackTrace();
-	    }catch(Exception e){
-	    	e.printStackTrace();
+		} catch(java.lang.NullPointerException e){ 	 e.printStackTrace();
+	    } catch (SQLException e) {	 e.printStackTrace();
+	    } catch(Exception e){e.printStackTrace();
 	    }  finally {
 	    	if(result != null)
-				try {
-					result.close();
-					result = null;
-					
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
+				try {	result.close();result = null;} catch (SQLException e) {e.printStackTrace();}
 	    }
 		
 		logger.debug("Database: query was successful [SELECT * FROM MEETING]");
@@ -1073,13 +1013,9 @@ public final class StockCalendarAndNewDbOperation
     					
     					InsertedNews = new InsertedExternalNews( (ExternalNewsType)news, meetingID);
     					
-    				}catch(java.lang.NullPointerException e){ 
-    			    	e.printStackTrace();
-    			    } catch(Exception e){
-    			    	e.printStackTrace();
-    			    }  finally {
-    			    	
-    			    }
+    				} catch(java.lang.NullPointerException e){ e.printStackTrace();
+    			    } catch(Exception e){e.printStackTrace();
+    			    } finally {}
     			
     	return InsertedNews;
 	}
@@ -1131,13 +1067,9 @@ public final class StockCalendarAndNewDbOperation
     					
     					InsertedNews = new InsertedExternalNews( (ExternalNewsType)news, meetingID);
     					
-    				}catch(java.lang.NullPointerException e){ 
-    			    	e.printStackTrace();
-    			    } catch(Exception e){
-    			    	e.printStackTrace();
-    			    }  finally {
-    			    	
-    			    }
+    				}catch(java.lang.NullPointerException e){ e.printStackTrace();
+    			    } catch(Exception e){e.printStackTrace();
+    			    }  finally { }
     			
     	return InsertedNews;
 		
@@ -1182,13 +1114,9 @@ public final class StockCalendarAndNewDbOperation
     					
     			        InsertedNews = new InsertedNews(meeting, meetingID);
     					
-    				}catch(java.lang.NullPointerException e){ 
-    			    	e.printStackTrace();
-    			    } catch(Exception e){
-    			    	e.printStackTrace();
-    			    }  finally {
-    			    	
-    			    }
+    				} catch(java.lang.NullPointerException e){ e.printStackTrace();
+    			    } catch(Exception e){e.printStackTrace();
+    			    }  finally { }
     			
     	return InsertedNews;
 	}
@@ -1251,13 +1179,9 @@ public final class StockCalendarAndNewDbOperation
 			
 			InsertedNews = new InsertedNews(meeting, meetingID);
 			
-		}catch(java.lang.NullPointerException e){ 
-	    	e.printStackTrace();
-	    } catch(Exception e){
-	    	e.printStackTrace();
-	    }  finally {
-	    	
-	    }
+		}catch(java.lang.NullPointerException e){ e.printStackTrace();
+	    } catch(Exception e){e.printStackTrace();
+	    }  finally {}
 		
 		return InsertedNews;
 	}
@@ -1315,13 +1239,9 @@ public final class StockCalendarAndNewDbOperation
 			
 			InsertedNews = new InsertedExternalNews(meeting, meetingID);
 			
-		}catch(java.lang.NullPointerException e){ 
-	    	e.printStackTrace();
-	    } catch(Exception e){
-	    	e.printStackTrace();
-	    }  finally {
-	    	
-	    }
+		}catch(java.lang.NullPointerException e){ e.printStackTrace();
+	    } catch(Exception e){e.printStackTrace();
+	    }  finally {}
 		
 		return InsertedNews;
 
@@ -1380,13 +1300,9 @@ public final class StockCalendarAndNewDbOperation
 			
 			InsertedNews = new InsertedExternalNews(meeting, meetingID);
 			
-		}catch(java.lang.NullPointerException e){ 
-	    	e.printStackTrace();
-	    } catch(Exception e){
-	    	e.printStackTrace();
-	    }  finally {
-	    	
-	    }
+		}catch(java.lang.NullPointerException e){e.printStackTrace();
+	    } catch(Exception e){e.printStackTrace();
+	    }  finally {}
 		
 		return InsertedNews;
 	}
@@ -1412,13 +1328,9 @@ public final class StockCalendarAndNewDbOperation
 //					;
 //			key = connectdb.sqlDeleteStatExecute(sqlstatement);
 			
-		}catch(java.lang.NullPointerException e){ 
-	    	e.printStackTrace();
-	    } catch(Exception e){
-	    	e.printStackTrace();
-	    }  finally {
-	    
-	    }
+		}catch(java.lang.NullPointerException e){ e.printStackTrace();
+	    } catch(Exception e){e.printStackTrace();
+	    }  finally {}
 		
 		return news;
 	}
@@ -1472,13 +1384,9 @@ public final class StockCalendarAndNewDbOperation
                 		  				;
                 	connectdb.sqlUpdateStatExecute(sqlupatestatement);
               }
-   		} catch(java.lang.NullPointerException e){ 
-   	    	e.printStackTrace();
-   	    } catch(Exception e){
-   	    	e.printStackTrace();
-   	    }  finally {
-   	    
-   	    }
+   		} catch(java.lang.NullPointerException e){ e.printStackTrace();
+   	    } catch(Exception e){e.printStackTrace();
+   	    }  finally {}
    		
    		return event;
 	
@@ -1506,13 +1414,9 @@ public final class StockCalendarAndNewDbOperation
 //					;
 //			key = connectdb.sqlDeleteStatExecute(sqlstatement);
 			
-		}catch(java.lang.NullPointerException e){ 
-	    	e.printStackTrace();
-	    } catch(Exception e){
-	    	e.printStackTrace();
-	    }  finally {
-	    
-	    }
+		}catch(java.lang.NullPointerException e){ e.printStackTrace();
+	    } catch(Exception e){e.printStackTrace();
+	    }  finally {}
 		
 		return deletedMeeting;
 	}
@@ -1533,13 +1437,9 @@ public final class StockCalendarAndNewDbOperation
 									+ " AND fromtable = '强弱势板块个股' "
 									;
 			int key = connectdb.sqlDeleteStatExecute(sqlstatement);
-		}catch(java.lang.NullPointerException e){ 
-	    	e.printStackTrace();
-	    } catch(Exception e){
-	    	e.printStackTrace();
-	    }  finally {
-	    
-	    }
+		}catch(java.lang.NullPointerException e){ e.printStackTrace();
+	    } catch(Exception e){e.printStackTrace();
+	    }  finally {}
 		
 		return deletedMeeting;
 	}
@@ -1593,13 +1493,9 @@ public final class StockCalendarAndNewDbOperation
               }
         		
 
-   		} catch(java.lang.NullPointerException e){ 
-   	    	e.printStackTrace();
-   	    } catch(Exception e){
-   	    	e.printStackTrace();
-   	    }  finally {
-   	    
-   	    }
+   		} catch(java.lang.NullPointerException e){ e.printStackTrace();
+   	    } catch(Exception e){e.printStackTrace();
+   	    }  finally { }
    		
    		return event;
 	}
@@ -1620,13 +1516,9 @@ public final class StockCalendarAndNewDbOperation
 									;
 			int key = connectdb.sqlDeleteStatExecute(sqlstatement);
 			
-		}catch(java.lang.NullPointerException e){ 
-	    	e.printStackTrace();
-	    } catch(Exception e){
-	    	e.printStackTrace();
-	    }  finally {
-	    
-	    }
+		}catch(java.lang.NullPointerException e){ e.printStackTrace();
+	    } catch(Exception e){e.printStackTrace();
+	    }  finally {}
 
 		return deletedMeeting;
 		
@@ -1733,13 +1625,9 @@ public final class StockCalendarAndNewDbOperation
             		  				;
             	connectdb.sqlUpdateStatExecute(sqlupatestatement);
           }
-		} catch(java.lang.NullPointerException e){ 
-	    	e.printStackTrace();
-	    } catch(Exception e){
-	    	e.printStackTrace();
-	    }  finally {
-	    
-	    }
+		} catch(java.lang.NullPointerException e){ e.printStackTrace();
+	    } catch(Exception e){e.printStackTrace();
+	    }  finally { }
 
 		return updatedMeeting;
 	}
@@ -1764,21 +1652,11 @@ public final class StockCalendarAndNewDbOperation
 	                News.Label nlabel = new News.Label(name, colour);
 	                InsertedNews.Label label = new InsertedNews.Label(nlabel, id);
 	                labels.add(label);
-	          }
-            
-            
-		}catch(java.lang.NullPointerException e){ 
-	    	e.printStackTrace();
-	    } catch(Exception e){
-	    	e.printStackTrace();
+	          }   
+		} catch(java.lang.NullPointerException e){ e.printStackTrace();
+	    } catch(Exception e){e.printStackTrace();
 	    }  finally {
-	    	try {
-	    		result.close();
-	    		result = null;
-	    		
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
+	    	try {result.close();result = null;} catch (SQLException e) {e.printStackTrace();}
 	    }
 
         logger.debug("Database: query was successful [SELECT * FROM LABEL]");
@@ -1802,13 +1680,9 @@ public final class StockCalendarAndNewDbOperation
 		try {
 			int key = connectdb.sqlInsertStatExecute(sqlstatement);
 			insertedLabel = new InsertedNews.Label(label, key);
-		}catch(java.lang.NullPointerException e){ 
-	    	e.printStackTrace();
-	    } catch(Exception e){
-	    	e.printStackTrace();
-	    }  finally {
-	    
-	    }
+		}catch(java.lang.NullPointerException e){ e.printStackTrace();
+	    } catch(Exception e){e.printStackTrace();
+	    }  finally {}
         
         logger.debug("Database: query was successful [INSERT INTO label] ");
         return insertedLabel;
@@ -1818,24 +1692,17 @@ public final class StockCalendarAndNewDbOperation
     {
     	InsertedNews.Label deletedLabel = null;
     	int labelid = label.getID();
-    	String meetingsqlstatement = "DELETE FROM meetingLabel WHERE LABEL_ID = " + labelid 
-                ;
-    	
-    	String labelsqlstatement = "DELETE FROM label WHERE LABEL_ID =  " + labelid 
-                ;
+    	String meetingsqlstatement = "DELETE FROM meetingLabel WHERE LABEL_ID = " + labelid  ;
+    	String labelsqlstatement = "DELETE FROM label WHERE LABEL_ID =  " + labelid     ;
     	
     	try {
 			connectdb.sqlDeleteStatExecute(labelsqlstatement);
 			connectdb.sqlDeleteStatExecute(meetingsqlstatement);
 			
 			 deletedLabel = label;
-		}catch(java.lang.NullPointerException e){ 
-	    	e.printStackTrace();
-	    } catch(Exception e){
-	    	e.printStackTrace();
-	    }  finally {
-	    
-	    }
+		}catch(java.lang.NullPointerException e){ e.printStackTrace();
+	    } catch(Exception e){e.printStackTrace();
+	    }  finally {}
 
     	logger.debug("Database: query was successful [DELETE label WHERE ID= " + label.getID() + "]");
 
@@ -1855,13 +1722,9 @@ public final class StockCalendarAndNewDbOperation
         try {
 			 connectdb.sqlUpdateStatExecute(sqlstatement);
 			 updatedLabel = label;
-		}catch(java.lang.NullPointerException e){ 
-	    	e.printStackTrace();
-	    } catch(Exception e){
-	    	e.printStackTrace();
-	    }  finally {
-	    
-	    }
+		}catch(java.lang.NullPointerException e){ e.printStackTrace();
+	    } catch(Exception e){e.printStackTrace();
+	    }  finally {}
  
 //        Connection connection = DriverManager.getConnection(this.url);
 //        PreparedStatement statement = null;
@@ -1880,9 +1743,7 @@ public final class StockCalendarAndNewDbOperation
 //
 //        } catch (SQLException e) {
 //            e.printStackTrace();
-//        } finally {
-//            
-//        }
+//        } finally {}
         logger.info("Database: query was successful [UPDATE label WHERE ID= " + label.getID() + "]");
         return updatedLabel;
     }

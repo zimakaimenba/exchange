@@ -87,13 +87,6 @@ public class BanKuai extends TDXNodes
 
 	private String bankuaileixing; // 通达信里面定义的板块有几种：1.有个股自身有成交量数据 2. 有个股自身无成交量数据 3.无个股自身有成交量数据
 	
-//	private Boolean exporttogehpi = true;
-//	private Boolean importdailytradingdata = true;
-//	private Boolean showinbkfxgui = true;
-//	private Boolean showincyltree = true;
-//	private Boolean exporttowklyfile ;
-//	private Boolean importbkgegu;
-	
 	private List<BkChanYeLianTreeNode> stockofbklist; //存放所有的个股
 	
 	private Set<String> socialfriendspos;
@@ -404,6 +397,10 @@ public class BanKuai extends TDXNodes
 		public Color getBanKuaiLabelColor () {
 			if(this.bankuailabelcolor == null) return null; 
 			else return Color.decode(this.bankuailabelcolor);
+		}
+		public String getBanKuaiLabelColorStr () {
+			if(this.bankuailabelcolor == null) return null; 
+			else return this.bankuailabelcolor;
 		}
 		
 		public void setImportBKGeGu(Boolean importgegu) 	{

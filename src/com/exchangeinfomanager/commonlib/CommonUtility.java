@@ -229,9 +229,8 @@ public class CommonUtility {
 	public static synchronized void playSound(String soundFile) {
 	    File f = new File(soundFile);
 	    AudioInputStream audioIn = null;
-		try {
-			audioIn = AudioSystem.getAudioInputStream(f.toURI().toURL());
-		} catch (UnsupportedAudioFileException | IOException e) {}  
+		try {	audioIn = AudioSystem.getAudioInputStream(f.toURI().toURL());
+		} catch (UnsupportedAudioFileException | IOException e) {return;}  
 	    Clip clip;
 		try {
 			clip = AudioSystem.getClip();

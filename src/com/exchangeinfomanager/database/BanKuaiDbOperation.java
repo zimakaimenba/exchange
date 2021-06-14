@@ -1398,8 +1398,7 @@ public class BanKuaiDbOperation
 			curallshbk.add(tmpnode.getMyOwnCode());
 
 		File file = new File(sysconfig.getTDXShangHaiZhiShuNameFile() );
-		if(!file.exists() ) 
-			 return -1;
+		if(!file.exists() ) return -1;
 		
 		 int addednumber =0;
 		 Set<String> allinsertbk = new HashSet<> (); //所有最新的指数，用来和curallshbk，以判断是否有旧的指数需要被删除
@@ -1412,7 +1411,6 @@ public class BanKuaiDbOperation
                byte[] itemBuf = new byte[fileheadbytenumber];
                dis.read(itemBuf, 0, fileheadbytenumber); 
                String fileHead =new String(itemBuf,0,fileheadbytenumber);  
-//               logger.debug(fileHead);
                
                int sigbk = 18*16+12+14;
                byte[] itemBuf2 = new byte[sigbk];
@@ -1422,13 +1420,11 @@ public class BanKuaiDbOperation
             	   String zhishuline =new String(itemBuf2,0,sigbk);
             	   String zhishucode = zhishuline.trim().substring(0, 6);
 
-            	   if( ! sysconfig.isShangHaiZhiShu(zhishucode))
-            		   continue;
+            	   if( ! sysconfig.isShangHaiZhiShu(zhishucode))   continue;
             	   
             	   List<String> tmplinelist = Splitter.onPattern("\\s+").omitEmptyStrings().trimResults(CharMatcher.INVISIBLE).splitToList(zhishuline.substring(6, zhishuline.length()));
             	   String zhishuname = null;
-            	   try {
-	            	    zhishuname = tmplinelist.get(0).trim().substring(0, 6).trim();
+            	   try {	zhishuname = tmplinelist.get(0).trim().substring(0, 6).trim();
             	   } catch (java.lang.StringIndexOutOfBoundsException ex) {
             		   List<String> tmplinepartnamelist = Splitter.fixedLength(8).omitEmptyStrings().trimResults(CharMatcher.INVISIBLE).splitToList(tmplinelist.get(1).trim());
             		   zhishuname = tmplinelist.get(0).trim() + tmplinepartnamelist.get(0).trim();
@@ -1508,8 +1504,7 @@ public class BanKuaiDbOperation
 			curallszbk.add(tmpnode.getMyOwnCode());
 			
 		File file = new File(sysconfig.getTDXShenZhenShuNameFile() );
-		if(!file.exists() ) 
-			 return -1;
+		if(!file.exists() )  return -1;
 
 		int addednumber =0;
 		Set<String> allinsertbk = new HashSet (); //所有最新的指数，用来和curallshbk，以判断是否有旧的指数需要被删除
@@ -1533,13 +1528,11 @@ public class BanKuaiDbOperation
             	   logger.debug(zhishuline);
             	   String zhishucode = zhishuline.trim().substring(0, 6);
 
-            	   if(! sysconfig.isShenZhengZhiShu(zhishucode))
-            		   continue;
+            	   if(! sysconfig.isShenZhengZhiShu(zhishucode))		   continue;
             	   
             	   List<String> tmplinelist = Splitter.onPattern("\\s+").omitEmptyStrings().trimResults(CharMatcher.INVISIBLE).splitToList(zhishuline.substring(6, zhishuline.length()));
             	   String zhishuname = null;
-            	   try {
-	            	    zhishuname = tmplinelist.get(0).trim().substring(0, 6).trim();
+            	   try {   zhishuname = tmplinelist.get(0).trim().substring(0, 6).trim();
             	   } catch (java.lang.StringIndexOutOfBoundsException ex) {
             		   List<String> tmplinepartnamelist = Splitter.fixedLength(8).omitEmptyStrings().trimResults(CharMatcher.INVISIBLE).splitToList(tmplinelist.get(1).trim());
             		   zhishuname = tmplinelist.get(0).trim() + tmplinepartnamelist.get(0).trim();
@@ -1646,8 +1639,7 @@ public class BanKuaiDbOperation
 	        		if(nodename != null && nodename.toUpperCase().contains("ST"))
 	        			tmpbk.getShuJuJiLuInfo().setHasReviewedToday(true);
 		        	tmpsysbankuailiebiaoinfo.add(tmpbk);
-	        	} else {
-	        		logger.debug(rs.getString("股票代码") + "已经退市");
+	        	} else { 		logger.debug(rs.getString("股票代码") + "已经退市");
 	        	}
 	        	
 	        }
@@ -1842,10 +1834,8 @@ public class BanKuaiDbOperation
 	private void getTDXBanKuaiShuJuJiLuMasMinDateByJiaoYiSuo (String jiaoyisuo)
 	{
 		String cjltablename;
-		if(jiaoyisuo.toLowerCase().equals("sh"))
-			cjltablename = "通达信板块每日交易信息";
-		else
-			cjltablename = "通达信交易所指数每日交易信息";
+		if(jiaoyisuo.toLowerCase().equals("sh"))			cjltablename = "通达信板块每日交易信息";
+		else			cjltablename = "通达信交易所指数每日交易信息";
 		
 		String sqlquerystat = "SELECT * FROM \r\n" + 
 				"(SELECT 板块ID  FROM 通达信板块列表\r\n" + 
@@ -1898,10 +1888,8 @@ public class BanKuaiDbOperation
 		getTDXBanKuaiShuJuJiLuMasMinDateByJiaoYiSuo (jiaoyisuo);
 		
 		String cjltablename;
-		if(jiaoyisuo.toLowerCase().equals("sh"))
-			cjltablename = "通达信板块每日交易信息";
-		else
-			cjltablename = "通达信交易所指数每日交易信息";
+		if(jiaoyisuo.toLowerCase().equals("sh"))			cjltablename = "通达信板块每日交易信息";
+		else			cjltablename = "通达信交易所指数每日交易信息";
 		
 		 Collection<BkChanYeLianTreeNode> requiredbk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getRequiredSubSetOfTheNodesByJiaoYiSuo(BkChanYeLianTreeNode.TDXBK,jiaoyisuo);
 		 for(BkChanYeLianTreeNode tmpnode :  requiredbk ) {
@@ -4400,10 +4388,8 @@ public class BanKuaiDbOperation
 		getTDXBanKuaiShuJuJiLuMasMinDateByJiaoYiSuo (jiaoyisuo);
 		
 		String cjltablename;
-		if(jiaoyisuo.toLowerCase().equals("sh"))
-			cjltablename = "通达信板块每日交易信息";
-		else
-			cjltablename = "通达信交易所指数每日交易信息";
+		if(jiaoyisuo.toLowerCase().equals("sh"))	cjltablename = "通达信板块每日交易信息";
+		else	cjltablename = "通达信交易所指数每日交易信息";
 		int nodecount = 0; List<String> nodeinsertdata = new ArrayList<>(); 
 		
 		 Collection<BkChanYeLianTreeNode> requiredbk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getRequiredSubSetOfTheNodesByJiaoYiSuo(BkChanYeLianTreeNode.TDXBK,jiaoyisuo);
@@ -5152,7 +5138,7 @@ public class BanKuaiDbOperation
 				//logger.debug(sqlinsertstat);
 				try {	int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
 				} catch (MysqlDataTruncation e) {e.printStackTrace();
-				} catch (SQLException e) {e.printStackTrace();s		}
+				} catch (SQLException e) {e.printStackTrace();	}
 
 			}
 		    differencebankuainew = null;
@@ -7387,30 +7373,17 @@ public class BanKuaiDbOperation
 			        	
 			        	LocalDate joindate = rspd.getDate("加入时间").toLocalDate();
 			        	LocalDate removedate;
-			        	try {
-			        		removedate = rspd.getDate("移除时间").toLocalDate();
-			        	} catch (java.lang.NullPointerException e) {
-			        		removedate = LocalDate.parse("3000-01-01");
-			        	}
-			        	Range<LocalDate> rangedate = Range.closed(joindate, removedate);
-			        	
-			        	tmpstock.addNewDuanQiGuanZhuRange (rangedate);
+			        	try { removedate = rspd.getDate("移除时间").toLocalDate();
+			        	} catch (java.lang.NullPointerException e) { removedate = LocalDate.parse("3000-01-01"); 	}
+			        	tmpstock.addNewDuanQiGuanZhuRange (joindate,removedate);
 			        	namelist.add(tmpstock);
 			        }
-			} catch(java.lang.NullPointerException e){ 
-			    	e.printStackTrace();
-			} catch (SQLException e) {
-			    	e.printStackTrace();
-			} catch(Exception e){
-			    	e.printStackTrace();
+			} catch(java.lang.NullPointerException e){	e.printStackTrace();
+			} catch (SQLException e) {	e.printStackTrace();
+			} catch(Exception e){	e.printStackTrace();
 			} finally {
 			    	if(rspd != null)
-						try {
-							rspd.close();
-							rspd = null;
-						} catch (SQLException e) {
-							e.printStackTrace();
-						}
+						try {	rspd.close();		rspd = null;} catch (SQLException e) {	e.printStackTrace();}
 			}
 			
 			return namelist;
@@ -7418,15 +7391,13 @@ public class BanKuaiDbOperation
 		
 		private List<QueKou> checkQueKouForAGivenPeriod (TDXNodes childnode,LocalDate startdate, LocalDate enddate, List<QueKou> qklist, String period )
 		{
-			if(  ((Stock)childnode).isVeryVeryNewXinStock(startdate)  )
-				return null;
+			if(  ((Stock)childnode).isVeryVeryNewXinStock(startdate)  )	return null;
 			
-			if(qklist == null)
-				qklist = new ArrayList<QueKou> ();
+			if(qklist == null)		qklist = new ArrayList<QueKou> ();
 			
 			NodeXPeriodData nodexdata = childnode.getNodeXPeroidData(period);
 			OHLCSeries nodeohlc = ((TDXNodesXPeriodDataForJFC)nodexdata).getOHLCData();
-			List<QueKou> newquekou = new ArrayList<QueKou> ();
+			List<QueKou> newquekou = new ArrayList<> ();
 			for(int j=1;j < nodeohlc.getItemCount();j++) {
 				
 				OHLCItem kxiandatacurwk = (OHLCItem) nodeohlc.getDataItem(j);

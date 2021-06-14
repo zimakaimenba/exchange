@@ -558,6 +558,7 @@ public class StockInfoManager
 			public void actionPerformed(ActionEvent arg0) 
 			{
 				startBanKuaiFengXi ();
+
 			}
 		});
 		menuItemggfx.addActionListener(new ActionListener() {
@@ -1705,11 +1706,7 @@ public class StockInfoManager
 				bkfx.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			} 
 			
-			if(!bkfx.isVisible() ) {
-
-				bkfx.setVisible(true);
-			} 
-			
+			if(!bkfx.isVisible() ) {		bkfx.setVisible(true);	} 
 			bkfx.toFront();
 			
 			//for test
@@ -1725,11 +1722,7 @@ public class StockInfoManager
 				bkfx.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			} 
 			
-			if(!bkfx.isVisible() ) {
-
-				bkfx.setVisible(true);
-			} 
-			
+			if(!bkfx.isVisible() ) {		bkfx.setVisible(true);		} 
 			bkfx.toFront();
 		}
 

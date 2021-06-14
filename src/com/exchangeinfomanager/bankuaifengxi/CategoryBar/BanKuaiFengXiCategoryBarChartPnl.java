@@ -165,19 +165,6 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 	{
 		return this.displayzhangdieting;
 	}
-	
-//	public void setDisplayZhanBiInLine (Boolean draw)
-//	{
-//		this.displayzhanbishujuinline = draw;
-//		if(this.displayzhanbishujuinline) 
-//			this.mntmCjeCjlZblineDate.setText("X 占比柱图转线图");
-//		else
-//			this.mntmCjeCjlZblineDate.setText("占比柱图转线图");
-//	}
-//	public Boolean shouldDisplayZhanBiInLine ()
-//	{
-//		return this.displayzhanbishujuinline;
-//	}
 	/*
 	 * 
 	 */
@@ -206,7 +193,6 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 	{
 		this.curdisplayednode = curdisplayednode1;
 		this.globeperiod = period;
-//		this.rowKey = this.curdisplayednode.getMyOwnCode();
 		 
 		BanKuaiFengXiCategoryBarRenderer render = (BanKuaiFengXiCategoryBarRenderer)plot.getRenderer();
 		render.setDisplayNode(this.curdisplayednode);
@@ -214,13 +200,9 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 		NodeXPeriodData nodexdata = this.curdisplayednode.getNodeXPeroidData(period);
 		render.setDisplayNodeXPeriod(nodexdata);
 		
-		if(curdisplayednode1.getMyOwnCode().equals("999999")) {
-			this.setDaZiJinValueMarker(100000000000.0);
-		} else 
-		if(curdisplayednode1.getType() == BkChanYeLianTreeNode.DAPAN ) {
-			this.setDaZiJinValueMarker(300000000000.0);
-		}
-		
+		if(curdisplayednode1.getMyOwnCode().equals("999999")) 	this.setDaZiJinValueMarker(100000000000.0);
+		else if(curdisplayednode1.getType() == BkChanYeLianTreeNode.DAPAN ) this.setDaZiJinValueMarker(300000000000.0);
+	
 		displaydatestarted = start;
 		displaydateended = end;
 	}

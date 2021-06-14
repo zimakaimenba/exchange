@@ -1,6 +1,7 @@
 package com.exchangeinfomanager.News.ExternalNewsType;
 
 import java.sql.SQLException;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Iterator;
@@ -47,20 +48,16 @@ public class DuanQiGuanZhuServices implements ServicesForNews
 	public Collection<News> getCurrentNews(LocalDate curdate)  
 	{
 		Collection<News> news = null;
-		try {
-			news = this.getNews("ALL", LocalDate.now().minusMonths(6), LocalDate.now().plusMonths(6) );
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		try {			news = this.getNews("ALL", curdate, curdate.with( DayOfWeek.SUNDAY ) );
+		} catch (SQLException e) {e.printStackTrace();}
 		
-		for (Iterator<News> lit = news.iterator(); lit.hasNext(); ) {
-			InsertedExternalNews f = (InsertedExternalNews)lit.next();
-    		LocalDate start = f.getStart();
-    		LocalDate end = f.getEnd();
-    		if( curdate.isBefore(start) || curdate.isAfter(end)   )
-    			lit.remove();
-    	}
+//		for (Iterator<News> lit = news.iterator(); lit.hasNext(); ) {
+//			InsertedExternalNews f = (InsertedExternalNews)lit.next();
+//    		LocalDate start = f.getStart();
+//    		LocalDate end = f.getEnd();
+//    		if( curdate.isBefore(start) || curdate.isAfter(end)   )
+//    			lit.remove();
+//    	}
 		
 		return news;
 	}

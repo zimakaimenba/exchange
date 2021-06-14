@@ -59,7 +59,6 @@ public class AllCurrentTdxBKAndStoksTree
 
 	private void initializeAllStocksTree() 
 	{
-		
 		DaPan alltopNode = new DaPan("000000","通达信两交易所");
 		
 		List<BanKuai> allbkandzs = bkdbopt.getTDXBanKuaiList ("all");

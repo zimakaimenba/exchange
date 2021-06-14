@@ -6,14 +6,18 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.joda.time.DateTime;
+import org.joda.time.Interval;
 import org.jsoup.Jsoup;
 
 import com.exchangeinfomanager.NodesServices.ServicesForNode;
 import com.exchangeinfomanager.Tag.Tag;
 import com.exchangeinfomanager.commonlib.CommonUtility;
+import com.exchangeinfomanager.commonlib.TimeIntervalUnion;
 import com.exchangeinfomanager.nodes.nodejibenmian.ShuJuJiLuInfo;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 
@@ -35,17 +39,13 @@ public abstract class TDXNodes extends BkChanYeLianTreeNode
 	
 	protected Collection<Tag> nodetags;
 	
-//	private String suoshujiaoyisuo;
+
 	private LocalDate lastdayofbxfx;
 	
-	protected List<Range<LocalDate>> qiangshirange;
-	private List<Range<LocalDate>> ruoshirange;
-	private List<Range<LocalDate>> dqguangzhurange;
+	protected List<Interval> qiangshirange;
+	private List<Interval> ruoshirange;
+	private List<Interval> dqguangzhurange;
 	
-//	private Double nodecjezhanbiuplevel;
-//	private Double nodecjezhanbidownlevel;
-//	private Double nodecjlzhanbiuplevel;
-//	private Double nodecjlzhanbidownlevel;
 	private ShuJuJiLuInfo ShuJuJiLu;
 	
 	public ShuJuJiLuInfo getShuJuJiLuInfo ()
@@ -55,49 +55,43 @@ public abstract class TDXNodes extends BkChanYeLianTreeNode
 		
 		return ShuJuJiLu;
 	}
-//	public void setNodeCjeZhanbiLevel (Double min, Double max)
-//	{
-//		if(min == null || min == 0.0) min = null;
-//		if(max == null || max == 0.0) max = null;
-//		
-//		this.nodecjezhanbidownlevel = min;
-//		this.nodecjezhanbiuplevel = max;
-//	}
-//	public Double[] getNodeCjeZhanbiLevel ()
-//	{
-//		Double[] zblevel =  {nodecjezhanbidownlevel,nodecjezhanbiuplevel};
-//		return zblevel;
-//	}
-//	public void setNodeCjlZhanbiLevel (Double min, Double max)
-//	{
-//		if(min == null || min == 0.0) min = null;
-//		if(max == null || max == 0.0) max = null;
-//		this.nodecjlzhanbidownlevel = min;
-//		this.nodecjlzhanbiuplevel = max;
-//	}
-//	public Double[] getNodeCjlZhanbiLevel ()
-//	{
-//		Double[] zblevel =  {nodecjlzhanbidownlevel,nodecjlzhanbiuplevel};
-//		return zblevel;
-//	}
-	
-	public void addNewDuanQiGuanZhuRange (Range<LocalDate> inter) 
+
+	public void addNewDuanQiGuanZhuRange (LocalDate start, LocalDate end) 
 	{
-		if(dqguangzhurange == null)
+		LocalDate joindate = start;
+		LocalDate leftdate = end;
+		DateTime joindt= new DateTime(joindate.getYear(), joindate.getMonthValue(), joindate.getDayOfMonth(), 0, 0, 0, 0);
+		DateTime leftdt = new DateTime(leftdate.getYear(), leftdate.getMonthValue(), leftdate.getDayOfMonth(), 0, 0, 0, 0);
+		Interval joinleftinterval = new Interval(joindt, leftdt);
+		
+		if(dqguangzhurange == null) {
 			dqguangzhurange = new ArrayList<> ();
-		
-		if( !dqguangzhurange.contains(inter) )
-			dqguangzhurange.add(inter);
+			dqguangzhurange.add(joinleftinterval);
+			return;
+		}
+		Collection<Interval> newintervallist = new ArrayList<> ();
+		ListIterator<Interval> iter = dqguangzhurange.listIterator();
+		while(iter.hasNext()) {
+			Interval tmpinterval = iter.next();
+		    if(tmpinterval.overlaps(joinleftinterval)){
+		    	Interval newinterval = TimeIntervalUnion.union(tmpinterval,joinleftinterval);
+		    	newintervallist.add(newinterval);
+		        iter.remove();
+		    }
+		}
+		if(newintervallist.isEmpty()) dqguangzhurange.add(joinleftinterval);
+		else dqguangzhurange.addAll(newintervallist);
 	}
-	public Range<LocalDate> isInDuanQiGuanZhuRange (LocalDate date) 
+	public Interval isInDuanQiGuanZhuRange (LocalDate joindate) 
 	{
-		if(dqguangzhurange == null)
-			return null;
+		if(dqguangzhurange == null || dqguangzhurange.isEmpty()) 	return null;
 		
+		DateTime joindt= new DateTime(joindate.getYear(), joindate.getMonthValue(), joindate.getDayOfMonth(), 0, 0, 0, 0);
+
 		for(int i=0; i<dqguangzhurange.size();i++) {
-			Range<LocalDate> tmpin = dqguangzhurange.get(i);
-			if( tmpin.contains(date) ) {
-				return tmpin;
+			Interval interval = dqguangzhurange.get(i);
+			if (interval.contains(joindt) || interval.getEnd().isEqual(joindt))  {
+				return interval;
 			}
 		}
 		
@@ -105,57 +99,100 @@ public abstract class TDXNodes extends BkChanYeLianTreeNode
 	}
 	public Boolean isEverBeingDuanQiGuanZhu ()
 	{
-		if(this.dqguangzhurange != null && dqguangzhurange.size() >0 )
-			return true;
-		else
-			return false;
+		if(this.dqguangzhurange != null && dqguangzhurange.size() >0 )			return true;
+		else			return false;
 	}
-	public void addNewQiangShiRange (Range<LocalDate> inter) 
+	/*
+	 * 
+	 */
+	public void addNewQiangShiRange (LocalDate start, LocalDate end) 
 	{
-		if(qiangshirange == null)			qiangshirange = new ArrayList<> ();
+		LocalDate joindate = start;
+		LocalDate leftdate = end;
+		DateTime joindt= new DateTime(joindate.getYear(), joindate.getMonthValue(), joindate.getDayOfMonth(), 0, 0, 0, 0);
+		DateTime leftdt = new DateTime(leftdate.getYear(), leftdate.getMonthValue(), leftdate.getDayOfMonth(), 0, 0, 0, 0);
+		Interval joinleftinterval = new Interval(joindt, leftdt);
 		
-		if( !qiangshirange.contains(inter) )			qiangshirange.add(inter);
+		if(qiangshirange == null) {
+			qiangshirange = new ArrayList<> ();
+			qiangshirange.add(joinleftinterval);
+			return;
+		}
+		Collection<Interval> newintervallist = new ArrayList<> ();
+		ListIterator<Interval> iter = qiangshirange.listIterator();
+		while(iter.hasNext()) {
+			Interval tmpinterval = iter.next();
+		    if(tmpinterval.overlaps(joinleftinterval)){
+		    	Interval newinterval = TimeIntervalUnion.union(tmpinterval,joinleftinterval);
+		    	newintervallist.add(newinterval);
+		        iter.remove();
+		    }
+		}
+		if(newintervallist.isEmpty()) qiangshirange.add(joinleftinterval);
+		else qiangshirange.addAll(newintervallist);
 	}
-	public Range<LocalDate> isInQiangShiBanKuaiRange (LocalDate date)
+	public Interval isInQiangShiBanKuaiRange (LocalDate joindate)
 	{
-		if(qiangshirange == null)			return null;
+		if(qiangshirange == null || qiangshirange.isEmpty()) 	return null;
 		
+		DateTime joindt= new DateTime(joindate.getYear(), joindate.getMonthValue(), joindate.getDayOfMonth(), 0, 0, 0, 0);
+
 		for(int i=0; i<qiangshirange.size();i++) {
-			Range<LocalDate> tmpin = qiangshirange.get(i);
-			if( tmpin.contains(date) ) {
-				return tmpin;
+			Interval interval = qiangshirange.get(i);
+			if (interval.contains(joindt) || interval.getEnd().isEqual(joindt))  {
+				return interval;
 			}
 		}
 		
 		return null;
 	}
-	public void addNewRuoShiRange (Range<LocalDate> inter) 
+	/*
+	 * 
+	 */
+	public void addNewRuoShiRange (LocalDate start, LocalDate end) 
 	{
-		if(ruoshirange == null)			ruoshirange = new ArrayList<> ();
+		LocalDate joindate = start;
+		LocalDate leftdate = end;
+		DateTime joindt= new DateTime(joindate.getYear(), joindate.getMonthValue(), joindate.getDayOfMonth(), 0, 0, 0, 0);
+		DateTime leftdt = new DateTime(leftdate.getYear(), leftdate.getMonthValue(), leftdate.getDayOfMonth(), 0, 0, 0, 0);
+		Interval joinleftinterval = new Interval(joindt, leftdt);
 		
-		if( !ruoshirange.contains(inter) )			ruoshirange.add(inter);
+		if(ruoshirange == null) {
+			ruoshirange = new ArrayList<> ();
+			ruoshirange.add(joinleftinterval);
+			return;
+		}
+		Collection<Interval> newintervallist = new ArrayList<> ();
+		ListIterator<Interval> iter = ruoshirange.listIterator();
+		while(iter.hasNext()) {
+			Interval tmpinterval = iter.next();
+		    if(tmpinterval.overlaps(joinleftinterval)){
+		    	Interval newinterval = TimeIntervalUnion.union(tmpinterval,joinleftinterval);
+		    	newintervallist.add(newinterval);
+		        iter.remove();
+		    }
+		}
+		if(newintervallist.isEmpty()) ruoshirange.add(joinleftinterval);
+		else ruoshirange.addAll(newintervallist);
 	}
-	public Range<LocalDate> isInRuoShiBanKuaiRange (LocalDate date) 
+	public Interval isInRuoShiBanKuaiRange (LocalDate joindate) 
 	{
-		if(ruoshirange == null)			return null;
+
+		if(ruoshirange == null || ruoshirange.isEmpty()) 	return null;
 		
+		DateTime joindt= new DateTime(joindate.getYear(), joindate.getMonthValue(), joindate.getDayOfMonth(), 0, 0, 0, 0);
+
 		for(int i=0; i<ruoshirange.size();i++) {
-			Range<LocalDate> tmpin = ruoshirange.get(i);
-			if(tmpin.contains(date) )
-				return tmpin;
+			Interval interval = ruoshirange.get(i);
+			if (interval.contains(joindt) || interval.getEnd().isEqual(joindt))  {
+				return interval;
+			}
 		}
 		
 		return null;
 	}
 		
-//	public String getSuoShuJiaoYiSuo ()
-//	{
-//		return this.suoshujiaoyisuo;
-//	}
-//	public void setSuoShuJiaoYiSuo (String jys)
-//	{
-//		this.suoshujiaoyisuo = jys;
-//	}
+
 	public NodeXPeriodData getNodeXPeroidData (String period)
 	{
 		if(period.equals(NodeGivenPeriodDataItem.WEEK))

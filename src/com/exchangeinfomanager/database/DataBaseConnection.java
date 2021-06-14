@@ -19,7 +19,7 @@ public class DataBaseConnection
 {
 	public DataBaseConnection (CurDataBase curdb)
 	{
-		if(this.isDatabaseconnected())
+		if(con != null)
 			try { con.close();
 			} catch (SQLException e1) {e1.printStackTrace();}
 		
@@ -33,14 +33,15 @@ public class DataBaseConnection
 	
 	private static Logger logger = Logger.getLogger(DataBaseConnection.class.getName());
 	private Connection con;
-	private boolean databaseconnected = false;
+//	private boolean databaseconnected = false;
 	private String databasetype;
 	private String databasename;
 	//private SystemConfigration sysconfig ;
 	
 	public boolean isDatabaseconnected ()
-	{
-		return databaseconnected;
+	{ 
+		if(con != null) return true;
+		else return false;
 	}
 	public Connection getDbConnection ()
 	{
@@ -91,14 +92,17 @@ public class DataBaseConnection
 			String urlToDababasecrypt = "jdbc:mysql://" +  dbconnectstr;  						// "jdbc:mysql://localhost:3306/stockinfomanagementtest" ;
 			try	{	// 方式二 通过数据源与数据库建立连接
 				EncryptAndDecypt encyptanddecypt = new EncryptAndDecypt ();
-				String decryptedpassword = encyptanddecypt.getDecryptedPassowrd(password);
+				try {
+					String decryptedpassword = encyptanddecypt.getDecryptedPassowrd(password);
+					tmpcon = DriverManager.getConnection(urlToDababasecrypt,user,decryptedpassword);
+				} catch (Exception e) { tmpcon = null;}
 				encyptanddecypt = null;
 				
-				tmpcon = DriverManager.getConnection(urlToDababasecrypt,user,decryptedpassword);
-				if(tmpcon != null)	{
+				if(tmpcon == null) tmpcon = DriverManager.getConnection(urlToDababasecrypt,user,password);
+				
+				if(tmpcon != null)	
 					logger.info("Sucessed connect database:" + dbconnectstr );
-					this.databaseconnected = true;
-				}
+					
 			} catch(SQLException se) {	logger.error("Failed connect database:" + dbconnectstr );}
 						
 			return tmpcon;
@@ -133,7 +137,6 @@ public class DataBaseConnection
 			} catch (SQLException e1) {e1.printStackTrace();return false;
 			} finally {this.con = null;}
 			
-		databaseconnected = false;
 		return true;
 	}
 	

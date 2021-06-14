@@ -6,24 +6,14 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
 import javax.swing.JTable;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
 
-import com.exchangeinfomanager.bankuaifengxi.bankuaigegutable.BanKuaiGeGuBasicTableModel;
-import com.exchangeinfomanager.gudong.JiGouService;
-import com.exchangeinfomanager.nodes.StockOfBanKuai;
-import com.google.common.base.Strings;
-
-import net.miginfocom.swing.MigLayout;
-
-import javax.swing.BoxLayout;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
@@ -36,7 +26,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
+
 import java.awt.Font;
 import javax.swing.JScrollPane;
 
@@ -109,8 +99,6 @@ public class ExtraExportConditionsPnl extends JPanel
 		huchixuanzeaboutstock.add(chkbxonlybkstock);
 		huchixuanzeaboutstock.add(chkbxonlyexportbk);
 		huchixuanzeaboutstock.add(chkbxonlycurstock);
-		
-			
 	}
 	/*
 	 * 

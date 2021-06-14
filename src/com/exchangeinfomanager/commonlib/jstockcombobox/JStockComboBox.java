@@ -26,6 +26,7 @@ import javax.swing.JTextField;
 
 import com.exchangeinfomanager.NodesServices.SvsForNodeOfBanKuai;
 import com.exchangeinfomanager.NodesServices.SvsForNodeOfStock;
+import com.exchangeinfomanager.StockCalendar.OnCalendarDateChangeListener;
 import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
 import com.exchangeinfomanager.Trees.CreateExchangeTree;
 import com.exchangeinfomanager.accountconfiguration.AccountsInfo.AccountInfoBasic;
@@ -41,7 +42,7 @@ import com.exchangeinfomanager.systemconfigration.SetupSystemConfiguration;
 import com.google.common.collect.Multimap;
 
 
-public class JStockComboBox extends  JComboBox<String>
+public class JStockComboBox extends  JComboBox<String> implements OnCalendarDateChangeListener
 {
 	/**
 	 * 
@@ -390,64 +391,13 @@ public class JStockComboBox extends  JComboBox<String>
 			else return false;
 	}
 
+	@Override
+	public void dateChanged(LocalDate newdate) {
+		((JStockComboBoxModel)this.getModel() ).setCurrentDataDate(newdate);
+		
+	}
 
-	
-	/*
-	 * 已经废弃
-	 */
-//	private void updateStockCombox (String tmp)
-//	{
-//		boolean isaddItem = true;
-////		int updateItem = -1;
-//
-//	   	  //判断用户所输入的项目是否有重复，若有重复则不增加到JComboBox中。
-//	   	  try{
-//	   			  for(int i=0;i< this.getItemCount();i++) {
-//	   				  	String curitem = this.getItemAt(i).toString();
-//		   				if(curitem.equals(tmp)  ) { // 已经有了，不用有任何操作
-//		   					isaddItem = false;
-//		   					this.setSelectedIndex(i);
-//		   					break;
-//		   				}
-////		   	  	  	  if(curitem.substring(0, 6).equals(tmp) && curitem.length()>6 ) { //
-////		   	  	  	  	 isaddItem = false;
-////		   	  	  	  	 break;
-////		   	  	  	  }
-//		   				String curstring = curitem.substring(0, 6);
-//			   	  	  if(curitem.substring(0, 6).equals(tmp)  ) { // 有了，但只有code,没有名字
-//			   	  		  
-//			   	  		isaddItem = false;
-////			   	  		 updateItem = i;
-//		   	  	  	  	 break;
-//		   	  	  	  }
-//		   	  	  }
-//	   	  	  
-//	   	  	  
-//	   	  	  if (isaddItem){
-//	   	  		  try{
-//	   	  			tmp = nodeshouldbedisplayed.getMyOwnCode().trim() + nodeshouldbedisplayed.getMyOwnName().trim();
-//		  			  this.insertItemAt(tmp,0);//插入项目tmp到0索引位置(第一列中).
-//		  			  this.setSelectedIndex(0);
-//	   	  		  } catch (java.lang.NullPointerException e) {
-//	   	  			  
-//	   	  		  }
-//	  			  
-//	   	  	  }
-////	   	  	  if(updateItem >= 0) {
-////	   	  		  this.removeItemAt(updateItem);
-////	   	  		  tmp = nodeshouldbedisplayed.getMyOwnCode().trim() + nodeshouldbedisplayed.getMyOwnName().trim();
-////	  			  this.insertItemAt(tmp,0);//插入项目tmp到0索引位置(第一列中).
-////	  			  this.setSelectedIndex(0);
-////	   	  	  }
-//	   	  }catch(NumberFormatException ne){
-//	   		
-//	   	  }
-//	}
-//	private void updateStockCombox() 
-//	{
-//		String tmp = formatStockCode( (String)this.getEditor().getItem() );//有可能是原来输入过的，要把代码选择出来。
-//		updateStockCombox (tmp);
-//	}
+
 
 
 }

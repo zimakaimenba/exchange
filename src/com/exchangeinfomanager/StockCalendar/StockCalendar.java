@@ -332,11 +332,8 @@ public class StockCalendar extends JCalendar
             if(action == null) {
             	 Date leftdate = this.skcal.getDate();
             	 LocalDate ldleftdate; 
-            	 try {
-            		 ldleftdate = leftdate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-         		} catch (java.lang.NullPointerException evt) {
-         			ldleftdate = null;
-         		}
+            	 try {   ldleftdate = leftdate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+         		} catch (java.lang.NullPointerException evt) {	ldleftdate = null;}
             	
             	long difference = ChronoUnit.MONTHS.between(calrightdate, ldleftdate );
         		if (difference == 0) {

@@ -18,6 +18,7 @@ import org.jeasy.rules.api.Facts;
 import org.jeasy.rules.api.Rules;
 import org.jeasy.rules.api.RulesEngine;
 import org.jeasy.rules.core.DefaultRulesEngine;
+import org.joda.time.Interval;
 
 import com.exchangeinfomanager.bankuaifengxi.CandleStick.CandleStickColorFactory;
 import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiAndGeGuMatchingConditions;
@@ -170,9 +171,8 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 			reviewedtoday = node.getShuJuJiLuInfo().wetherHasReiewedToday();
 		
 		LocalDate curdisplaydate = ((BandKuaiAndGeGuTableBasicModel)table.getModel()).getCurDisplayedDate();
-		Range<LocalDate> range = ((TDXNodes)node).isInDuanQiGuanZhuRange (curdisplaydate); 
-        if(range != null)  
-        	background = new Color(102,178,255);
+		 Interval range = ((TDXNodes)node).isInDuanQiGuanZhuRange (curdisplaydate); 
+        if(range != null)    	background = new Color(102,178,255);
 	    
         String column_bg_hidekw  = prop.getProperty ( String.valueOf(col) + "column_background_highlight_neverhideafterreaded" );
         Boolean shouldhidecol = true;

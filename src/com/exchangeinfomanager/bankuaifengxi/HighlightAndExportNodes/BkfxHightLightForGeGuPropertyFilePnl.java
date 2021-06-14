@@ -38,6 +38,7 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker.StateValue;
 
+import com.exchangeinfomanager.StockCalendar.OnCalendarDateChangeListener;
 import com.exchangeinfomanager.Trees.CreateExchangeTree;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi;
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfCjeZbDpMaxWk;
@@ -50,7 +51,7 @@ import com.exchangeinfomanager.systemconfigration.SetupSystemConfiguration;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 
-public class BkfxHightLightForGeGuPropertyFilePnl extends JPanel {
+public class BkfxHightLightForGeGuPropertyFilePnl extends JPanel implements OnCalendarDateChangeListener{
 
 	private Properties mainboardprop;
 	private Properties secondboardprop;
@@ -814,4 +815,9 @@ public class BkfxHightLightForGeGuPropertyFilePnl extends JPanel {
 		this.curselectdate = date;
 	}
 //	 
+
+	@Override
+	public void dateChanged(LocalDate newdate) {
+		this.setCurrentDisplayDate (newdate);
+	}
 }

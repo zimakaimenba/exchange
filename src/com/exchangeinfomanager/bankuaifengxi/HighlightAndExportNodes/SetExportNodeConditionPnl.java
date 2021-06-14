@@ -24,6 +24,7 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker.StateValue;
 
+import com.exchangeinfomanager.StockCalendar.OnCalendarDateChangeListener;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi;
 import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.guifactory.JLabelFactory;
@@ -31,7 +32,7 @@ import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDa
 import com.exchangeinfomanager.systemconfigration.SetupSystemConfiguration;
 import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiAndGeGuMatchingConditions;
 
-public class SetExportNodeConditionPnl extends JPanel {
+public class SetExportNodeConditionPnl extends JPanel implements OnCalendarDateChangeListener {
 	/**
 	 * 
 	 */
@@ -230,6 +231,11 @@ public class SetExportNodeConditionPnl extends JPanel {
 		    });
 		
 		exporttask.execute();
+	}
+
+	@Override
+	public void dateChanged(LocalDate newdate) {
+		this.setCurrentDisplayDate(newdate);
 	}
 
 
