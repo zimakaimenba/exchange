@@ -1,6 +1,5 @@
 package com.exchangeinfomanager.gui;
 
-
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -197,7 +196,6 @@ import javax.swing.JComboBox;
 import javax.swing.BoxLayout;
 import javax.swing.JSplitPane;
 import javax.swing.ListSelectionModel;
-
 
 public class StockInfoManager 
 {
@@ -3178,8 +3176,6 @@ class AccountsInfoTableModel extends DefaultTableModel
 		    	this.fireTableDataChanged();
 	    	}
 	    }
-	    
-
 }
 
 class ImportTDXDataTask extends SwingWorker<Integer, String>  

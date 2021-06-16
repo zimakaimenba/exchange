@@ -51,7 +51,6 @@ public class BanKuaiInfoTable extends BanKuaiandGeGuTableBasic implements NewsCa
 //	private BanKuaiAndStockTree allbkskstree;
 //	private TableFilterHeader filterHeader;
 	
-	
 	private Logger logger = Logger.getLogger(BanKuaiInfoTable.class);
 	private BanKuaiInfoTableRenderer renderer;
 
@@ -65,7 +64,6 @@ public class BanKuaiInfoTable extends BanKuaiandGeGuTableBasic implements NewsCa
 		super.setColumnPreferredWidth ();
 		super.createTableHeaderTooltips ();
 		
-//		this.allbkskstree = AllCurrentTdxBKAndStoksTree.getInstance().getAllBkStocksTree();
 		this.stockmanager = stockmanager1;
 		
 		this.renderer =  new BanKuaiInfoTableRenderer (prop);
@@ -174,8 +172,8 @@ public class BanKuaiInfoTable extends BanKuaiandGeGuTableBasic implements NewsCa
 					 int modelRow = 0;
 					 try {
 						 int rowIndex = tablemodel.getNodeRowIndex (friend);
-						 if(rowIndex == -1)
-							 continue;
+						 if(rowIndex == -1)		 continue;
+						 
 						 modelRow = this.convertRowIndexToView(rowIndex);
 					 } catch (java.lang.NullPointerException e) {e.printStackTrace(); }
 					 
@@ -187,17 +185,26 @@ public class BanKuaiInfoTable extends BanKuaiandGeGuTableBasic implements NewsCa
 					 tdel1.appendText(frbkcode + frbkname);
 					 
 					 Integer kwcolumnindex = tablemodel.getKeyWrodColumnIndex("cjezbgrowrate");
+					 if(kwcolumnindex == null) {
+						 org.jsoup.nodes.Element tdel2 = trelline.appendElement("td");
+						 tdel2.appendText("没有数据");
+					 }
 					 Double cjezbchangerate = (Double)this.getValueAt(modelRow, kwcolumnindex);
-					 NumberFormat percentFormat = NumberFormat.getPercentInstance(Locale.CHINA);
-		 	    	 percentFormat.setMinimumFractionDigits(2);
-		        	 String cjezbchangeratepect = percentFormat.format (cjezbchangerate );
-		        	 org.jsoup.nodes.Element tdel2 = trelline.appendElement("td");
-					 tdel2.appendText(cjezbchangeratepect);
-		        	 
+					 if(cjezbchangerate != null) {
+						 NumberFormat percentFormat = NumberFormat.getPercentInstance(Locale.CHINA);
+			 	    	 percentFormat.setMinimumFractionDigits(2);
+			        	 String cjezbchangeratepect = percentFormat.format (cjezbchangerate );
+			        	 org.jsoup.nodes.Element tdel2 = trelline.appendElement("td");
+						 tdel2.appendText(cjezbchangeratepect);
+					 } else {
+			        	 org.jsoup.nodes.Element tdel2 = trelline.appendElement("td");
+						 tdel2.appendText("没有数据");
+					 }
+					 
 //					 Integer kwcolumnindex2 = tablemodel.getKeyWrodColumnIndex("cjlzbgrowrate");
 //					 Integer cjedpmaxwk;
 //					if(kwcolumnindex2 != null) {
-//						cjedpmaxwk = (Double)this.getValueAt(modelRow, kwcolumnindex2);
+//						cjedpmaxwk = (Integer)this.getValueAt(modelRow, kwcolumnindex2);
 //						org.jsoup.nodes.Element tdel3 = trelline.appendElement("td");
 //						tdel3.appendText(cjedpmaxwk.toString());
 //					} else {

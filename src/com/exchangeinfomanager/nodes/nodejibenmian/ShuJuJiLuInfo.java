@@ -12,7 +12,7 @@ public class ShuJuJiLuInfo
 	LocalDate tushareextradatajlmindate;
 	String gupiaobankuaiduiyingbiao; //和数据库表相关，对应哪个表
 	
-	private Boolean hasreviewedtoday;
+	
 	public LocalDate getTushareextradatajlmindate() {
 		return tushareextradatajlmindate;
 	}
@@ -25,6 +25,7 @@ public class ShuJuJiLuInfo
 	public void setTushareextradatajlmaxdate(LocalDate tushareextradatajlmaxdate) {
 		this.tushareextradatajlmaxdate = tushareextradatajlmaxdate;
 	}
+	private Boolean hasreviewedtoday;
 	public void setHasReviewedToday (Boolean reviewedornot)
 	{
 		this.hasreviewedtoday = reviewedornot;

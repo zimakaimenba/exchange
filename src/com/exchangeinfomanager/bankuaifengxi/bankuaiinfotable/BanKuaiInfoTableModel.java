@@ -39,26 +39,38 @@ public class BanKuaiInfoTableModel extends BandKuaiAndGeGuTableBasicModel
 		super.curperiod = period;
 		super.curbk = (DaPan)CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getModel().getRoot();
 		
-		try{
-			if(entryList != null) //按成交额排序
+		try{ if(entryList != null) //按成交额排序
 				Collections.sort(entryList, new NodeChenJiaoErComparator(showwknum,difference,curperiod) );
 		} catch (java.lang.IllegalArgumentException e) {//			e.printStackTrace();
 		}
 	 	
 		this.fireTableDataChanged();
 	}
-
+	
+	public void refresh  (List<BkChanYeLianTreeNode> bklist,LocalDate curselectdate,int difference2, String period)
+	{
+		super.entryList = bklist;
+		super.showwknum = curselectdate;
+		super.difference = difference2;
+		super.curperiod = period;
+		super.curbk = (DaPan)CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getModel().getRoot();
+		
+		try{ if(entryList != null) //按成交额排序
+				Collections.sort(entryList, new NodeChenJiaoErComparator(showwknum,difference,curperiod) );
+		} catch (java.lang.IllegalArgumentException e) {//			e.printStackTrace();
+		}
+	 	
+		this.fireTableDataChanged();
+	}
 	public void addBanKuai ( BanKuai bankuai)
 	{
-		if(entryList == null)
-			entryList = new ArrayList<BkChanYeLianTreeNode> ();
+		if(entryList == null)	entryList = new ArrayList<BkChanYeLianTreeNode> ();
 		
 		entryList.add(bankuai);
 	}
 	public void addBanKuai ( List<BkChanYeLianTreeNode> bankuaiwithcje)
 	{
-		if(entryList == null)
-			entryList = new ArrayList<BkChanYeLianTreeNode> ();
+		if(entryList == null)	entryList = new ArrayList<BkChanYeLianTreeNode> ();
 		
 		for(BkChanYeLianTreeNode tmpnode : bankuaiwithcje) 
 			if(!this.entryList.contains(tmpnode) )

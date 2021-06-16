@@ -91,12 +91,15 @@ import com.exchangeinfomanager.bankuaifengxi.PieChart.BanKuaiFengXiPieChartCjePn
 import com.exchangeinfomanager.bankuaifengxi.PieChart.BanKuaiFengXiPieChartPnl;
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.VoiceEngine;
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.WeeklyAnalysis;
+import com.exchangeinfomanager.bankuaifengxi.bankuaigegumergetable.BanKuaiGeGuMergeTable;
+import com.exchangeinfomanager.bankuaifengxi.bankuaigegumergetable.BanKuaiGeGuMergeTableModel;
 import com.exchangeinfomanager.bankuaifengxi.bankuaigegutable.BanKuaiGeGuBasicTable;
 import com.exchangeinfomanager.bankuaifengxi.bankuaigegutable.BanKuaiGeGuBasicTableModel;
 import com.exchangeinfomanager.bankuaifengxi.bankuaigegutable.BanKuaiGeGuExternalInfoTableFromPropertiesFile;
 import com.exchangeinfomanager.bankuaifengxi.bankuaiinfotable.BanKuaiInfoTable;
 import com.exchangeinfomanager.bankuaifengxi.bankuaiinfotable.BanKuaiInfoTableModel;
-
+import com.exchangeinfomanager.bankuaifengxi.gegutobankuaistable.GeGuToBanKuaiTable;
+import com.exchangeinfomanager.bankuaifengxi.gegutobankuaistable.GeGuToBanKuaiTableModel;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.commonlib.ParseBanKuaiWeeklyFielGetStocksProcessor;
 import com.exchangeinfomanager.commonlib.ReminderPopToolTip;
@@ -445,7 +448,6 @@ public class BanKuaiFengXi extends JDialog
 				continue;
 			
 			bkwithcje.add( (BanKuai)childnode );
-
 		}
 		
 		return bkwithcje;
@@ -967,6 +969,10 @@ public class BanKuaiFengXi extends JDialog
 		tabbedPanegeguzhanbi.setSelectedIndex(0);
 		panelGgDpCjeZhanBi.resetDate();
 		panelggdpcjlwkzhanbi.resetDate();
+		
+		((BanKuaiGeGuMergeTableModel)tblmergeggtobks.getModel()).deleteAllRows();
+		tabpnlKxian.setTitleAt(2, "个股板块计算");
+		tblmergeggtobks.repaint();
 	}
 
 	/*
@@ -1385,7 +1391,30 @@ public class BanKuaiFengXi extends JDialog
 			
 			public void mouseClicked(MouseEvent e) {}
 		});
-		
+		menuItemsGeGuToBksXuanDingZhou.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            	
+            	int row = tablexuandingzhou.getSelectedRow();
+    			int modelRow = tablexuandingzhou.convertRowIndexToModel(row);
+    			StockOfBanKuai selectstock = (StockOfBanKuai) ((BanKuaiGeGuBasicTableModel)tablexuandingzhou.getModel()).getNode (modelRow);
+    			LocalDate curdisplaydate = ((BanKuaiGeGuBasicTableModel)tablexuandingzhou.getModel()).getCurDisplayedDate();
+    			calculateAllGeGuBanKuaiInfo (selectstock.getStock(),curdisplaydate);
+    			tabpnlKxian.setSelectedIndex(2);
+            }
+        });
+		menuItemsGeGuToBks.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            	
+            	int row = tableGuGuZhanBiInBk.getSelectedRow();
+    			int modelRow = tableGuGuZhanBiInBk.convertRowIndexToModel(row);
+    			StockOfBanKuai selectstock = (StockOfBanKuai) ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel()).getNode (modelRow);
+    			LocalDate curselectdate = dateChooser.getLocalDate();
+    			calculateAllGeGuBanKuaiInfo (selectstock.getStock(),curselectdate);
+    			tabpnlKxian.setSelectedIndex(2);
+            }
+        });
 		menuItemsMrjh.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -2188,6 +2217,35 @@ public class BanKuaiFengXi extends JDialog
 			}
 		});
 	}
+	protected void calculateAllGeGuBanKuaiInfo(Stock stock, LocalDate curselectdate) 
+	{
+		((BanKuaiInfoTableModel)tblmergegegubkinfo.getModel()).deleteAllRows(); 
+		((GeGuToBanKuaiTableModel)tblmergegeguinfoinallbk.getModel()).deleteAllRows();
+		((BanKuaiGeGuMergeTableModel)tblmergeggtobks.getModel()).deleteAllRows();
+		
+		LocalDate requirestart = CommonUtility.getSettingRangeDate(this.dateChooser.getLocalDate(),"large").with(DayOfWeek.MONDAY);
+		
+		SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai ();
+		Set<BkChanYeLianTreeNode> curbklist = stock.getGeGuCurSuoShuTDXSysBanKuaiList();
+		for(BkChanYeLianTreeNode tmpbk : curbklist) {
+			if( ((BanKuai)tmpbk).getBanKuaiLeiXing().equals(BanKuai.HASGGNOSELFCJL) 
+					||  ((BanKuai)tmpbk).getBanKuaiLeiXing().equals(BanKuai.NOGGNOSELFCJL)  ) //有些指数是没有个股和成交量的，不列入比较范围
+				continue;
+			
+			if( !((BanKuai)tmpbk).getBanKuaiOperationSetting().isShowinbkfxgui() )
+				continue;
+			
+			tmpbk = svsbk.getNodeData( (BanKuai)tmpbk, requirestart, this.dateChooser.getLocalDate(),globeperiod,globecalwholeweek);
+			((BanKuaiInfoTableModel)tblmergegegubkinfo.getModel()).addBanKuai((BanKuai)tmpbk);
+		}
+		svsbk = null;
+		
+		((BanKuaiInfoTableModel)tblmergegegubkinfo.getModel()).refresh(curselectdate, 0, this.globeperiod); 
+		((GeGuToBanKuaiTableModel)tblmergegeguinfoinallbk.getModel()).refresh(stock, curselectdate, this.globeperiod);
+		((BanKuaiGeGuMergeTableModel)tblmergeggtobks.getModel()).refresh();
+		
+		tabpnlKxian.setTitleAt(2, stock.getMyOwnCode() + "所有板块信息(" + curselectdate.toString() + ")" );
+	}
 	/*
 	 * 
 	 */
@@ -2907,6 +2965,15 @@ public class BanKuaiFengXi extends JDialog
 	private JMenuItem menuItemAddRmvBkToRedSign;
 
 	private JMenuItem menuItemcancelAllNodesReviewedtoday;
+	private JMenuItem menuItemsGeGuToBks;
+
+	private BanKuaiGeGuMergeTable tblmergeggtobks;
+	private BanKuaiInfoTable tblmergegegubkinfo;
+	private GeGuToBanKuaiTable tblmergegeguinfoinallbk;
+
+	private JMenuItem menuItemsGeGuToBksXuanDingZhou;
+
+	private JScrollPane scrollPangegutobankuaisInfo;
 
 	private void initializeGuiOf2560Resolution ()
 	{
@@ -2990,6 +3057,20 @@ public class BanKuaiFengXi extends JDialog
 		
 		pnlStockCandle = new BanKuaiFengXiCandlestickPnl();
 		tabpnlKxian.addTab("\u4E2A\u80A1K\u7EBF", null, pnlStockCandle, null);
+		
+		scrollPangegutobankuaisInfo = new JScrollPane();
+		tabpnlKxian.addTab("个股所有板块数据", null, scrollPangegutobankuaisInfo, null);
+		String BkfxGeGuToBanKuaisMergeTableInfoSettingFile = bkfxsettingprop.getProperty ("BkfxGeGuToBanKuaisMergeTableInfoSettingFile") ;
+		List<String> mergeprop = Splitter.on(",").omitEmptyStrings().splitToList(BkfxGeGuToBanKuaisMergeTableInfoSettingFile);
+		String BkfxGeGuToBanKuaisMergeTableInfoSettingFilebkfile =   (new SetupSystemConfiguration()).getSystemInstalledPath() + "/config/" + mergeprop.get(0).trim()   + "/";
+		tblmergegegubkinfo = new BanKuaiInfoTable (null,BkfxGeGuToBanKuaisMergeTableInfoSettingFilebkfile);
+		String bkmergekeywds = mergeprop.get(1).trim();
+		String BkfxGeGuToBanKuaisMergeTableInfoSettingFileggfile =   (new SetupSystemConfiguration()).getSystemInstalledPath() + "/config/" + mergeprop.get(2).trim()   + "/";
+		tblmergegeguinfoinallbk = new GeGuToBanKuaiTable (BkfxGeGuToBanKuaisMergeTableInfoSettingFileggfile );
+		String ggmergekeywds = mergeprop.get(3).trim();
+		tblmergeggtobks = new BanKuaiGeGuMergeTable (tblmergegegubkinfo, bkmergekeywds, tblmergegeguinfoinallbk, ggmergekeywds);
+		scrollPangegutobankuaisInfo.setViewportView(tblmergeggtobks);
+		
 		
 		tfldselectedmsg = new JPanel ();
 		scrldailydata.setViewportView(tfldselectedmsg);
@@ -3403,9 +3484,11 @@ public class BanKuaiFengXi extends JDialog
        menuItemcancelreviewedtoday = new JMenuItem("取消已经阅读状态"); //系统默认按成交额排名
        jPopupMenuoftabbedpane.add(menuItemcancelreviewedtoday);
        	   
-	   
 	   menuItemsMrjh = new JMenuItem("明日计划");
 	   tableGuGuZhanBiInBk.getPopupMenu().add(menuItemsMrjh);
+	   
+	   menuItemsGeGuToBks = new JMenuItem("计算个股所有板块");
+	   tableGuGuZhanBiInBk.getPopupMenu().add(menuItemsGeGuToBks);
 	   
 	   JMenu stkcsvMenu = new JMenu("CSV");
 	   tableGuGuZhanBiInBk.getPopupMenu().add(stkcsvMenu);
@@ -3427,6 +3510,9 @@ public class BanKuaiFengXi extends JDialog
 	   stockbiaojiMenu .add(menuItemQiangShigg);
 	   stockbiaojiMenu .add(menuItemRuoShigg);
        tableGuGuZhanBiInBk.getPopupMenu().add(stockbiaojiMenu);
+       
+       menuItemsGeGuToBksXuanDingZhou = new JMenuItem("计算个股所有板块");
+       tablexuandingzhou.getPopupMenu().add(menuItemsGeGuToBksXuanDingZhou);
        
        JPopupMenu popupMenuGeguNews = new JPopupMenu () ;
        menuItemTempGeGuFromFile = new JMenuItem("文件导入");

@@ -42,12 +42,6 @@ public class DisPlayNodeSuoShuBanKuaiListServices implements ServicesOfNodeJiBen
 		Set<BkChanYeLianTreeNode> suosutdxbankuai = ((Stock)node).getGeGuCurSuoShuTDXSysBanKuaiList();
 		Set<BkChanYeLianTreeNode> suosudzhbankuai = ((Stock)node).getGeGuCurSuoShuDZHSysBanKuaiList();
 		
-//		LocalDate monday = requiredstart.with( DayOfWeek.MONDAY );
-//		LocalDate sunday = requiredend.with( DayOfWeek.SUNDAY );
-//		ServicesForNews svsdqgz = new DuanQiGuanZhuServices ();
-//    	NewsCache dqgzcache = new NewsCache ("ALL",svsdqgz,null,monday,sunday);
-//    	svsdqgz.setCache(dqgzcache);
-		 
 		if(this.requireddate == null) this.requireddate = LocalDate.now();
 		String samenamebkname;
 		try {	samenamebkname = this.samenamebk.getMyOwnName().trim();
@@ -61,6 +55,7 @@ public class DisPlayNodeSuoShuBanKuaiListServices implements ServicesOfNodeJiBen
 //    		String bkcode = f.getNewsOwnerCodes();
 //    		gzbkcodeset.add(bkcode);
 //    	}
+//		NewsLabelServices
 
 		 String htmlstring = "";
 		 org.jsoup.nodes.Document doc = Jsoup.parse(htmlstring);

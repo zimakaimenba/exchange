@@ -42,6 +42,7 @@ public  abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 	
 	protected String[] jtableTitleStrings ;
 	protected TDXNodes curbk;
+	protected TDXNodes curnode;
 	protected List<BkChanYeLianTreeNode> entryList;
 	protected LocalDate showwknum;
 	protected int difference;
@@ -69,8 +70,7 @@ public  abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 		
 		String columnmaxnumberstr = prop.getProperty ( "columnmaxnumber");
 		int columnmaxnumber =0;
-		try {
-			columnmaxnumber = Integer.parseInt(columnmaxnumberstr);
+		try { columnmaxnumber = Integer.parseInt(columnmaxnumberstr);
 		} catch (java.lang.NumberFormatException e) {	e.printStackTrace();	}
 		String[] jtableTitleStrings = new String[columnmaxnumber];
 		for(int i=0;i<columnmaxnumber;i++) {
@@ -83,6 +83,9 @@ public  abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 
 		this.setTableHeader(jtableTitleStrings);
 	}
+	/*
+	 * 
+	 */
 	public void setTimeRangeZhangFuDates(LocalDate start, LocalDate end)	{
 		this.timerangezhangfu[0] = start;
 		this.timerangezhangfu[1] = end; 
@@ -190,10 +193,12 @@ public  abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 		  
 		  NodeXPeriodData nodexdatawk =  ((TDXNodes)node).getNodeXPeroidData(period);
 		  value = nodexdatawk.getNodeDataByKeyWord(keyword,showdate,maformula[0]);
-		  if(value != null)
-			  return value;
+		  if(value != null)		  return value;
 			  
 		  switch (keyword) {
+			  case "CurrentBanKuai":
+				  value = this.curbk.getMyOwnCode();
+				  break;
 			  case "Tags":
 				  TagsServiceForNodes tagsservicesfornode = new TagsServiceForNodes (node);
 			      Collection<Tag> nodetags = null;
@@ -208,7 +213,6 @@ public  abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 			      }
 			      value = tagslist;
 			     break;
-			  
 		  		case "SuoShuBanKuai" :
 		  			if (node.getType() == BkChanYeLianTreeNode.TDXBK) {
 		  				value = node.getMyOwnCode() + node.getMyOwnName();
@@ -272,20 +276,25 @@ public  abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 	}
 	protected Object getColomnValue(String column_keyword, int rowIndex) 
 	{
-		if(column_keyword == null)
-			return null;
-		 column_keyword = column_keyword.trim();
-		
+		if(column_keyword == null)		return null;
+		column_keyword = column_keyword.trim();
+
+		BkChanYeLianTreeNode sendnode = null;
+		if(this.curnode != null) { //显示个股所有板块数据的表
+			sendnode = this.curnode;
+			this.curbk = (TDXNodes) entryList.get(rowIndex);
+		} else {
+			BkChanYeLianTreeNode node = entryList.get(rowIndex);
+			  if( node.getType() == BkChanYeLianTreeNode.BKGEGU ) 
+				  sendnode = ((StockOfBanKuai)node).getStock();
+			   else if ( node.getType() == BkChanYeLianTreeNode.TDXBK || node.getType() == BkChanYeLianTreeNode.DZHBK ) 
+				  sendnode = node;
+		}
+		  		
 		  Object value = null;
-		  
-		  BkChanYeLianTreeNode node = entryList.get(rowIndex);
-		  BkChanYeLianTreeNode sendnode = null;
-		  if( node.getType() == BkChanYeLianTreeNode.BKGEGU ) 
-			  sendnode = ((StockOfBanKuai)node).getStock();
-		   else if ( node.getType() == BkChanYeLianTreeNode.TDXBK || node.getType() == BkChanYeLianTreeNode.DZHBK ) 
-			  sendnode = node;
-		
-		  if(column_keyword.equals("CLOSEVSMA")) {
+		  if(column_keyword.equalsIgnoreCase("CLOSEVSMA")) {
+			  if(highlightcond == null) return null;
+			  
 			  String maformula = highlightcond.getSettingMaFormula();
 			  value = getNodeValueByKeyWord(sendnode, column_keyword, this.showwknum, NodeGivenPeriodDataItem.DAY, maformula);
 		  }
@@ -297,11 +306,7 @@ public  abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 	
 	protected Object reformateDoubleValue (int columnIndex, Object value, String columnIndexForDecimal)
     {
-		if(value == null)
-			return null;
-		
-//		if(value.equals("??")) 
-//			return value;
+		if(value == null)	return null;
 		
     	Class<?> columncl = this.getColumnClass (columnIndex);
     	if (  !columncl.equals(Double.class) ) 
@@ -313,8 +318,7 @@ public  abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
     			
     	int decimalnumber = Integer.parseInt(decimal);
     	double count = Math.pow(10, decimalnumber);
-    	try {
-    				Double output = Math.round(  (Double)value * count) / count;
+    	try {		Double output = Math.round(  (Double)value * count) / count;
     				value = output;
     	} catch ( java.lang.ClassCastException e) {	e.printStackTrace();return value;}
     			
@@ -346,27 +350,12 @@ public  abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 	  	  
 	  	  return clazz;
      }
-	  public Integer getKeyWrodColumnIndex (String keywords)
-	  {
-		  Integer columnIndex = null;
-		  for(int i=0;i<=10;i++) {
-			  String column_kw_i  = prop.getProperty (String.valueOf(i) + "column_info_keyword");
-			  if(column_kw_i != null) 
-				  if(column_kw_i.equalsIgnoreCase(keywords)) {
-					  columnIndex = i;
-					  break;
-				  }
-		  }
-		  
-		  return columnIndex;
-	  }
 	  /*
 	   * 
 	   */
 	  private Object getCellValueByKeywords (int rowIndex, int columnIndex,String kw)
 	  {
-		  if(kw == null)
-			  return null;
+		  if(kw == null)			  return null;
 		  
 		  Object value = null;
 		  
@@ -384,9 +373,34 @@ public  abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 		  
 		  return value;
 	  }
+	  /*
+	   * 
+	   */
+	  public String getColumnKeyWord (int columnIndex)
+	  {
+		  String column_kw  = prop.getProperty ( String.valueOf(columnIndex) + "column_info_keyword");
+		  return column_kw;
+	  }
+	  public Integer getKeyWrodColumnIndex (String keywords)
+	  {
+		  Integer columnIndex = null;
+		  for(int i=0;i<=10;i++) {
+			  String column_kw_i  = prop.getProperty (String.valueOf(i) + "column_info_keyword");
+			  if(column_kw_i != null) 
+				  if(column_kw_i.equalsIgnoreCase(keywords)) {
+					  columnIndex = i;
+					  break;
+				  }
+		  }
+		  
+		  return columnIndex;
+	  }
+	  /*
+	   * 
+	   */
 	  public Object getValueAt(int rowIndex, int columnIndex) 
 	    {
-	    	if(entryList.isEmpty())
+	    	if(entryList.isEmpty() && this.curnode == null)
 	    		return null;
 
 	    	Object value = null;

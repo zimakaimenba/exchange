@@ -45,7 +45,7 @@ public class BanKuaiTreeRelated implements NodesTreeRelated
 	{
 		if(isinparsedfile == null)   isinparsedfile = HashMultimap.create();
 		
-		String colorcode = String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getGreen() );
+		String colorcode = String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue() );
 		LocalDate friday = selfinsetdate.with(DayOfWeek.FRIDAY);
 		
 		if(inorout) {
@@ -72,7 +72,7 @@ public class BanKuaiTreeRelated implements NodesTreeRelated
 	{
 		if(isinparsedfile == null) return false;
 		
-		String colorcode = String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getGreen() );
+		String colorcode = String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue() );
 		LocalDate friday = selfinsetdate.with(DayOfWeek.FRIDAY);
 		
 		try {

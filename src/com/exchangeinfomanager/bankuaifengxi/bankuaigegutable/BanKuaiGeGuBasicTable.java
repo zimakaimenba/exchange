@@ -53,6 +53,10 @@ public abstract class BanKuaiGeGuBasicTable extends BanKuaiandGeGuTableBasic
 		this.newsdbopt = new StockCalendarAndNewDbOperation ();
 		this.stockmanager = stockmanager1;
 				
+//		super.setColumnPreferredWidth ();
+//		super.createTableHeaderTooltips ();
+//		super.setColumnPredefinedFilter();
+		
 		createMenuForIndividualGeGu ();
 		createMenuForTable ();
 		createEvents ();

@@ -388,7 +388,7 @@ public class BanKuai extends TDXNodes
 		private String bankuailabelcolor;
 		
 		public void setBanKuaiLabelColor(Color color) {
-			String colorcode = String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getGreen() );
+			String colorcode = String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue() );
 			this.bankuailabelcolor = colorcode;
 		}
 		public void setBanKuaiLabelColor(String colorstr) {

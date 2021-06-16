@@ -115,14 +115,14 @@ public class ServicesForBkfxEbkOutPutFileDirectRead implements ServicesForBkfxEb
             int nodetype = treeChild.getType();
             if( nodetype == BkChanYeLianTreeNode.TDXBK) {
             	BanKuaiTreeRelated treerelated = (BanKuaiTreeRelated)treeChild.getNodeTreeRelated ();
-            		String colorcode = String.format("#%02x%02x%02x", Color.YELLOW.getRed(), Color.YELLOW.getGreen(), Color.YELLOW.getGreen() );
+            		String colorcode = String.format("#%02x%02x%02x", Color.YELLOW.getRed(), Color.YELLOW.getGreen(), Color.YELLOW.getBlue() );
                 	if(!bkinfile.contains(nodecode) && removeoldrecord)		treerelated.setSelfIsMatchModel(localDate, colorcode, false);
                 	else   if(bkinfile.contains(nodecode) ) treerelated.setSelfIsMatchModel(localDate, colorcode,  true);
 //                	else  treerelated.setSelfIsMatchModel(localDate, colorcode, false);
             } else 
             if( nodetype == BkChanYeLianTreeNode.TDXGG) {
             	NodesTreeRelated stofbktree = treeChild.getNodeTreeRelated();
-            		String colorcode = String.format("#%02x%02x%02x", Color.YELLOW.getRed(), Color.YELLOW.getGreen(), Color.YELLOW.getGreen() );
+            		String colorcode = String.format("#%02x%02x%02x", Color.YELLOW.getRed(), Color.YELLOW.getGreen(), Color.YELLOW.getBlue() );
                 	if(!stockinfile.contains(nodecode) && removeoldrecord)		
                 		stofbktree.setSelfIsMatchModel(localDate, colorcode, false);
                 	else if(stockinfile.contains(nodecode) )  

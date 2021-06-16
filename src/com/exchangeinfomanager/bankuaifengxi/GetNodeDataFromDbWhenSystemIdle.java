@@ -41,7 +41,7 @@ public class GetNodeDataFromDbWhenSystemIdle implements Runnable
 			TDXNodes treeroot = (TDXNodes)bkcyltree.getModel().getRoot();
 			int bankuaicount = bkcyltree.getModel().getChildCount(treeroot);
 			
-			int sleepcount = 15; int mousenotmoverange = 50;
+			int sleepcount = 5; int mousenotmoverange = 5;
 			long idleTime = 0 ;
 		    long start = System.currentTimeMillis();
 		    Point currLocation = MouseInfo.getPointerInfo().getLocation();
@@ -355,13 +355,18 @@ public class GetNodeDataFromDbWhenSystemIdle implements Runnable
 			if( ((BanKuai)node).getBanKuaiLeiXing().equals(BanKuai.HASGGNOSELFCJL) 
 					||  ((BanKuai)node).getBanKuaiLeiXing().equals(BanKuai.NOGGNOSELFCJL)  ) //有些指数是没有个股和成交量的，不列入比较范围
 				return;
-
+			
+			if( ((TDXNodes)node).getShuJuJiLuInfo().wetherHasReiewedToday()   )
+				return;
+			
 			animation ();
 			System.out.print("Buffering BanKuai" + node.getMyOwnCode() + node.getMyOwnName() + " Zhanbi\n");
 			SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai  ();
 			node = svsbk.getNodeData( node, requirestart, exportdate,NodeGivenPeriodDataItem.WEEK,true);
 			svsbk = null;
 		} else if(node.getType() == BkChanYeLianTreeNode.TDXGG) {
+			if( ((TDXNodes)node).getShuJuJiLuInfo().wetherHasReiewedToday()   )
+				return;
 			
 			animation ();
 			

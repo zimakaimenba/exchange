@@ -167,8 +167,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 			stock = ((StockOfBanKuai)node).getStock();
 			if(stock.getShuJuJiLuInfo().wetherHasReiewedToday())
 				reviewedtoday = true;
-		} else
-			reviewedtoday = node.getShuJuJiLuInfo().wetherHasReiewedToday();
+		} else	reviewedtoday = node.getShuJuJiLuInfo().wetherHasReiewedToday();
 		
 		LocalDate curdisplaydate = ((BandKuaiAndGeGuTableBasicModel)table.getModel()).getCurDisplayedDate();
 		 Interval range = ((TDXNodes)node).isInDuanQiGuanZhuRange (curdisplaydate); 

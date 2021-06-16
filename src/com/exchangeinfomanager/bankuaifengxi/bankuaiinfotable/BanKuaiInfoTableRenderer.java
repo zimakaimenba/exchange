@@ -64,7 +64,6 @@ public class BanKuaiInfoTableRenderer extends BanKuaiAndGeguTableBasicRenderer
 	    JComponent jc = (JComponent)comp;
 	    
 	    tablemodel =  (BanKuaiInfoTableModel)table.getModel();
-//	    LocalDate curdate = tablemodel.getCurDisplayedDate();
    	    
 	    int modelRow = table.convertRowIndexToModel(row);
 	    BanKuai bankuai = (BanKuai) ( (BanKuaiInfoTableModel)table.getModel() ).getNode(modelRow);
@@ -90,7 +89,6 @@ public class BanKuaiInfoTableRenderer extends BanKuaiAndGeguTableBasicRenderer
         	
 	        Set<String> socialsetneg = bkcurselected.getSocialFriendsSetNegtive();
 	        if(socialsetneg.contains(bkcode))    jc.setBorder( highlightneg );
-        		
         }
        
        

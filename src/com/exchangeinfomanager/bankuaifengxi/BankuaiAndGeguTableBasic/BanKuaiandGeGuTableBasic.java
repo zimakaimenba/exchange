@@ -51,6 +51,11 @@ public abstract class BanKuaiandGeGuTableBasic extends JTable  implements   IFil
 		createEvents ();
 	}
 	
+	public Properties getTableProperties ()
+	{
+		return this.prop;
+	}
+	
 	@Override
 	public void BanKuaiAndGeGuMatchingConditionValuesChanges (BanKuaiAndGeGuMatchingConditions expc)
 	{
@@ -138,8 +143,7 @@ public abstract class BanKuaiandGeGuTableBasic extends JTable  implements   IFil
 	{
 		String columnmaxnumberstr = prop.getProperty ( "columnmaxnumber");
 		int columnmaxnumber =0;
-		try {
-			columnmaxnumber = Integer.parseInt(columnmaxnumberstr);
+		try {	columnmaxnumber = Integer.parseInt(columnmaxnumberstr);
 		} catch (java.lang.NumberFormatException e) {	e.printStackTrace();	}
 		
 		for(int i=0;i<columnmaxnumber;i++) {
@@ -159,6 +163,8 @@ public abstract class BanKuaiandGeGuTableBasic extends JTable  implements   IFil
 //				this.getColumnModel().getColumn(i).setWidth(columnwidth);
 			} 
 		}
+		
+		return;
 	}
 	
 	protected void createTableHeaderTooltips ()
@@ -207,7 +213,6 @@ public abstract class BanKuaiandGeGuTableBasic extends JTable  implements   IFil
 			
 			filterHeader.getFilterEditor(i).setContent(column_predefinedfileter);
 		}
-		
 	}
 	
 	@Override

@@ -1450,6 +1450,13 @@ public class BanKuaiDbOperation
              try { dis.close(); } catch (IOException e) {e.printStackTrace();}     
 		 }
 		 
+		 SetView<String> differencebankuainew = Sets.difference(allinsertbk, curallshbk  );//新的板块要加到树上，否则对后面导入板块交易数据有影响
+		 for(String newbkcode : differencebankuainew) {
+			 BanKuai newbk = new BanKuai(newbkcode,"");
+			 BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode) CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getModel().getRoot();
+			 treeroot.add(newbk);
+		 }
+		 
 //		 SetView<String> differencebankuaiold = Sets.difference( curallshbk, allinsertbk );
 //		 if(differencebankuaiold.size() >0 ) { //说明有某些板块需要删除
 //			 for(String oldbkcode : differencebankuaiold) {
@@ -1549,13 +1556,19 @@ public class BanKuaiDbOperation
 	   						;
             	   logger.debug(sqlinsertstat);
 	   				int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
-//	                Files.append("加入：" + str.trim() + " "  +  System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
 	   				allinsertbk.add(zhishucode);
                }
 		 } catch (Exception e) {e.printStackTrace();return -1;
 		 } finally {
 			 try {in.close();} catch (IOException e) {e.printStackTrace();}
              try {dis.close();} catch (IOException e) {e.printStackTrace();}     
+		 }
+		 
+		 SetView<String> differencebankuainew = Sets.difference(allinsertbk, curallszbk);//新的板块要加到树上，否则对后面导入板块交易数据有影响  //
+		 for(String newbkcode : differencebankuainew) {
+			 BanKuai newbk = new BanKuai(newbkcode,"");
+			 BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode) CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getModel().getRoot();
+			 treeroot.add(newbk);
 		 }
 		 
 //		 SetView<String> differencebankuaiold = Sets.difference(curallszbk, allinsertbk );
@@ -6361,7 +6374,7 @@ public class BanKuaiDbOperation
 		public void updateBanKuaiOperationsSettings(BkChanYeLianTreeNode node, boolean importdailydata, boolean exporttogephi, 
 				boolean showinbkfx,boolean showincyltree, boolean exporttowkfile, boolean importbkgg, Color bkcolor)
 		{
-			String colorcode = String.format("#%02x%02x%02x", bkcolor.getRed(), bkcolor.getGreen(), bkcolor.getGreen() );
+			String colorcode = String.format("#%02x%02x%02x", bkcolor.getRed(), bkcolor.getGreen(), bkcolor.getBlue() );
 			
 			String sqlupdatestat = "UPDATE 通达信板块列表 SET " +
 								" 导入交易数据=" + importdailydata  + "," +
