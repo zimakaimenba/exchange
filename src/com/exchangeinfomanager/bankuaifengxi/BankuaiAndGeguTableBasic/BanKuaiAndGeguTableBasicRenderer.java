@@ -540,7 +540,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	else	stofbktree = node.getNodeTreeRelated();
         	if(stofbktree == null) background = Color.WHITE;
         	else {
-        		String colorcode = String.format("#%02x%02x%02x", Color.YELLOW.getRed(), Color.YELLOW.getGreen(), Color.YELLOW.getGreen() );
+        		String colorcode = String.format("#%02x%02x%02x", Color.YELLOW.getRed(), Color.YELLOW.getGreen(), Color.YELLOW.getBlue() );
         		Boolean isin = stofbktree.selfIsMatchModel(requireddate,colorcode);
     	    	if(isin != null && isin  ) 
     	    		if(predefinedcolor != null && !predefinedcolor.toUpperCase().equals("SYSTEM") )
@@ -548,8 +548,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
     	    		else if(predefinedcolor != null && predefinedcolor.toUpperCase().equals("SYSTEM") )
     	    			background = Color.ORANGE;
     			    else background = Color.ORANGE;  
-    	    	else 
-    	    		background = Color.WHITE;
+    	    	else background = Color.WHITE;
         	}
         	break;
         case "RedSignHighLight":
@@ -558,7 +557,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	else	stofbktree1 = node.getNodeTreeRelated();
         	if(stofbktree1 == null) background = Color.WHITE;
         	else {
-        		String colorcode = String.format("#%02x%02x%02x", Color.RED.getRed(), Color.RED.getGreen(), Color.RED.getGreen() );
+        		String colorcode = String.format("#%02x%02x%02x", Color.RED.getRed(), Color.RED.getGreen(), Color.RED.getBlue() );
         		Boolean isin = stofbktree1.selfIsMatchModel(requireddate,colorcode);
     	    	if(isin != null && isin  ) 
     	    		if(predefinedcolor != null && !predefinedcolor.toUpperCase().equals("SYSTEM") )

@@ -118,7 +118,6 @@ public class ServicesForBkfxEbkOutPutFileDirectRead implements ServicesForBkfxEb
             		String colorcode = String.format("#%02x%02x%02x", Color.YELLOW.getRed(), Color.YELLOW.getGreen(), Color.YELLOW.getBlue() );
                 	if(!bkinfile.contains(nodecode) && removeoldrecord)		treerelated.setSelfIsMatchModel(localDate, colorcode, false);
                 	else   if(bkinfile.contains(nodecode) ) treerelated.setSelfIsMatchModel(localDate, colorcode,  true);
-//                	else  treerelated.setSelfIsMatchModel(localDate, colorcode, false);
             } else 
             if( nodetype == BkChanYeLianTreeNode.TDXGG) {
             	NodesTreeRelated stofbktree = treeChild.getNodeTreeRelated();
@@ -127,7 +126,6 @@ public class ServicesForBkfxEbkOutPutFileDirectRead implements ServicesForBkfxEb
                 		stofbktree.setSelfIsMatchModel(localDate, colorcode, false);
                 	else if(stockinfile.contains(nodecode) )  
                 		stofbktree.setSelfIsMatchModel(localDate, colorcode,  true);
-//                	else  stofbktree.setSelfIsMatchModel(localDate, colorcode, false);
             }
   	          
 	        patchParsedFileToTrees(treeChild,localDate,stockinfile,bkinfile,removeoldrecord);
