@@ -3,6 +3,8 @@ package com.exchangeinfomanager.bankuaifengxi.bankuaigegumergetable;
 import javax.swing.table.DefaultTableModel;
 
 import com.exchangeinfomanager.bankuaifengxi.BankuaiAndGeguTableBasic.BandKuaiAndGeGuTableBasicModel;
+import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.StockOfBanKuai;
 
 public class BanKuaiGeGuMergeTableModel extends DefaultTableModel 
 {
@@ -157,5 +159,9 @@ public class BanKuaiGeGuMergeTableModel extends DefaultTableModel
 	    @Override
 	    public boolean isCellEditable(int row,int column) {
 	    	return false;
+		}
+		public BkChanYeLianTreeNode getNode(int modelRow)		{
+			BkChanYeLianTreeNode node = this.bkmodel.getNode(modelRow);
+			return node;
 		}
 }

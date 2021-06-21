@@ -27,6 +27,19 @@ public class StockOfBanKuaiTreeRelated implements NodesTreeRelated
 	private Multimap<LocalDate, String> isinparsedfile; //表明个股在指定日期是否在分析文件中
 	
 	@Override
+	public void setSelfIsMatchModel (LocalDate selfinsetdate, Color color,  Boolean inorout)
+	{
+		if(isinparsedfile == null)   isinparsedfile = HashMultimap.create();
+		String colorcode = String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue() );
+		LocalDate friday = selfinsetdate.with(DayOfWeek.FRIDAY);
+		if(inorout) {
+			Collection<String> fruits = isinparsedfile.get(friday);
+			Boolean checkresult = fruits.contains(colorcode);
+			if(!checkresult) isinparsedfile.put(friday, colorcode);
+		} else  
+			isinparsedfile.remove(friday, colorcode);
+	}
+	@Override
 	public void setSelfIsMatchModel (LocalDate selfinsetdate, String colorcode,  Boolean inorout)
 	{
 		if(isinparsedfile == null)   isinparsedfile = HashMultimap.create();

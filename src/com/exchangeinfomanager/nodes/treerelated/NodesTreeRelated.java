@@ -13,5 +13,6 @@ public interface  NodesTreeRelated
 	public Integer getStocksNumInParsedFileForSpecificDate (LocalDate requiredate);
 	Collection<String> selfIsMatchModelSet(LocalDate selfinsetdate);
 	Boolean selfIsMatchModel(LocalDate selfinsetdate, Color color);
+	void setSelfIsMatchModel(LocalDate selfinsetdate, Color color, Boolean inorout);
 }
  	

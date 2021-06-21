@@ -67,6 +67,7 @@ public class ExportMatchedNode2
 				if(!matchednodeset.contains(childnode)  && yellowsignresult ) matchednodeset.add((TDXNodes) childnode);
 //				if(!checkednodesset.contains(childnode.getMyOwnCode()))  checkednodesset.add( childnode.getMyOwnCode() );
 			} 
+			// Red sign part
 			Boolean redsignresult = checkNodeMatchedCurSettingConditonsOfRedSign (childnode, exportdate, period);
 			if(redsignresult != null  ) {
 				if(!matchednodeset.contains(childnode)  && redsignresult ) matchednodeset.add((TDXNodes) childnode);
@@ -149,8 +150,8 @@ public class ExportMatchedNode2
 	{
 		if(this.cond.shouldExportOnlyYellowSignBkStk() ) {
 			NodesTreeRelated filetree = childnode.getNodeTreeRelated ();
-			String colorcode = String.format("#%02x%02x%02x", Color.YELLOW.getRed(), Color.YELLOW.getGreen(), Color.YELLOW.getGreen() );
-			if(!filetree.selfIsMatchModel(exportdate,colorcode) )		return false;
+//			String colorcode = String.format("#%02x%02x%02x", Color.YELLOW.getRed(), Color.YELLOW.getGreen(), Color.YELLOW.getGreen() );
+			if(!filetree.selfIsMatchModel(exportdate,Color.YELLOW) )		return false;
 			else	return true;
 		} 
 		
@@ -163,8 +164,8 @@ public class ExportMatchedNode2
 	{
 		if(this.cond.shouldExportOnlyRedSignBkStk() ) {
 			NodesTreeRelated filetree = childnode.getNodeTreeRelated ();
-			String colorcode = String.format("#%02x%02x%02x", Color.RED.getRed(), Color.RED.getGreen(), Color.RED.getGreen() );
-			if(!filetree.selfIsMatchModel(exportdate,colorcode) )		return false;
+//			String colorcode = String.format("#%02x%02x%02x", Color.RED.getRed(), Color.RED.getGreen(), Color.RED.getGreen() );
+			if(!filetree.selfIsMatchModel(exportdate,Color.RED) )		return false;
 			else	return true;
 		} 
 		

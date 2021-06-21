@@ -154,7 +154,6 @@ public class BanKuaiFengXiCategoryBarChartCjlPnl extends BanKuaiFengXiCategoryBa
 			super.plot.getRangeAxis(0).setRange(0, 1);//重置坐标，否则会出现问题
 			
 			NodeXPeriodData nodexdata = node.getNodeXPeroidData(period);
-			
 			 
 			if(shouldDisplayBarOfSuperBanKuaiCjeInsteadOfSelfCje == null) { //显示node自己的成交额，个股成交额和平均成交额差别不会太大，可以用同一个坐标系显示
 				Double leftrangeaxix = displayBarDataToGui (nodexdata,startdate,enddate,period);
@@ -164,7 +163,6 @@ public class BanKuaiFengXiCategoryBarChartCjlPnl extends BanKuaiFengXiCategoryBa
 					((BanKuaiFengXiCategoryBarRenderer)super.plot.getRenderer()).unhideBarMode();
 					 Double avecje2 = displayAverageDailyCjlOfWeekLineDataToGuiUsingLeftAxis(nodexdata,startdate,enddate,period);
 				}
-				
 			} else { //显示大盘的平均成交额，大盘的平均成交额比个股平均成交额大很多，所以用独立的成交量坐标系，
 				NodeXPeriodData nodexdataOfSuperBk = shouldDisplayBarOfSuperBanKuaiCjeInsteadOfSelfCje.getNodeXPeroidData(period);
 				Double leftrangeaxix = displayAverageBarDataToGui (nodexdata,startdate,enddate,period);

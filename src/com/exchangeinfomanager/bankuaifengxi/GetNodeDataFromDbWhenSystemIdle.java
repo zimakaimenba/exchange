@@ -41,7 +41,7 @@ public class GetNodeDataFromDbWhenSystemIdle implements Runnable
 			TDXNodes treeroot = (TDXNodes)bkcyltree.getModel().getRoot();
 			int bankuaicount = bkcyltree.getModel().getChildCount(treeroot);
 			
-			int sleepcount = 5; int mousenotmoverange = 5;
+			int sleepcount = 15; int mousenotmoverange = 50;
 			long idleTime = 0 ;
 		    long start = System.currentTimeMillis();
 		    Point currLocation = MouseInfo.getPointerInfo().getLocation();
