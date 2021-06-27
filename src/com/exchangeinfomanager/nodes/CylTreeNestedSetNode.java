@@ -2,10 +2,12 @@ package com.exchangeinfomanager.nodes;
 
 import java.time.LocalDate;
 
+import org.jdesktop.swingx.treetable.AbstractMutableTreeTableNode;
+
 import com.exchangeinfomanager.nodes.treerelated.BanKuaiTreeRelated;
 import com.exchangeinfomanager.nodes.treerelated.NodesTreeRelated;
 
-public class CylTreeNestedSetNode extends BkChanYeLianTreeNode 
+public class CylTreeNestedSetNode extends   BkChanYeLianTreeNode 
 {
 
 	public CylTreeNestedSetNode(String myowncode, String name, Integer type) 
@@ -66,6 +68,5 @@ public class CylTreeNestedSetNode extends BkChanYeLianTreeNode
 	{
 		return this.nestedparent;
 	}
-
 	
 }

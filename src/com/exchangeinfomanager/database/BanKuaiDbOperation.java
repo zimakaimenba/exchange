@@ -1453,6 +1453,7 @@ public class BanKuaiDbOperation
 		 SetView<String> differencebankuainew = Sets.difference(allinsertbk, curallshbk  );//新的板块要加到树上，否则对后面导入板块交易数据有影响
 		 for(String newbkcode : differencebankuainew) {
 			 BanKuai newbk = new BanKuai(newbkcode,"");
+			 newbk.getNodeJiBenMian().setSuoShuJiaoYiSuo("SH");
 			 BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode) CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getModel().getRoot();
 			 treeroot.add(newbk);
 		 }
@@ -1567,6 +1568,7 @@ public class BanKuaiDbOperation
 		 SetView<String> differencebankuainew = Sets.difference(allinsertbk, curallszbk);//新的板块要加到树上，否则对后面导入板块交易数据有影响  //
 		 for(String newbkcode : differencebankuainew) {
 			 BanKuai newbk = new BanKuai(newbkcode,"");
+			 newbk.getNodeJiBenMian().setSuoShuJiaoYiSuo("SZ");
 			 BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode) CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getModel().getRoot();
 			 treeroot.add(newbk);
 		 }

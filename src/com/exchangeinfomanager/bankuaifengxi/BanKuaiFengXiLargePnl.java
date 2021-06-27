@@ -331,7 +331,7 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 
 		this.nodekpnl = new BanKuaiFengXiCandlestickPnl ();
 		this.nodekpnl.displayQueKou(true);
-//		this.centerPanel = new BanKuaiFengXiNodeCombinedCategoryPnl ("vertical");
+
 		this.centerPanel = new JPanel ();
 		this.centerPanel.setLayout(new BoxLayout(this.centerPanel, BoxLayout.Y_AXIS));
 		this.centerPanel.setPreferredSize(new Dimension(1800, 705)); //设置显示框的大小

@@ -133,22 +133,26 @@ public class TreeOfChanYeLian  extends BanKuaiAndStockTree
 	public void addNewNodeToTree (BkChanYeLianTreeNode node, int direction)
 	{
 		CylTreeNestedSetNode cylnode = new CylTreeNestedSetNode (node.getMyOwnCode(),node.getMyOwnName(),node.getType());
-
-		BkChanYeLianTreeNode parent = (BkChanYeLianTreeNode) this.getSelectionPath().getLastPathComponent();
+		BkChanYeLianTreeNode parent;
+		try { parent = (BkChanYeLianTreeNode) this.getSelectionPath().getLastPathComponent();
+		} catch (java.lang.NullPointerException e) { JOptionPane.showMessageDialog(null,"请选择父节点!"); 
+			return;
+		}
+		
 		if(parent.getType() == BkChanYeLianTreeNode.GPC  ) {
 			if (direction == BanKuaiAndChanYeLianGUI.DOWN || direction == BanKuaiAndChanYeLianGUI.UP ) 
 				direction = BanKuaiAndChanYeLianGUI.RIGHT;
 		}
 		
 		boolean enableoperation = this.checkNodeDuplicate (parent,cylnode);
-    	if( enableoperation ) {
-        		JOptionPane.showMessageDialog(null,"同级中已经存在相同名称子版块或与父节点重名，不能重复添加!");
+    	if( enableoperation ) { 		JOptionPane.showMessageDialog(null,"同级中已经存在相同名称子版块或与父节点重名，不能重复添加!");
         		return;
         }
     	
-        if (direction == BanKuaiAndChanYeLianGUI.RIGHT) {
-        	parent.add(cylnode);
-        } 
+    	try {	this.dboptforcyl.addNodeToNestedDatabase ((CylTreeNestedSetNode)parent,(CylTreeNestedSetNode)cylnode);
+		} catch (SQLException e) {e.printStackTrace();	return;}
+    	
+        if (direction == BanKuaiAndChanYeLianGUI.RIGHT)    	parent.add(cylnode);
         
         if (direction != BanKuaiAndChanYeLianGUI.RIGHT) {
         	BkChanYeLianTreeNode currentNode = (BkChanYeLianTreeNode) this.getSelectionPath().getLastPathComponent();
@@ -167,9 +171,6 @@ public class TreeOfChanYeLian  extends BanKuaiAndStockTree
             	parent.insert(cylnode, childIndex);
         }
         
-        this.dboptforcyl.addNodeToNestedDatabase ((CylTreeNestedSetNode)parent,(CylTreeNestedSetNode)cylnode);
-        
-
        InvisibleTreeModel treeModel = (InvisibleTreeModel)this.getModel();
        BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)treeModel.getRoot();
        treeModel.nodesWereInserted(cylnode.getParent(), new int[] {cylnode.getParent().getIndex(cylnode)});

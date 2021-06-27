@@ -1,14 +1,18 @@
 package com.exchangeinfomanager.nodes;
 
 import java.util.ArrayList;
+
+import javax.swing.tree.DefaultMutableTreeNode;
+
 import org.apache.log4j.Logger;
+import org.jdesktop.swingx.treetable.AbstractMutableTreeTableNode;
 
 import com.exchangeinfomanager.Trees.InvisibleNode;
 import com.exchangeinfomanager.nodes.nodejibenmian.NodeJiBenMian;
 import com.exchangeinfomanager.nodes.treerelated.NodesTreeRelated;
 import com.google.common.base.Strings;
 
-public abstract class BkChanYeLianTreeNode  extends InvisibleNode 
+public abstract class BkChanYeLianTreeNode  extends  DefaultMutableTreeNode// InvisibleNode  AbstractMutableTreeTableNode 
 {
 	public static int  DAPAN = 3, TDXBK = 4,  BKGEGU = 7, TDXGG = 6, GPC = 8, SUBGPC = 9, DZHBK =10; //SUBBK = 5,
 
@@ -134,7 +138,7 @@ public abstract class BkChanYeLianTreeNode  extends InvisibleNode
         
         return result;
     }
-
+    
 }
 
 

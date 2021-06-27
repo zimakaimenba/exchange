@@ -194,6 +194,9 @@ public class BanKuaiAndStockTree extends JTree
 			if(childnode.getType() != requiredtype) 
 				continue;
 			
+			if( ((TDXNodes)childnode).getNodeJiBenMian().getSuoShuJiaoYiSuo() == null)
+				continue;
+			
 			if( !((TDXNodes)childnode).getNodeJiBenMian().getSuoShuJiaoYiSuo().equalsIgnoreCase(jys) )
 				continue;
 			

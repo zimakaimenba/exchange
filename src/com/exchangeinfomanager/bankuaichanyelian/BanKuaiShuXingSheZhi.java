@@ -169,7 +169,6 @@ public class BanKuaiShuXingSheZhi extends JPanel
 					applaySetttingToDb ();
 			}
 		});
-		
 	}
 
 	protected void applaySetttingToDb() 

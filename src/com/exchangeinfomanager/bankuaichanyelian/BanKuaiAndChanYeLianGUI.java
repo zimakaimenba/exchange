@@ -97,13 +97,9 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 //		this.bkstk = AllCurrentTdxBKAndStoksTree.getInstance();
 		
 		svsforbank = new SvsForNodeOfBanKuai ();
-		
-		
-		
 		bkopt = new BanKuaiDbOperation ();
 		
 		treechanyelian = CreateExchangeTree.CreateTreeOfChanYeLian();
-		
 
 		initializeGui ();
 		setupSubGpcAndBanKuai ();
@@ -554,7 +550,6 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 		treeScrollPane.getVerticalScrollBar().setValue(0);
 		panel.add(treeScrollPane, BorderLayout.CENTER);
 		
-		
 		JPanel pnlup = new JPanel();
 //		pnlup.setPreferredSize(new Dimension(300, 40));
 		add(pnlup, BorderLayout.NORTH);
@@ -672,7 +667,6 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 		
 		btnfindnode = new JButton("\u5B9A\u4F4D\u8282\u70B9");
 		
-		
 		tfldfindnodeintree = new JUpdatedTextField();
 		tfldfindnodeintree.setColumns(10);
 		
@@ -682,7 +676,6 @@ public class BanKuaiAndChanYeLianGUI  extends JPanel
 		pnldown.add(tfldfindnodeintree, "cell 1 0,alignx left,aligny center");
 		
 		btndelnode = new JButton("\u5220\u9664\u8282\u70B9");
-		
 		pnldown.add(btndelnode, "cell 2 0");
 		
 		btnrestorenode = new JButton("\u6062\u590D\u8282\u70B9");

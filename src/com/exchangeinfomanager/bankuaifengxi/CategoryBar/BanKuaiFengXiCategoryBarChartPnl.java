@@ -397,8 +397,6 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
     	            pcs.firePropertyChange(evt);
     	    		
     	    	} else if (me.getClickCount() == 1) {
-//    	    		xbeforeclick = me.getX();
-    	    		
     	    		try {
     	    			Point2D po = chartPanel.translateScreenToJava2D(cme.getTrigger().getPoint());
             	        Rectangle2D plotArea = chartPanel.getScreenDataArea();
@@ -417,7 +415,6 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 
             	        selectchanged = true;
         	    	} catch ( java.lang.ClassCastException e ) {selectchanged = false;}
-
     	    	}
     	    }
     	    @Override
@@ -440,8 +437,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				if(!enableChangeDisplayDateRange )
-					return;
+				if(!enableChangeDisplayDateRange )		return;
 				
 				pointEnd = e.getPoint();
 				if( ! (Math.abs(this.pointStart.x - this.pointEnd.x) > 50) || ! (Math.abs(this.pointStart.y - this.pointEnd.y) < 10)  )

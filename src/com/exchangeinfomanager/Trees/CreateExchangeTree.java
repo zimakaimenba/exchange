@@ -8,7 +8,14 @@ public class CreateExchangeTree
 	public static TreeOfChanYeLian CreateTreeOfChanYeLian ()
 	{
 		CylTreeNestedSetNode alltopNode = new CylTreeNestedSetNode ("000000","两交易所",BkChanYeLianTreeNode.DAPAN);
-		TreeOfChanYeLian treecyl = new TreeOfChanYeLian(alltopNode,"CYLTREE");
+		TreeOfChanYeLian treecyl = new TreeOfChanYeLian(alltopNode,"CYLTREE"); 
+		return treecyl;
+	}
+	
+	public static TreeOfChanYeLian CreateTDXBankuaiSocialTree ()
+	{
+		CylTreeNestedSetNode alltopNode = new CylTreeNestedSetNode ("000000","两交易所",BkChanYeLianTreeNode.DAPAN);
+		TreeOfChanYeLian treecyl = new TreeOfChanYeLian(alltopNode,"TDXBANKUAISOCIALTREE"); 
 		return treecyl;
 	}
 	

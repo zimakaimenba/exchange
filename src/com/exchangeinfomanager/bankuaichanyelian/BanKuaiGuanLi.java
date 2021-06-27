@@ -12,6 +12,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.border.EmptyBorder;
 import javax.swing.GroupLayout;
+import javax.swing.ImageIcon;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JScrollPane;
 import javax.swing.LayoutStyle.ComponentPlacement;
@@ -33,6 +34,7 @@ import com.exchangeinfomanager.StockCalendar.GBC;
 import com.exchangeinfomanager.Trees.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
 import com.exchangeinfomanager.Trees.CreateExchangeTree;
+import com.exchangeinfomanager.Trees.TreeOfChanYeLian;
 import com.exchangeinfomanager.bankuaifengxi.bankuaiinfotable.BanKuaiInfoTableModel;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.commonlib.JUpdatedTextField;
@@ -46,6 +48,7 @@ import com.exchangeinfomanager.gui.subgui.BuyStockNumberPrice;
 import com.exchangeinfomanager.guifactory.JPanelFactory;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.CylTreeNestedSetNode;
 import com.exchangeinfomanager.nodes.DaPan;
 import com.exchangeinfomanager.nodes.HanYuPinYing;
 import com.exchangeinfomanager.nodes.Stock;
@@ -61,6 +64,7 @@ import com.opencsv.bean.StatefulBeanToCsvBuilder;
 //import net.ginkgo.copy.Ginkgo2;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.text.Collator;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -141,7 +145,6 @@ public class BanKuaiGuanLi extends JDialog
 		this.bkdbopt = new BanKuaiDbOperation ();
 		initializeBaiKuaiOfNoGeGuWithSelfCJLTree ();
 		initializeGui2 ();
-		
 		createEvents ();
 	}
 
@@ -188,6 +191,26 @@ public class BanKuaiGuanLi extends JDialog
 
 	private void createEvents() 
 	{
+		btndelnode.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				deleteANode ();
+			}
+		});
+		
+		btnAddBktotree.addMouseMotionListener(new mousemotionadapter()  );
+		btnAddBktotree.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+//            	addSubnodeButton.setIcon(addSubnodeIcon);
+//    	        addSubnodeButton.setToolTipText("Add subnode");
+            }
+        });
+		btnAddBktotree.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addBanKuaiButtonActionPerformed(evt);
+            }
+        });
+		
 		menuItemrelatedbk.addActionListener(new ActionListener() 
 		{
 			@Override
@@ -347,8 +370,7 @@ public class BanKuaiGuanLi extends JDialog
 			public void mouseClicked(MouseEvent arg0) 
 			{
 				int row = tableSysBk.getSelectedRow();
-				if(row <0) {
-					JOptionPane.showMessageDialog(null,"请选择一个板块！","Warning",JOptionPane.WARNING_MESSAGE);
+				if(row <0) {	JOptionPane.showMessageDialog(null,"请选择一个板块！","Warning",JOptionPane.WARNING_MESSAGE);
 					return;
 				}
 				
@@ -415,6 +437,33 @@ public class BanKuaiGuanLi extends JDialog
 			public void windowClosing(WindowEvent arg0) {
 			}
 		});
+	}
+	private void deleteANode ()
+	{
+		BkChanYeLianTreeNode delnode = (BkChanYeLianTreeNode) tdxbksocialtree.getSelectionPath().getLastPathComponent();
+		int action = JOptionPane.showConfirmDialog(null, "是否将该节点删除？","询问", JOptionPane.YES_NO_OPTION);
+		if(0 == action) {
+			tdxbksocialtree.deleteNodeFromTree ( (CylTreeNestedSetNode)delnode,true);
+		} 
+	}
+	private void addBanKuaiButtonActionPerformed(java.awt.event.ActionEvent evt) 
+	{
+		int row = tableSysBk.getSelectedRow();
+		if(row <0) {	JOptionPane.showMessageDialog(null,"请选择一个板块！","Warning",JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+		
+		BkChanYeLianTreeNode selectnode = (BkChanYeLianTreeNode) ( tableSysBk.getModel().getValueAt(row, 0) );
+		if(selectnode.getType() != BkChanYeLianTreeNode.TDXBK)
+			return;
+		
+		if( !((BanKuai)selectnode).getBanKuaiOperationSetting().isShowinbkfxgui() ) {
+			JOptionPane.showMessageDialog(null,"板块已被设置为不在板块分析窗口显示，不可添加！","Warning",JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+			 
+		int direction = ((SubnodeButton)evt.getSource()).getDirection();
+		this.tdxbksocialtree.addNewNodeToTree (selectnode, direction);
 	}
 
 	protected void updateNodeSocialFriend(BanKuai mainnode, BanKuai friend, Boolean relationship)
@@ -493,11 +542,17 @@ public class BanKuaiGuanLi extends JDialog
 	private JTreeTable tabledazsocial;
 	private JMenuItem menuItemSocialFriendPostiveformiddletablefordzh;
 	private JMenuItem menuItemSocialFriendNegtiveformiddletablefordzh;
+	private SubnodeButton btnAddBktotree;
+	private JButton btndelnode;
+	private JButton btnfindnode;
+	private JUpdatedTextField tfldfindnodeintree;
+	private TreeOfChanYeLian tdxbksocialtree;
+	ImageIcon addBelowIcon, addAboveIcon, addChildIcon, addSubnodeIcon;
 	
 	private void initializeGui2() 
 	{
 		setTitle("\u901A\u8FBE\u4FE1\u677F\u5757/\u81EA\u5B9A\u4E49\u677F\u5757\u8BBE\u7F6E");
-		setBounds(100, 100, 550, 988);
+		setBounds(100, 100, 750, 988);
 		getContentPane().setLayout(new BorderLayout());
 		
 		JPanel layoutPanel = JPanelFactory.createFixedSizePanel(new BorderLayout ());
@@ -505,11 +560,18 @@ public class BanKuaiGuanLi extends JDialog
 		layoutPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 20, 0));
 		this.add(layoutPanel);
 		
+		JPanel pnlwestwestbankuaisocialtree = JPanelFactory.createPanel(); //
+		pnlwestwestbankuaisocialtree.setPreferredSize(new Dimension(200, 988));
+		pnlwestwestbankuaisocialtree.setLayout(new FlowLayout() );
+		layoutPanel.add(pnlwestwestbankuaisocialtree, BorderLayout.WEST);
+		
 		JPanel westbankuaipnl = JPanelFactory.createPanel(); //右边板块设置pnl
 		westbankuaipnl.setPreferredSize(new Dimension(500, 988));
 		westbankuaipnl.setLayout(new GridLayout(1, 2));
 		westbankuaipnl.setBackground(ColorScheme.GREY_LINE);
+		layoutPanel.add(westbankuaipnl, BorderLayout.EAST);
 		
+		//westbankuaipnl
 		JPanel allbkfriendspnl = JPanelFactory.createPanel(); //板块的social friend pnl
 		allbkfriendspnl.setLayout(new GridLayout(3, 1));
 		allbkfriendspnl.setPreferredSize(new Dimension(300, 988));
@@ -860,7 +922,39 @@ public class BanKuaiGuanLi extends JDialog
 		westbankuaipnl.add(allbkskpnl);
 		westbankuaipnl.add(allbkfriendspnl);
 		
-		layoutPanel.add(westbankuaipnl, BorderLayout.WEST);
+		//pnlwestwestbankuaisocialtree
+		JPanel pnlwestwestupbksocial = JPanelFactory.createPanel(); //
+		pnlwestwestupbksocial.setLayout(new FlowLayout() );
+//		pnlwestwestupbksocial.setPreferredSize(new Dimension(200, 100));
+		
+		this.tdxbksocialtree = CreateExchangeTree.CreateTDXBankuaiSocialTree();
+		JScrollPane sclpwestwestupbksocial = new JScrollPane(this.tdxbksocialtree,
+			      JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+			      JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		sclpwestwestupbksocial.setPreferredSize(new Dimension(200, 688));
+		sclpwestwestupbksocial.grabFocus();
+		sclpwestwestupbksocial.getVerticalScrollBar().setValue(0);
+		
+		JPanel pnlwestwestdownbksocial = JPanelFactory.createPanel(); //
+		pnlwestwestdownbksocial.setLayout(new FlowLayout() );
+//		pnlwestwestdownbksocial.setPreferredSize(new Dimension(200, 200));
+		
+		pnlwestwestbankuaisocialtree.add(pnlwestwestupbksocial);
+		pnlwestwestbankuaisocialtree.add(sclpwestwestupbksocial);
+		pnlwestwestbankuaisocialtree.add(pnlwestwestdownbksocial);
+		//////
+		btnfindnode = new JButton("\u5B9A\u4F4D\u8282\u70B9");
+		tfldfindnodeintree = new JUpdatedTextField();
+		tfldfindnodeintree.setColumns(10);
+		pnlwestwestdownbksocial.add(btnfindnode);
+		pnlwestwestdownbksocial.add(tfldfindnodeintree);
+		/////
+		btnAddBktotree = new SubnodeButton();
+		btnAddBktotree.setIcon(new ImageIcon(BanKuaiAndChanYeLianGUI.class.getResource("/images/subnode24.png")));
+		btndelnode = new JButton("\u5220\u9664\u8282\u70B9");
+		pnlwestwestupbksocial.add(btnAddBktotree);
+		pnlwestwestupbksocial.add(btndelnode);
+
 		
 		menuBar = new JMenuBar();
 		menuBar.setBorderPainted(false);
@@ -869,7 +963,11 @@ public class BanKuaiGuanLi extends JDialog
 		JMenu menuOperationList = new JMenu("\u64CD\u4F5C");
 		buttonGroup.add(menuOperationList);
 		menuBar.add(menuOperationList);
-		 
+		
+		addBelowIcon = new javax.swing.ImageIcon(getClass().getResource("/images/subnodeBelow24.png"));
+	    addAboveIcon = new javax.swing.ImageIcon(getClass().getResource("/images/subnodeAbove24.png"));
+	    addSubnodeIcon = new javax.swing.ImageIcon(getClass().getResource("/images/subnode24.png"));
+	    addChildIcon = new javax.swing.ImageIcon(getClass().getResource("/images/subnodeChild24.png"));
 	}
 	
 	private  void addPopup(Component component, final JPopupMenu popup) 
@@ -890,6 +988,41 @@ public class BanKuaiGuanLi extends JDialog
 			}
 		});
 	}
+	
+	 private class mousemotionadapter extends MouseMotionAdapter {
+
+		 public void mouseMoved(java.awt.event.MouseEvent evt) {
+           	 SubnodeButton button = (SubnodeButton) evt.getSource();
+    	        String key;
+    	        if (System.getProperty("os.name").startsWith("Mac OS X")) 
+    	        	key = "CMD";
+    	        else 
+    	        	key = "CTRL";
+    	        
+    	        int x = evt.getX();
+    	        int y = evt.getY();
+    	        if (y<19 && x+y<30 && x<19) {
+    	            button.setDirection(BanKuaiAndChanYeLianGUI.UP);
+    	            button.setIcon(addAboveIcon);
+    	            button.setToolTipText("Add above ("+key+"-UP)");
+    	        }
+    	        else if (y>=19 && x-y < 0 && x<19){
+    	            button.setDirection(BanKuaiAndChanYeLianGUI.DOWN);
+    	            button.setIcon(addBelowIcon);
+    	            button.setToolTipText("Add below ("+key+"-DOWN)");
+    	        }
+    	        else if (x+y>30 && x-y>0){
+    	            button.setDirection(BanKuaiAndChanYeLianGUI.RIGHT);
+    	            button.setIcon(addChildIcon);
+    	            button.setToolTipText("Add subnode ("+key+"-RIGHT)");
+    	        }
+    	        else {
+    	            button.setDirection(BanKuaiAndChanYeLianGUI.NONE);
+    	            button.setIcon(addSubnodeIcon);
+    	            button.setToolTipText("Add subnode");
+    	        }
+           }
+	    }
 	
 }
 
@@ -1129,8 +1262,4 @@ class BanKuaiSocialFriendsTableModel extends DefaultTableModel
 		{
 			return this.jtableTitleStrings;
 		}
-
 }
-
-
-

@@ -1776,11 +1776,8 @@ public class StockInfoManager
 				bkgldialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			} 
 			
-			if(!bkgldialog.isVisible() ) {
-				bkgldialog.toFront();
-				bkgldialog.setVisible(true);
-			 } 
-
+			bkgldialog.toFront();
+			bkgldialog.setVisible(true);
 		}
 
 	protected void refreshChiCangAccountPanel ()
@@ -2894,15 +2891,15 @@ public class StockInfoManager
 		menuItemTongdaxinbb.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/if_reports_49615 (1).png")));
 		menuOperationList.add(menuItemTongdaxinbb);
 		
-		menuItemChanYeLian = new JMenuItem("\u4EA7\u4E1A\u94FE\u8BBE\u7F6E");
-		menuItemChanYeLian.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/focus.png")));
-		
-		menuOperationList.add(menuItemChanYeLian);
-		
 		menuItembkconfg = new JMenuItem("∞ÂøÈ…Ë÷√");
 		menuItembkconfg.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/focus.png")));
 		
 		menuOperationList.add(menuItembkconfg);
+		
+		menuItemChanYeLian = new JMenuItem("\u4EA7\u4E1A\u94FE\u8BBE\u7F6E");
+		menuItemChanYeLian.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/focus.png")));
+		
+		menuOperationList.add(menuItemChanYeLian);
 		
 		menuItemimportrecords = new JMenuItem("\u5BFC\u5165\u4EA4\u6613\u8BB0\u5F55");
 		menuItemimportrecords.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/import.png")));

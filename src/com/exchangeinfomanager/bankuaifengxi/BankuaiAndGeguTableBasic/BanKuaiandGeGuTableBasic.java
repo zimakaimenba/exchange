@@ -99,7 +99,7 @@ public abstract class BanKuaiandGeGuTableBasic extends JTable  implements   IFil
 	}
 	
 	 protected JTableHeader createDefaultTableHeader() 
-	    {
+	 {
 	        return new JTableHeader(columnModel) {
 	            public String getToolTipText(MouseEvent e) {
 	                String tip = null;
@@ -110,7 +110,7 @@ public abstract class BanKuaiandGeGuTableBasic extends JTable  implements   IFil
 	                return jtableTitleStringsTooltips[realIndex];
 	            }
 	        };
-	    }
+	 }
 	 
 	private void setPropertiesInfo (String propertiesfile)
 	{
