@@ -514,6 +514,9 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 		case "ExtremeCjeZhanbi" :
 			Double[] extremecje = node.getNodeJiBenMian().getNodeCjeZhanbiLevel();
 			Double cjezhanbi = nodexdata.getChenJiaoErZhanBi(requireddate, 0);
+			if(cjezhanbi == null || matchcond == null)
+				background = Color.WHITE;
+			else
 			if(extremecje[0] != null && cjezhanbi < extremecje[0] && matchcond.getHighlightExtremeCjeZhanbiBenchMark())
 				background = Color.RED;
 			else

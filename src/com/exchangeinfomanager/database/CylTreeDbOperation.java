@@ -826,10 +826,10 @@ public class CylTreeDbOperation
 				while(rs.next()) {
 					String nodeid = rs.getString("nodeid");
 					
-					sqlquery = "SELECT * FROM " + treetablename +"\r\n" + 
+					sqlquery = "SELECT * FROM " + treetablename +", \r\n" + 
 							"\r\n" + 
-							"(SELECT " +  treetablename + ".parent_id,"+  treetablename + ".nodeid  FROM " + treetablename + 
-							"WHERE nodeid = '" + nodecode+ "' AND " + treetablename + ".nodetype = " + nodetype + "  \r\n" + 
+							"(SELECT " +  treetablename + ".parent_id,"+  treetablename + ".nodeid  FROM " + treetablename + "  \r\n" + 
+							" WHERE nodeid = '" + nodecode+ "' AND " + treetablename + ".nodetype = " + nodetype + "  \r\n" + 
 							") A \r\n" + 
 							"where " +  treetablename + ".parent_id = A.parent_id \r\n" + 
 							"GROUP BY " + treetablename + ".tree_id"

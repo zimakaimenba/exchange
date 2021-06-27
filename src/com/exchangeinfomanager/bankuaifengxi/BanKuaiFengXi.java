@@ -29,8 +29,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
 import javax.swing.border.EmptyBorder;
-
-
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 
@@ -343,6 +342,7 @@ public class BanKuaiFengXi extends JDialog
 		this.bkggmatchcondition.addCacheListener(pnlbkwkcjlzhanbi);
 		this.bkggmatchcondition.addCacheListener(tblmergegegubkinfo);
 		this.bkggmatchcondition.addCacheListener(tblmergegeguinfoinallbk);
+		this.bkggmatchcondition.addCacheListener(tableBkSocialbkCurwkData);
 		
 		((BandKuaiAndGeGuTableBasicModel)tableGuGuZhanBiInBk.getModel()).setHighLightBanKuaiAndGeGuMatchingCondition (bkggmatchcondition);
 		((BandKuaiAndGeGuTableBasicModel)tableExternalInfo.getModel()).setHighLightBanKuaiAndGeGuMatchingCondition (bkggmatchcondition);
@@ -355,6 +355,7 @@ public class BanKuaiFengXi extends JDialog
 		((BandKuaiAndGeGuTableBasicModel)tableselectedwkbkzb.getModel()).setHighLightBanKuaiAndGeGuMatchingCondition (bkggmatchcondition);
 		((BandKuaiAndGeGuTableBasicModel)tblmergegegubkinfo.getModel()).setHighLightBanKuaiAndGeGuMatchingCondition (bkggmatchcondition);
 		((BandKuaiAndGeGuTableBasicModel)tblmergegeguinfoinallbk.getModel()).setHighLightBanKuaiAndGeGuMatchingCondition (bkggmatchcondition);
+		((BandKuaiAndGeGuTableBasicModel)tableBkSocialbkCurwkData.getModel()).setHighLightBanKuaiAndGeGuMatchingCondition (bkggmatchcondition);
 		
 		
 		dateChooser.addJCalendarDateChangeListener (combxsearchbk);
@@ -493,13 +494,18 @@ public class BanKuaiFengXi extends JDialog
 	}
 	private void showBanKuaiSocialFriendsWeeklyData (BkChanYeLianTreeNode node)
 	{
-		List<BkChanYeLianTreeNode> slidingnodelist = bksocialtreecopy.getSlidingInChanYeLianInfo (node.getMyOwnCode(),node.getType());
+		BkChanYeLianTreeNode parent = (BkChanYeLianTreeNode)bksocialtreecopy.getSpecificNodeByHypyOrCode(node.getMyOwnCode(), node.getType()).getParent();
+		List<BkChanYeLianTreeNode> slidingnodelist = null;
+		if(parent.getType() != BkChanYeLianTreeNode.DAPAN) {
+			slidingnodelist = bksocialtreecopy.getSlidingInChanYeLianInfo (node.getMyOwnCode(),node.getType());
+			for(BkChanYeLianTreeNode tmpnode : slidingnodelist) {
+				BkChanYeLianTreeNode friend = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode(tmpnode.getMyOwnCode(), BkChanYeLianTreeNode.TDXBK);
+				((BanKuaiInfoTableModel)tableBkSocialbkCurwkData.getModel()).addBanKuai ( (BanKuai)friend);
+			}
+		}
+		
 		List<BkChanYeLianTreeNode> childnodelist = bksocialtreecopy.getChildrenInChanYeLianInfo(node.getMyOwnCode(),node.getType());
 //		List<BkChanYeLianTreeNode> allsocialfriendsnodeslist = new ArrayList<>();
-		for(BkChanYeLianTreeNode tmpnode : slidingnodelist) {
-			BkChanYeLianTreeNode friend = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode(tmpnode.getMyOwnCode(), BkChanYeLianTreeNode.TDXBK);
-			((BanKuaiInfoTableModel)tableBkSocialbkCurwkData.getModel()).addBanKuai ( (BanKuai)friend);
-		}
 		for(BkChanYeLianTreeNode tmpnode : childnodelist) {
 			BkChanYeLianTreeNode friend = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode(tmpnode.getMyOwnCode(), BkChanYeLianTreeNode.TDXBK);
 			((BanKuaiInfoTableModel)tableBkSocialbkCurwkData.getModel()).addBanKuai ( (BanKuai)friend);
@@ -1007,6 +1013,7 @@ public class BanKuaiFengXi extends JDialog
 		((BanKuaiGeGuBasicTableModel)tablexuandingminusone.getModel()).deleteAllRows();
 		((BanKuaiGeGuBasicTableModel)tablexuandingminustwo.getModel()).deleteAllRows();
 		((BanKuaiGeGuBasicTableModel)tablexuandingplusone.getModel()).deleteAllRows();
+		((BanKuaiInfoTableModel)tableBkSocialbkCurwkData.getModel()).deleteAllRows();
 				
 //		menuItemchengjiaoer.setText("X 按成交额排名");
 //    	menuItemliutong.setText("按流通市值排名");
@@ -1029,6 +1036,7 @@ public class BanKuaiFengXi extends JDialog
 		panelggdpcjlwkzhanbi.resetDate();
 		
 		((BanKuaiGeGuMergeTableModel)tblmergeggtobks.getModel()).deleteAllRows();
+		
 		tabpnlKxian.setTitleAt(3, "个股板块计算");
 		tblmergeggtobks.repaint();
 	}
