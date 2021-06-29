@@ -7,7 +7,6 @@ import java.util.List;
 import org.jfree.data.time.RegularTimePeriod;
 
 import com.exchangeinfomanager.bankuaifengxi.QueKou;
-import com.exchangeinfomanager.nodes.DaPan;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.google.common.collect.Multimap;

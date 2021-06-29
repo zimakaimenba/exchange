@@ -898,11 +898,14 @@ public class SetupSystemConfiguration
 		}
 		public Boolean isShangHaiZhiShu (String nodecode)
 		{
-			String nodecodeprefix = nodecode.substring(0, 3);
-			if( shanghaizhishucodeprefixlist.contains(nodecodeprefix) )
-				return true;
-			else 
-				return false;
+			for(String shanghaizhishucodeprefix : shanghaizhishucodeprefixlist  ) {
+				int prefixlength = shanghaizhishucodeprefix.trim().length();
+				String nodecodeprefix = nodecode.substring(0, prefixlength);
+				if(nodecodeprefix.equalsIgnoreCase(shanghaizhishucodeprefix) ) {
+					return true;
+				}
+			}
+			return false;
 		}
 		public Boolean isShenZhengStock (String nodecode)
 		{
@@ -914,11 +917,14 @@ public class SetupSystemConfiguration
 		}
 		public Boolean isShenZhengZhiShu (String nodecode)
 		{
-			String nodecodeprefix = nodecode.substring(0, 3);
-			if( shengzhengzhishucodeprefixlist.contains(nodecodeprefix) )
-				return true;
-			else 
-				return false;
+			for(String shanghaizhishucodeprefix : shengzhengzhishucodeprefixlist  ) {
+				int prefixlength = shanghaizhishucodeprefix.trim().length();
+				String nodecodeprefix = nodecode.substring(0, prefixlength);
+				if(nodecodeprefix.equalsIgnoreCase(shanghaizhishucodeprefix) ) {
+					return true;
+				}
+			}
+			return false;
 		}
 		/*
 		 * 最核心的几个指数
@@ -938,20 +944,39 @@ public class SetupSystemConfiguration
 		{
 			return this.dzhinstalledpath;
 		}
-		public File getDaZhiHuiBanKuaiExportFileName ()
+		public String getDZHShangHaiZhiShuNameFile ()
 		{
-			String installpath = this.getDaZhiHuiInstalledPath();
-			File dir = new File(installpath);
-			
-			FileFilter csvfileFilter = new WildcardFileFilter("*.SNT", IOCase.INSENSITIVE);      			// For taking both .JPG and .jpg files (useful in *nix env)  
-			File[] csvfileList = dir.listFiles(csvfileFilter);      
-			if (csvfileList.length > 0) {          
-				/** The oldest file comes first **/     
-				Arrays.sort(csvfileList, LastModifiedFileComparator.LASTMODIFIED_COMPARATOR); //filesList now contains all the JPG/jpg files in sorted order    
-			}
-			
-			return csvfileList[0];
-		} 
+			String dzhinstallpath = this.getDaZhiHuiInstalledPath();
+			String dzhshzhishufile = dzhinstallpath + "/SH.SNT";
+			return dzhshzhishufile;
+		}
+		public String getDZHShenZhenZhiShuNameFile ()
+		{
+			String dzhinstallpath = this.getDaZhiHuiInstalledPath();
+			String dzhshzhishufile = dzhinstallpath + "/SZ.SNT";
+			return dzhshzhishufile;
+		}
+		public String getDZHShangHaiBanKuaiNameFile ()
+		{
+			String dzhinstallpath = this.getDaZhiHuiInstalledPath();
+			String dzhshzhishufile = dzhinstallpath + "/B$.SNT";
+			return dzhshzhishufile;
+		}
+		
+//		public File getDaZhiHuiBanKuaiExportFileName ()
+//		{
+//			String installpath = this.getDaZhiHuiInstalledPath();
+//			File dir = new File(installpath);
+//			
+//			FileFilter csvfileFilter = new WildcardFileFilter("*.SNT", IOCase.INSENSITIVE);      			// For taking both .JPG and .jpg files (useful in *nix env)  
+//			File[] csvfileList = dir.listFiles(csvfileFilter);      
+//			if (csvfileList.length > 0) {          
+//				/** The oldest file comes first **/     
+//				Arrays.sort(csvfileList, LastModifiedFileComparator.LASTMODIFIED_COMPARATOR); //filesList now contains all the JPG/jpg files in sorted order    
+//			}
+//			
+//			return csvfileList[0];
+//		} 
 		public String getDaZhiHuiBanKuaiFilePath ()
 		{
 			return this.dzhinstalledpath  + "/data/B$/block/";

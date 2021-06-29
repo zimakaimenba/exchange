@@ -80,9 +80,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 	{
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		createChartPanel();
-		
 		createEvent ();
-		
 		charttype = charttype1;
 	}
 
@@ -414,7 +412,7 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
             	        setCurSelectedBarInfo (columnkey,selectedtooltip);
 
             	        selectchanged = true;
-        	    	} catch ( java.lang.ClassCastException e ) {selectchanged = false;}
+        	    	} catch ( java.lang.ClassCastException e ) {selectchanged = false;setCurSelectedBarInfo (null,null);}
     	    	}
     	    }
     	    @Override
@@ -531,10 +529,14 @@ public abstract class BanKuaiFengXiCategoryBarChartPnl extends JPanel
 	 */
 	public void setCurSelectedBarInfo (LocalDate newdate,String selectedtooltip) 
 	{
-        this.dateselected = newdate ;
-
-        PropertyChangeEvent evt = new PropertyChangeEvent(this, SELECTED_PROPERTY, "",  this.dateselected );
-        pcs.firePropertyChange(evt);
+		if(newdate != null)    {
+			this.dateselected = newdate ;
+			PropertyChangeEvent evt = new PropertyChangeEvent(this, SELECTED_PROPERTY, "",  this.dateselected );
+	        pcs.firePropertyChange(evt);
+		} else {
+			PropertyChangeEvent evt = new PropertyChangeEvent(this, SELECTED_PROPERTY, "",  null );
+	        pcs.firePropertyChange(evt);
+		}
     }
 	/*
 	 * 

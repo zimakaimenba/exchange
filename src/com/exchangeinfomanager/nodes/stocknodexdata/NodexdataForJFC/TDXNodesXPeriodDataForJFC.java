@@ -367,18 +367,13 @@ import com.udojava.evalex.Expression;
 			}
 			
 			OHLCItem lastholc = null; Double lastclose = 0.0;
-			try {
-				lastholc = (OHLCItem) this.getOHLCData().getDataItem(indexofcur.intValue() -1 );
+			try {	lastholc = (OHLCItem) this.getOHLCData().getDataItem(indexofcur.intValue() -1 );
 				lastclose = lastholc.getCloseValue();
-			}	catch (java.lang.IndexOutOfBoundsException ex) { //第一周
-				return null;
-			}
+			}	catch (java.lang.IndexOutOfBoundsException ex) {return null;} //第一周
 			
-			if(lastclose == 0.0)
-				return null;
+			if(lastclose == 0.0)	return null;
 			
 			double zhangfu = (curclose - lastclose) / lastclose;
-			
 			return zhangfu;
 		} catch (java.lang.NullPointerException e) {
 //			String code = super.getNodeCode();
@@ -1243,44 +1238,149 @@ import com.udojava.evalex.Expression;
 			closedata[i] = close;
 		}
 		
-		Double ma5 = null;Double ma10 = null;Double ma20 = null;Double ma60 = null;Double ma250 = null;
 		for(int i= itemcount-1;i >=0;i--) {
 			OHLCItem dataitem = (OHLCItem)this.nodeohlc.getDataItem(i);
 			RegularTimePeriod period = dataitem.getPeriod();
 			
 			if(i>=5) {
+				Double ma5 = null;
 				if( this.nodeohlcma5.getIndex(period) <0  )
-				ma5 = StatUtils.mean(closedata, i-4, 5);
-				if(ma5 != null)
-					nodeohlcma5.addOrUpdate(period,ma5);
+					ma5 = StatUtils.mean(closedata, i-4, 5);
+				if(ma5 != null)		nodeohlcma5.addOrUpdate(period,ma5);
 			}
 			if(i>=10) {
+				Double ma10 = null;
 				if( this.nodeohlcma10.getIndex(period) <0  )
-				ma10 = StatUtils.mean(closedata, i-9, 10);
-				if(ma10 != null)
-					nodeohlcma10.addOrUpdate(period,ma10);
+					ma10 = StatUtils.mean(closedata, i-9, 10);
+				if(ma10 != null)	nodeohlcma10.addOrUpdate(period,ma10);
 			}
 			if(i>=20) {
+				Double ma20 = null;
 				if( this.nodeohlcma20.getIndex(period) <0  )
-				ma20 = StatUtils.mean(closedata, i-19, 20);
-				if(ma20 != null)
-					nodeohlcma20.addOrUpdate(period,ma20);
+					ma20 = StatUtils.mean(closedata, i-19, 20);
+				if(ma20 != null)	nodeohlcma20.addOrUpdate(period,ma20);
 			}
 			if(i>=60) {
+				Double ma60 = null;
 				if( this.nodeohlcma60.getIndex(period) <0  )
-				ma60 = StatUtils.mean(closedata, i-59, 60);
-				if(ma60 != null)
-					nodeohlcma60.addOrUpdate(period,ma60);
+					ma60 = StatUtils.mean(closedata, i-59, 60);
+				if(ma60 != null)	nodeohlcma60.addOrUpdate(period,ma60);
 			}
 			if(i>=250) {
+				Double ma250 = null;
 				if( this.nodeohlcma250.getIndex(period) <0  )
-				ma250 = StatUtils.mean(closedata, i-249, 250);
-				if(ma250 != null)
-					nodeohlcma250.addOrUpdate(period,ma250);
+					ma250 = StatUtils.mean(closedata, i-249, 250);
+				if(ma250 != null)	nodeohlcma250.addOrUpdate(period,ma250);
 			}
 		}
-		
+		checkNodeOhlcMA ();
 		return;
+	}
+	private void checkNodeOhlcMA ()
+	{
+		double checkvalue = 0.0; int duplicatecount = 0;RegularTimePeriod dupperiod = null;
+//		int itemcount = this.nodeohlcma5.getItemCount();
+//		for(int i=0;i<itemcount;i++) {
+//			TimeSeriesDataItem ma5item = this.nodeohlcma5.getDataItem(i);
+//			double ma5 = ma5item.getValue().doubleValue();
+//			if(ma5 == checkvalue) {
+//				duplicatecount ++;
+//				dupperiod = ma5item.getPeriod();
+//			}
+//			else { checkvalue = ma5; duplicatecount =0;};
+//			
+//			if(duplicatecount >= 5) {
+//				logger.info(super.getNodeCode() + "MA5计算有误，出现连续等值数据，请检查.!" + "日期：" + dupperiod.getEnd().toString());
+//				break;
+//			}
+//		}
+		checkvalue = 0.0;duplicatecount = 0;
+		int itemcount = this.nodeohlcma10.getItemCount();
+		for(int i=0;i<itemcount;i++) {
+			TimeSeriesDataItem ma10item = this.nodeohlcma10.getDataItem(i);
+			double ma10 = ma10item.getValue().doubleValue();
+			if(ma10 == checkvalue) {
+				duplicatecount ++;
+				dupperiod = ma10item.getPeriod();
+			}
+			else { checkvalue = ma10; duplicatecount =0;};
+			
+			if(duplicatecount >= 5) {
+				logger.info(super.getNodeCode() + "MA10计算有误，出现连续等值数据，请检查.!" + "日期：" + dupperiod.getEnd().toString());
+				break;
+			}
+		}
+		checkvalue = 0.0;duplicatecount = 0;
+		itemcount = this.nodeohlcma20.getItemCount();
+		for(int i=0;i<itemcount;i++) {
+			TimeSeriesDataItem ma20item = this.nodeohlcma20.getDataItem(i);
+			double ma20 = ma20item.getValue().doubleValue();
+			if(ma20 == checkvalue) {
+				duplicatecount ++;
+				dupperiod = ma20item.getPeriod();
+			}
+			else { checkvalue = ma20; duplicatecount =0;};
+			
+			if(duplicatecount >= 10) {
+				logger.info(super.getNodeCode() + "MA20计算有误，出现连续等值数据，请检查!" + "日期：" + dupperiod.getEnd().toString());
+				break;
+			}
+		}
+		checkvalue = 0.0;duplicatecount = 0;
+		itemcount = this.nodeohlcma60.getItemCount();
+		for(int i=0;i<itemcount;i++) {
+			TimeSeriesDataItem ma60item = this.nodeohlcma60.getDataItem(i);
+			double ma60 = ma60item.getValue().doubleValue();
+			if(ma60 == checkvalue) {
+				duplicatecount ++;
+				dupperiod = ma60item.getPeriod();
+			}
+			else { checkvalue = ma60; duplicatecount =0;};
+			
+			if(duplicatecount >= 20) {
+				logger.info(super.getNodeCode() + "MA60计算有误，出现连续等值数据，请检查.!" + "日期：" + dupperiod.getEnd().toString());
+				debugOhlcMADate (nodeohlcma60);
+				break;
+			}
+		}
+		checkvalue = 0.0;duplicatecount = 0;
+		itemcount = this.nodeohlcma250.getItemCount();
+		for(int i=0;i<itemcount;i++) {
+			TimeSeriesDataItem ma250item = this.nodeohlcma250.getDataItem(i);
+			double ma250 = ma250item.getValue().doubleValue();
+			if(ma250 == checkvalue) {
+				duplicatecount ++;
+				dupperiod = ma250item.getPeriod();
+			}
+			else { checkvalue = ma250; duplicatecount =0;};
+			
+			if(duplicatecount >= 20) {
+				logger.info(super.getNodeCode() + "MA250计算有误，出现连续等值数据，请检查!" + "日期：" + dupperiod.getEnd().toString());
+				debugOhlcMADate (nodeohlcma250);
+				break;
+			}
+		}
+	}
+	private  void debugOhlcMADate (TimeSeries nodeohlcma)
+	{
+		logger.info("CLOSE MAVALUE \r\n");
+		int itemcount = nodeohlcma.getItemCount();
+		for(int i=0;i<itemcount;i++) {
+			TimeSeriesDataItem maitem = nodeohlcma.getDataItem(i);
+			double ma = maitem.getValue().doubleValue();
+			
+			RegularTimePeriod maperiod = maitem.getPeriod();
+			int itemohlccount = this.nodeohlc.getItemCount();
+			for(int j=0;i < itemohlccount;j++) {
+				OHLCItem dataitem = (OHLCItem)this.nodeohlc.getDataItem(j);
+				RegularTimePeriod ohlcperiod = dataitem.getPeriod();
+				if(maperiod.getEnd().equals(ohlcperiod.getEnd())) {
+					double close = dataitem.getCloseValue();
+					System.out.println(maperiod.getEnd().toString() + "CLOSE " + String.valueOf(close) + " MAVALUE " + String.valueOf(ma) + " \r\n");
+					break;
+				}
+			}
+		}
 	}
 	/*
 	 * 通过apache math计算MA
@@ -1300,15 +1400,13 @@ import com.udojava.evalex.Expression;
 			closedata[i] = close;
 		}
 		
-		
 		Integer itemindex = this.getIndexOfSpecificDateOHLCData(requireddate,difference);
 		Double ma5 = null;
 		Integer ma5index = this.nodeohlcma5.getIndex(expectedperiod);
 		if(ma5index == -1 && itemindex>=5) {
 			ma5 = StatUtils.mean(closedata, itemindex-4, 5);
 			nodeohlcma5.add(expectedperiod,ma5,false);
-		} else
-		{
+		} else	{
 			TimeSeriesDataItem ma5item = this.nodeohlcma5.getDataItem(expectedperiod);
 			if(ma5item != null)
 			ma5 = ma5item.getValue().doubleValue();
@@ -1319,8 +1417,7 @@ import com.udojava.evalex.Expression;
 		if(ma10index == -1 && itemindex>=10) {
 			ma10 = StatUtils.mean(closedata, itemindex-9, 10);
 			nodeohlcma10.add(expectedperiod,ma10,false);
-		} else
-		{
+		} else	{
 			TimeSeriesDataItem ma10item = this.nodeohlcma10.getDataItem(expectedperiod);
 			if(ma10item != null)
 				ma10 = ma10item.getValue().doubleValue();

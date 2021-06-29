@@ -221,14 +221,17 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 //		String indictor = (String) evt.getNewValue();
 		switch (evtpropertyname) {
 		case BanKuaiFengXiCategoryBarChartPnl.SELECTED_PROPERTY:
-			String selectedinfo = evt.getNewValue().toString();
-			chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(LocalDate.parse(selectedinfo) ) );
-    		//特别标记点击的日期，这样界面上看比较清晰
-    		if(cjecjlzbpnldown.isAllowDrawAnnoation()) {
-				cjecjlzbpnldown.setAnnotations( LocalDate.parse(selectedinfo)  );
-				cjecjlpnlup.setAnnotations( LocalDate.parse(selectedinfo)  );
+			if(evt.getNewValue() != null ) {
+				String selectedinfo = evt.getNewValue().toString();
+				chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(LocalDate.parse(selectedinfo) ) );
+	    		//特别标记点击的日期，这样界面上看比较清晰
+	    		if(cjecjlzbpnldown.isAllowDrawAnnoation()) {
+					cjecjlzbpnldown.setAnnotations( LocalDate.parse(selectedinfo)  );
+					cjecjlpnlup.setAnnotations( LocalDate.parse(selectedinfo)  );
+				}
 			}
-			PropertyChangeEvent evtnew = new PropertyChangeEvent(source, SELECTED_PROPERTY, "", selectedinfo );
+			
+			PropertyChangeEvent evtnew = new PropertyChangeEvent(source, SELECTED_PROPERTY, "", evt.getNewValue() );
 			pcs.firePropertyChange(evtnew);
 			break;
 		case BanKuaiFengXiCategoryBarChartPnl.MOUSEDOUBLECLICK_PROPERTY:

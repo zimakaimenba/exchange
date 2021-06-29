@@ -7,14 +7,14 @@ public class CreateExchangeTree
 {
 	public static TreeOfChanYeLian CreateTreeOfChanYeLian ()
 	{
-		CylTreeNestedSetNode alltopNode = new CylTreeNestedSetNode ("000000","两交易所",BkChanYeLianTreeNode.DAPAN);
+		CylTreeNestedSetNode alltopNode = new CylTreeNestedSetNode ("000000","产业链",BkChanYeLianTreeNode.DAPAN);
 		TreeOfChanYeLian treecyl = new TreeOfChanYeLian(alltopNode,"CYLTREE"); 
 		return treecyl;
 	}
 	
 	public static TreeOfChanYeLian CreateTDXBankuaiSocialTree ()
 	{
-		CylTreeNestedSetNode alltopNode = new CylTreeNestedSetNode ("000000","两交易所",BkChanYeLianTreeNode.DAPAN);
+		CylTreeNestedSetNode alltopNode = new CylTreeNestedSetNode ("000000","板块SocialFriends",BkChanYeLianTreeNode.DAPAN);
 		TreeOfChanYeLian treecyl = new TreeOfChanYeLian(alltopNode,"TDXBANKUAISOCIALTREE"); 
 		return treecyl;
 	}

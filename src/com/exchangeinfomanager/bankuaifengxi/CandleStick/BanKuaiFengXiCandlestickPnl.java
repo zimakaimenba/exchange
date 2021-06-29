@@ -365,41 +365,28 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		for(int i= indexstart; i<= indexend; i++) {
 			OHLCItem tmpohlc =  (OHLCItem) nodexdata.getOHLCData().getDataItem(i);
 			
-			try {
-				tmpohlcSeries.add(tmpohlc);
-			} catch (org.jfree.data.general.SeriesException e) {
-				e.printStackTrace();
-			}
+			try {	tmpohlcSeries.add(tmpohlc);
+			} catch (org.jfree.data.general.SeriesException e) {	e.printStackTrace();	}
 			
 			Double low = tmpohlc.getLowValue();
 			Double high = tmpohlc.getHighValue();
 			
-			if(low < lowestLow && low !=0) {//股价不可能为0，为0，说明停牌，无需计算
-				lowestLow = low;
-			}
-			if(high > highestHigh && high !=0) {
-				highestHigh = high;
-			}
+			if(low  < lowestLow && low !=0) 	lowestLow = low; //股价不可能为0，为0，说明停牌，无需计算
+			if(high > highestHigh && high !=0)	highestHigh = high;
 			
 			RegularTimePeriod tmpperiod = tmpohlc.getPeriod();
 			TimeSeriesDataItem tmpma250 = nodexdata.getMA250().getDataItem(tmpperiod);
 			TimeSeriesDataItem tmpma60 = nodexdata.getMA60().getDataItem(tmpperiod);
-			if(tmpma250 != null)
-				tmpma250ts.add(tmpma250);
-			if(tmpma60 != null)
-				tmpma60ts.add(tmpma60);
+			if(tmpma250 != null)	tmpma250ts.add(tmpma250);
+			if(tmpma60 != null)		tmpma60ts.add(tmpma60);
 
 		}
-
 
 		tmpohlcSeries.setNotify(false);
 		tmpcandlestickDataset.setNotify(false);
 		
-		try {
-			candlestickChart.getXYPlot().getRangeAxis(indexofseries).setRange(lowestLow*0.98, highestHigh*1.02);
-		} catch (java.lang.IllegalArgumentException e ) {
-//			e.printStackTrace();
-		}
+		try {	candlestickChart.getXYPlot().getRangeAxis(indexofseries).setRange(lowestLow*0.98, highestHigh*1.02);
+		} catch (java.lang.IllegalArgumentException e ) {	e.printStackTrace();}
 		
 //		if(indexofseries == 0) {
 //			ohlcSeries = tmpohlcSeries;
@@ -418,8 +405,6 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
         tmpcandlestickDataset.setNotify(false);
         candlestickChart.setNotify(false);
         this.maDataSet.setNotify(false);
-	
-		
 	}
 	
 	/*
@@ -442,12 +427,10 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		TDXNodesXPeriodDataForJFC nodexdata = (TDXNodesXPeriodDataForJFC) node.getNodeXPeroidData(period);
 		LocalDate nodestart = nodexdata.getOHLCRecordsStartDate();
 		LocalDate nodeend = nodexdata.getOHLCRecordsEndDate();
-		if(nodestart == null)
-			return;
+		if(nodestart == null)		return;
 		
 		Interval result = getTimeIntervalOfNodeTimeIntervalWithRequiredTimeInterval (nodestart,nodeend, requirestart, requireend);
-		if(result == null )
-			return;
+		if(result == null )		return;
 		
 		DateTime overlapstartdt = result.getStart();
 		DateTime overlapenddt = result.getEnd();
@@ -483,41 +466,26 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		double lowestLow =10000.0;  double highestHigh = 0.0;
 		for(int i= indexstart; i<= indexend; i++) {
 			OHLCItem tmpohlc =  (OHLCItem) nodexdata.getOHLCData().getDataItem(i);
-			
-			try {
-				tmpohlcSeries.add(tmpohlc);
-			} catch (org.jfree.data.general.SeriesException e) {
-				e.printStackTrace();
-			}
+			try {	tmpohlcSeries.add(tmpohlc);
+			} catch (org.jfree.data.general.SeriesException e) { e.printStackTrace(); }
 			
 			Double low = tmpohlc.getLowValue();
 			Double high = tmpohlc.getHighValue();
 			
-			if(low < lowestLow && low !=0) {//股价不可能为0，为0，说明停牌，无需计算
-				lowestLow = low;
-			}
-			if(high > highestHigh && high !=0) {
-				highestHigh = high;
-			}
+			if(low < lowestLow && low !=0) lowestLow = low;//股价不可能为0，为0，说明停牌，无需计算
+			if(high > highestHigh && high !=0) 	highestHigh = high;
 			
 			RegularTimePeriod tmpperiod = tmpohlc.getPeriod();
 			TimeSeriesDataItem tmpma250 = nodexdata.getMA250().getDataItem(tmpperiod);
 			TimeSeriesDataItem tmpma60 = nodexdata.getMA60().getDataItem(tmpperiod);
-			if(tmpma250 != null)
-				tmpma250ts.add(tmpma250);
-			if(tmpma60 != null)
-				tmpma60ts.add(tmpma60);
-
+			if(tmpma250 != null)	tmpma250ts.add(tmpma250);
+			if(tmpma60 != null)		tmpma60ts.add(tmpma60);
 		}
 
 		tmpohlcSeries.setNotify(false);
 		tmpcandlestickDataset.setNotify(false);
-		
-		try {
-			candlestickChart.getXYPlot().getRangeAxis(indexofseries).setRange(lowestLow*0.98, highestHigh*1.02);
-		} catch (java.lang.IllegalArgumentException e ) {
-//			e.printStackTrace();
-		}
+		try {	candlestickChart.getXYPlot().getRangeAxis(indexofseries).setRange(lowestLow*0.98, highestHigh*1.02);
+		} catch (java.lang.IllegalArgumentException e ) {e.printStackTrace();}
 		
 //		if(indexofseries == 0) {
 //			ohlcSeries = tmpohlcSeries;

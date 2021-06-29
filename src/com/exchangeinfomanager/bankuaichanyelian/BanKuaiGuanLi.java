@@ -521,12 +521,12 @@ public class BanKuaiGuanLi extends JDialog
 
 	private final ButtonGroup buttonGroup = new ButtonGroup();
 	private JTreeTable tableSysBk;
-	private final JPanel contentPanel = new JPanel();
+//	private final JPanel contentPanel = new JPanel();
 //	private AllCurrentTdxBKAndStoksTree allbkstks;
-	private JPanel panelSys;
-	private JTable tableZdy;
-	private BanKuaiAndStockTree cyltree;
-		private JUpdatedTextField tfldsearchsysbk;
+//	private JPanel panelSys;
+//	private JTable tableZdy;
+//	private BanKuaiAndStockTree cyltree;
+	private JUpdatedTextField tfldsearchsysbk;
 	private BanKuaiShuXingSheZhi panelsetting;
 	private JMenuBar menuBar;
 	private JTable tableBkfriends;
@@ -665,33 +665,29 @@ public class BanKuaiGuanLi extends JDialog
 			
 			public Component prepareRenderer(TableCellRenderer renderer, int row, int col) 
 			{
-				
 		        Component comp = super.prepareRenderer(renderer, row, col);
 		        JComponent jc = (JComponent)comp;
 		        
 				BkChanYeLianTreeNode node = (BkChanYeLianTreeNode) ( this.getModel().getValueAt(row, 0) );
-				if(node.getType() ==  BkChanYeLianTreeNode.TDXBK ) {
-					
+				if(node.getType() !=  BkChanYeLianTreeNode.TDXBK ) return comp; 
+				
 					String bktype = ((BanKuai)node).getBanKuaiLeiXing();
 			        if(bktype.equals(BanKuai.NOGGWITHSELFCJL)) {
 			        	Font defaultFont = this.getFont();
 			        	Font font = new Font(defaultFont.getName(),Font.ITALIC,defaultFont.getSize());
 			        	comp.setFont(font);
 			        }
-				}
-				
 				
 				int rowofsysbk = tableSysBk.getSelectedRow();
-				if(rowofsysbk <0) {
-				} else {
-					String socialbkcode =  node.getMyOwnCode();
-					BanKuai sysbk = (BanKuai) ( tableSysBk.getModel().getValueAt(rowofsysbk, 0) );
+				if(rowofsysbk <0) return comp;
+				
+				String socialbkcode =  node.getMyOwnCode();
+				BanKuai sysbk = (BanKuai) ( tableSysBk.getModel().getValueAt(rowofsysbk, 0) );
 			        Set<String> socialsetpos = sysbk.getSocialFriendsSetPostive();
 			        if(socialsetpos.contains(socialbkcode))	jc.setBorder( highlightpos );
 		        	
 			        Set<String> socialsetneg = sysbk.getSocialFriendsSetNegtive();
 			        if(socialsetneg.contains(socialbkcode))	jc.setBorder( highlightneg );
-			    }
 				
 		        return comp;
 			}
@@ -711,8 +707,6 @@ public class BanKuaiGuanLi extends JDialog
 		menuItemSocialFriendPostiveformiddletable.setBackground(Color.RED);
 		popupMenunogegubk.add(menuItemSocialFriendPostiveformiddletable);
 		popupMenunogegubk.add(menuItemSocialFriendNegtiveformiddletable);
-		
-		
 		
 		//////////////////////////////////////////////////
 		JScrollPane scrollPanesocialdzhbk   = new JScrollPane (); //°å¿éÁÐ±í
@@ -890,8 +884,7 @@ public class BanKuaiGuanLi extends JDialog
                 int colIndex = columnAtPoint(p);
 
                 try { tip = getValueAt(rowIndex, colIndex).toString();
-                } catch (RuntimeException e1) {//catch null pointer exception if mouse is over an empty line
-                }
+                } catch (RuntimeException e1) {}//catch null pointer exception if mouse is over an empty line
 
                 return tip;
             }
@@ -955,7 +948,6 @@ public class BanKuaiGuanLi extends JDialog
 		pnlwestwestupbksocial.add(btnAddBktotree);
 		pnlwestwestupbksocial.add(btndelnode);
 
-		
 		menuBar = new JMenuBar();
 		menuBar.setBorderPainted(false);
 		this.setJMenuBar(menuBar);

@@ -2055,7 +2055,7 @@ public class StockInfoManager
 			tblzhongdiangz.setEnabled(true);
 			btnMai.setEnabled(true);
 			btnSell.setEnabled(true);
-			btnjiaruzdgz.setEnabled(true);
+//			btnjiaruzdgz.setEnabled(true);
 			btnSongZhuanGu.setEnabled(true);
 			btnRemvZdy.setEnabled(true);
 			btndetailfx.setEnabled(true);
