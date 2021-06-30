@@ -21,9 +21,11 @@ import javax.swing.JTree;
 import javax.swing.TransferHandler;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
+import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
+
 
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiAndChanYeLianGUI;
 import com.exchangeinfomanager.database.ConnectDataBase;
@@ -32,10 +34,11 @@ import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.CylTreeNestedSetNode;
 import com.sun.rowset.CachedRowSetImpl;
 
-public class TreeOfChanYeLian  extends BanKuaiAndStockTree
+public class TreeOfChanYeLian  extends BanKuaiAndStockTree implements CylTreeUpdatedListener
 {
 //	private CylTreeNestedSetNode treeroot;
 	private CylTreeDbOperation dboptforcyl; 
+	private HashSet<CylTreeUpdatedListener> treechangedlistenerset;
 
 	public TreeOfChanYeLian (BkChanYeLianTreeNode bkcylrootnode,String treeid)
 	{
@@ -45,8 +48,13 @@ public class TreeOfChanYeLian  extends BanKuaiAndStockTree
 		createTreeOfChanYeLian ();
 		
 		createOwnEvents ();
+		
+		treechangedlistenerset = new HashSet<> ();
 	}
-	
+	public void addCylTreeUpdatedListener (CylTreeUpdatedListener listener)
+	{
+		treechangedlistenerset.add(listener);
+	}
 	private void createOwnEvents ()
 	{
 		((InvisibleTreeModel)this.getModel()).addTreeModelListener(new CylTreeModelListener () );
@@ -79,14 +87,15 @@ public class TreeOfChanYeLian  extends BanKuaiAndStockTree
 		    } catch (NullPointerException exc) {}
 		}
 		public void treeNodesRemoved(TreeModelEvent e) 
-		{
+		{	//System.out.println("CYL Tree changed");
+			treechangedlistenerset.forEach(l -> l.ChanYeLianTreeUpdated());
 		}
 		public void treeStructureChanged(TreeModelEvent e) 
 		{
+//			System.out.println("CYL Tree changed");
+			treechangedlistenerset.forEach(l -> l.ChanYeLianTreeUpdated());
 		}
 	}
-	
-
 	
 	private void createTreeOfChanYeLian ()
 	{
@@ -552,8 +561,14 @@ public class TreeOfChanYeLian  extends BanKuaiAndStockTree
 		return dboptforcyl.addNewGuoPiaoChi( gpccode,  gpcname);
 	}
 	
-	
-
+	@Override //CylTreeUpdatedListener
+	public void ChanYeLianTreeUpdated() {
+//		System.out.println("TIME TO UPDATED myslef");
+		DefaultTreeModel model = (DefaultTreeModel) this.getModel();
+		DefaultMutableTreeNode root = (DefaultMutableTreeNode) model.getRoot();
+		root.removeAllChildren();
+		createTreeOfChanYeLian ();
+	}
 }
 /*
  * °´¸¸Ç×½Úµã

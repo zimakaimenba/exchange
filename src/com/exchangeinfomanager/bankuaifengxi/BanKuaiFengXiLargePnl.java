@@ -233,7 +233,9 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
             	String evtpropertyname = evt.getPropertyName();
             	switch (evtpropertyname) {
             	case BanKuaiFengXiCategoryBarChartPnl.SELECTED_PROPERTY:
-            		@SuppressWarnings("unchecked")
+            		if(evt.getNewValue() == null)
+            			break;
+            		
                     String selectedinfo = evt.getNewValue().toString();
             		LocalDate datekey = LocalDate.parse(selectedinfo);
             		

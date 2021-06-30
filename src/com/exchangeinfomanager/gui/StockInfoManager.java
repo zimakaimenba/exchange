@@ -296,6 +296,10 @@ public class StockInfoManager
 		}
 		return null;
 	}
+	private void createSystemGlobeTrees ()
+	{
+		CreateExchangeTree.CreateTreeOfBanKuaiAndStocks();
+	}
 	/*
 	 * 把持仓显示在相应的位置
 	 */

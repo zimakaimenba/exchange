@@ -4891,18 +4891,16 @@ public class BanKuaiDbOperation
 	public void setStockWeightInBanKuai(BanKuai bankuai, String stockcode, int weight) 
 	{
 		String bkcode = bankuai.getMyOwnCode();
-		String bktypetable = this.getBanKuaiJiaoYiLiangBiaoName( (BanKuai)bankuai);
+		String bktypetable = ((BanKuai)bankuai).getShuJuJiLuInfo().getGuPiaoBanKuaiDuiYingBiao();
 		
 		String sqlupdatestat = "UPDATE " + bktypetable  + " SET 股票权重 = " +  weight  + 
 				" WHERE 板块代码 = '" + bkcode + 
 				"' AND 股票代码 = '" + stockcode + "'" +
 				"  AND  ISNULL(移除时间)"
 				;
-		logger.debug(sqlupdatestat);
-		try {
-			connectdb.sqlUpdateStatExecute(sqlupdatestat);
+		try {	connectdb.sqlUpdateStatExecute(sqlupdatestat);
 		} catch (MysqlDataTruncation e) {			e.printStackTrace();
-		} catch (SQLException e) {		e.printStackTrace();	}
+		} catch (SQLException e) {	System.out.println(sqlupdatestat + "\r\n");	e.printStackTrace();	}
 	}
 	/*
 	 * 通达信的行业与个股对应文件

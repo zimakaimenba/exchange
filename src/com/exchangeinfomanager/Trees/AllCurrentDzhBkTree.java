@@ -13,8 +13,6 @@ import com.exchangeinfomanager.nodes.Stock;
 
 public class AllCurrentDzhBkTree 
 {
-
-	
 	private AllCurrentDzhBkTree ()
 	{
 		this.bkdbopt = new BanKuaiDZHDbOperation ();
@@ -23,7 +21,6 @@ public class AllCurrentDzhBkTree
 		setupDaPan();
 	}
 	
-	// ����ʵ��  
 	 public static AllCurrentDzhBkTree getInstance ()
 	 {  
 	        return Singtonle.instance;  
@@ -54,7 +51,6 @@ public class AllCurrentDzhBkTree
 	{
 		return allbkggtree;
 	}
-	
 	/*
 	 * 
 	 */

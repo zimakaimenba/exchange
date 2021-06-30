@@ -150,8 +150,9 @@ public class BanKuaiGuanLi extends JDialog
 
 		
 	private BanKuaiDbOperation bkdbopt;
-	private HashMap<String,BanKuai> zhishulist;
+//	private HashMap<String,BanKuai> zhishulist;
 	private BanKuaiAndStockTree treebkonlynoggwithselfcjl;
+	private TreeOfChanYeLian tdxbksocialtree;
 	
 	private Border outsidepos = new MatteBorder(1, 0, 1, 0, Color.RED);
 	private Border insidepos = new EmptyBorder(0, 1, 0, 1);
@@ -546,7 +547,6 @@ public class BanKuaiGuanLi extends JDialog
 	private JButton btndelnode;
 	private JButton btnfindnode;
 	private JUpdatedTextField tfldfindnodeintree;
-	private TreeOfChanYeLian tdxbksocialtree;
 	ImageIcon addBelowIcon, addAboveIcon, addChildIcon, addSubnodeIcon;
 	
 	private void initializeGui2() 
@@ -920,7 +920,7 @@ public class BanKuaiGuanLi extends JDialog
 		pnlwestwestupbksocial.setLayout(new FlowLayout() );
 //		pnlwestwestupbksocial.setPreferredSize(new Dimension(200, 100));
 		
-		this.tdxbksocialtree = CreateExchangeTree.CreateTDXBankuaiSocialTree();
+		this.tdxbksocialtree = CreateExchangeTree.CreateTreeOfBanKuaiSocialFriends();
 		JScrollPane sclpwestwestupbksocial = new JScrollPane(this.tdxbksocialtree,
 			      JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 			      JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);

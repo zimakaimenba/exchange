@@ -12,11 +12,17 @@ public class CreateExchangeTree
 		return treecyl;
 	}
 	
-	public static TreeOfChanYeLian CreateTDXBankuaiSocialTree ()
+	public static TreeOfChanYeLian CreateCopyOfTDXBankuaiSocialTree ()
 	{
 		CylTreeNestedSetNode alltopNode = new CylTreeNestedSetNode ("000000","°å¿éSocialFriends",BkChanYeLianTreeNode.DAPAN);
 		TreeOfChanYeLian treecyl = new TreeOfChanYeLian(alltopNode,"TDXBANKUAISOCIALTREE"); 
 		return treecyl;
+	}
+	
+	public static TreeOfChanYeLian CreateTreeOfBanKuaiSocialFriends ()
+	{
+		AllCurrentBanKuaiSocialFriendsTree allbksocialfriends = AllCurrentBanKuaiSocialFriendsTree.getInstance();
+		return allbksocialfriends.getAllBkStocksTree();
 	}
 	
 	public static BanKuaiAndStockTree CreateTreeOfBanKuaiAndStocks ()

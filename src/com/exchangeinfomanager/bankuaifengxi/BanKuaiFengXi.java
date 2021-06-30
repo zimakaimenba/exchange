@@ -77,6 +77,7 @@ import com.exchangeinfomanager.TagServices.CacheForInsertedTag;
 import com.exchangeinfomanager.TagServices.TagsServiceForNodes;
 import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
 import com.exchangeinfomanager.Trees.CreateExchangeTree;
+import com.exchangeinfomanager.Trees.CylTreeUpdatedListener;
 import com.exchangeinfomanager.Trees.TreeOfChanYeLian;
 import com.exchangeinfomanager.bankuaifengxi.CandleStick.BanKuaiFengXiCandlestickPnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartCjePnl;
@@ -3250,17 +3251,15 @@ public class BanKuaiFengXi extends JDialog
 		
 		pnlBanKuaiCandle = new BanKuaiFengXiCandlestickPnl();
 		tabpnlKxian.addTab("\u677F\u5757K\u7EBF", null, pnlBanKuaiCandle, null);
-		String bkzbtablepropFileName =   (new SetupSystemConfiguration()).getSystemInstalledPath() + "/config/" +  bkfxsettingprop.getProperty ("BkfxBanKuaiTableInfoSettingFile")  + "/";
 		
+		String bkzbtablepropFileName =   (new SetupSystemConfiguration()).getSystemInstalledPath() + "/config/" +  bkfxsettingprop.getProperty ("BkfxBanKuaiTableInfoSettingFile")  + "/";
 		pnlsocialfriendbkdata = new JPanel();
 		tabpnlKxian.addTab("\u677F\u5757SocialFriends", null, pnlsocialfriendbkdata, null);
-		pnlsocialfriendbkdata.setLayout(new BoxLayout(pnlsocialfriendbkdata, BoxLayout.Y_AXIS));
-		
+		pnlsocialfriendbkdata.setLayout(new BoxLayout(pnlsocialfriendbkdata, BoxLayout.X_AXIS));
 		JScrollPane sclpcurrentsocialbkdata = new JScrollPane();
 		pnlsocialfriendbkdata.add(sclpcurrentsocialbkdata);
 		tableBkSocialbkCurwkData = new BanKuaiInfoTable(this.stockmanager,bkzbtablepropFileName);
 		sclpcurrentsocialbkdata.setViewportView(tableBkSocialbkCurwkData);
-		
 		sclpselectwkbkfriendsdata = new JScrollPane();
 		pnlsocialfriendbkdata.add(sclpselectwkbkfriendsdata);
 		tableBkSocialbkSelectwkData = new BanKuaiInfoTable(this.stockmanager,bkzbtablepropFileName);
@@ -3434,7 +3433,8 @@ public class BanKuaiFengXi extends JDialog
 		
 		JScrollPane scrollPanesocialbktree = new JScrollPane();
 		tabbedPanebk.addTab("\u677F\u5757SocialTree", null, scrollPanesocialbktree, null);
-		bksocialtreecopy = CreateExchangeTree.CreateTDXBankuaiSocialTree();
+		bksocialtreecopy = CreateExchangeTree.CreateCopyOfTDXBankuaiSocialTree();
+		CreateExchangeTree.CreateTreeOfBanKuaiSocialFriends().addCylTreeUpdatedListener (bksocialtreecopy);
 		scrollPanesocialbktree.setViewportView(bksocialtreecopy);
 		
 		String ggzbtablepropFileName =   (new SetupSystemConfiguration()).getSystemInstalledPath() + "/config/" +  bkfxsettingprop.getProperty ("BkfxGeGuTableInfoSettingFile")  + "/";
@@ -3843,6 +3843,5 @@ public class BanKuaiFengXi extends JDialog
 			        }
 			});
 		}
-		
 	}
 }

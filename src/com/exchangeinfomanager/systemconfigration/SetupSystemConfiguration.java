@@ -983,18 +983,18 @@ public class SetupSystemConfiguration
 		}
 		public String getGuDongInfoCsvFile() 
 		{
-//			return this.systeminstalledpath  + "/dailydata/tushare/shareholder";
-			return "E:/stock/stockmanager/dailydata/tushare/shareholder";
+			return this.systeminstalledpath  + "/dailydata/tushare/shareholder";
+//			return "E:/stock/stockmanager/dailydata/tushare/shareholder";
 		}
 		public String getTuShareExtraDataDownloadedFilePath() 
 		{
-//			return this.systeminstalledpath  + "/dailydata/tushare/dailyexchangedata";
-			return "E:/stock/stockmanager/dailydata/tushare/dailyexchangedata";
+			return this.systeminstalledpath  + "/dailydata/tushare/dailyexchangedata";
+//			return "E:/stock/stockmanager/dailydata/tushare/dailyexchangedata";
 		}
 		public String getPythonScriptsPath() 
 		{
-//			return this.systeminstalledpath + "thirdparty/python/execscripts/";
-			return "E:/stock/stockmanager/thirdparty/python/execscripts/";
+			return this.systeminstalledpath + "thirdparty/python/execscripts/";
+//			return "E:/stock/stockmanager/thirdparty/python/execscripts/";
 		}
 
 }
