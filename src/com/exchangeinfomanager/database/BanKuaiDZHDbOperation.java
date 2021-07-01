@@ -276,13 +276,14 @@ public class BanKuaiDZHDbOperation
 	/*
 	 * 
 	 */
-	public void refreshDZHShangHaiZhiShuAndGaiNianBanKuaiFromExportFileToDatabase ()
+	public void refreshDZHGaiNianBanKuaiFromExportFileToDatabase ()
 	{
-		Set<String> dzhbksetindb = this.getDZHBanKuaiNameSet ("SH");
+		Set<String> dzhbksetindb = this.getDZHBanKuaiNameSet ("BK");
 		
 		Set<String> dzhbksetinfile = new HashSet<> ();
 		//
 		try {
+//			System.out.println("大智慧板块文件路径：" + sysconfig.getDZHShangHaiBanKuaiNameFile ());
 			File dzhbkfile = new File(sysconfig.getDZHShangHaiBanKuaiNameFile ());
 			String line; BufferedReader reader;
 			reader = new BufferedReader(new FileReader(dzhbkfile.getAbsolutePath() ));
@@ -290,8 +291,10 @@ public class BanKuaiDZHDbOperation
 			while (line != null) {
 				List<String> tmplinelist = Splitter.onPattern("\\s+").omitEmptyStrings().trimResults(CharMatcher.INVISIBLE).splitToList(line);
            		try {
-	            			String bkcode = tmplinelist.get(0);
+	            			String bkcode = tmplinelist.get(0).trim();
+//	            			System.out.println(bkcode + "   ");
 	            			if( ! sysconfig.isShangHaiZhiShu(bkcode))   {
+//	            				System.out.println(bkcode + " is not shanghaizshishu .  ");
 	            				line = reader.readLine();
 	            				continue;
 	            			}
@@ -300,22 +303,82 @@ public class BanKuaiDZHDbOperation
 	            			String sqlinsertstat = "INSERT INTO  大智慧板块列表(板块ID,板块名称,指数所属交易所) values ("
 	        	   						+ " '" + bkcode.trim() + "'" + ","
 	        	   						+ " '" + bkname.trim() + "'" + ","
-	        	   						+ " 'SH'"
+	        	   						+ " 'BK'"
 	        	   						+ ")"
 	        	   						+ " ON DUPLICATE KEY UPDATE "
 	        	   						+ "板块名称 =" + " '" + bkname.trim() + "'" 
-	        	   						+ ", 指数所属交易所 = 'SH'"
+	        	   						+ ", 指数所属交易所 = 'BK'"
 	        	   						;
 	            				int autoIncKeyFromApi = tdxconnectdb.sqlInsertStatExecute(sqlinsertstat);
         	   				
 	            				dzhbksetinfile.add(bkcode);
            		} catch(SQLException e) {e.printStackTrace();
-           		} catch (Exception e) {	}
+           		} catch (Exception e) {e.printStackTrace();	}
 				// read next line
 				line = reader.readLine();
 			}
-			reader.close();
+			reader.close(); dzhbkfile= null;
 		} catch (IOException e) {e.printStackTrace(); }
+		
+		SetView<String> differencebankuaiold = com.google.common.collect.Sets.difference( dzhbksetindb, dzhbksetinfile );
+//		System.out.println("dzhbksetindb" + dzhbksetindb.toString() + "\r\n");
+//		System.out.println("dzhbksetinfile" + dzhbksetinfile.toString() + "\r\n");
+//		System.out.println("differencebankuaiold" + differencebankuaiold.toString() + "\r\n");
+		for(String oldbkcode : differencebankuaiold) {
+				 String sqldeletetstat = "DELETE  FROM  大智慧板块列表 WHERE "
+						 				+ " 板块ID =" + " '" + oldbkcode.trim() + "'" 
+						 				;
+	   			try {
+					int autoIncKeyFromApi = tdxconnectdb.sqlDeleteStatExecute(sqldeletetstat);
+//					System.out.println("从数据库中删除" + oldbkcode.trim());
+				} catch (MysqlDataTruncation e) {e.printStackTrace();
+				} catch (SQLException e) {e.printStackTrace();	}
+		}
+		differencebankuaiold = null;
+		 
+		 return;
+	}
+	public void refreshDZHShangHaiZhiShuAndGaiNianBanKuaiFromExportFileToDatabase ()
+	{
+		Set<String> dzhbksetindb = this.getDZHBanKuaiNameSet ("SH");
+		
+		Set<String> dzhbksetinfile = new HashSet<> ();
+//		//
+//		try {
+//			System.out.println("大智慧板块文件路径：" + sysconfig.getDZHShangHaiBanKuaiNameFile ());
+//			File dzhbkfile = new File(sysconfig.getDZHShangHaiBanKuaiNameFile ());
+//			String line; BufferedReader reader;
+//			reader = new BufferedReader(new FileReader(dzhbkfile.getAbsolutePath() ));
+//			line = reader.readLine();
+//			while (line != null) {
+//				List<String> tmplinelist = Splitter.onPattern("\\s+").omitEmptyStrings().trimResults(CharMatcher.INVISIBLE).splitToList(line);
+//           		try {
+//	            			String bkcode = tmplinelist.get(0).trim();
+//	            			if( ! sysconfig.isShangHaiZhiShu(bkcode))   {
+//	            				line = reader.readLine();
+//	            				continue;
+//	            			}
+//	            			
+//	            			String bkname=null ; if(tmplinelist.size() >1 ) bkname = tmplinelist.get(1);
+//	            			String sqlinsertstat = "INSERT INTO  大智慧板块列表(板块ID,板块名称,指数所属交易所) values ("
+//	        	   						+ " '" + bkcode.trim() + "'" + ","
+//	        	   						+ " '" + bkname.trim() + "'" + ","
+//	        	   						+ " 'SH'"
+//	        	   						+ ")"
+//	        	   						+ " ON DUPLICATE KEY UPDATE "
+//	        	   						+ "板块名称 =" + " '" + bkname.trim() + "'" 
+//	        	   						+ ", 指数所属交易所 = 'SH'"
+//	        	   						;
+//	            				int autoIncKeyFromApi = tdxconnectdb.sqlInsertStatExecute(sqlinsertstat);
+//        	   				
+//	            				dzhbksetinfile.add(bkcode);
+//           		} catch(SQLException e) {e.printStackTrace();
+//           		} catch (Exception e) {e.printStackTrace();	}
+//				// read next line
+//				line = reader.readLine();
+//			}
+//			reader.close(); dzhbkfile= null;
+//		} catch (IOException e) {e.printStackTrace(); }
 		//
 		
 		try {
@@ -326,7 +389,7 @@ public class BanKuaiDZHDbOperation
 			while (line != null) {
 				List<String> tmplinelist = Splitter.onPattern("\\s+").omitEmptyStrings().trimResults(CharMatcher.INVISIBLE).splitToList(line);
            		try {
-	            			String bkcode = tmplinelist.get(0);
+	            			String bkcode = tmplinelist.get(0).trim();
 	            			if( ! sysconfig.isShangHaiZhiShu(bkcode))   {
 	            				line = readerdzhshzs.readLine();
 	            				continue;
@@ -346,29 +409,30 @@ public class BanKuaiDZHDbOperation
         	   				
             				dzhbksetinfile.add(bkcode);
            		} catch(SQLException e) {e.printStackTrace();
-           		} catch (Exception e) {	}
+           		} catch (Exception e) {e.printStackTrace();	}
 				
 				// read next line
 				line = readerdzhshzs.readLine();
 			}
-			readerdzhshzs.close();
+			readerdzhshzs.close(); dzhshzsfile = null;
 		} catch (IOException e) {e.printStackTrace(); }
 
 		
-		SetView<String> differencebankuaiold = Sets.difference( dzhbksetindb, dzhbksetinfile );
-		if(differencebankuaiold.size() >0 ) { //说明有某些板块需要删除
-			 for(String oldbkcode : differencebankuaiold) {
+		SetView<String> differencebankuaiold = com.google.common.collect.Sets.difference( dzhbksetindb, dzhbksetinfile );
+//		System.out.println("dzhbksetindb" + dzhbksetindb.toString() + "\r\n");
+//		System.out.println("dzhbksetinfile" + dzhbksetindb.toString() + "\r\n");
+//		System.out.println("dzhbksetinfile" + differencebankuaiold.toString() + "\r\n");
+		for(String oldbkcode : differencebankuaiold) {
 				 String sqldeletetstat = "DELETE  FROM  大智慧板块列表 WHERE "
 						 				+ " 板块ID =" + " '" + oldbkcode.trim() + "'" 
 						 				;
 	   			try {
 					int autoIncKeyFromApi = tdxconnectdb.sqlDeleteStatExecute(sqldeletetstat);
+//					System.out.println("从数据库中删除" + oldbkcode.trim());
 				} catch (MysqlDataTruncation e) {e.printStackTrace();
 				} catch (SQLException e) {e.printStackTrace();	}
-
-			 }
-		 }
-		 differencebankuaiold = null;
+		}
+		differencebankuaiold = null;
 		 
 		 return;
 	}
@@ -384,12 +448,11 @@ public class BanKuaiDZHDbOperation
 			rsagu = tdxconnectdb.sqlQueryStatExecute(sqlquerystat);
 			while(rsagu.next()) {
 				String dzhbk = rsagu.getString("板块ID"); 
-				dzhbkset.add(dzhbk);
+				dzhbkset.add(dzhbk.trim());
 			}
 		} catch (Exception e) { e.printStackTrace();
 		} finally {
-			try {	rsagu.close();
-			} catch (SQLException e) {	e.printStackTrace();}
+			try {	rsagu.close();} catch (SQLException e) {	e.printStackTrace();}
 			rsagu = null;
 		}
 		

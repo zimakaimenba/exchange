@@ -248,13 +248,13 @@ public class BanKuaiAndGeGuMatchingConditions implements Cloneable {
 		public void setExportOnlyGeGuNotBanKuai(boolean exportOnlyGeGuOntBanKuai) {
 			this.exportOnlyGeGuOntBanKuai = exportOnlyGeGuOntBanKuai;
 		}
-		boolean exportOnlyCurrentGeGu;
-		public boolean shouldExportOnlyCurrentGeGu() {
-			return exportOnlyCurrentGeGu;
-		}
-		public void setExportOnlyCurrentGeGu(boolean exportOnlyCurrentGeGu) {
-			this.exportOnlyCurrentGeGu = exportOnlyCurrentGeGu;
-		}
+//		boolean exportOnlyCurrentGeGu;
+//		public boolean shouldExportOnlyCurrentGeGu() {
+//			return exportOnlyCurrentGeGu;
+//		}
+//		public void setExportOnlyCurrentGeGu(boolean exportOnlyCurrentGeGu) {
+//			this.exportOnlyCurrentGeGu = exportOnlyCurrentGeGu;
+//		}
 		
 		Boolean exportGeGuZhangfuQuJian;
 		public Boolean shouldExporGeGuWithZhangFuQuJian() {
@@ -385,4 +385,18 @@ public class BanKuaiAndGeGuMatchingConditions implements Cloneable {
 		public Object clone() throws CloneNotSupportedException {
 	        return super.clone();
 	    }
+		Boolean exportGeGuOfRedSignBankuai;
+		public void setExportGeGuOfRedSignBanKuai(boolean b) {
+			exportGeGuOfRedSignBankuai = b;
+		}
+		public Boolean getExportGeGuOfRedSignBanKuai() {
+			return exportGeGuOfRedSignBankuai ;
+		}
+		Boolean exportGeGuOfYellowSignBankuai;
+		public void setExportGeGuOfYellowSignBanKuai(boolean b) {
+			exportGeGuOfYellowSignBankuai = b;
+		}
+		public Boolean getExportGeGuOfYellowSignBanKuai() {
+			return exportGeGuOfYellowSignBankuai ;
+		}
 }

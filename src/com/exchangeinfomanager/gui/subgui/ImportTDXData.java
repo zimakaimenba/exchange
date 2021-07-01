@@ -427,8 +427,9 @@ public class ImportTDXData extends JDialog {
 			long start=System.currentTimeMillis(); //获取开始时间
 			BanKuaiDZHDbOperation dzhdbopt = new BanKuaiDZHDbOperation ();
 			dzhdbopt.refreshDZHShangHaiZhiShuAndGaiNianBanKuaiFromExportFileToDatabase ();
-			dzhdbopt.refreshDZHGaiNianBanKuaiGeGu ();
 			dzhdbopt.refreshDZHShenZhenZhiShuAndGaiNianBanKuaiFromExportFileToDatabase ();
+			dzhdbopt.refreshDZHGaiNianBanKuaiFromExportFileToDatabase ();
+			dzhdbopt.refreshDZHGaiNianBanKuaiGeGu ();
 			dzhdbopt = null;
 			long end=System.currentTimeMillis(); //获取结束时间
 			System.out.println("......导入大智慧板块信息结束" + LocalTime.now()  + ".....导入耗费时间： "+(end-start)+"ms \r\n");

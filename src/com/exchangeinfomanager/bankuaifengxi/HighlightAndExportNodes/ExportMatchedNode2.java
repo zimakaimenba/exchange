@@ -1,46 +1,33 @@
 package com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes;
 
 import java.awt.Color;
-import java.math.BigDecimal;
-import java.sql.SQLException;
+
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
+
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
+
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import com.exchangeinfomanager.NodesServices.ServicesForNode;
 import com.exchangeinfomanager.NodesServices.SvsForNodeOfBanKuai;
-import com.exchangeinfomanager.NodesServices.SvsForNodeOfStock;
-import com.exchangeinfomanager.Tag.Tag;
-import com.exchangeinfomanager.TagServices.TagsServiceForNodes;
 import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
 import com.exchangeinfomanager.Trees.CreateExchangeTree;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.Stock;
-import com.exchangeinfomanager.nodes.StockOfBanKuai;
+
 import com.exchangeinfomanager.nodes.TDXNodes;
-import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
-import com.exchangeinfomanager.nodes.stocknodexdata.StockNodesXPeriodData;
-import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC.StockXPeriodDataForJFC;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.exchangeinfomanager.nodes.treerelated.NodesTreeRelated;
-import com.google.common.base.Splitter;
+
 import com.google.common.base.Strings;
-import com.udojava.evalex.Expression;
+
 
 public class ExportMatchedNode2
 {
 	private BanKuaiAndGeGuMatchingConditions cond;
-//	private SvsForNodeOfBanKuai svsbk;
-//	private SvsForNodeOfStock svsstk;
 	private LocalDate exportdate;
 
 	public ExportMatchedNode2 (BanKuaiAndGeGuMatchingConditions cond) 
@@ -57,7 +44,7 @@ public class ExportMatchedNode2
 		int bankuaicount = bkcyltree.getModel().getChildCount(treeroot);
 		
 		Set<TDXNodes> matchednodeset = new HashSet<> ();
-		Set<String> checkednodesset = new HashSet<String> ();
+		Set<String> checkednodesset = new HashSet<> ();
 		
 		for(int i=0;i< bankuaicount; i++) {
 			BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode)bkcyltree.getModel().getChild(treeroot, i);
@@ -78,45 +65,48 @@ public class ExportMatchedNode2
 			
 			//normal part
 			if(childnode.getType() == BkChanYeLianTreeNode.TDXBK ) {
-//				if( ! ((BanKuai)childnode).isImportdailytradingdata() )
-//					continue;
-//				if( ! ((BanKuai)childnode).isExportTowWlyFile() )
-//					continue;
+				if( ! ((BanKuai)childnode).getBanKuaiOperationSetting().isImportdailytradingdata() )
+					continue;
+				if( ! ((BanKuai)childnode).getBanKuaiOperationSetting().isExportTowWlyFile() )
+					continue;
+				
+				if( ((BanKuai)childnode).getBanKuaiLeiXing().equals(BanKuai.HASGGNOSELFCJL) 
+						 ||  ((BanKuai)childnode).getBanKuaiLeiXing().equals(BanKuai.NOGGNOSELFCJL) //有些指数是没有个股和成交量的，不列入比较范围 
+						 ||  ((BanKuai)childnode).getBanKuaiLeiXing().equals(BanKuai.NOGGWITHSELFCJL) ) //仅导出有个股的板块
+					continue;
+				
+				if( checkednodesset.contains(childnode.getMyOwnCode() ) ) 
+					continue;
+				
+				String checkresult = this.checkBanKuaiMatchedCurSettingConditons((BanKuai)childnode, exportdate, period);
+				checkednodesset.add( childnode.getMyOwnCode() );
+				
+				if( checkresult.toUpperCase().contains("UNMATCH") ) continue;
+				
+				if(checkresult.toUpperCase().contains("MATCHED") ) {
+					if( !this.cond.shouldExportOnlyGeGuNotBanKuai() ) //只导出板块个股
+						if(!matchednodeset.contains(childnode)) 
+							matchednodeset.add((TDXNodes) childnode);
+				}  
+					
+				if( this.cond.shouldExportOnlyBankuaiNotGeGu() )		continue;
+								
+				if( !checkresult.toUpperCase().contains("WITHCHECKGEGU") )			continue;
+				
+				childnode = ((SvsForNodeOfBanKuai)((BanKuai) childnode).getServicesForNode(true)).getAllGeGuOfBanKuai((BanKuai) childnode);
+				((BanKuai) childnode).getServicesForNode(false);
 //				
-//				if( ((BanKuai)childnode).getBanKuaiLeiXing().equals(BanKuai.HASGGNOSELFCJL) 
-//						 ||  ((BanKuai)childnode).getBanKuaiLeiXing().equals(BanKuai.NOGGNOSELFCJL) //有些指数是没有个股和成交量的，不列入比较范围 
-//						 ||  ((BanKuai)childnode).getBanKuaiLeiXing().equals(BanKuai.NOGGWITHSELFCJL) ) //仅导出有个股的板块
-//					continue;
-//				
-//				if( checkednodesset.contains(childnode.getMyOwnCode() ) ) 
-//					continue;
-//				
-////				String checkresult = this.checkBanKuaiMatchedCurSettingConditons((BanKuai)childnode, exportdate, period);
-//				checkednodesset.add( childnode.getMyOwnCode() );
-//				
-//				if(checkresult.toUpperCase().contains("MATCHED") ) {
-//					if( !this.cond.shouldExportOnlyGeGuNotBanKuai() ) //只导出板块个股
-//						if(!matchednodeset.contains(childnode)) 
-//							matchednodeset.add((TDXNodes) childnode);
-//				}  
-//					
-//				if( this.cond.shouldExportOnlyBankuaiNotGeGu() )		continue;
-//								
-//				if( !checkresult.toUpperCase().contains("WITHCHECKGEGU") )			continue;
-//				
-//				childnode = ((SvsForNodeOfBanKuai)((BanKuai) childnode).getServicesForNode(true)).getAllGeGuOfBanKuai((BanKuai) childnode);
-//				((BanKuai) childnode).getServicesForNode(false);
-//				
-//				Collection<BkChanYeLianTreeNode> nowbkallgg = ((BanKuai)childnode).getSpecificPeriodBanKuaiGeGu(exportdate,0);
-//				if(nowbkallgg != null)
-//					for (BkChanYeLianTreeNode ggstock : nowbkallgg) {
-//						if( checkednodesset.contains(childnode.getMyOwnCode() ) ) //已经检查过的stock就不用了，加快速度
-//							continue;
-//						
-//						Boolean result = this.checkNodesMatchedCurSettingConditions ((Stock)ggstock);
-//						if(result && !matchednodeset.contains(childnode))	matchednodeset.add((TDXNodes) childnode);
-//						if(!checkednodesset.contains(childnode))  checkednodesset.add( childnode.getMyOwnCode() );
-//					}
+				Collection<BkChanYeLianTreeNode> nowbkallgg = ((BanKuai)childnode).getSpecificPeriodBanKuaiGeGu(exportdate,0);
+				if(nowbkallgg == null) continue;
+
+				for (BkChanYeLianTreeNode ggstock : nowbkallgg) {
+						if( checkednodesset.contains(ggstock.getMyOwnCode() ) ) //已经检查过的stock就不用了，加快速度
+							continue;
+						
+						Boolean result = this.checkNodesMatchedCurSettingConditions ((Stock)ggstock);
+						if(result && !matchednodeset.contains(ggstock))	matchednodeset.add((TDXNodes) ggstock);
+						if(!checkednodesset.contains(ggstock))  checkednodesset.add( ggstock.getMyOwnCode() );
+				}
 			}
 			
 			if(childnode.getType() == BkChanYeLianTreeNode.TDXGG  ) { //只有在导出所有板块个股的时候才会用到这里，否则个股都在前面检查了
@@ -129,6 +119,12 @@ public class ExportMatchedNode2
 					continue;
 				
 				if( this.cond.shouldExportOnlyYellowSignBkStk() ) // 
+					continue;
+				
+				if( this.cond.getExportGeGuOfRedSignBanKuai() )  
+					continue;
+				
+				if( this.cond.getExportGeGuOfYellowSignBanKuai() )  
 					continue;
 				
 				if( ((Stock)childnode).isVeryVeryNewXinStock(this.exportdate) )
@@ -188,35 +184,33 @@ public class ExportMatchedNode2
 			svsnode.getNodeKXian( node, requirestart, exportdate, NodeGivenPeriodDataItem.DAY,true);
 		
 		checkresult = node.checkNodeDataMatchedWithFormula(formula);
-		
-
 		return checkresult;
 	}
-	private String getKeywordValue(TDXNodes node, String kw, LocalDate selectdate, String curperiod,String factor)
-	{
-		  Object value = null;
-		  factor = factor.replaceAll(" ", "");
-		  NodeXPeriodData nodexdata = node.getNodeXPeroidData(curperiod);
-          
-		  if(kw.equals("CLOSEVSMA")) {
-	          Pattern p = Pattern.compile("\'.*?\'", Pattern.CASE_INSENSITIVE);
-	          Matcher m = p.matcher(factor);
-	          int indexofeq ;  int indexofend = 0;
-	          while (m.find()) {
-	        	  indexofeq = m.start();
-	        	  indexofend = m.end();
-	          }
-	          String maformula = factor.substring(indexofend + 1, factor.length()-1);
-			  value =  nodexdata.getNodeDataByKeyWord( kw, selectdate,  maformula);
-		  }
-		  else try {  value = nodexdata.getNodeDataByKeyWord(kw,selectdate,"");
-		  } catch (java.lang.NullPointerException e) {  e.printStackTrace();
-			  System.out.println(node.getMyOwnCode() + node.getMyOwnName() + "Get keyword failed. keyword is" + kw + selectdate.toString() + ". FACTOR is" + factor + "PERIOD is " + curperiod);
-		  }
-		  
-		  if(value != null)		  return value.toString();
-		  else	  return null;
-	}
+//	private String getKeywordValue(TDXNodes node, String kw, LocalDate selectdate, String curperiod,String factor)
+//	{
+//		  Object value = null;
+//		  factor = factor.replaceAll(" ", "");
+//		  NodeXPeriodData nodexdata = node.getNodeXPeroidData(curperiod);
+//          
+//		  if(kw.equals("CLOSEVSMA")) {
+//	          Pattern p = Pattern.compile("\'.*?\'", Pattern.CASE_INSENSITIVE);
+//	          Matcher m = p.matcher(factor);
+//	          int indexofeq ;  int indexofend = 0;
+//	          while (m.find()) {
+//	        	  indexofeq = m.start();
+//	        	  indexofend = m.end();
+//	          }
+//	          String maformula = factor.substring(indexofend + 1, factor.length()-1);
+//			  value =  nodexdata.getNodeDataByKeyWord( kw, selectdate,  maformula);
+//		  }
+//		  else try {  value = nodexdata.getNodeDataByKeyWord(kw,selectdate,"");
+//		  } catch (java.lang.NullPointerException e) {  e.printStackTrace();
+//			  System.out.println(node.getMyOwnCode() + node.getMyOwnName() + "Get keyword failed. keyword is" + kw + selectdate.toString() + ". FACTOR is" + factor + "PERIOD is " + curperiod);
+//		  }
+//		  
+//		  if(value != null)		  return value.toString();
+//		  else	  return null;
+//	}
 	/*
 	 * 检查板块是否符合设定
 	 */
@@ -239,10 +233,16 @@ public class ExportMatchedNode2
 			if(this.cond.shouldExportOnlyGeGuNotBanKuai() )
 				return "UNMATCH";
 			
-			String checkresult = ""; 
+//			String checkresult = ""; 
 			if( ! this.cond.shouldExportAllBanKuai()  )
-				checkresult = "WITHCHECKGEGU";
+				return "WITHCHECKGEGU";
 			
-			return checkresult;
+			if( this.cond.getExportGeGuOfRedSignBanKuai() && node.getNodeTreeRelated().selfIsMatchModel(exportdate, Color.RED))  
+				return  "WITHCHECKGEGU";
+			
+			if( this.cond.getExportGeGuOfYellowSignBanKuai() && node.getNodeTreeRelated().selfIsMatchModel(exportdate, Color.YELLOW))  
+				return  "WITHCHECKGEGU";
+			
+			return "UNMATCH";
 	}
 }

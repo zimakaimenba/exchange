@@ -890,6 +890,9 @@ public class SetupSystemConfiguration
 		}
 		public Boolean isShangHaiStock (String nodecode)
 		{
+			if(nodecode.trim().length() <6)
+				return false;
+			
 			String nodecodeprefix = nodecode.substring(0, 3);
 			if( shanghaistockcodeprefixlist.contains(nodecodeprefix) )
 				return true;
@@ -898,17 +901,28 @@ public class SetupSystemConfiguration
 		}
 		public Boolean isShangHaiZhiShu (String nodecode)
 		{
+			if(nodecode.trim().length() <6)
+				return false;
+			
 			for(String shanghaizhishucodeprefix : shanghaizhishucodeprefixlist  ) {
 				int prefixlength = shanghaizhishucodeprefix.trim().length();
-				String nodecodeprefix = nodecode.substring(0, prefixlength);
-				if(nodecodeprefix.equalsIgnoreCase(shanghaizhishucodeprefix) ) {
-					return true;
+				try {
+					String nodecodeprefix = nodecode.substring(0, prefixlength);
+					if(nodecodeprefix.equalsIgnoreCase(shanghaizhishucodeprefix) ) {
+						return true;
+					}
+				} catch (java.lang.StringIndexOutOfBoundsException e) {
+//					e.printStackTrace();	logger.info(nodecode + "\r\n");
+					continue;
 				}
 			}
 			return false;
 		}
 		public Boolean isShenZhengStock (String nodecode)
 		{
+			if(nodecode.trim().length() <6)
+				return false;
+			
 			String nodecodeprefix = nodecode.substring(0, 3);
 			if( shengzhengstockcodeprefixlist.contains(nodecodeprefix) )
 				return true;
@@ -917,11 +931,18 @@ public class SetupSystemConfiguration
 		}
 		public Boolean isShenZhengZhiShu (String nodecode)
 		{
+			if(nodecode.trim().length() <6)
+				return false;
 			for(String shanghaizhishucodeprefix : shengzhengzhishucodeprefixlist  ) {
 				int prefixlength = shanghaizhishucodeprefix.trim().length();
-				String nodecodeprefix = nodecode.substring(0, prefixlength);
-				if(nodecodeprefix.equalsIgnoreCase(shanghaizhishucodeprefix) ) {
-					return true;
+				try {
+					String nodecodeprefix = nodecode.substring(0, prefixlength);
+					if(nodecodeprefix.equalsIgnoreCase(shanghaizhishucodeprefix) ) {
+						return true;
+					}
+				} catch (java.lang.StringIndexOutOfBoundsException e) {
+//					e.printStackTrace();		logger.info(nodecode + "\r\n");
+					continue;
 				}
 			}
 			return false;

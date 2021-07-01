@@ -29,53 +29,12 @@ import java.awt.Dimension;
 
 import java.awt.Font;
 import javax.swing.JScrollPane;
+import net.miginfocom.swing.MigLayout;
+import java.awt.FlowLayout;
 
 public class ExtraExportConditionsPnl extends JPanel 
 {
-	private JCheckBox cbxExceptSt;
-	private JCheckBox cbxOnlyCurBk;
-	private JCheckBox chkbxexportallbk;
-	private JCheckBox chkbxonlybkstock;
-	private JLabel lblNewLabel_2;
-	private JLabel label_2;
-	private JCheckBox chkbxexporbkallowedinsetting;
-
-	private List<JCheckBox> huchixuanzebasic; //互斥意味着其中一个选了，其他都不惜不选
-	private List<JCheckBox> huchixuanzeupdate; //有两个是不互斥的，和其他互斥
-	private List<JCheckBox> huchixuanzeaboutstock;
-	private JCheckBox chkbxonlyexportbk;
-	private JCheckBox chkbxonlycurstock;
-	private BanKuaiAndGeGuMatchingConditions cond;
-	private JCheckBox chckbxexportyellowbkstk;
-	private JTextArea tfldexportformula;
-	private JButton btnCJEZbDpMaxWk;
-	private JButton btnzongshizhi;
-	private JButton btnma;
-	private JLabel lblNewLabel;
-	private JButton btncjezbdpminwk;
-	private JButton btncjlzbdpmaxwk;
-	private JButton btncjlzbdpminwk;
-	private JButton btnliutongshizhi;
-	private JButton btncje;
-	private JButton btngujia;
-	private JButton btnwkzhangfu;
-	private JButton btnfreehsl;
-	private JButton btnhsl;
-	private JButton btncjlmaxwk;
-	private JButton btncjemaxwk;
-	private JTextArea txaJisuan;
-	private JButton btnJisuanToFormula;
-	private JButton btncjlzb;
-	private JButton btncjezb;
-	private JButton btncjl;
-	private JButton btncjezbgr;
-	private JButton btncjlzbgr;
-	private LocalDate curselectdate;
-	private JButton btnClearFormula;
-	private JButton btnimportsavedformula;
-	private JButton btnedit;
-	private JButton btndailykzhangfu;
-	private JCheckBox chckbxexportredbkstk;
+	
 	/**
 	 * Create the panel.
 	 */
@@ -85,20 +44,12 @@ public class ExtraExportConditionsPnl extends JPanel
 		this.cond  = cond;
 		this.curselectdate = curselectdate1;
 
-		initializeGui ();
-		createEvents ();
-		
 		huchixuanzebasic = new ArrayList<JCheckBox> ();
 		huchixuanzeupdate = new ArrayList<JCheckBox> ();
 		huchixuanzeaboutstock = new ArrayList<JCheckBox> ();
 		
-		huchixuanzebasic.add(cbxOnlyCurBk);
-		huchixuanzebasic.add(chkbxexportallbk);
-		huchixuanzebasic.add(chkbxexporbkallowedinsetting);
-		
-		huchixuanzeaboutstock.add(chkbxonlybkstock);
-		huchixuanzeaboutstock.add(chkbxonlyexportbk);
-		huchixuanzeaboutstock.add(chkbxonlycurstock);
+		initializeGui ();
+		createEvents ();
 	}
 	/*
 	 * 
@@ -120,15 +71,15 @@ public class ExtraExportConditionsPnl extends JPanel
 		else
 			this.cond.setExportOnlyCurrentBanKuai (false);
 		
-//		if(chkbxzhbiup.isSelected() )
-//			this.cond.setExportChenJiaoErZhanbiUpBanKuai(true);
-//		else
-//			this.cond.setExportChenJiaoErZhanbiUpBanKuai(false);
-//		
-//		if(chkbxexportyangxianbk.isSelected() )
-//			this.cond.setExportYangXianBanKuai(true);
-//		else
-//			this.cond.setExportYangXianBanKuai(false);
+		if(chckexportredbkgegu.isSelected() )
+			this.cond.setExportGeGuOfRedSignBanKuai(true);
+		else
+			this.cond.setExportGeGuOfRedSignBanKuai(false);
+		
+		if(chckexportyellowbkgegu.isSelected() )
+			this.cond.setExportGeGuOfYellowSignBanKuai(true);
+		else
+			this.cond.setExportGeGuOfYellowSignBanKuai(false);
 		
 		if( chkbxonlyexportbk.isSelected() )
 			this.cond.setExportOnlyBankuaiNotGeGu(true);
@@ -140,13 +91,6 @@ public class ExtraExportConditionsPnl extends JPanel
 		else
 			this.cond.setExportOnlyGeGuNotBanKuai(false);
 		
-		if( chkbxonlycurstock.isSelected() )
-			this.cond.setExportOnlyCurrentGeGu(true);
-		else
-			this.cond.setExportOnlyCurrentGeGu(false);
-
-		
-
 		
 		if(cbxExceptSt.isSelected() )
 			this.cond.setExportST(false);
@@ -173,21 +117,47 @@ public class ExtraExportConditionsPnl extends JPanel
 	 */
 	private void huchiOperationsForJCheckBox (List<JCheckBox> huchixuanlist, JCheckBox selectedjchb) 
 	{
-		for(JCheckBox tmpjchb : huchixuanlist) {
-			if( !tmpjchb.getText().equals(selectedjchb.getText()) ) {
-				if(selectedjchb.isSelected()) {
-					tmpjchb.setSelected(false);
-					tmpjchb.setEnabled(false);
-				} else {
-					tmpjchb.setSelected(false);
-					tmpjchb.setEnabled(true);
-				}
-			}
-		}
+//		for(JCheckBox tmpjchb : huchixuanlist) {
+//			if( !tmpjchb.getText().equals(selectedjchb.getText()) ) {
+//				if(selectedjchb.isSelected()) {
+//					tmpjchb.setSelected(false);
+//					tmpjchb.setEnabled(false);
+//				} else {
+//					tmpjchb.setSelected(false);
+//					tmpjchb.setEnabled(true);
+//				}
+//			}
+//		}
 	}
 
 	private void createEvents() 
 	{
+		chckexportyellowbkgegu.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if(chckexportyellowbkgegu.isSelected()) {
+					chckexportredbkgegu.setEnabled(false);
+					chckexportredbkgegu.setSelected(false);
+				} else {
+					chckexportredbkgegu.setEnabled(true);
+					chckexportredbkgegu.setSelected(false);
+				}
+			}
+		});
+		
+		chckexportredbkgegu.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if(chckexportredbkgegu.isSelected()) {
+					chckexportyellowbkgegu.setEnabled(false);
+					chckexportyellowbkgegu.setSelected(false);
+				} else {
+					chckexportyellowbkgegu.setEnabled(true);
+					chckexportyellowbkgegu.setSelected(false);
+				}
+			}
+		});
+		
 		btnedit.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -451,16 +421,6 @@ public class ExtraExportConditionsPnl extends JPanel
 
 			}
 		});
-		
-		chkbxonlycurstock.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				
-				huchiOperationsForJCheckBox(huchixuanzeaboutstock,chkbxonlycurstock);
-				huchiOperationsForJCheckBox (huchixuanzebasic,chkbxonlycurstock);
-				huchiOperationsForJCheckBox (huchixuanzeupdate,chkbxonlycurstock);
-			}
-		});
 
 		
 		chkbxexportallbk.addMouseListener(new MouseAdapter() {
@@ -499,12 +459,22 @@ public class ExtraExportConditionsPnl extends JPanel
 					chkbxonlybkstock.setEnabled(false);
 					chkbxonlybkstock.setSelected(false);
 					
-					chkbxonlycurstock.setEnabled(false);
-					chkbxonlycurstock.setSelected(false);
+					chckexportredbkgegu.setEnabled(false);
+					chckexportredbkgegu.setSelected(false);
+					
+					chckexportyellowbkgegu.setEnabled(false);
+					chckexportyellowbkgegu.setSelected(false);
+					
+					
 				} else {
 					chkbxonlyexportbk.setEnabled(true);
-					chkbxonlycurstock.setEnabled(true);
 					chkbxonlybkstock.setEnabled(true);
+					
+					chckexportredbkgegu.setEnabled(true);
+					chckexportredbkgegu.setSelected(false);
+					
+					chckexportyellowbkgegu.setEnabled(true);
+					chckexportyellowbkgegu.setSelected(false);
 				}
 				
 				huchiOperationsForJCheckBox (huchixuanzebasic,chckbxexportyellowbkstk);
@@ -522,12 +492,21 @@ public class ExtraExportConditionsPnl extends JPanel
 					chkbxonlybkstock.setEnabled(false);
 					chkbxonlybkstock.setSelected(false);
 					
-					chkbxonlycurstock.setEnabled(false);
-					chkbxonlycurstock.setSelected(false);
+					chckexportredbkgegu.setEnabled(false);
+					chckexportredbkgegu.setSelected(false);
+					
+					chckexportyellowbkgegu.setEnabled(false);
+					chckexportyellowbkgegu.setSelected(false);
+					
 				} else {
 					chkbxonlyexportbk.setEnabled(true);
-					chkbxonlycurstock.setEnabled(true);
 					chkbxonlybkstock.setEnabled(true);
+					
+					chckexportredbkgegu.setEnabled(true);
+					chckexportredbkgegu.setSelected(false);
+					
+					chckexportyellowbkgegu.setEnabled(true);
+					chckexportyellowbkgegu.setSelected(false);
 				}
 				
 				huchiOperationsForJCheckBox (huchixuanzebasic,chckbxexportredbkstk);
@@ -560,302 +539,159 @@ public class ExtraExportConditionsPnl extends JPanel
 	/*
 	 * 
 	 */
+	private JCheckBox cbxExceptSt;
+	private JCheckBox cbxOnlyCurBk;
+	private JCheckBox chkbxexportallbk;
+	private JCheckBox chkbxonlybkstock;
+	private JLabel lblNewLabel_2;
+	private JLabel label_2;
+	private JCheckBox chkbxexporbkallowedinsetting;
+
+	private List<JCheckBox> huchixuanzebasic; //互斥意味着其中一个选了，其他都不惜不选
+	private List<JCheckBox> huchixuanzeupdate; //有两个是不互斥的，和其他互斥
+	private List<JCheckBox> huchixuanzeaboutstock;
+	private JCheckBox chkbxonlyexportbk;
+	private BanKuaiAndGeGuMatchingConditions cond;
+	private JCheckBox chckbxexportyellowbkstk;
+	private JTextArea tfldexportformula;
+	private JButton btnCJEZbDpMaxWk;
+	private JButton btnzongshizhi;
+	private JButton btnma;
+	private JLabel lblNewLabel;
+	private JButton btncjezbdpminwk;
+	private JButton btncjlzbdpmaxwk;
+	private JButton btncjlzbdpminwk;
+	private JButton btnliutongshizhi;
+	private JButton btncje;
+	private JButton btngujia;
+	private JButton btnwkzhangfu;
+	private JButton btnfreehsl;
+	private JButton btnhsl;
+	private JButton btncjlmaxwk;
+	private JButton btncjemaxwk;
+	private JTextArea txaJisuan;
+	private JButton btnJisuanToFormula;
+	private JButton btncjlzb;
+	private JButton btncjezb;
+	private JButton btncjl;
+	private JButton btncjezbgr;
+	private JButton btncjlzbgr;
+	private LocalDate curselectdate;
+	private JButton btnClearFormula;
+	private JButton btnimportsavedformula;
+	private JButton btnedit;
+	private JButton btndailykzhangfu;
+	private JCheckBox chckbxexportredbkstk;
+	private JCheckBox chckexportredbkgegu;
+	private JSeparator separator;
+	private JScrollPane scrollPane;
+	private JLabel label;
+	private JLabel lblNewLabel_1;
+	private JCheckBox chckexportyellowbkgegu;
+	private JScrollPane scrollPane_1;
+	private JLabel lblNewLabel_5;
 	private void initializeGui() 
 	{
 		
-		cbxOnlyCurBk = new JCheckBox("\u5BFC\u51FA\u6761\u4EF6\u4EC5\u9650\u5F53\u524D\u677F\u5757(\u677F\u5757\u8BBE\u7F6E\u65E0\u6548)");
-		cbxOnlyCurBk.setEnabled(false);
-		
-		chkbxexportallbk = new JCheckBox("\u5BFC\u51FA\u5168\u90E8\u677F\u5757(\u677F\u5757\u5BFC\u51FA\u8BBE\u7F6E\u65E0\u6548)");
-		chkbxexportallbk.setEnabled(false);
-		chkbxexportallbk.setSelected(true);
-		
-		chkbxexporbkallowedinsetting = new JCheckBox("\u5BFC\u51FA\u677F\u5757\u8BBE\u7F6E\u5141\u8BB8\u7684\u677F\u5757");
-		chkbxexporbkallowedinsetting.setEnabled(false);
-		
-		chkbxonlyexportbk = new JCheckBox("\u4EC5\u5BFC\u51FA\u677F\u5757\uFF0C\u4E0D\u5BFC\u51FA\u677F\u5757\u4E2A\u80A1");
-		chkbxonlyexportbk.setEnabled(false);
-		
 		lblNewLabel_2 = new JLabel("-----------------------");
-		
-		chkbxonlybkstock = new JCheckBox("\u4EC5\u5BFC\u51FA\u677F\u5757\u7684\u4E2A\u80A1\uFF0C\u4E0D\u5BFC\u51FA\u677F\u5757");
-		chkbxonlybkstock.setSelected(true);
-		
-		chkbxonlycurstock = new JCheckBox("\u4EC5\u5BFC\u51FA\u5F53\u524D\u4E2A\u80A1");
-		chkbxonlycurstock.setEnabled(false);
-		cbxExceptSt = new JCheckBox("\u4E0D\u5BFC\u51FAST\u4E2A\u80A1");
-		cbxExceptSt.setSelected(true);
 		
 		label_2 = new JLabel("-----------------------");
 		
-		chckbxexportyellowbkstk = new JCheckBox ("导出黄标板块和个股");
-		
-btnCJEZbDpMaxWk = new JButton("\u6210\u4EA4\u989D\u5468\u5360\u6BD4DPMAXWK");
-btnCJEZbDpMaxWk.setForeground(Color.RED);
-		
-		
-		btnzongshizhi = new JButton("\u603B\u5E02\u503C");
-		
-		
-		btnma = new JButton("CLOSE VS. \u5747\u7EBF");
-		btnma.setForeground(Color.RED);
-		
 		lblNewLabel = new JLabel(" \u5176\u4ED6\u5BFC\u51FA\u53C2\u6570\u8BBE\u7F6E");
 		
-btncjezbdpminwk = new JButton("\u6210\u4EA4\u989D\u5360\u6BD4DPMINWK");
-btncjezbdpminwk.setEnabled(false);
+		separator = new JSeparator();
 		
-		btncjlzbdpmaxwk = new JButton("\u6210\u4EA4\u91CF\u5468\u5360\u6BD4DPMAXWK");
+		lblNewLabel_1 = new JLabel("------------------------");
 		
-		btncjlzbdpminwk = new JButton("\u6210\u4EA4\u91CF\u5360\u6BD4DPMINWK");
-		btncjlzbdpminwk.setEnabled(false);
+JPanel panel = new JPanel();
+FlowLayout flowLayout = (FlowLayout) panel.getLayout();
+flowLayout.setAlignment(FlowLayout.LEFT);
 		
-		btnliutongshizhi = new JButton("\u6D41\u901A\u5E02\u503C");
+		JLabel label_1 = new JLabel("");
 		
-		JSeparator separator = new JSeparator();
+		JPanel panel_1 = new JPanel();
 		
-		JLabel lblNewLabel_1 = new JLabel("------------------------");
+		JPanel panel_2 = new JPanel();
+		FlowLayout fl_panel_2 = (FlowLayout) panel_2.getLayout();
+		fl_panel_2.setAlignment(FlowLayout.LEFT);
 		
-		btncjemaxwk = new JButton("\u65E5\u5E73\u5747\u6210\u4EA4\u989DMAXWK");
+		JPanel panel_3 = new JPanel();
+		FlowLayout fl_panel_3 = (FlowLayout) panel_3.getLayout();
+		fl_panel_3.setAlignment(FlowLayout.LEFT);
 		
-		btncjlmaxwk = new JButton("\u65E5\u5E73\u5747\u6210\u4EA4\u91CFMAXWK");
+		JPanel panel_4 = new JPanel();
+		FlowLayout fl_panel_4 = (FlowLayout) panel_4.getLayout();
+		fl_panel_4.setAlignment(FlowLayout.LEFT);
 		
-		btnhsl = new JButton("\u6362\u624B\u7387");
-		btnhsl.setEnabled(false);
-		
-		btnfreehsl = new JButton("\u81EA\u7531\u6D41\u901A\u6362\u624B\u7387");
-		
-		btnwkzhangfu = new JButton("\u6DA8\u5E45");
-		
-		btngujia = new JButton("\u80A1\u4EF7");
-		
-		btncje = new JButton("\u6210\u4EA4\u989D");
-		btncje.setForeground(Color.RED);
-		
-		txaJisuan = new JTextArea();
-		txaJisuan.setLineWrap(true);
-		
-		btncjezb = new JButton("\u6210\u4EA4\u989D\u5360\u6BD4");
-		btncjezb.setEnabled(false);
-		btncjezb.setForeground(Color.BLACK);
-		
-		btncjlzb = new JButton("\u6210\u4EA4\u91CF\u5360\u6BD4");
-		btncjlzb.setEnabled(false);
-		
-		btnJisuanToFormula = new JButton("<---");
-		
-		btncjl = new JButton("\u6210\u4EA4\u91CF");
-		btncjl.setEnabled(false);
-		
-		btncjezbgr = new JButton("\u6210\u4EA4\u989D\u5360\u6BD4\u589E\u957F\u7387");
-		btncjezbgr.setForeground(Color.RED);
-		
-		
-		btncjlzbgr = new JButton("\u6210\u4EA4\u91CF\u5360\u6BD4\u589E\u957F\u7387");
-		btncjlzbgr.setEnabled(false);
-		
-		btnClearFormula = new JButton("\u6E05\u9664");
-		
-		
-		JLabel label = new JLabel("\u4EC5\u652F\u6301\u52A0\u51CF\u4E58\u9664\u8FD0\u7B97");
-		
-		btnimportsavedformula = new JButton("\u5BFC\u5165\u9884\u5B9A\u4E49\u516C\u5F0F");
-		
-		JScrollPane scrollPane = new JScrollPane();
-		
-		btnedit = new JButton("\u7F16\u8F91");
-		
-		btndailykzhangfu = new JButton("\u5468\u5185\u65E5K\u6DA8\u5E45");
-		
-		chckbxexportredbkstk = new JCheckBox("\u5BFC\u51FA\u7EA2\u6807\u4E2A\u80A1\u548C\u677F\u5757");
+		JPanel panel_5 = new JPanel();
 		GroupLayout groupLayout = new GroupLayout(this);
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
+					.addContainerGap()
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addComponent(panel_5, GroupLayout.PREFERRED_SIZE, 793, GroupLayout.PREFERRED_SIZE)
 						.addGroup(groupLayout.createSequentialGroup()
-							.addGap(7)
-							.addComponent(chkbxexportallbk))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addGap(7)
-							.addComponent(chkbxexporbkallowedinsetting))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addGap(7)
-							.addComponent(cbxOnlyCurBk))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addGap(158)
+							.addComponent(panel, GroupLayout.PREFERRED_SIZE, 796, Short.MAX_VALUE)
+							.addPreferredGap(ComponentPlacement.RELATED)
 							.addComponent(separator, GroupLayout.PREFERRED_SIZE, 1, GroupLayout.PREFERRED_SIZE))
 						.addGroup(groupLayout.createSequentialGroup()
-							.addContainerGap()
-							.addComponent(btncje)
-							.addGap(18)
-							.addComponent(btncjezb)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(btnCJEZbDpMaxWk)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(btncjezbdpminwk)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(btncjemaxwk)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(btncjezbgr))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addContainerGap()
-							.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-								.addGroup(groupLayout.createSequentialGroup()
-									.addComponent(btncjl)
-									.addGap(18)
-									.addComponent(btncjlzb)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(btncjlzbdpmaxwk)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(btncjlzbdpminwk)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(btncjlmaxwk)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(btncjlzbgr))
-								.addGroup(groupLayout.createSequentialGroup()
-									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-										.addGroup(groupLayout.createSequentialGroup()
-											.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 465, Short.MAX_VALUE)
-											.addPreferredGap(ComponentPlacement.RELATED)
-											.addComponent(btnJisuanToFormula))
-										.addGroup(groupLayout.createSequentialGroup()
-											.addComponent(btnClearFormula)
-											.addPreferredGap(ComponentPlacement.RELATED)
-											.addComponent(btnedit)
-											.addPreferredGap(ComponentPlacement.RELATED)
-											.addComponent(btnimportsavedformula)))
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-										.addComponent(label)
-										.addComponent(txaJisuan, GroupLayout.PREFERRED_SIZE, 202, GroupLayout.PREFERRED_SIZE))
-									.addGap(14))))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addContainerGap()
-							.addComponent(btnzongshizhi)
-							.addGap(18)
-							.addComponent(btnliutongshizhi))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addContainerGap()
-							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-								.addComponent(lblNewLabel_2)
-								.addComponent(chkbxonlyexportbk)))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addContainerGap()
-							.addComponent(chkbxonlybkstock))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addContainerGap()
-							.addComponent(chkbxonlycurstock))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addContainerGap()
-							.addComponent(cbxExceptSt))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addContainerGap()
-							.addComponent(label_2))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addContainerGap()
-							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-								.addComponent(lblNewLabel_1)
-								.addGroup(groupLayout.createSequentialGroup()
-									.addComponent(chckbxexportyellowbkstk)
-									.addGap(29)
-									.addComponent(chckbxexportredbkstk))))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addContainerGap()
-							.addComponent(lblNewLabel))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addContainerGap()
-							.addComponent(btngujia)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(btnwkzhangfu)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(btndailykzhangfu)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(btnhsl)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(btnfreehsl)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(btnma)))
-					.addGap(13))
+							.addGap(803)
+							.addComponent(label_1))
+						.addComponent(lblNewLabel_2, GroupLayout.PREFERRED_SIZE, 291, GroupLayout.PREFERRED_SIZE)
+						.addComponent(label_2)
+						.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING, false)
+							.addComponent(panel_2, Alignment.LEADING, 0, 0, Short.MAX_VALUE)
+							.addComponent(panel_3, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+						.addComponent(panel_4, GroupLayout.PREFERRED_SIZE, 344, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblNewLabel_1, GroupLayout.PREFERRED_SIZE, 409, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblNewLabel)
+						.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, 799, GroupLayout.PREFERRED_SIZE))
+					.addContainerGap())
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
-					.addGap(7)
-					.addComponent(chkbxexportallbk)
-					.addGap(4)
-					.addComponent(chkbxexporbkallowedinsetting)
-					.addGap(4)
-					.addComponent(cbxOnlyCurBk)
+					.addContainerGap()
+					.addComponent(panel_2, GroupLayout.PREFERRED_SIZE, 65, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(chkbxonlyexportbk)
-					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(lblNewLabel_2)
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addComponent(chkbxonlybkstock)
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addComponent(chkbxonlycurstock)
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addComponent(cbxExceptSt)
-					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(panel_3, GroupLayout.PREFERRED_SIZE, 47, GroupLayout.PREFERRED_SIZE)
+					.addGap(10)
 					.addComponent(label_2)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-						.addComponent(chckbxexportyellowbkstk)
-						.addComponent(chckbxexportredbkstk))
-					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(panel_4, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(lblNewLabel_1)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(lblNewLabel)
-					.addGap(16)
-					.addComponent(separator, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-						.addComponent(btncje)
-						.addComponent(btncjezb)
-						.addComponent(btnCJEZbDpMaxWk)
-						.addComponent(btncjezbdpminwk)
-						.addComponent(btncjemaxwk)
-						.addComponent(btncjezbgr))
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-						.addComponent(btncjl)
-						.addComponent(btncjlzb)
-						.addComponent(btncjlzbdpmaxwk)
-						.addComponent(btncjlzbdpminwk)
-						.addComponent(btncjlmaxwk)
-						.addComponent(btncjlzbgr))
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-						.addComponent(btnzongshizhi)
-						.addComponent(btnliutongshizhi))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-						.addComponent(btngujia)
-						.addComponent(btnwkzhangfu)
-						.addComponent(btnhsl)
-						.addComponent(btnfreehsl)
-						.addComponent(btnma)
-						.addComponent(btndailykzhangfu))
-					.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
 						.addGroup(groupLayout.createSequentialGroup()
-							.addGap(43)
-							.addComponent(btnJisuanToFormula))
+							.addGap(84)
+							.addComponent(separator, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 						.addGroup(groupLayout.createSequentialGroup()
-							.addGap(6)
-							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-								.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 101, GroupLayout.PREFERRED_SIZE)
-								.addComponent(txaJisuan, GroupLayout.PREFERRED_SIZE, 101, GroupLayout.PREFERRED_SIZE))))
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(label)
-						.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-							.addComponent(btnimportsavedformula)
-							.addComponent(btnClearFormula)
-							.addComponent(btnedit)))
-					.addGap(77))
+							.addGap(18)
+							.addComponent(lblNewLabel)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(panel, GroupLayout.PREFERRED_SIZE, 122, GroupLayout.PREFERRED_SIZE)))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(panel_5, GroupLayout.PREFERRED_SIZE, 155, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, 37, GroupLayout.PREFERRED_SIZE)
+					.addGap(139)
+					.addComponent(label_1)
+					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 		);
+		
+		btnJisuanToFormula = new JButton("<---");
+		
+//		scrollPane_1 = new JScrollPane();
+//		pnldisplaygongshi.add(scrollPane_1, BorderLayout.EAST);
+		
+		txaJisuan = new JTextArea();
+		txaJisuan.setLineWrap(true);
+		
+		scrollPane = new JScrollPane();
 		
 		
 		tfldexportformula = new JTextArea();
@@ -864,6 +700,167 @@ btncjezbdpminwk.setEnabled(false);
 		tfldexportformula.setEditable(false);
 		tfldexportformula.setLineWrap(true);
 		tfldexportformula.setColumns(10);
+		GroupLayout gl_panel_5 = new GroupLayout(panel_5);
+		gl_panel_5.setHorizontalGroup(
+			gl_panel_5.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_panel_5.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 448, GroupLayout.PREFERRED_SIZE)
+					.addGap(18)
+					.addComponent(btnJisuanToFormula)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(txaJisuan, GroupLayout.DEFAULT_SIZE, 239, Short.MAX_VALUE)
+					.addGap(15))
+		);
+		gl_panel_5.setVerticalGroup(
+			gl_panel_5.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_panel_5.createSequentialGroup()
+					.addGroup(gl_panel_5.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_panel_5.createSequentialGroup()
+							.addContainerGap()
+							.addGroup(gl_panel_5.createParallelGroup(Alignment.BASELINE)
+								.addComponent(txaJisuan, GroupLayout.PREFERRED_SIZE, 119, GroupLayout.PREFERRED_SIZE)
+								.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 135, GroupLayout.PREFERRED_SIZE)))
+						.addGroup(gl_panel_5.createSequentialGroup()
+							.addGap(59)
+							.addComponent(btnJisuanToFormula, GroupLayout.PREFERRED_SIZE, 35, GroupLayout.PREFERRED_SIZE)))
+					.addContainerGap(10, Short.MAX_VALUE))
+		);
+		panel_5.setLayout(gl_panel_5);
+		
+		chckbxexportredbkstk = new JCheckBox("\u5BFC\u51FA\u7EA2\u6807\u4E2A\u80A1\u548C\u7EA2\u6807\u677F\u5757");
+		panel_4.add(chckbxexportredbkstk);
+		
+		chckbxexportyellowbkstk = new JCheckBox ("\u5BFC\u51FA\u9EC4\u6807\u677F\u5757\u548C\u7EA2\u6807\u4E2A\u80A1");
+		panel_4.add(chckbxexportyellowbkstk);
+		
+		chkbxonlybkstock = new JCheckBox("\u4EC5\u5BFC\u51FA\u677F\u5757\u7684\u4E2A\u80A1\uFF0C\u4E0D\u5BFC\u51FA\u677F\u5757");
+		panel_3.add(chkbxonlybkstock);
+		chkbxonlybkstock.setSelected(true);
+		
+		chckexportredbkgegu = new JCheckBox("\u4EC5\u5BFC\u51FA\u7EA2\u6807\u677F\u5757\u5185\u4E2A\u80A1");
+		panel_3.add(chckexportredbkgegu);
+		
+		chckexportyellowbkgegu = new JCheckBox("\u4EC5\u5BFC\u51FA\u9EC4\u6807\u677F\u5757\u5185\u4E2A\u80A1");
+		panel_3.add(chckexportyellowbkgegu);
+		cbxExceptSt = new JCheckBox("\u4E0D\u5BFC\u51FAST\u4E2A\u80A1");
+		panel_3.add(cbxExceptSt);
+		cbxExceptSt.setSelected(true);
+		huchixuanzebasic.add(chkbxexportallbk);
+		
+		chkbxexportallbk = new JCheckBox("\u5BFC\u51FA\u5168\u90E8\u677F\u5757(\u677F\u5757\u5BFC\u51FA\u8BBE\u7F6E\u65E0\u6548)");
+		panel_2.add(chkbxexportallbk);
+		chkbxexportallbk.setEnabled(false);
+		chkbxexportallbk.setSelected(true);
+		huchixuanzebasic.add(chkbxexporbkallowedinsetting);
+		
+		chkbxexporbkallowedinsetting = new JCheckBox("\u5BFC\u51FA\u677F\u5757\u8BBE\u7F6E\u5141\u8BB8\u7684\u677F\u5757");
+		panel_2.add(chkbxexporbkallowedinsetting);
+		chkbxexporbkallowedinsetting.setEnabled(false);
+		
+		huchixuanzebasic.add(cbxOnlyCurBk);
+		
+		cbxOnlyCurBk = new JCheckBox("\u5BFC\u51FA\u6761\u4EF6\u4EC5\u9650\u5F53\u524D\u677F\u5757(\u677F\u5757\u8BBE\u7F6E\u65E0\u6548)");
+		panel_2.add(cbxOnlyCurBk);
+		cbxOnlyCurBk.setEnabled(false);
+		huchixuanzeaboutstock.add(chkbxonlyexportbk);
+		
+		chkbxonlyexportbk = new JCheckBox("\u4EC5\u5BFC\u51FA\u677F\u5757\uFF0C\u4E0D\u5BFC\u51FA\u677F\u5757\u4E2A\u80A1");
+		panel_2.add(chkbxonlyexportbk);
+		chkbxonlyexportbk.setEnabled(false);
+		
+		btnClearFormula = new JButton("\u6E05\u9664");
+		panel_1.add(btnClearFormula);
+		
+		btnedit = new JButton("\u7F16\u8F91");
+		panel_1.add(btnedit);
+		
+		btnimportsavedformula = new JButton("\u5BFC\u5165\u9884\u5B9A\u4E49\u516C\u5F0F");
+		panel_1.add(btnimportsavedformula);
+		
+		lblNewLabel_5 = new JLabel("New label                                                          ");
+		panel_1.add(lblNewLabel_5);
+		
+		
+		label = new JLabel("\u4EC5\u652F\u6301\u52A0\u51CF\u4E58\u9664\u8FD0\u7B97");
+		panel_1.add(label);
+		
+		btncje = new JButton("\u6210\u4EA4\u989D");
+		panel.add(btncje);
+		btncje.setForeground(Color.RED);
+		
+		btncjezb = new JButton("\u6210\u4EA4\u989D\u5360\u6BD4");
+		panel.add(btncjezb);
+		btncjezb.setEnabled(false);
+		btncjezb.setForeground(Color.BLACK);
+		
+btnCJEZbDpMaxWk = new JButton("\u6210\u4EA4\u989D\u5468\u5360\u6BD4DPMAXWK");
+panel.add(btnCJEZbDpMaxWk);
+btnCJEZbDpMaxWk.setForeground(Color.RED);
+
+btncjezbdpminwk = new JButton("\u6210\u4EA4\u989D\u5360\u6BD4DPMINWK");
+panel.add(btncjezbdpminwk);
+btncjezbdpminwk.setEnabled(false);
+
+btncjemaxwk = new JButton("\u65E5\u5E73\u5747\u6210\u4EA4\u989DMAXWK");
+panel.add(btncjemaxwk);
+
+btncjezbgr = new JButton("\u6210\u4EA4\u989D\u5360\u6BD4\u589E\u957F\u7387");
+panel.add(btncjezbgr);
+btncjezbgr.setForeground(Color.RED);
+
+btncjl = new JButton("\u6210\u4EA4\u91CF");
+panel.add(btncjl);
+btncjl.setEnabled(false);
+
+btncjlzb = new JButton("\u6210\u4EA4\u91CF\u5360\u6BD4");
+panel.add(btncjlzb);
+btncjlzb.setEnabled(false);
+
+btncjlzbdpmaxwk = new JButton("\u6210\u4EA4\u91CF\u5468\u5360\u6BD4DPMAXWK");
+panel.add(btncjlzbdpmaxwk);
+
+btncjlzbdpminwk = new JButton("\u6210\u4EA4\u91CF\u5360\u6BD4DPMINWK");
+panel.add(btncjlzbdpminwk);
+btncjlzbdpminwk.setEnabled(false);
+
+btncjlmaxwk = new JButton("\u65E5\u5E73\u5747\u6210\u4EA4\u91CFMAXWK");
+panel.add(btncjlmaxwk);
+
+
+btncjlzbgr = new JButton("\u6210\u4EA4\u91CF\u5360\u6BD4\u589E\u957F\u7387");
+panel.add(btncjlzbgr);
+btncjlzbgr.setEnabled(false);
+
+
+btnzongshizhi = new JButton("\u603B\u5E02\u503C");
+panel.add(btnzongshizhi);
+
+btnliutongshizhi = new JButton("\u6D41\u901A\u5E02\u503C");
+panel.add(btnliutongshizhi);
+
+btngujia = new JButton("\u80A1\u4EF7");
+panel.add(btngujia);
+
+btnwkzhangfu = new JButton("\u6DA8\u5E45");
+panel.add(btnwkzhangfu);
+
+btndailykzhangfu = new JButton("\u5468\u5185\u65E5K\u6DA8\u5E45");
+panel.add(btndailykzhangfu);
+
+btnhsl = new JButton("\u6362\u624B\u7387");
+panel.add(btnhsl);
+btnhsl.setEnabled(false);
+
+btnfreehsl = new JButton("\u81EA\u7531\u6D41\u901A\u6362\u624B\u7387");
+panel.add(btnfreehsl);
+
+
+btnma = new JButton("CLOSE VS. \u5747\u7EBF");
+panel.add(btnma);
+btnma.setForeground(Color.RED);
+JLabel lblNewLabel_4 = new JLabel("                               ");
+panel.add(lblNewLabel_4);
 		setLayout(groupLayout);
 		
 	
