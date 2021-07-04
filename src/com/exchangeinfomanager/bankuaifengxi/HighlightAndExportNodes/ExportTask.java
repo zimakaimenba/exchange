@@ -112,9 +112,4 @@ public class ExportTask extends SwingWorker<Integer, String>
 	  
 		SystemAudioPlayed.playSound();
 	}
-	public void cancel ()
-	{
-		try {		int i = get ();
-		} catch (InterruptedException | ExecutionException e) {			e.printStackTrace();}
-	}
 }

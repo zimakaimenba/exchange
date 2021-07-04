@@ -51,7 +51,7 @@ public class SetExportNodeConditionPnl extends JPanel implements OnCalendarDateC
 	{
 		this.globeexpc = expc1;
 		this.exportcond = new ArrayList<> ();
-		this.curselectdate = LocalDate.now();
+//		this.curselectdate = LocalDate.now();
 		
 		createMainBorardGui ();
 	}
@@ -211,11 +211,13 @@ public class SetExportNodeConditionPnl extends JPanel implements OnCalendarDateC
 			      			  System.gc();
 			      		  }
 			            } catch (final CancellationException e) {
-			            	try { exporttask.get();	} catch (Exception e1) {e1.printStackTrace();	}
+			            	exporttask.cancel(true);
+			            	exporttask = null;
+			            	
 			            	progressBarExport.setIndeterminate(false);  progressBarExport.setValue(0);
 			            	JOptionPane.showMessageDialog(null, "导出条件个股被终止！", "导出条件个股",JOptionPane.WARNING_MESSAGE);
-			            	exporttask = null;
 			            	progressBarExport.setString("导出设置条件个股");
+			            	
 			            	System.gc();
 			            } catch (final Exception e) { e.printStackTrace(); }
 			            break;

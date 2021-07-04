@@ -41,6 +41,13 @@ public class NodeJiBenMian
 			private Double nodecjlzhanbiuplevel;
 			private Double nodecjlzhanbidownlevel;
 			
+			private boolean iscorezhishu;
+			public void setIsCoreZhiShu (boolean iscore) {
+				iscorezhishu = iscore;
+			}
+			public boolean isCoreZhiShu () {
+				return this.iscorezhishu;
+			}
 			
 			public void setNodeCjeZhanbiLevel (Double min, Double max)
 			{

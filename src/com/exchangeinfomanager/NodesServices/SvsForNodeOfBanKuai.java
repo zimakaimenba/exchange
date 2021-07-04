@@ -52,6 +52,9 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 	public BkChanYeLianTreeNode getNodeData(BkChanYeLianTreeNode bankuai, LocalDate requiredstartday,
 			LocalDate requiredendday, String period, Boolean calwholeweek) 
 	{
+		requiredstartday = requiredstartday.with(DayOfWeek.MONDAY);
+		requiredendday   = requiredendday.with(DayOfWeek.FRIDAY);
+		
 		NodeXPeriodData nodedayperioddata = ((BanKuai)bankuai).getNodeXPeroidData(period);
 		
 		if(!calwholeweek) {
@@ -589,9 +592,9 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 	}
 	
 	public BkChanYeLianTreeNode updateBanKuaiBasicOperationsSettings(BkChanYeLianTreeNode node, boolean importdailydata, boolean exporttogephi, 
-			boolean showinbkfx,boolean showincyltree, boolean exporttowkfile, boolean importbkgg,Color bkcolor)
+			boolean showinbkfx,boolean showincyltree, boolean exporttowkfile, boolean importbkgg,Color bkcolor,boolean corezhishu)
 	{
-		bkdbopt.updateBanKuaiOperationsSettings (node,importdailydata,exporttogephi,showinbkfx,showincyltree,exporttowkfile,importbkgg,bkcolor);
+		bkdbopt.updateBanKuaiOperationsSettings (node,importdailydata,exporttogephi,showinbkfx,showincyltree,exporttowkfile,importbkgg,bkcolor,corezhishu);
 		((BanKuai)node).getBanKuaiOperationSetting().setImportdailytradingdata(importdailydata);
 		((BanKuai)node).getBanKuaiOperationSetting().setExporttogehpi(exporttogephi);
 		((BanKuai)node).getBanKuaiOperationSetting().setShowinbkfxgui(showinbkfx);

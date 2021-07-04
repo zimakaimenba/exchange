@@ -18,8 +18,8 @@ import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 public class RuleOfCjeZbGrowingRate 
 {
 	private Color foreground = Color.BLACK, background = Color.white;
-	boolean checkresult = false;
 	String analysisresultforvoice = "";
+	private Boolean analysisresult = false;
 	
 	@Condition
 	public boolean evaluate(@Fact("evanode") TDXNodes evanode,
@@ -29,7 +29,7 @@ public class RuleOfCjeZbGrowingRate
 	{
 		NodeXPeriodData nodexdata = evanode.getNodeXPeroidData(evaperiod);
 		Double cjedpzbgr = nodexdata.getChenJiaoErZhanBiGrowthRateOfSuperBanKuai(evadate,evadatedifference);
-		if(cjedpzbgr!= null && cjedpzbgr > 0 ) {
+		if(cjedpzbgr!= null ) {
 			if(evacond.getCjezbGrowingRateMin() == null && evacond.getCjezbGrowingRateMax() == null)
 				return false;
 			
@@ -52,7 +52,7 @@ public class RuleOfCjeZbGrowingRate
     		@Fact("evaperiod") String evaperiod,
     		@Fact("evacond") BanKuaiAndGeGuMatchingConditions evacond )
     {
-		checkresult = true;
+		analysisresult = true;
 		foreground = Color.yellow;
     }
     
@@ -60,7 +60,10 @@ public class RuleOfCjeZbGrowingRate
     public int getPriority(){
         return 1;
     }
-    
+    public Boolean getAnalysisResult ()
+    {
+    	return this.analysisresult ;
+    }
     public Color getForeGround ()
     {
     	return this.foreground;
@@ -76,5 +79,10 @@ public class RuleOfCjeZbGrowingRate
     public String getName() {
         return "ChenJiaoEr ZhanBi Growing Rate Rules";
     }
+
+	public Color getBackGround() {
+		// TODO Auto-generated method stub
+		return this.background;
+	}
 
 }

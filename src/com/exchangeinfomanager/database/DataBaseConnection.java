@@ -152,29 +152,18 @@ public class DataBaseConnection
 			
 			cachedRS = new CachedRowSetImpl();
 			cachedRS.populate(rsquery);
-		}  catch(java.lang.NullPointerException e) {
-			logger.info("数据库连接为NULL");
-//			System.out.println("数据库连接为NULL");
+		}  catch(java.lang.NullPointerException e) {	logger.info("数据库连接为NULL");
 			e.printStackTrace();
-		} catch(com.mysql.jdbc.exceptions.jdbc4.CommunicationsException e1) {
-			logger.info("与数据库的连接断开，需要重新连接");
-//			System.out.println("与数据库的连接断开，需要重新连接");
+		} catch(com.mysql.jdbc.exceptions.jdbc4.CommunicationsException e1) {	logger.info("与数据库的连接断开，需要重新连接");
 			e1.printStackTrace();
-		} catch (com.mysql.jdbc.exceptions.jdbc4.MySQLNonTransientConnectionException e1) {
-//			System.out.println("与数据库的连接断开，需要重新连接");
-			logger.info("与数据库的连接断开，需要重新连接");
-			e1.printStackTrace();
-		}catch(Exception e) {
-//			System.out.println("数据库SQL执行失败");
-//			System.out.println("出错SQL是:" + sqlstatement );
-			e.printStackTrace();
-		}finally {
+		} catch (com.mysql.jdbc.exceptions.jdbc4.MySQLNonTransientConnectionException e1) {	logger.info("与数据库的连接断开，需要重新连接");
+				e1.printStackTrace();
+		} catch(Exception e) {		e.printStackTrace();
+		} finally {
 			if(rsquery != null)
-				try { rsquery.close();rsquery = null;
-				} catch (SQLException e1) { e1.printStackTrace(); }
+				try { rsquery.close();rsquery = null;	} catch (SQLException e1) { e1.printStackTrace(); }
 			if(sqlstat != null)
-				try { sqlstat.close(); sqlstat = null;
-				} catch (SQLException e) { e.printStackTrace();}
+				try { sqlstat.close(); sqlstat = null;	} catch (SQLException e) { e.printStackTrace();}
 		}
 		return cachedRS;
 	}

@@ -183,6 +183,7 @@ public class BanKuaiDbOperation
 	        	tmpbk.getBanKuaiOperationSetting().setBanKuaiLabelColor(rs.getString("DefaultCOLOUR"));
 	        	tmpbk.getNodeJiBenMian().setNodeCjlZhanbiLevel (rs.getDouble("成交量占比下限"), rs.getDouble("成交量占比上限"));
 	        	tmpbk.getNodeJiBenMian().setNodeCjeZhanbiLevel (rs.getDouble("成交额占比下限"), rs.getDouble("成交额占比上限"));
+	        	tmpbk.getNodeJiBenMian().setIsCoreZhiShu (rs.getBoolean("核心指数"));
 	        	
 	        	tmpsysbankuailiebiaoinfo.add(tmpbk);
 	        }
@@ -6372,7 +6373,7 @@ public class BanKuaiDbOperation
 		 * 设置板块的属性: 是否导入数据，是否出现在板块分析界面中，是否导出到Gephi
 		 */
 		public void updateBanKuaiOperationsSettings(BkChanYeLianTreeNode node, boolean importdailydata, boolean exporttogephi, 
-				boolean showinbkfx,boolean showincyltree, boolean exporttowkfile, boolean importbkgg, Color bkcolor)
+				boolean showinbkfx,boolean showincyltree, boolean exporttowkfile, boolean importbkgg, Color bkcolor, boolean corezhishu)
 		{
 			String colorcode = String.format("#%02x%02x%02x", bkcolor.getRed(), bkcolor.getGreen(), bkcolor.getBlue() );
 			
@@ -6383,6 +6384,7 @@ public class BanKuaiDbOperation
 								" 产业链树=" + showincyltree + ","  +
 								" 周分析文件 = " + exporttowkfile + ","  +
 								" DefaultCOLOUR = '" + colorcode + "',"  +
+								" 核心指数 = " + corezhishu + ","  +
 								" 导入板块个股 = " + importbkgg +
 								" WHERE 板块ID='" + node.getMyOwnCode() + "'"
 								;

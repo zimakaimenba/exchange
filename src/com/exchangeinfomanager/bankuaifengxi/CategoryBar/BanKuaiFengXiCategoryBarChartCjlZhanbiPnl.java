@@ -206,6 +206,7 @@ public class BanKuaiFengXiCategoryBarChartCjlZhanbiPnl extends BanKuaiFengXiCate
 			this.dipalyCjlZBLineDataToGui ( super.getCurDisplayedNode().getNodeXPeroidData(period),period );
 		}
 		
+		super.highLightSpecificBarColumn(super.getCurSelectedDate());
 		super.barchart.setNotify(true);
 	}
 	/*

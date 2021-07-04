@@ -213,6 +213,7 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 			this.dipalyCjeZBLineDataToGui ( super.getCurDisplayedNode().getNodeXPeroidData(period),period );
 		}
 		
+		super.highLightSpecificBarColumn(super.getCurSelectedDate());
 		super.barchart.setNotify(true);
 	}
 	/*

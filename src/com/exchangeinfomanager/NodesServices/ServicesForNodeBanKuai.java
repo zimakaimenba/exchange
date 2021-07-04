@@ -16,5 +16,5 @@ public interface ServicesForNodeBanKuai
 	public StockOfBanKuai getGeGuOfBanKuaiData(BanKuai bankuai, String stockcode,String period);
 	public StockOfBanKuai getGeGuOfBanKuaiData(String bkcode, String stockcode,String period);
 	public BkChanYeLianTreeNode updateBanKuaiBasicOperationsSettings(BkChanYeLianTreeNode node, boolean importdailydata, boolean exporttogephi, 
-			boolean showinbkfx,boolean showincyltree, boolean exporttowkfile, boolean importbkgg, Color color);
+			boolean showinbkfx,boolean showincyltree, boolean exporttowkfile, boolean importbkgg, Color color, boolean corezhishu);
 }

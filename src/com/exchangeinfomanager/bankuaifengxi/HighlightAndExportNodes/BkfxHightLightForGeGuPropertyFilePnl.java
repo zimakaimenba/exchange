@@ -592,6 +592,14 @@ public class BkfxHightLightForGeGuPropertyFilePnl extends JPanel implements OnCa
 	{
 		String keyword = ckbxhighlight.getName();
 		switch (keyword) {
+		case "CjeZbGrowRate":
+			Double showcjezbgrmin = null; Double showcjezbgrmax = null;
+			if(ckbxhighlight.isSelected()) {
+				if( !Strings.isNullOrEmpty(min) && !min.trim().equalsIgnoreCase("MIN") ) showcjezbgrmin =  Double.parseDouble( min );
+				if( !Strings.isNullOrEmpty(max) && !Strings.isNullOrEmpty(max.trim()) && !max.trim().equalsIgnoreCase("MAX")  ) showcjezbgrmax = Double.parseDouble(max );
+			} 
+			globeexpc.setCjezbGrowingRate(showcjezbgrmin ,showcjezbgrmax);
+			break;
 		case "CLOSEVSMA":
 			if(ckbxhighlight.isSelected() && !Strings.isNullOrEmpty(min) && !min.trim().equalsIgnoreCase("MIN")  ) 
 				globeexpc.setSettingMaFormula(min);
@@ -657,6 +665,7 @@ public class BkfxHightLightForGeGuPropertyFilePnl extends JPanel implements OnCa
 				if( !Strings.isNullOrEmpty(max)  && !max.equalsIgnoreCase("MAX"))   cjemax = Double.parseDouble( max );
 			}
 			globeexpc.setSettingChenJiaoEr(cjemin, cjemax );
+			break;
 		case "LastWkDpcjezbGrowingRate":
 			Double showcjegrmin = null; Double showcjegrmax = null;
 			if(ckbxhighlight.isSelected()) {
@@ -802,9 +811,11 @@ public class BkfxHightLightForGeGuPropertyFilePnl extends JPanel implements OnCa
 		case "ExtremeCjeZhanbi":
 			tfldextramax.setEnabled(false);tfldextramin.setEditable(false);
         	tfldextramax.setText("");tfldextramin.setText("");
+        	break;
 		case "ExtremeCjlZhanbi":
 			tfldextramax.setEnabled(false);tfldextramin.setEditable(false);
         	tfldextramax.setText("");tfldextramin.setText("");
+        	break;
 		}
 	}
 	/*

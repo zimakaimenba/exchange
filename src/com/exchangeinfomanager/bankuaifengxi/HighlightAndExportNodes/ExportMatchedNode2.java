@@ -230,9 +230,6 @@ public class ExportMatchedNode2
 			if(this.cond.shouldExportOnlyGeGuNotBanKuai() && ! this.cond.shouldExportAllBanKuai() )
 				return  "WITHCHECKGEGU";
 			
-			if(this.cond.shouldExportOnlyGeGuNotBanKuai() )
-				return "UNMATCH";
-			
 //			String checkresult = ""; 
 			if( ! this.cond.shouldExportAllBanKuai()  )
 				return "WITHCHECKGEGU";
@@ -242,6 +239,9 @@ public class ExportMatchedNode2
 			
 			if( this.cond.getExportGeGuOfYellowSignBanKuai() && node.getNodeTreeRelated().selfIsMatchModel(exportdate, Color.YELLOW))  
 				return  "WITHCHECKGEGU";
+			
+			if(this.cond.shouldExportOnlyGeGuNotBanKuai() )
+				return "UNMATCH";
 			
 			return "UNMATCH";
 	}

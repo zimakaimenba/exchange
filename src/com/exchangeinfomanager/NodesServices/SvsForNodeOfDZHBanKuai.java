@@ -183,9 +183,9 @@ public class SvsForNodeOfDZHBanKuai implements ServicesForNode ,ServicesForNodeB
 	}
 	
 	public BkChanYeLianTreeNode updateBanKuaiBasicOperationsSettings(BkChanYeLianTreeNode node, boolean importdailydata, boolean exporttogephi, 
-			boolean showinbkfx,boolean showincyltree, boolean exporttowkfile, boolean importbkgg, Color bkcolor)
+			boolean showinbkfx,boolean showincyltree, boolean exporttowkfile, boolean importbkgg, Color bkcolor,  boolean corezhishu)
 	{
-		dzhbkdbopt.updateBanKuaiOperationsSettings (node,importdailydata,exporttogephi,showinbkfx,showincyltree,exporttowkfile,importbkgg,bkcolor);
+		dzhbkdbopt.updateBanKuaiOperationsSettings (node,importdailydata,exporttogephi,showinbkfx,showincyltree,exporttowkfile,importbkgg,bkcolor,corezhishu);
 		((BanKuai)node).getBanKuaiOperationSetting().setImportdailytradingdata(importdailydata);
 		((BanKuai)node).getBanKuaiOperationSetting().setExporttogehpi(exporttogephi);
 		((BanKuai)node).getBanKuaiOperationSetting().setShowinbkfxgui(showinbkfx);

@@ -176,6 +176,7 @@ public class BanKuaiFengXiCategoryBarChartCjlPnl extends BanKuaiFengXiCategoryBa
 //				this.dipalyCjeCjlZBLineDataToGui (nodexdata,startdate,enddate,period);
 //			}
 
+			super.highLightSpecificBarColumn(super.getCurSelectedDate());
 			super.barchart.setNotify(true);
 	 }
 	 /*

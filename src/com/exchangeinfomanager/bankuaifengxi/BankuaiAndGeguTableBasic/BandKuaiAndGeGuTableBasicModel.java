@@ -175,7 +175,6 @@ public  abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 	    			}
 	    			
 	    			if(stockname == null) continue;
-	    			
 	    			Boolean compresult = hypy.compareTwoStrings (stockname, neededfindstring.trim() );
 			   		if(compresult) {
 			   			index = i;
@@ -270,6 +269,10 @@ public  abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 			    	Double nodetimerangezhangfu = nodexdataday.getSpecificTimeRangeOHLCHightestZhangFu (this.timerangezhangfu[0], this.timerangezhangfu[1] );
 			    	value =  nodetimerangezhangfu;
 				    break;
+			  case "CoreZhiShu":
+				  	if (node.getType() == BkChanYeLianTreeNode.TDXBK) 
+		  				value = ((BanKuai)node).getNodeJiBenMian().isCoreZhiShu();
+		  			else value = Boolean.FALSE;
 		  }
 
 		  return value;

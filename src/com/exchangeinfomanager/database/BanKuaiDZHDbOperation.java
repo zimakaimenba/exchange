@@ -542,7 +542,7 @@ public class BanKuaiDZHDbOperation
 	 * 
 	 */
 	public void updateBanKuaiOperationsSettings(BkChanYeLianTreeNode node, boolean importdailydata, boolean exporttogephi, 
-			boolean showinbkfx,boolean showincyltree, boolean exporttowkfile, boolean importbkgg, Color bkcolor)
+			boolean showinbkfx,boolean showincyltree, boolean exporttowkfile, boolean importbkgg, Color bkcolor, boolean corezhishu)
 	{
 		String colorcode = String.format("#%02x%02x%02x", bkcolor.getRed(), bkcolor.getGreen(), bkcolor.getGreen() );
 		
@@ -553,6 +553,7 @@ public class BanKuaiDZHDbOperation
 							" 产业链树=" + showincyltree + ","  +
 							" 周分析文件 = " + exporttowkfile + ","  +
 							" DefaultCOLOUR = '" + colorcode + "',"  +
+							" 核心指数 = " + corezhishu + ","  +
 							" 导入板块个股 = " + importbkgg +
 							" WHERE 板块ID='" + node.getMyOwnCode() + "'"
 							;
