@@ -107,6 +107,8 @@ public class SetupSystemConfiguration
 			
 			BankuaifenxiSettingPropertiesFile = propxml.getProperty ("BankuaifenxiSettingPropertiesFile");
 			
+			dzhdailydatafile = propxml.getProperty ("dzhdailyDADfilepathname");
+			
 			floatholders = propxml.getProperty ("floatholders");
 			top10holders = propxml.getProperty ("top10holders");
 			
@@ -1016,6 +1018,12 @@ public class SetupSystemConfiguration
 		{
 			return this.systeminstalledpath + "thirdparty/python/execscripts/";
 //			return "E:/stock/stockmanager/thirdparty/python/execscripts/";
+		}
+		
+		String dzhdailydatafile ;
+		public String getDZHDailyDataFile ()
+		{
+			return dzhdailydatafile;
 		}
 
 }

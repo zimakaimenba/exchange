@@ -462,6 +462,17 @@ public class BanKuaiGuanLi extends JDialog
 			JOptionPane.showMessageDialog(null,"板块已被设置为不在板块分析窗口显示，不可添加！","Warning",JOptionPane.WARNING_MESSAGE);
 			return;
 		}
+		
+		BkChanYeLianTreeNode parent;
+		try { parent = (BkChanYeLianTreeNode) this.tdxbksocialtree.getSelectionPath().getLastPathComponent();
+		} catch (java.lang.NullPointerException e) { JOptionPane.showMessageDialog(null,"请选择父节点!"); 
+			return;
+		}
+		if(parent.getType() == BkChanYeLianTreeNode.DAPAN) {
+			if( !((BanKuai)selectnode).getNodeJiBenMian().isCoreZhiShu() ) {	JOptionPane.showMessageDialog(null,"不是核心指数，不能添加为根节点!");
+				return;
+			}
+		}
 			 
 		int direction = ((SubnodeButton)evt.getSource()).getDirection();
 		this.tdxbksocialtree.addNewNodeToTree (selectnode, direction);

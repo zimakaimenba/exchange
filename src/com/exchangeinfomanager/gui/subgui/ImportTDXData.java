@@ -93,9 +93,8 @@ public class ImportTDXData extends JDialog {
 	{
 		this.bkdbopt = new BanKuaiDbOperation ();
 		this.sysconfig = new SetupSystemConfiguration(); 
-//		this.allbksks = AllCurrentTdxBKAndStoksTree.getInstance();
-		initializeGui ();
 
+		initializeGui ();
 		iniiazlizeZdyGui ();
 		formateGui ();
 		createEvents ();
@@ -130,6 +129,7 @@ public class ImportTDXData extends JDialog {
 		}
 		
 		tfldfloatholder.setText(this.sysconfig.getFloatHoldersFile() ); tfldtopholder.setText(this.sysconfig.getTop10HoldersFile());
+		tflddzhdatafilename.setText( this.sysconfig.getDZHDailyDataFile () );
 	}
 	
 	private void iniiazlizeZdyGui() 
@@ -422,19 +422,25 @@ public class ImportTDXData extends JDialog {
 			}
 		}
 
+		BanKuaiDZHDbOperation dzhdbopt = new BanKuaiDZHDbOperation ();
 		if(chckbximportdzhbk.isSelected() ) {
 			System.out.println("------导入大智慧板块信息开始" + LocalTime.now() );
 			long start=System.currentTimeMillis(); //获取开始时间
-			BanKuaiDZHDbOperation dzhdbopt = new BanKuaiDZHDbOperation ();
 			dzhdbopt.refreshDZHShangHaiZhiShuAndGaiNianBanKuaiFromExportFileToDatabase ();
 			dzhdbopt.refreshDZHShenZhenZhiShuAndGaiNianBanKuaiFromExportFileToDatabase ();
 			dzhdbopt.refreshDZHGaiNianBanKuaiFromExportFileToDatabase ();
 			dzhdbopt.refreshDZHGaiNianBanKuaiGeGu ();
-			dzhdbopt = null;
 			long end=System.currentTimeMillis(); //获取结束时间
 			System.out.println("......导入大智慧板块信息结束" + LocalTime.now()  + ".....导入耗费时间： "+(end-start)+"ms \r\n");
 		}
-		
+		if(chckbximportDZHbkdailyamodata.isSelected()) {
+			System.out.println("------导入大智慧板块信息开始" + LocalTime.now() );
+			long start=System.currentTimeMillis(); //获取开始时间
+			dzhdbopt.refreshDZHBanKuaiVolAmoToDbBulkImport ("BK",tflddzhdatafilename.getText(), 15 );
+			long end=System.currentTimeMillis(); //获取结束时间
+			System.out.println("......导入大智慧板块信息结束" + LocalTime.now()  + ".....导入耗费时间： "+(end-start)+"ms \r\n");
+		}
+		dzhdbopt = null;
 //		if(chkbximportgudong.isSelected()) { //导入TUSHARE的股东数据
 //			String pythoninterpreter = sysconfig.getPythonInterpreter();
 //			String pythonscripts = sysconfig.getPythonScriptsPath ();
@@ -780,6 +786,8 @@ public class ImportTDXData extends JDialog {
 					chckbximporttushareextradata.setSelected(true);
 					ckbxbuquanshuju.setEnabled(false);
 					ckbxbuquanshuju.setSelected(false);
+					chckbximportDZHbkdailyamodata.setSelected(true);
+					chckbximportdzhbk.setSelected(true);
 					
 					LocalTime tdytime = LocalTime.now(); 
 					Calendar cal = Calendar.getInstance();
@@ -792,7 +800,7 @@ public class ImportTDXData extends JDialog {
 					
 					if(wkday == 1 || wkday == 3 ) {
 						chbxdaorutdxsysbk.setSelected(true);
-						chckbximportdzhbk.setSelected(true);
+						
 					}
 						
 					
@@ -816,6 +824,8 @@ public class ImportTDXData extends JDialog {
 					ckbxbuquanshuju.setEnabled(true);
 					ckbxbuquanshuju.setSelected(false);
 					chckbximporttushareextradata.setSelected(false);
+					chckbximportDZHbkdailyamodata.setSelected(false);
+					chckbximportdzhbk.setSelected(false);
 				}
 			}
 		});
@@ -891,11 +901,14 @@ public class ImportTDXData extends JDialog {
 	private JCheckBox chckbximporttushareextradata;
 	private JCheckBox ckbxgddatadwnloded;
 	private JPanel buttonPane;
+	private JCheckBox chckbximportDZHbkdailyamodata;
+	private JLabel label;
+	private JTextField tflddzhdatafilename;
 	
 	private void initializeGui() 
 	{
 		setTitle("\u540C\u6B65\u901A\u8FBE\u4FE1\u6570\u636E");
-		setBounds(100, 100, 731, 900);
+		setBounds(100, 100, 741, 900);
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		
 		pbarbankuai = new JProgressBar();
@@ -910,7 +923,7 @@ public class ImportTDXData extends JDialog {
 		
 		chbxdaorutdxzdybk = new JCheckBox("\u5BFC\u5165\u901A\u8FBE\u4FE1\u81EA\u5B9A\u4E49\u677F\u5757(\u9009\u62E9\u8981\u5BFC\u5165\u7684\u81EA\u5B9A\u4E49\u677F\u5757)");
 		
-		chbxdaorutdxsysbkvol = new JCheckBox("*\u5BFC\u5165\u901A\u8FBE\u4FE1\u677F\u5757\u53CA\u6307\u6570\u6210\u4EA4\u989D\u4FE1\u606F");
+		chbxdaorutdxsysbkvol = new JCheckBox("*\u5BFC\u5165\u901A\u8FBE\u4FE1\u677F\u5757\u53CA\u6BCF\u65E5\u4EA4\u6613\u4FE1\u606F");
 		
 		chbximportcym = new JCheckBox("\u5BFC\u5165\u901A\u8FBE\u4FE1\u80A1\u7968\u73B0\u7528\u540D/\u66FE\u7528\u540D\u4FE1\u606F((\u6BCF\u5468\u540C\u6B65\u4E00\u6B21\u5373\u53EF))");
 		
@@ -1062,81 +1075,61 @@ public class ImportTDXData extends JDialog {
 		JSeparator separator_2 = new JSeparator();
 		
 		JSeparator separator_3 = new JSeparator();
+		
+		chckbximportDZHbkdailyamodata = new JCheckBox("\u5BFC\u5165\u5927\u667A\u6167\u677F\u5757\u6BCF\u65E5\u4EA4\u6613\u4FE1\u606F");
+		
+		label = new JLabel("\u5927\u667A\u6167\u6570\u636E\u6587\u4EF6\u8DEF\u5F84/\u540D\u79F0");
+		
+		tflddzhdatafilename = new JTextField();
+		tflddzhdatafilename.setText("E:/SUPERSTK2.DAD");
+		tflddzhdatafilename.setColumns(10);
 		GroupLayout gl_contentPanel = new GroupLayout(contentPanel);
 		gl_contentPanel.setHorizontalGroup(
 			gl_contentPanel.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_contentPanel.createSequentialGroup()
-					.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
-						.addComponent(scrollPane, Alignment.LEADING)
-						.addGroup(Alignment.LEADING, gl_contentPanel.createSequentialGroup()
+					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_contentPanel.createSequentialGroup()
 							.addGap(7)
 							.addComponent(cbximporttdxgeguinfo)
 							.addGap(14)
 							.addComponent(progressBar_1, GroupLayout.PREFERRED_SIZE, 503, GroupLayout.PREFERRED_SIZE))
-						.addGroup(Alignment.LEADING, gl_contentPanel.createSequentialGroup()
+						.addGroup(gl_contentPanel.createSequentialGroup()
 							.addGap(7)
 							.addComponent(chbximportcym)
 							.addGap(40)
 							.addComponent(progressBar, GroupLayout.PREFERRED_SIZE, 321, GroupLayout.PREFERRED_SIZE))
-						.addGroup(Alignment.LEADING, gl_contentPanel.createSequentialGroup()
+						.addGroup(gl_contentPanel.createSequentialGroup()
 							.addGap(9)
 							.addComponent(chbxdaorutdxsysbk)
 							.addGap(18)
 							.addComponent(pbarbankuai, GroupLayout.PREFERRED_SIZE, 389, GroupLayout.PREFERRED_SIZE))
-						.addGroup(Alignment.LEADING, gl_contentPanel.createSequentialGroup()
+						.addGroup(gl_contentPanel.createSequentialGroup()
 							.addGap(8)
 							.addComponent(chbxdaorutdxzdybk)
 							.addGap(13)
 							.addComponent(cbximportzdyfromout)
 							.addGap(23)
 							.addComponent(tfldoutzdyfile, GroupLayout.PREFERRED_SIZE, 197, GroupLayout.PREFERRED_SIZE))
-						.addGroup(Alignment.LEADING, gl_contentPanel.createSequentialGroup()
+						.addGroup(gl_contentPanel.createSequentialGroup()
 							.addGap(7)
 							.addComponent(scrollPane_1, GroupLayout.PREFERRED_SIZE, 692, GroupLayout.PREFERRED_SIZE))
-						.addGroup(Alignment.LEADING, gl_contentPanel.createSequentialGroup()
+						.addGroup(gl_contentPanel.createSequentialGroup()
 							.addGap(8)
 							.addComponent(chbxdaorutdxsysbkvol)
 							.addGap(26)
 							.addComponent(progressBar_2, GroupLayout.PREFERRED_SIZE, 454, GroupLayout.PREFERRED_SIZE))
-						.addGroup(Alignment.LEADING, gl_contentPanel.createSequentialGroup()
+						.addGroup(gl_contentPanel.createSequentialGroup()
 							.addGap(7)
 							.addComponent(cbxImportSzGeGuVol)
 							.addGap(14)
 							.addComponent(progressBar_4, GroupLayout.PREFERRED_SIZE, 503, GroupLayout.PREFERRED_SIZE))
-						.addGroup(Alignment.LEADING, gl_contentPanel.createSequentialGroup()
+						.addGroup(gl_contentPanel.createSequentialGroup()
 							.addGap(7)
 							.addComponent(chckbximporttushareextradata))
-						.addGroup(Alignment.LEADING, gl_contentPanel.createSequentialGroup()
+						.addGroup(gl_contentPanel.createSequentialGroup()
 							.addContainerGap()
 							.addComponent(ckbxnetease))
-						.addGroup(Alignment.LEADING, gl_contentPanel.createSequentialGroup()
-							.addContainerGap()
-							.addComponent(chckbximportdzhbk, GroupLayout.PREFERRED_SIZE, 212, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(separator_3, GroupLayout.PREFERRED_SIZE, 1, GroupLayout.PREFERRED_SIZE)
-							.addGap(216)
-							.addComponent(separator_2, GroupLayout.PREFERRED_SIZE, 1, GroupLayout.PREFERRED_SIZE))
-						.addGroup(Alignment.LEADING, gl_contentPanel.createSequentialGroup()
-							.addGap(7)
-							.addComponent(separator, GroupLayout.PREFERRED_SIZE, 1, GroupLayout.PREFERRED_SIZE))
-						.addGroup(Alignment.LEADING, gl_contentPanel.createSequentialGroup()
-							.addGap(37)
-							.addComponent(ckbxgddatadwnloded)
-							.addGap(4)
-							.addComponent(lblNewLabel_1)
-							.addGap(14)
-							.addComponent(tfldfloatholder, GroupLayout.PREFERRED_SIZE, 125, GroupLayout.PREFERRED_SIZE)
-							.addGap(8)
-							.addComponent(lblNewLabel_2)
-							.addGap(8)
-							.addComponent(tfldtopholder, GroupLayout.PREFERRED_SIZE, 130, GroupLayout.PREFERRED_SIZE))
-						.addGroup(Alignment.LEADING, gl_contentPanel.createSequentialGroup()
-							.addGap(7)
-							.addComponent(separator_1, GroupLayout.PREFERRED_SIZE, 1, GroupLayout.PREFERRED_SIZE))
-						.addGroup(Alignment.LEADING, gl_contentPanel.createSequentialGroup()
-							.addGap(7)
-							.addComponent(chkbximportgudong))
-						.addGroup(Alignment.LEADING, gl_contentPanel.createSequentialGroup()
+						.addGroup(gl_contentPanel.createSequentialGroup()
 							.addGap(12)
 							.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
 								.addGroup(gl_contentPanel.createSequentialGroup()
@@ -1156,8 +1149,49 @@ public class ImportTDXData extends JDialog {
 									.addPreferredGap(ComponentPlacement.UNRELATED)
 									.addComponent(dctushareextastart, GroupLayout.PREFERRED_SIZE, 77, GroupLayout.PREFERRED_SIZE)
 									.addGap(21)
-									.addComponent(dctushareextaend, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))))
-					.addContainerGap())
+									.addComponent(dctushareextaend, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))))
+						.addGroup(gl_contentPanel.createSequentialGroup()
+							.addContainerGap()
+							.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+								.addGroup(gl_contentPanel.createSequentialGroup()
+									.addComponent(chckbximportdzhbk, GroupLayout.PREFERRED_SIZE, 212, GroupLayout.PREFERRED_SIZE)
+									.addGap(105)
+									.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING, false)
+										.addGroup(gl_contentPanel.createSequentialGroup()
+											.addGap(214)
+											.addComponent(separator_3, GroupLayout.PREFERRED_SIZE, 1, GroupLayout.PREFERRED_SIZE))
+										.addGroup(gl_contentPanel.createSequentialGroup()
+											.addComponent(separator, GroupLayout.PREFERRED_SIZE, 1, GroupLayout.PREFERRED_SIZE)
+											.addGap(53)
+											.addComponent(tflddzhdatafilename)))
+									.addGap(216)
+									.addComponent(separator_2, GroupLayout.PREFERRED_SIZE, 1, GroupLayout.PREFERRED_SIZE))
+								.addGroup(gl_contentPanel.createSequentialGroup()
+									.addComponent(chckbximportDZHbkdailyamodata)
+									.addGap(34)
+									.addComponent(label))))
+						.addGroup(gl_contentPanel.createSequentialGroup()
+							.addContainerGap()
+							.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+								.addGroup(gl_contentPanel.createSequentialGroup()
+									.addGap(21)
+									.addComponent(ckbxgddatadwnloded)
+									.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+										.addGroup(gl_contentPanel.createSequentialGroup()
+											.addGap(89)
+											.addComponent(separator_1, GroupLayout.PREFERRED_SIZE, 1, GroupLayout.PREFERRED_SIZE))
+										.addGroup(gl_contentPanel.createSequentialGroup()
+											.addPreferredGap(ComponentPlacement.UNRELATED)
+											.addComponent(lblNewLabel_1)))
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(tfldfloatholder, GroupLayout.PREFERRED_SIZE, 125, GroupLayout.PREFERRED_SIZE)
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(lblNewLabel_2)
+									.addPreferredGap(ComponentPlacement.UNRELATED)
+									.addComponent(tfldtopholder, GroupLayout.PREFERRED_SIZE, 209, GroupLayout.PREFERRED_SIZE))
+								.addComponent(chkbximportgudong)))
+						.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 615, GroupLayout.PREFERRED_SIZE))
+					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 		);
 		gl_contentPanel.setVerticalGroup(
 			gl_contentPanel.createParallelGroup(Alignment.LEADING)
@@ -1199,33 +1233,36 @@ public class ImportTDXData extends JDialog {
 					.addComponent(chckbximporttushareextradata)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(ckbxnetease)
-					.addGap(1)
-					.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
-						.addComponent(separator_2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(separator_3, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(chckbximportdzhbk, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE))
-					.addGap(4)
-					.addComponent(separator, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addGap(4)
+					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_contentPanel.createSequentialGroup()
+							.addGap(30)
+							.addGroup(gl_contentPanel.createParallelGroup(Alignment.TRAILING)
+								.addComponent(separator_2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+								.addComponent(separator_3, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+							.addGap(4)
+							.addComponent(separator, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+						.addGroup(gl_contentPanel.createSequentialGroup()
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(chckbximportdzhbk, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE)
+							.addGap(2)
+							.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
+								.addComponent(chckbximportDZHbkdailyamodata)
+								.addComponent(label)
+								.addComponent(tflddzhdatafilename, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))))
+					.addGap(29)
 					.addComponent(chkbximportgudong)
 					.addGap(4)
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.LEADING)
-						.addComponent(ckbxgddatadwnloded)
+						.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
+							.addComponent(ckbxgddatadwnloded)
+							.addComponent(lblNewLabel_1)
+							.addComponent(tfldfloatholder, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+							.addComponent(lblNewLabel_2)
+							.addComponent(tfldtopholder, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 						.addGroup(gl_contentPanel.createSequentialGroup()
-							.addGap(4)
-							.addComponent(lblNewLabel_1))
-						.addGroup(gl_contentPanel.createSequentialGroup()
-							.addGap(1)
-							.addComponent(tfldfloatholder, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-						.addGroup(gl_contentPanel.createSequentialGroup()
-							.addGap(4)
-							.addComponent(lblNewLabel_2))
-						.addGroup(gl_contentPanel.createSequentialGroup()
-							.addGap(1)
-							.addComponent(tfldtopholder, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
-					.addGap(4)
-					.addComponent(separator_1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addGap(33)
+							.addGap(21)
+							.addComponent(separator_1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
+					.addGap(12)
 					.addGroup(gl_contentPanel.createParallelGroup(Alignment.BASELINE)
 						.addComponent(lblNewLabel)
 						.addComponent(txfldbqsjnodecode, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)

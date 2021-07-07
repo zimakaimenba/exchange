@@ -344,6 +344,7 @@ public class BanKuai extends TDXNodes
 		}
 	}
 	
+	private ServicesForNodeBanKuai svsofnodeofbk;
 	public ServicesForNodeBanKuai getBanKuaiService (Boolean getorreset)
 	{
 		if(!getorreset) {
@@ -356,11 +357,13 @@ public class BanKuai extends TDXNodes
 		
 		if(this.getType() == BkChanYeLianTreeNode.TDXBK)
 			svsofnodeofbk = new SvsForNodeOfBanKuai ();
-		else
+		else if(this.getType() == BkChanYeLianTreeNode.DZHBK)
 			svsofnodeofbk = new SvsForNodeOfDZHBanKuai ();
 		
 		return svsofnodeofbk;
 	}
+	
+	private ServicesForNode svsofnode;
 	public ServicesForNode getServicesForNode (Boolean getorreset)
 	{
 		if(!getorreset) {
@@ -368,14 +371,16 @@ public class BanKuai extends TDXNodes
 			return null;
 		}
 		
-		if(svsofnode == null)
-			return svsofnode = new SvsForNodeOfBanKuai ();
-		else
+		if(svsofnode != null)
 			return this.svsofnode;
+		
+		if(this.getType() == BkChanYeLianTreeNode.TDXBK)
+			svsofnode = new SvsForNodeOfBanKuai ();
+		else if(this.getType() == BkChanYeLianTreeNode.DZHBK)
+			svsofnode = new SvsForNodeOfDZHBanKuai ();
+		
+		return svsofnode;
 	}
-	
-	private SvsForNodeOfBanKuai svsofnode;
-	private ServicesForNodeBanKuai svsofnodeofbk;
 	
 	public class BanKuaiOperationSetting 
 	{

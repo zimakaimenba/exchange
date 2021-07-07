@@ -602,6 +602,7 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 		((BanKuai)node).getBanKuaiOperationSetting().setExportTowWlyFile(exporttowkfile);
 		((BanKuai)node).getBanKuaiOperationSetting().setImportBKGeGu(importbkgg);
 		((BanKuai)node).getBanKuaiOperationSetting().setBanKuaiLabelColor (bkcolor);
+		((BanKuai)node).getNodeJiBenMian().setIsCoreZhiShu(corezhishu);
 		
 		return node;
 		        

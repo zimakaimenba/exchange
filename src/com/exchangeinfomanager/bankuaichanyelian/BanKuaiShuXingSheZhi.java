@@ -35,6 +35,9 @@ import javax.swing.JOptionPane;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
 import java.awt.Font;
+import java.awt.MouseInfo;
+import java.awt.Point;
+
 import javax.swing.DefaultComboBoxModel;
 
 
@@ -132,6 +135,11 @@ public class BanKuaiShuXingSheZhi extends JPanel
 	}
 	private void createEvetns() 
 	{
+		cbxcorezhishu.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent arg0) {
+				buttonapplybksetting.setEnabled(true);
+			}
+		});
 		chkbxnotexportwklyfile.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent arg0) {
 				buttonapplybksetting.setEnabled(true);
@@ -248,6 +256,9 @@ public class BanKuaiShuXingSheZhi extends JPanel
         @Override
         public void mouseClicked(MouseEvent e) {
             super.mouseClicked(e);
+//            Point location = MouseInfo.getPointerInfo().getLocation();
+            Point location = colorButton.getLocation();
+            colorChooser.setLocation(location);
             colorChooser.setVisible(true);
             colorButton.setBackground(colorChooser.getColor());
         }

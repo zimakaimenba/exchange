@@ -1659,7 +1659,7 @@ public final class StockCalendarAndNewDbOperation
 	    	try {result.close();result = null;} catch (SQLException e) {e.printStackTrace();}
 	    }
 
-        logger.debug("Database: query was successful [SELECT * FROM LABEL]");
+//        logger.debug("Database: query was successful [SELECT * FROM LABEL]");
         return labels;
     }
     /**

@@ -35,9 +35,6 @@ import com.google.common.collect.Sets.SetView;
 
 public class BanKuaiGeGuBasicTableRenderer extends BanKuaiAndGeguTableBasicRenderer
 {
-//	protected BandKuaiAndGeGuTableBasicModel tablemodel;
-//	protected Properties prop;
-	
 	protected BanKuaiGeGuBasicTableRenderer (Properties prop1) {
 		super (prop1);
 	}
@@ -71,17 +68,19 @@ public class BanKuaiGeGuBasicTableRenderer extends BanKuaiAndGeguTableBasicRende
 	    Collection<Tag> keywordsset = ((BanKuaiGeGuBasicTableModel)tablemodel).getCurrentHighlightKeyWords ();
 	    if(keywordsset != null) {
 	    	Collection<Tag> curtags = stock.getNodeTags ();
-		    SetView<Tag> intersection = Sets.intersection((HashSet<Tag>)keywordsset, (HashSet<Tag>)curtags);
-		    if( !intersection.isEmpty() && intersection.size() == keywordsset.size() ) {
-		    	String IntersectionWithTagsColor = prop.getProperty ( "IntersectionWithTagsColor");
-	    		Color tagcolor;
-	    		if(IntersectionWithTagsColor != null)	tagcolor = Color.decode(IntersectionWithTagsColor);
-	    		else 	tagcolor = Color.RED;
-		    	Border outsidefortag = new MatteBorder(1, 0, 1, 0,tagcolor);
-		    	Border insidefortag = new EmptyBorder(0, 1, 0, 1);
-		    	Border highlightfortag = new CompoundBorder(outsidefortag, insidefortag);
-		    	jc.setBorder( highlightfortag );
-		    }
+	    	if(curtags != null) {
+	    		SetView<Tag> intersection = Sets.intersection((HashSet<Tag>)keywordsset, (HashSet<Tag>)curtags);
+			    if( !intersection.isEmpty() && intersection.size() == keywordsset.size() ) {
+			    	String IntersectionWithTagsColor = prop.getProperty ( "IntersectionWithTagsColor");
+		    		Color tagcolor;
+		    		if(IntersectionWithTagsColor != null)	tagcolor = Color.decode(IntersectionWithTagsColor);
+		    		else 	tagcolor = Color.RED;
+			    	Border outsidefortag = new MatteBorder(1, 0, 1, 0,tagcolor);
+			    	Border insidefortag = new EmptyBorder(0, 1, 0, 1);
+			    	Border highlightfortag = new CompoundBorder(outsidefortag, insidefortag);
+			    	jc.setBorder( highlightfortag );
+			    }
+	    	}
 	    }
 	    
 	    Color foreground = Color.BLACK, background = Color.white;
@@ -101,6 +100,4 @@ public class BanKuaiGeGuBasicTableRenderer extends BanKuaiAndGeguTableBasicRende
 	    
 	    return comp;
 	}
-	
-
 }

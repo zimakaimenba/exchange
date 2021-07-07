@@ -11,11 +11,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.RandomAccessFile;
-import java.io.UnsupportedEncodingException;
 import java.net.URL;
 
 import java.nio.charset.Charset;
-import java.sql.ResultSet;
+
 import java.sql.SQLException;
 
 import java.text.DateFormat;
@@ -1729,8 +1728,8 @@ public class BanKuaiDbOperation
 	{
 		Collection<BkChanYeLianTreeNode> curallbk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getAllRequiredNodes(BkChanYeLianTreeNode.TDXBK);
 		
-		this.getTDXBanKuaiShuJuJiLuMasMinDateByJiaoYiSuo ("SH");
-		this.getTDXBanKuaiShuJuJiLuMasMinDateByJiaoYiSuo ("SZ");
+		this.getTDXBanKuaiShuJuJiLuMaxMinDateByJiaoYiSuo ("SH");
+		this.getTDXBanKuaiShuJuJiLuMaxMinDateByJiaoYiSuo ("SZ");
 		
 		this.getTDXBanKuaiGeGuDuiYingBiaoByJiaoYiSuo ("SH");
 	    this.getTDXBanKuaiGeGuDuiYingBiaoByJiaoYiSuo ("SZ");
@@ -1820,6 +1819,9 @@ public class BanKuaiDbOperation
 		setTDXBanKuaiGeGuDuiYingBiao (sqlquerystat4);
 		
 	}
+	/*
+	 * 
+	 */
 	private void setTDXBanKuaiGeGuDuiYingBiao (String sqlquerystat1)
 	{
 		CachedRowSetImpl rsdm = connectdb.sqlQueryStatExecute(sqlquerystat1);
@@ -1847,7 +1849,7 @@ public class BanKuaiDbOperation
 	/*
 	 * 
 	 */
-	private void getTDXBanKuaiShuJuJiLuMasMinDateByJiaoYiSuo (String jiaoyisuo)
+	private void getTDXBanKuaiShuJuJiLuMaxMinDateByJiaoYiSuo (String jiaoyisuo)
 	{
 		String cjltablename;
 		if(jiaoyisuo.toLowerCase().equals("sh"))			cjltablename = "通达信板块每日交易信息";
@@ -1901,7 +1903,7 @@ public class BanKuaiDbOperation
 		String filenamerule = volamooutput.get(1);
 		String dateRule = volamooutput.get(2);
 		
-		getTDXBanKuaiShuJuJiLuMasMinDateByJiaoYiSuo (jiaoyisuo);
+		getTDXBanKuaiShuJuJiLuMaxMinDateByJiaoYiSuo (jiaoyisuo);
 		
 		String cjltablename;
 		if(jiaoyisuo.toLowerCase().equals("sh"))			cjltablename = "通达信板块每日交易信息";
@@ -2551,7 +2553,6 @@ public class BanKuaiDbOperation
 		
 		return stockcodesetbyshizhirang;
 	}
-
 	/*
 	 * 板块设定时间跨度内和大盘相比的按周期占比。
 	 */
@@ -2699,7 +2700,6 @@ public class BanKuaiDbOperation
 
 		return bankuai;
 	}
-
 	/*
 	 * 股票对板块的按周占比
 	 */
@@ -4401,7 +4401,7 @@ public class BanKuaiDbOperation
 		String filenamerule = volamooutput.get(1);
 		String dateRule = volamooutput.get(2);
 		
-		getTDXBanKuaiShuJuJiLuMasMinDateByJiaoYiSuo (jiaoyisuo);
+		getTDXBanKuaiShuJuJiLuMaxMinDateByJiaoYiSuo (jiaoyisuo);
 		
 		String cjltablename;
 		if(jiaoyisuo.toLowerCase().equals("sh"))	cjltablename = "通达信板块每日交易信息";

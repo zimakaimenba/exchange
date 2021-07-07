@@ -168,8 +168,7 @@ public class TreeOfChanYeLian  extends BanKuaiAndStockTree implements CylTreeUpd
         	parent = (BkChanYeLianTreeNode) currentNode.getParent();
 
         	enableoperation = this.checkNodeDuplicate (parent,cylnode);
-        	if( enableoperation ) {
-            		JOptionPane.showMessageDialog(null,"同级中已经存在相同名称子版块或与父节点重名，不能重复添加!");
+        	if( enableoperation ) {   		JOptionPane.showMessageDialog(null,"同级中已经存在相同名称子版块或与父节点重名，不能重复添加!");
             		return;
             }
             

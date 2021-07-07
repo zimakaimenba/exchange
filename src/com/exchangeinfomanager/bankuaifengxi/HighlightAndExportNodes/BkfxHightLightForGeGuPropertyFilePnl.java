@@ -5,6 +5,8 @@ import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.MouseInfo;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -721,14 +723,15 @@ public class BkfxHightLightForGeGuPropertyFilePnl extends JPanel implements OnCa
 			JFileChooser chooser = new JFileChooser();
 			chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 			chooser.setCurrentDirectory(new File(parsedpath) );
-			
+
 			if(chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
 			    if(chooser.getSelectedFile().isDirectory())
 			    	filename = (chooser.getSelectedFile()+ "\\").replace('\\', '/');
 			    else
 			    	filename = (chooser.getSelectedFile()).toString().replace('\\', '/');
-			} else
+			} else { ckboxparsefile.setSelected(false);
 				return ;
+			}
 		}
 		
 		if(!filename.endsWith("EBK") && !filename.endsWith("XML")) { //不是板块文件
