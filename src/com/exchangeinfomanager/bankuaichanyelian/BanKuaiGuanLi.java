@@ -449,6 +449,44 @@ public class BanKuaiGuanLi extends JDialog
 	}
 	private void addBanKuaiButtonActionPerformed(java.awt.event.ActionEvent evt) 
 	{
+		String selecttitle = tabbedPaneBk.getTitleAt( tabbedPaneBk.getSelectedIndex() );
+		if(selecttitle.contains("通达信"))
+			addTDXBanKuaiToBanKuaiSocialTree (evt);
+		else if(selecttitle.contains("大智慧"))
+			addDZHBanKuaiToBanKuaiSocialTree (evt);
+	}
+	private void addDZHBanKuaiToBanKuaiSocialTree (java.awt.event.ActionEvent evt)
+	{
+		int row = tableDzhBk.getSelectedRow();
+		if(row <0) {	JOptionPane.showMessageDialog(null,"请选择一个板块！","Warning",JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+		
+		BkChanYeLianTreeNode selectnode = (BkChanYeLianTreeNode) ( tableDzhBk.getModel().getValueAt(row, 0) );
+		if(selectnode.getType() != BkChanYeLianTreeNode.DZHBK)
+			return;
+		
+		if( !((BanKuai)selectnode).getBanKuaiOperationSetting().isShowinbkfxgui() ) {
+			JOptionPane.showMessageDialog(null,"板块已被设置为不在板块分析窗口显示，不可添加！","Warning",JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+		
+		BkChanYeLianTreeNode parent;
+		try { parent = (BkChanYeLianTreeNode) this.tdxbksocialtree.getSelectionPath().getLastPathComponent();
+		} catch (java.lang.NullPointerException e) { JOptionPane.showMessageDialog(null,"请选择父节点!"); 
+			return;
+		}
+		if(parent.getType() == BkChanYeLianTreeNode.DAPAN) {
+			if( !((BanKuai)selectnode).getNodeJiBenMian().isCoreZhiShu() ) {	JOptionPane.showMessageDialog(null,"不是核心指数，不能添加为根节点!");
+				return;
+			}
+		}
+			 
+		int direction = ((SubnodeButton)evt.getSource()).getDirection();
+		this.tdxbksocialtree.addNewNodeToTree (selectnode, direction);
+	}
+	private void addTDXBanKuaiToBanKuaiSocialTree (java.awt.event.ActionEvent evt)
+	{
 		int row = tableSysBk.getSelectedRow();
 		if(row <0) {	JOptionPane.showMessageDialog(null,"请选择一个板块！","Warning",JOptionPane.WARNING_MESSAGE);
 			return;

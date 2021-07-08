@@ -27,7 +27,7 @@ public class RuleOfLiuTongShiZhi //extends BasicRule //extends RuleOfNodeXdataBa
     		@Fact("evaperiod") String evaperiod,
     		@Fact("evacond") BanKuaiAndGeGuMatchingConditions evacond ) 
 	{
-		if(evanode.getType() == BkChanYeLianTreeNode.TDXBK)
+		if(evanode.getType() == BkChanYeLianTreeNode.TDXBK || evanode.getType() == BkChanYeLianTreeNode.DZHBK)
 			return false;
 		
 		Double ltszmin ;

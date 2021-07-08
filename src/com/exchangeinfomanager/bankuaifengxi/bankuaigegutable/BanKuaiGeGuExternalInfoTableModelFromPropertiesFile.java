@@ -10,16 +10,12 @@ import com.exchangeinfomanager.nodes.stocknodexdata.StockNodesXPeriodData;
 
 public class BanKuaiGeGuExternalInfoTableModelFromPropertiesFile extends BanKuaiGeGuBasicTableModel
 {
-//	private Properties prop;
-
-
 	public BanKuaiGeGuExternalInfoTableModelFromPropertiesFile (Properties prop)
 	{
 		super (prop);
 	}
 
 	private static Logger logger = Logger.getLogger(BanKuaiGeGuExternalInfoTableModelFromPropertiesFile.class);
-
 	/*
 	 * 
 	 */
@@ -38,9 +34,7 @@ public class BanKuaiGeGuExternalInfoTableModelFromPropertiesFile extends BanKuai
 		  
 		  StockOfBanKuai stock = (StockOfBanKuai) entryList.get(row);
 		  ((StockOfBanKuai)stock).setStockQuanZhong(newweight);
-//		  String stockcode = stock.getMyOwnCode();
-//	      curbk.setGeGuSuoShuBanKuaiWeight(stockcode,newweight);
+
 		  this.fireTableDataChanged();
 	  }
-
 }

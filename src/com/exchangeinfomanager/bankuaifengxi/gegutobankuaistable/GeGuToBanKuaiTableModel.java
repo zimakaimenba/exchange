@@ -45,6 +45,18 @@ public class GeGuToBanKuaiTableModel  extends BandKuaiAndGeGuTableBasicModel
 			entryList.add(tmpbk);
 		}
 		
+		Set<BkChanYeLianTreeNode> curdzhbklist = stock.getGeGuCurSuoShuDZHSysBanKuaiList();
+		for(BkChanYeLianTreeNode tmpbk : curdzhbklist) {
+			if( ((BanKuai)tmpbk).getBanKuaiLeiXing().equals(BanKuai.HASGGNOSELFCJL) 
+					||  ((BanKuai)tmpbk).getBanKuaiLeiXing().equals(BanKuai.NOGGNOSELFCJL)  ) //有些指数是没有个股和成交量的，不列入比较范围
+				continue;
+			
+			if( !((BanKuai)tmpbk).getBanKuaiOperationSetting().isShowinbkfxgui() )
+				continue;
+			
+			entryList.add(tmpbk);
+		}
+		
     	this.fireTableDataChanged();
 	}
 	public Object getValueAt(int rowIndex, int columnIndex) 

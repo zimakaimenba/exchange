@@ -32,12 +32,12 @@ public class BanKuaiInfoTableModel extends BandKuaiAndGeGuTableBasicModel
 	/*
 	 * 
 	 */
-	public void refresh  (LocalDate curselectdate,int difference2, String period)
+	public void refresh  (LocalDate curselectdate,int difference2, String period )
 	{
 		super.showwknum = curselectdate;
 		super.difference = difference2;
 		super.curperiod = period;
-		super.curbk = (DaPan)CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getModel().getRoot();
+		super.curbk =  (DaPan)CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getModel().getRoot();
 		
 		try{ if(entryList != null) //∞¥≥…Ωª∂Ó≈≈–Ú
 				Collections.sort(entryList, new NodeChenJiaoErComparator(showwknum,difference,curperiod) );
@@ -47,7 +47,7 @@ public class BanKuaiInfoTableModel extends BandKuaiAndGeGuTableBasicModel
 		this.fireTableDataChanged();
 	}
 	
-	public void refresh  (List<BkChanYeLianTreeNode> bklist,LocalDate curselectdate,int difference2, String period)
+	public void refresh  (List<BkChanYeLianTreeNode> bklist,LocalDate curselectdate,int difference2, String period )
 	{
 		super.entryList = bklist;
 		super.showwknum = curselectdate;

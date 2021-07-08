@@ -1,11 +1,9 @@
 package com.exchangeinfomanager.NodesServices;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
@@ -15,22 +13,15 @@ import com.exchangeinfomanager.Trees.CreateExchangeTree;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.nodes.Stock;
-import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
+import com.exchangeinfomanager.nodes.DaPan;
 
-public class SvsForNodeOfDaPan implements ServicesForNode
+public class SvsForNodeOfDZHDaPan implements ServicesForNode
 {
+	private SvsForNodeOfDZHBanKuai servicsofbk;
 
-	private BanKuaiAndStockTree allbkstk;
-	private BanKuaiDbOperation bkdbopt;
-	private SvsForNodeOfBanKuai servicsofbk;
-
-	public SvsForNodeOfDaPan ()
+	public SvsForNodeOfDZHDaPan ()
 	{
-		this.bkdbopt = new BanKuaiDbOperation ();
-		allbkstk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks();
-		
-		servicsofbk = new SvsForNodeOfBanKuai  ();
+		servicsofbk = new SvsForNodeOfDZHBanKuai  ();
 	}
 
 //	@Override
@@ -63,24 +54,25 @@ public class SvsForNodeOfDaPan implements ServicesForNode
 //	}
 
 	@Override
-	public BkChanYeLianTreeNode getNodeData(BkChanYeLianTreeNode bankuai, LocalDate requiredstartday,
+	public BkChanYeLianTreeNode getNodeData(BkChanYeLianTreeNode dapan, LocalDate requiredstartday,
 			LocalDate requiredendday, String period, Boolean calwholeweek) 
 	{
-		BanKuai shdpbankuai = 	(BanKuai)allbkstk.getSpecificNodeByHypyOrCode("999999",BkChanYeLianTreeNode.TDXBK);
-		BanKuai szdpbankuai = 	(BanKuai)allbkstk.getSpecificNodeByHypyOrCode("399001",BkChanYeLianTreeNode.TDXBK);
-		BanKuai cybdpbankuai = 	(BanKuai)allbkstk.getSpecificNodeByHypyOrCode("399006",BkChanYeLianTreeNode.TDXBK);
+//		BanKuai shdpbankuai = 	(BanKuai)CreateExchangeTree.CreateTreeOfDZHBanKuaiAndStocks().getSpecificNodeByHypyOrCode("999999",BkChanYeLianTreeNode.DZHBK);
+//		BanKuai szdpbankuai = 	(BanKuai)CreateExchangeTree.CreateTreeOfDZHBanKuaiAndStocks().getSpecificNodeByHypyOrCode("399001",BkChanYeLianTreeNode.DZHBK);
+//		BanKuai cybdpbankuai = 	(BanKuai)CreateExchangeTree.CreateTreeOfDZHBanKuaiAndStocks().getSpecificNodeByHypyOrCode("399006",BkChanYeLianTreeNode.DZHBK);
 		
+		BanKuai shdpbankuai = ((DaPan)dapan).getDaPanShangHai ();
+		BanKuai szdpbankuai = ((DaPan)dapan).getDaPanShenZhen ();
 		shdpbankuai = 	(BanKuai) this.servicsofbk.getNodeData(shdpbankuai,requiredstartday,requiredendday,period,calwholeweek);
 		szdpbankuai = 	(BanKuai) this.servicsofbk.getNodeData(szdpbankuai,requiredstartday,requiredendday,period,calwholeweek);
-		cybdpbankuai = 	(BanKuai) this.servicsofbk.getNodeData(cybdpbankuai,requiredstartday,requiredendday,period,calwholeweek);
 		
-		return bankuai;
+		return dapan;
 	}
 
 	@Override
 	public BkChanYeLianTreeNode getNodeData(String bkcode, LocalDate requiredstartday, LocalDate requiredendday,
 			String period, Boolean calwholeweek) {
-		BkChanYeLianTreeNode result = this.getNodeData( allbkstk.getSpecificNodeByHypyOrCode("999999",BkChanYeLianTreeNode.TDXBK),
+		BkChanYeLianTreeNode result = this.getNodeData( CreateExchangeTree.CreateTreeOfDZHBanKuaiAndStocks().getSpecificNodeByHypyOrCode("999999",BkChanYeLianTreeNode.DZHBK),
 				requiredstartday, requiredendday, period,calwholeweek);
 		return result;
 	}
@@ -89,26 +81,28 @@ public class SvsForNodeOfDaPan implements ServicesForNode
 	public BkChanYeLianTreeNode getNodeKXian(String bkcode, LocalDate requiredstartday, LocalDate requiredendday,
 			String period,Boolean calwholeweek)
 	{
-		this.getNodeKXian ( (BanKuai) allbkstk.getSpecificNodeByHypyOrCode("999999",BkChanYeLianTreeNode.TDXBK),
+		this.getNodeKXian ( (BanKuai) CreateExchangeTree.CreateTreeOfDZHBanKuaiAndStocks().getSpecificNodeByHypyOrCode("999999",BkChanYeLianTreeNode.DZHBK),
 				requiredstartday, requiredendday, period, calwholeweek);
 		
 		return null;
 	}
 
 	@Override
-	public BkChanYeLianTreeNode getNodeKXian(BkChanYeLianTreeNode bk, LocalDate requiredstartday,
+	public BkChanYeLianTreeNode getNodeKXian(BkChanYeLianTreeNode dapan, LocalDate requiredstartday,
 			LocalDate requiredendday, String period,Boolean calwholeweek) 
 	{
-		this.getNodeData(bk, requiredstartday, requiredendday, period, calwholeweek);
+//		this.getNodeData(bk, requiredstartday, requiredendday, period, calwholeweek);
 		
-		BanKuai shdpbankuai = (BanKuai) allbkstk.getSpecificNodeByHypyOrCode("999999",BkChanYeLianTreeNode.TDXBK);
-		BanKuai szdpbankuai = (BanKuai) allbkstk.getSpecificNodeByHypyOrCode("399001",BkChanYeLianTreeNode.TDXBK);
-		BanKuai cybdpbankuai = (BanKuai) allbkstk.getSpecificNodeByHypyOrCode("399006",BkChanYeLianTreeNode.TDXBK);
+//		BanKuai shdpbankuai = (BanKuai) CreateExchangeTree.CreateTreeOfDZHBanKuaiAndStocks().getSpecificNodeByHypyOrCode("999999",BkChanYeLianTreeNode.DZHBK);
+//		BanKuai szdpbankuai = (BanKuai) CreateExchangeTree.CreateTreeOfDZHBanKuaiAndStocks().getSpecificNodeByHypyOrCode("399001",BkChanYeLianTreeNode.DZHBK);
+//		BanKuai cybdpbankuai = (BanKuai) CreateExchangeTree.CreateTreeOfDZHBanKuaiAndStocks().getSpecificNodeByHypyOrCode("399006",BkChanYeLianTreeNode.DZHBK);
+		
+		BanKuai shdpbankuai = ((DaPan)dapan).getDaPanShangHai ();
+		BanKuai szdpbankuai = ((DaPan)dapan).getDaPanShenZhen ();
 		
 		shdpbankuai = (BanKuai) this.servicsofbk.getNodeKXian(shdpbankuai, requiredstartday, requiredendday,period,true);
 		szdpbankuai = (BanKuai) this.servicsofbk.getNodeKXian(szdpbankuai, requiredstartday, requiredendday,period,true);
-		cybdpbankuai = (BanKuai) this.servicsofbk.getNodeKXian(cybdpbankuai, requiredstartday, requiredendday, period,true);
-		
+//		cybdpbankuai = (BanKuai) this.servicsofbk.getNodeKXian(cybdpbankuai, requiredstartday, requiredendday, period,true);
 		
 		return null;
 	}
@@ -136,13 +130,16 @@ public class SvsForNodeOfDaPan implements ServicesForNode
 	}
 
 	@Override
-	public void syncNodeData(BkChanYeLianTreeNode bk) 
+	public void syncNodeData(BkChanYeLianTreeNode dapan) 
 	{
-		BanKuai shdpbankuai = (BanKuai) allbkstk.getSpecificNodeByHypyOrCode("999999",BkChanYeLianTreeNode.TDXBK);
+		BanKuai shdpbankuai = ((DaPan)dapan).getDaPanShangHai ();
+		BanKuai szdpbankuai = ((DaPan)dapan).getDaPanShenZhen ();
+		
+//		BanKuai shdpbankuai = (BanKuai) CreateExchangeTree.CreateTreeOfDZHBanKuaiAndStocks().getSpecificNodeByHypyOrCode("999999",BkChanYeLianTreeNode.DZHBK);
 		shdpbankuai.getServicesForNode(true).syncNodeData(shdpbankuai);
 		shdpbankuai.getServicesForNode(false);
 		
-		BanKuai szdpbankuai = (BanKuai) allbkstk.getSpecificNodeByHypyOrCode("399001",BkChanYeLianTreeNode.TDXBK);
+//		BanKuai szdpbankuai = (BanKuai) CreateExchangeTree.CreateTreeOfDZHBanKuaiAndStocks().getSpecificNodeByHypyOrCode("399001",BkChanYeLianTreeNode.DZHBK);
 		szdpbankuai.getServicesForNode(true).syncNodeData(szdpbankuai);
 		szdpbankuai.getServicesForNode(false);
 	}
@@ -256,3 +253,4 @@ public class SvsForNodeOfDaPan implements ServicesForNode
 	}
 
 }
+

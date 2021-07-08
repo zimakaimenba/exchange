@@ -2573,16 +2573,17 @@ public class BanKuaiDbOperation
 		
 		NodeXPeriodData nodewkperioddata = bankuai.getNodeXPeroidData(period);
 		
-		String bkcode = bankuai.getMyOwnCode();
-		String bkcjltable;
 		String bkcys = bankuai.getNodeJiBenMian().getSuoShuJiaoYiSuo();
-		if(bkcys == null)
-			return bankuai;
-		if(bkcys.toLowerCase().equals("sh"))
+		if(bkcys == null)	return bankuai;
+		String bkcjltable = null;
+		if(bkcys.equalsIgnoreCase("sh"))
 			bkcjltable = "通达信板块每日交易信息";
-		else
+		else if(bkcys.equalsIgnoreCase("sz"))
 			bkcjltable = "通达信交易所指数每日交易信息";
+		else if(bkcys.equalsIgnoreCase("BK"))	
+			bkcjltable = "大智慧板块每日交易信息";
 		
+		String bkcode = bankuai.getMyOwnCode();
 		String formatedstartdate = selecteddatestart.toString();
 		String formatedenddate  = selecteddateend.toString();
 		
@@ -3877,6 +3878,8 @@ public class BanKuaiDbOperation
 		String searchtable = null;
 		if(bk.getType() == BkChanYeLianTreeNode.TDXBK) 
 			searchtable = this.getBanKuaiJiaoYiLiangBiaoName(bk);
+		else if(bk.getType() == BkChanYeLianTreeNode.DZHBK)
+			searchtable = "大智慧板块每日交易信息";
 		
 		TemporalField fieldCH = WeekFields.of(Locale.CHINA).dayOfWeek();
 		try{

@@ -4,6 +4,9 @@ package com.exchangeinfomanager.nodes;
 import java.time.LocalDate;
 
 import com.exchangeinfomanager.NodesServices.ServicesForNode;
+import com.exchangeinfomanager.NodesServices.SvsForNodeOfBanKuai;
+import com.exchangeinfomanager.NodesServices.SvsForNodeOfDZHBanKuai;
+import com.exchangeinfomanager.NodesServices.SvsForNodeOfDZHDaPan;
 import com.exchangeinfomanager.NodesServices.SvsForNodeOfDaPan;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC.DaPanXPeriodDataForJFC;
@@ -15,7 +18,7 @@ public class DaPan extends TDXNodes
 
 	public DaPan(String dapcode, String dapanname) 
 	{
-		super(dapcode,"╢Сел");
+		super(dapcode,dapanname);
 		super.nodetype = BkChanYeLianTreeNode.DAPAN;
 		
 //		super.nodetreerelated = new NodesTreeRelated (this);
@@ -23,7 +26,7 @@ public class DaPan extends TDXNodes
 //	private static Logger logger = Logger.getLogger(DaPan.class);
 	private BanKuai shanghai; //
 	private BanKuai shenzhen; //
-	private SvsForNodeOfDaPan svsdp;
+	private ServicesForNode svsdp;
 	
 	public void setDaPanContents (BanKuai sh,BanKuai sz)
 	{
@@ -34,6 +37,14 @@ public class DaPan extends TDXNodes
 		super.nodedaydata = new DaPanXPeriodDataForJFC (NodeGivenPeriodDataItem.DAY,shanghai,shenzhen) ;
 	}
 	
+	public BanKuai getDaPanShangHai ()
+	{
+		return this.shanghai;
+	}
+	public BanKuai getDaPanShenZhen ()
+	{
+		return this.shenzhen;
+	}
 	/*
 	 * 
 	 */
@@ -52,20 +63,22 @@ public class DaPan extends TDXNodes
 //		svsdp.getNodeData("000000",requiredstartday, requiredendday,period,calwholeweek);
 //	}
 
-	@Override
-	public ServicesForNode getServicesForNode(Boolean getornot) {
-		if(!getornot) {
+	public ServicesForNode getServicesForNode (Boolean getorreset)
+	{
+		if(!getorreset) {
 			svsdp = null;
 			return null;
 		}
-			
-		if(svsdp == null) {
+		
+		if(svsdp != null)
+			return this.svsdp;
+		
+		if(this.shanghai.getType() == BkChanYeLianTreeNode.TDXBK)
 			svsdp = new SvsForNodeOfDaPan ();
-			return svsdp;
-		}
-		else 
-			return svsdp;
-
+		else if(this.shanghai.getType() == BkChanYeLianTreeNode.DZHBK)
+			svsdp = new SvsForNodeOfDZHDaPan ();
+		
+		return svsdp;
 	}
 	
 }

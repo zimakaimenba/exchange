@@ -572,7 +572,7 @@ import com.udojava.evalex.Expression;
 	 * 每日均量和上周均量的差额
 	 */
 	public Double getChengJiaoErDailyAverageDifferenceWithLastPeriod(LocalDate requireddate,int difference)
-	{
+	{int i=0;
 		if(nodeohlc == null)
 			return null;
 		
@@ -2243,14 +2243,12 @@ import com.udojava.evalex.Expression;
 		protected Boolean isNodeDataFuPaiAfterTingPai (TDXNodes superbk, LocalDate requireddate,int difference)
 		{
 			RegularTimePeriod curperiod = super.getJFreeChartFormateTimePeriodForAMO(requireddate,difference);
-			if(curperiod == null)
-				return null;
+			if(curperiod == null)	return null;
 			
 			int index = this.nodeamo.getIndex( curperiod );
 			
 			TimeSeriesDataItem lastcjlrecord = null;
-			try{
-				lastcjlrecord = nodeamo.getDataItem( index - 1);
+			try{	lastcjlrecord = nodeamo.getDataItem( index - 1);
 			} catch (java.lang.ArrayIndexOutOfBoundsException e ) {
 				logger.debug("index = 0，可能是新股第一周");
 				return true;
@@ -2264,15 +2262,15 @@ import com.udojava.evalex.Expression;
 			String nodept = getNodeperiodtype();
 			DaPan dapan = (DaPan)superbk.getRoot();
 			NodeXPeriodData dpxata = dapan.getNodeXPeroidData(nodept);
-//			int superbkindex = bkxdata.getIndexOfSpecificDateOHLCData(requireddate, 0);
-			int bklstindex = 0;
-			for(int i= -1;;i--) {
-				Integer bklastxdata = dpxata.getIndexOfSpecificDateOHLCData(requireddate, i);
+			Integer bklstindex = null;
+			for(int i= -1;i>=-4;i--) { //大盘连续停牌4周的可能性大概为0
+				Integer bklastxdata = dpxata.getIndexOfSpecificDateOHLCData(requireddate, difference - i);
 				if(bklastxdata != null) {
 					bklstindex = bklastxdata;
 					break;
 				}
 			}
+			if(bklstindex == null) 	return false;  //大盘没有数据,默认为没有停牌
 			LocalDate bklastlocaldate = dpxata.getLocalDateOfSpecificIndexOfOHLCData(bklstindex);
 			
 			WeekFields weekFields = WeekFields.of(Locale.getDefault());

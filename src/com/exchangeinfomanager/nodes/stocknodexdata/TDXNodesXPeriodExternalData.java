@@ -1060,6 +1060,9 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 //				expectedate = requireddate.plus(difference,ChronoUnit.MONTHS);
 			}
 
+			int count = this.nodeamozhanbi.getItemCount();
+			TimeSeriesDataItem item = this.nodeamozhanbi.getDataItem(count -1);
+			RegularTimePeriod itemperiod = item.getPeriod();
 			Integer curindex = this.nodeamozhanbi.getIndex(period);
 			try {
 				if(curindex >= 0 ) {

@@ -116,21 +116,19 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 	}
 	@Override
 	public Double getChengJiaoErDailyAverageDifferenceWithLastPeriod(LocalDate requireddate, int difference) 
-	{
+	{int i=0;
 		String recordsperiod = getNodeperiodtype();
 		
 		NodeXPeriodData shanghaiperiodrecords = shanghai.getNodeXPeroidData(recordsperiod);
 		Double shdiff = shanghaiperiodrecords.getChengJiaoErDailyAverageDifferenceWithLastPeriod(requireddate,difference);
 		
 		NodeXPeriodData shenzhenperiodrecords = shenzhen.getNodeXPeroidData(recordsperiod);
-		LocalDate start = shenzhenperiodrecords.getOHLCRecordsStartDate();
-		LocalDate end = shenzhenperiodrecords.getOHLCRecordsEndDate();
-		Double szcurrecord = shenzhenperiodrecords.getChengJiaoErDailyAverageDifferenceWithLastPeriod(requireddate,difference);
+		Double szdiff = shenzhenperiodrecords.getChengJiaoErDailyAverageDifferenceWithLastPeriod(requireddate,difference);
 		
 		if(shdiff == null)
 			return null;
 		try {
-			double result = shdiff + szcurrecord; 
+			double result = shdiff + szdiff; 
 			return result;
 		} catch ( java.lang.NullPointerException e) {
 			e.printStackTrace();

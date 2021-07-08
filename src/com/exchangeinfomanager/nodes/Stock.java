@@ -112,13 +112,20 @@ public class Stock extends TDXNodes {
 		else
 			return suoShuCurDZHBanKuai;
 	}
-
 	/**
 	 * @param stockbanks 
 	 * @param tmpsysbk the suoShuBanKuai to set
 	 */
 	public void setGeGuCurSuoShuDZHSysBanKuaiList( Set<BkChanYeLianTreeNode> stockbanks) {
 		this.suoShuCurDZHBanKuai = stockbanks;
+	}
+	public void addGeGuDZHSysBanKuai (BanKuai bk)
+	{
+		if( this.suoShuCurDZHBanKuai == null)
+			this.suoShuCurDZHBanKuai = new HashSet<>();
+		
+		if(!this.suoShuCurDZHBanKuai.contains(bk))
+			this.suoShuCurDZHBanKuai.add(bk);
 	}
 	
 	/*

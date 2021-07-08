@@ -14,13 +14,11 @@ import com.google.common.base.Splitter;
 
 public class BanKuaiGeGuTableModelFromPropertiesFile extends BanKuaiGeGuBasicTableModel 
 {
-
 	BanKuaiGeGuTableModelFromPropertiesFile (Properties prop) 
 	{
 		super (prop);
 	}
 
 	private static Logger logger = Logger.getLogger(BanKuaiGeGuTableModelFromPropertiesFile.class);
-
 }
 

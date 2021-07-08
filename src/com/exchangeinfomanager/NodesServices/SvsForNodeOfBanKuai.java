@@ -119,7 +119,6 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 		NodeXPeriodData nodedayperioddata = ((BanKuai) bankuai).getNodeXPeroidData(period);
 		if(nodedayperioddata.getOHLCRecordsStartDate() == null) {
 			bankuai = bkdbopt.getBanKuaiKXianZouShi (((BanKuai) bankuai),requiredstartday,requiredendday,period);
-			
 			return bankuai;
 		}
 		
@@ -134,7 +133,6 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 				
 				requiredstartday = LocalDate.of(newstartdt.getYear(), newstartdt.getMonthOfYear(), newstartdt.getDayOfMonth()).with(DayOfWeek.MONDAY);
 				requiredendday = LocalDate.of(newenddt.getYear(), newenddt.getMonthOfYear(), newenddt.getDayOfMonth()).with(DayOfWeek.FRIDAY);
-				
 				bankuai = bkdbopt.getBanKuaiKXianZouShi (((BanKuai) bankuai),requiredstartday,requiredendday,period);
 		}
 		

@@ -75,10 +75,8 @@ public  abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 		String[] jtableTitleStrings = new String[columnmaxnumber];
 		for(int i=0;i<columnmaxnumber;i++) {
 			String column_name  = prop.getProperty (String.valueOf(i) + "column_name");
-			if(column_name != null)
-				jtableTitleStrings[i] = column_name ;
-			else
-				jtableTitleStrings[i] = "NULL";
+			if(column_name != null)	jtableTitleStrings[i] = column_name ;
+			else	jtableTitleStrings[i] = "NULL";
 		}
 
 		this.setTableHeader(jtableTitleStrings);
@@ -104,10 +102,8 @@ public  abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 	}
 	@Override
 	public int getRowCount() 	{
-		 if(entryList == null)
-			 return 0;
-		 else 
-			 return entryList.size();
+		 if(entryList == null)	return 0;
+		 else	return entryList.size();
 	}
 
 	    @Override
@@ -125,7 +121,6 @@ public  abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 	    public boolean isCellEditable(int row,int column) {
 	    	return false;
 		}
-	    
 	    
 	    public List<BkChanYeLianTreeNode> getAllNodes ()
 	    {
@@ -213,7 +208,7 @@ public  abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 			      value = tagslist;
 			     break;
 		  		case "SuoShuBanKuai" :
-		  			if (node.getType() == BkChanYeLianTreeNode.TDXBK) {
+		  			if (node.getType() == BkChanYeLianTreeNode.TDXBK || node.getType() == BkChanYeLianTreeNode.DZHBK) {
 		  				value = node.getMyOwnCode() + node.getMyOwnName();
 		  			} else 
 		  			if( node.getType() == BkChanYeLianTreeNode.BKGEGU ) {
@@ -270,7 +265,7 @@ public  abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 			    	value =  nodetimerangezhangfu;
 				    break;
 			  case "CoreZhiShu":
-				  	if (node.getType() == BkChanYeLianTreeNode.TDXBK) 
+				  	if (node.getType() == BkChanYeLianTreeNode.TDXBK || node.getType() == BkChanYeLianTreeNode.DZHBK) 
 		  				value = ((BanKuai)node).getNodeJiBenMian().isCoreZhiShu();
 		  			else value = Boolean.FALSE;
 		  }

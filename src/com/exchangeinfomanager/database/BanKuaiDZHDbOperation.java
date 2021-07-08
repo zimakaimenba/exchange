@@ -299,299 +299,547 @@ public class BanKuaiDZHDbOperation
 		 return;
 		
 	}
+//	/*
+//	 * 板块设定时间跨度内和大盘相比的按周期占比。
+//	 */
+//	public  BanKuai getBanKuaiZhanBi (BanKuai bankuai,LocalDate selecteddatestart,LocalDate selecteddateend,String period)
+//	{
+//		if(bankuai == null  )		return null;
+//		
+//		selecteddatestart = selecteddatestart.with(DayOfWeek.MONDAY);
+//		if(!bankuai.isNodeDataAtNotCalWholeWeekMode() )
+//			selecteddateend = selecteddateend.with(DayOfWeek.FRIDAY);
+//		
+//		//本函数初始是开发为周的占比，所以日/月线的占比掉用其他函数
+//		if(period.equals(NodeGivenPeriodDataItem.DAY)) //调用日线查询函数
+//			; 
+//		else if(period.equals(NodeGivenPeriodDataItem.MONTH)) //调用月线查询函数
+//			;
+//		
+//		NodeXPeriodData nodewkperioddata = bankuai.getNodeXPeroidData(period);
+//		
+//		String bkcode = bankuai.getMyOwnCode();
+//		String bkcjltable = null;
+//		String bkcys = bankuai.getNodeJiBenMian().getSuoShuJiaoYiSuo();
+//		if(bkcys == null)	return bankuai;
+//		if(bkcys.equalsIgnoreCase("BK"))	bkcjltable = "大智慧板块每日交易信息";
+//		else return bankuai;
+//
+//		String formatedstartdate = selecteddatestart.toString();
+//		String formatedenddate  = selecteddateend.toString();
+//		
+//		//包含成交量和成交额的SQL
+//		String sqlquerystat = "SELECT YEAR(t.workday) AS CALYEAR, WEEK(t.workday) AS CALWEEK, M.BKCODE AS BKCODE, t.EndOfWeekDate AS EndOfWeekDate," +
+//				 "M.板块周交易额 as 板块周交易额, SUM(T.AMO) AS 大盘周交易额 ,  M.板块周交易额/SUM(T.AMO) AS CJE占比,\r\n" +
+//
+//				"M.板块周交易量 as 板块周交易量, SUM(T.VOL) AS 大盘周交易量 ,  M.板块周交易量/SUM(T.VOL) AS VOL占比, \r\n" +
+//				"  M.JILUTIAOSHU  \r\n"+
+//				 
+//				"FROM\r\n" + 
+//				"(\r\n" + 
+//				"SELECT  通达信板块每日交易信息.`交易日期` as workday, DATE(通达信板块每日交易信息.交易日期 + INTERVAL (6 - DAYOFWEEK(通达信板块每日交易信息.交易日期)) DAY) as EndOfWeekDate, \r\n" + 
+//				"		  sum(通达信板块每日交易信息.`成交额`) AS AMO , sum(通达信板块每日交易信息.`成交量`) AS VOL \r\n" + 
+//				"FROM 通达信板块每日交易信息 \r\n" + 
+//				"WHERE 代码 = '999999' AND 通达信板块每日交易信息.`交易日期` BETWEEN '" + formatedstartdate + "' AND '" + formatedenddate + "' \r\n" + 
+//				" GROUP by YEARWEEK(通达信板块每日交易信息.`交易日期`,2)\r\n" + 
+//				"\r\n" + 
+//				"UNION ALL\r\n" + 
+//				"\r\n" + 
+//				"select  通达信交易所指数每日交易信息.`交易日期` as workday,   DATE(通达信交易所指数每日交易信息.交易日期 + INTERVAL (6 - DAYOFWEEK(通达信交易所指数每日交易信息.交易日期)) DAY) as EndOfWeekDate, \r\n" + 
+//				"			sum(通达信交易所指数每日交易信息.`成交额`) AS AMO, sum(通达信交易所指数每日交易信息.`成交量`) AS VOL \r\n" + 
+//				"from 通达信交易所指数每日交易信息\r\n" + 
+//				"where 代码 = '399001' AND 通达信交易所指数每日交易信息.`交易日期` BETWEEN '" + formatedstartdate + "' AND '" + formatedenddate + "' \r\n" + 
+//				" group by YEARWEEK(通达信交易所指数每日交易信息.`交易日期`,2)\r\n" + 
+//				") T,\r\n" + 
+//				"\r\n" + 
+//				"(select " + bkcjltable + ".`代码` AS BKCODE, " + bkcjltable + ".`交易日期` as workday,  "
+//						+ "sum( " + bkcjltable + ".`成交额`) AS 板块周交易额 , \r\n"
+//						+ "sum( " + bkcjltable + ".`成交量`) AS 板块周交易量, \r\n"
+//						+ " count(1) as JILUTIAOSHU \r\n"
+//						+ "from " + bkcjltable + "\r\n" +
+//						
+//				"where 代码 = '" + bkcode + "' AND " + bkcjltable + ".`交易日期` BETWEEN '" + formatedstartdate + "' AND '" + formatedenddate + "' \r\n" + 
+//				"GROUP BY YEARWEEK( " + bkcjltable + ".`交易日期`,2)\r\n" + 
+//				") M\r\n" + 
+//				" WHERE YEARWEEK(T.WORKDAY,2) = YEARWEEK(M.WORKDAY,2) \r\n" + 
+//				"  GROUP BY YEARWEEK(t.workday,2)"
+//				;
+//		
+//		String sqlquerystatfx = "SELECT 操作记录重点关注.`日期`, COUNT(*) AS RESULT FROM 操作记录重点关注 \r\n" + 
+//				" WHERE 股票代码='" + bkcode + "'" + "\r\n" + 
+//				" AND 操作记录重点关注.`日期` between '" + formatedstartdate + "' AND '" + formatedenddate + "' \r\n" +
+//				" GROUP BY YEAR(操作记录重点关注.`日期`), WEEK(操作记录重点关注.`日期`) "
+//				;
+//		
+//		CachedRowSetImpl rs = null;
+//		CachedRowSetImpl rsfx = null;
+//		try {
+//			//分析
+//			rsfx = tdxconnectdb.sqlQueryStatExecute(sqlquerystatfx);
+//			while(rsfx.next()) {
+//				java.sql.Date recdate = rsfx.getDate("日期");
+//				org.jfree.data.time.Week wknum = new org.jfree.data.time.Week(recdate);
+//				Integer reccount = rsfx.getInt("RESULT");
+//				nodewkperioddata.addFxjgToPeriod(wknum, reccount);
+//			}
+//			
+//			//交易
+//			rs = tdxconnectdb.sqlQueryStatExecute(sqlquerystat);
+//			
+//			while(rs.next()) {
+//				java.sql.Date lastdayofweek = rs.getDate("EndOfWeekDate");
+//				ZonedDateTime zdtime = lastdayofweek.toLocalDate().with(DayOfWeek.FRIDAY).atStartOfDay(ZoneOffset.UTC);
+//				org.jfree.data.time.Week wknum = new org.jfree.data.time.Week(lastdayofweek);
+//				
+//				Double bankuaicje = rs.getDouble("板块周交易额");
+//				Double dapancje = rs.getDouble("大盘周交易额");
+//				Double cjezb = rs.getDouble("CJE占比");
+//
+//				Double bankuaicjl = rs.getDouble("板块周交易量");
+//				Double dapancjl = rs.getDouble("大盘周交易量");
+//				Double cjlzb = rs.getDouble("VOL占比");
+//				
+//				int exchangedaysnumber = rs.getInt("JILUTIAOSHU");
+//				
+//				NodeGivenPeriodDataItem bkperiodrecord = new NodeGivenPeriodDataItemForJFC( bkcode, NodeGivenPeriodDataItem.WEEK,
+//						wknum, 0.0, 0.0,  0.0,  0.0,bankuaicjl, bankuaicje );
+//				
+////				NodeGivenPeriodDataItem bkperiodrecord = new NodeGivenPeriodDataItemForTA4J( bkcode, NodeGivenPeriodDataItem.WEEK,
+////						zdtime, PrecisionNum.valueOf(0.0), PrecisionNum.valueOf(0.0),  PrecisionNum.valueOf(0.0),  PrecisionNum.valueOf(0.0), 
+////						PrecisionNum.valueOf(bankuaicjl), PrecisionNum.valueOf(bankuaicje) );
+//				
+//				bkperiodrecord.setNodeToDpChenJiaoErZhanbi(cjezb);
+//				bkperiodrecord.setNodeToDpChenJiaoLiangZhanbi(cjlzb);
+//				bkperiodrecord.setUplevelChengJiaoEr(dapancje);
+//				bkperiodrecord.setUplevelChengJiaoLiang(dapancjl);
+//				bkperiodrecord.setExchangeDaysNumber(exchangedaysnumber);
+//				
+//				nodewkperioddata.addNewXPeriodData(bkperiodrecord);
+//				
+//				wknum = null;
+//				bkperiodrecord = null;
+//				bankuaicje = null;
+//				dapancje = null;
+//				lastdayofweek = null;
+//				bankuaicjl = null;
+//				dapancjl = null;
+//			}
+//		}	catch(java.lang.NullPointerException e){e.printStackTrace();
+//	    } 	catch(Exception e){e.printStackTrace();
+//	    }  	finally {
+//	    	try {	rs.close();	rsfx.close();	rs = null;rsfx = null;bkcjltable = null;	} catch (SQLException e) {e.printStackTrace();}
+//	    }
+//
+//		return bankuai;
+//	}
+//	/*
+//	 * 从数据库中获取板块某时间段的日线走势，而个股是从CSV中读取
+//	 */
+//	public BanKuai getBanKuaiKXianZouShi(BanKuai bk, LocalDate nodestartday, LocalDate nodeendday, String period) 
+//	{//本函数初始是开发为日周期的K线数据，
+//		if(period.equals(NodeGivenPeriodDataItem.WEEK)) //调用周线查询函数
+//			; 
+//		else if(period.equals(NodeGivenPeriodDataItem.MONTH)) //调用月线查询函数
+//			;
+//
+//		String searchtable = null;
+//		String bkcys = bk.getNodeJiBenMian().getSuoShuJiaoYiSuo();
+//		if(bkcys == null)
+//			return bk;
+//		if(bkcys.equalsIgnoreCase("BK"))
+//			searchtable = "大智慧板块每日交易信息";
+//		else return bk;
+//		
+//		TemporalField fieldCH = WeekFields.of(Locale.CHINA).dayOfWeek();
+//		try{
+//			nodestartday = nodestartday.with(fieldCH, 1); //确保K线总是显示完整得一周
+//		} catch (java.lang.NullPointerException e) {return bk;}
+//		if(!bk.isNodeDataAtNotCalWholeWeekMode() )
+//			nodeendday = nodeendday.with(fieldCH, 7);
+//		
+//		NodeXPeriodData nodedayperioddata = bk.getNodeXPeroidData(period);
+//
+//		String nodecode = bk.getMyOwnCode();
+//		
+//		String sqlquerystat = "SELECT *  FROM " + searchtable + " \r\n" + 
+//				"WHERE 代码='" + nodecode + "'" + "\r\n" + 
+//				"AND 交易日期  between'" + nodestartday + "' AND '" + nodeendday + "'"
+//				;
+//		
+//		CachedRowSetImpl rsfx = tdxconnectdb.sqlQueryStatExecute(sqlquerystat);
+//		LocalDate lastdaydate = nodestartday.with(fieldCH, 6); //
+////		org.ta4j.core.TimeSeries nodenewohlc = new BaseTimeSeries.SeriesBuilder().withName(bk.getMyOwnCode()).build();
+//		OHLCSeries nodenewohlc = new OHLCSeries (bk.getMyOwnCode());
+//		try {  
+//			 rsfx = tdxconnectdb.sqlQueryStatExecute(sqlquerystat);
+//			
+//			 while(rsfx.next()) {
+//				 double open = rsfx.getDouble("开盘价");
+//				 double high = rsfx.getDouble("最高价");
+//				 double low = rsfx.getDouble("最低价");
+//				 double close = rsfx.getDouble("收盘价");
+//				 double cje = rsfx.getDouble("成交额");
+//				 double cjl = rsfx.getDouble("成交量");
+//				 java.sql.Date actiondate = rsfx.getDate("交易日期");
+//				 ZonedDateTime zdtime = actiondate.toLocalDate().atStartOfDay(ZoneOffset.UTC);
+//				 org.jfree.data.time.Day recordday = new org.jfree.data.time.Day (actiondate);
+//				 
+//				 NodeGivenPeriodDataItem bkperiodrecord = new NodeGivenPeriodDataItemForJFC( bk.getMyOwnCode(), NodeGivenPeriodDataItem.DAY,
+//						 recordday, open, high,  low,  close, 
+//							cjl, cje );
+//				 
+////				 NodeGivenPeriodDataItem bkperiodrecord = new NodeGivenPeriodDataItemForTA4J( bk.getMyOwnCode(), NodeGivenPeriodDataItem.DAY,
+////							zdtime, PrecisionNum.valueOf(open), PrecisionNum.valueOf(high),  PrecisionNum.valueOf(low),  PrecisionNum.valueOf(close), 
+////							PrecisionNum.valueOf(cjl), PrecisionNum.valueOf(cje) );
+//				 
+//				 
+//				 nodedayperioddata.addNewXPeriodData(bkperiodrecord);
+//				 
+//				 //计算周线OHLC数据
+//				 WeekFields weekFields = WeekFields.of(Locale.getDefault()); 
+//				 int lastdayweekNumber = lastdaydate.get(weekFields.weekOfWeekBasedYear());
+//				 int curweekNumber = actiondate.toLocalDate().get(weekFields.weekOfWeekBasedYear());
+//				 if(lastdayweekNumber == curweekNumber) {
+//					 try{
+////						 nodenewohlc.addBar( (NodeGivenPeriodDataItemForTA4J)bkperiodrecord);
+//						 nodenewohlc.add( (NodeGivenPeriodDataItemForJFC)bkperiodrecord);
+//					 } catch (java.lang.IllegalArgumentException e) {
+//						 e.printStackTrace();
+//					 }
+//				 } else {
+//					 //换周了，计算上一周周线OHLC 数据
+//					 this.getTDXNodesWeeklyKXianZouShiForJFC(bk, lastdaydate.with(DayOfWeek.FRIDAY), nodenewohlc);
+//					 
+//					 nodenewohlc = null;
+//					 nodenewohlc = new OHLCSeries (bk.getMyOwnCode());
+//					 lastdaydate = actiondate.toLocalDate().with(DayOfWeek.FRIDAY);
+//					 nodenewohlc.add( (NodeGivenPeriodDataItemForJFC)bkperiodrecord);
+//				 }
+//				 
+//				 bkperiodrecord = null;
+//			 }
+//			 //目前算法最后一周要跳出循环后才能计算
+//			 this.getTDXNodesWeeklyKXianZouShiForJFC(bk, lastdaydate.with(DayOfWeek.FRIDAY), nodenewohlc);
+//			 
+//				
+//		} catch(java.lang.NullPointerException e){e.printStackTrace();
+//		} catch (SQLException e) {e.printStackTrace();
+//		} catch(Exception e){e.printStackTrace();
+//		} finally {
+//			try {if(rsfx != null) rsfx.close();} catch (SQLException e) {e.printStackTrace();}
+//			rsfx = null;
+//			searchtable = null;
+//			nodenewohlc = null;
+//		}
+//
+//		return bk;
+//	}
+//	/*
+//	 * 函数需要修改
+//	 */
+//	private TDXNodes getTDXNodesWeeklyKXianZouShiForJFC (TDXNodes tdxnode, LocalDate friday, OHLCSeries nodenewohlc)
+//	{
+//		int newcount = nodenewohlc.getItemCount();
+//		if(newcount == 0)
+//			return tdxnode;
+//		
+//		TDXNodesXPeriodDataForJFC nodexdata =  (TDXNodesXPeriodDataForJFC) tdxnode.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
+//		//在前面处理周线成交量等数据的时候，已经存了OHLC的数据，都是0，现在要把这个数据找到，是情况处理
+//		Integer spcohlcdataindex = nodexdata.getIndexOfSpecificDateOHLCData(friday, 0);
+//		if(spcohlcdataindex != null) {
+//			OHLCItem wkohlcdata = nodexdata.getSpecificDateOHLCData(friday,0);
+//			double wkclose = wkohlcdata.getCloseValue(); double wkhigh = wkohlcdata.getHighValue();
+//			double wklow = wkohlcdata.getLowValue(); double wkopen = wkohlcdata.getOpenValue() ;
+//			if(! (wkclose == 0 && wkhigh == 0 && wklow == 0 && wkopen	== 0) ) 
+//				return tdxnode; //都不是0，说明正确的数据已经在前面找出来了，直接退出。
+//		} 
+//		
+//		try { //都是0，就把原来的数据移除，然后把新数据放进去
+//			if(spcohlcdataindex != null) 
+//				nodexdata.getOHLCData().remove(spcohlcdataindex.intValue());
+//			
+//		} catch (java.lang.ArrayIndexOutOfBoundsException e) {e.printStackTrace();}
+//		
+//		Double weeklyopen = null;
+//		try{
+//			OHLCItem newohlcdata0 = (OHLCItem) nodenewohlc.getDataItem(0);
+//			weeklyopen = newohlcdata0.getOpenValue();
+//		} catch (java.lang.IndexOutOfBoundsException e) {e.printStackTrace();}
+//
+//		//Close Of this week
+//		OHLCItem newohlcdatalast = (OHLCItem) nodenewohlc.getDataItem(nodenewohlc.getItemCount()-1); 
+//		Double weeklyclose = newohlcdatalast.getCloseValue();
+//
+//		Double weeklyhigh=0.0; Double weeklylow=10000000.0; 
+//		for(int i=0;i<nodenewohlc.getItemCount();i++) {
+//			OHLCItem newohlctmp = (OHLCItem) nodenewohlc.getDataItem(i);
+//			if( newohlctmp.getHighValue() > weeklyhigh)
+//				weeklyhigh = newohlctmp.getHighValue();
+//			
+//			if( newohlctmp.getLowValue() < weeklylow)
+//				weeklylow = newohlctmp.getLowValue();
+//		}
+//		
+//		java.sql.Date sqldate = null;
+//		try {
+//			DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
+//			 sqldate = new java.sql.Date(format.parse(friday.toString()).getTime());
+//		} catch (ParseException e) {e.printStackTrace();}
+//		try {
+//			org.jfree.data.time.Week recordwk = new org.jfree.data.time.Week (sqldate);
+//			nodexdata.getOHLCData().add(new OHLCItem(recordwk,weeklyopen,weeklyhigh,weeklylow,weeklyclose) );
+//		} catch(Exception e) {e.printStackTrace();}
+//
+//		return tdxnode;
+//	}
+//	/*
+//	 * 
+//	 */
+//	public BanKuai getBanKuaiGeGuZhanBi(BanKuai bk,LocalDate selecteddatestart,LocalDate selecteddateend,String period)
+//	{
+//		if(period.equals(NodeGivenPeriodDataItem.DAY)) //调用日线查询函数
+//			; 
+//		else if(period.equals(NodeGivenPeriodDataItem.MONTH)) //调用月线查询函数
+//			;
+//		
+//		getBanKuaiGeGuZhanBiByJys( bk, selecteddatestart, selecteddateend, period,"SH");
+//		getBanKuaiGeGuZhanBiByJys( bk, selecteddatestart, selecteddateend, period,"SZ");
+//		return bk;
+//	}
+//	/*
+//	 * 
+//	 */
+//	private BanKuai getBanKuaiGeGuZhanBiByJys(BanKuai bk,LocalDate selecteddatestart,LocalDate selecteddateend,String period,String jys)
+//	{
+//		List<BkChanYeLianTreeNode> bkshgegu = bk.getAllGeGuOfBanKuaiInHistoryByJiaoYiSuo(jys);
+//		if(bkshgegu == null  || bkshgegu.isEmpty())
+//			return bk;
+//		
+//		String bkggstr = "";
+//		for(BkChanYeLianTreeNode stockofbk : bkshgegu) {
+//			//系统后台如果自动下载了个股的数据，再在这里做一次，浪费时间，要判断
+////			Stock stock = (Stock) CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode(stockofbk.getMyOwnCode(), BkChanYeLianTreeNode.TDXGG);
+//			Stock stock = ((StockOfBanKuai)stockofbk).getStock();
+//			if(stock == null) continue;
+//			
+//			NodeXPeriodData nodewkperioddata = stock.getNodeXPeroidData(period);
+//			if(nodewkperioddata.getAmoRecordsStartDate() != null) //如果有数据，就不做了，至于数据是否完整，后面有个股自己的同步来保证。这样简单点。
+//				continue;
+//			
+//			bkggstr  = bkggstr + "'" + stockofbk.getMyOwnCode() +  "', ";
+//		}
+//		if(bkggstr.isBlank() )
+//			return bk;
+//		bkggstr = bkggstr.substring(0, bkggstr.length() -2);
+//		
+//		String bkcjltable =   "大智慧板块每日交易信息";;
+//		String formatedstartdate = selecteddatestart.toString();
+//		String formatedenddate  = selecteddateend.toString();
+//		//包含成交量和成交额的SQL
+//				String sqlquerystat = "SELECT YEAR(t.workday) AS CALYEAR, WEEK(t.workday,1) AS CALWEEK, M.BKCODE AS BKCODE, \r\n"
+//						+ "t.StartOfWeekDate AS StartOfWeekDate, t.EndOfWeekDate AS EndOfWeekDate, \r\n" +
+//						 "M.板块周交易额 as 板块周交易额, SUM(T.AMO) AS 大盘周交易额 ,  M.板块周交易额/SUM(T.AMO) AS CJE占比, \r\n" +
+//						"M.板块周交易量 as 板块周交易量, SUM(T.VOL) AS 大盘周交易量 ,  M.板块周交易量/SUM(T.VOL) AS VOL占比, \r\n" +
+//						"M.板块周换手率 as 板块周换手率, M.板块周自由流通换手率 AS 板块周自由流通换手率, \r\n"
+//						+ "M.总市值/M.SHIZHIJILUTIAOSHU   as 周平均总市值, "
+//						+ "M.总流通市值/M.SHIZHIJILUTIAOSHU   as 周平均流通市值, \r\n"
+//						+ "M.JILUTIAOSHU , M.SHIZHIJILUTIAOSHU  , \r\n"
+//						+ "M.周最大涨跌幅,M.周最小涨跌幅   ,M.涨停,M.跌停        \r\n" +
+//						 
+//						"FROM\r\n" + 
+//						"(\r\n" + 
+//						"select 通达信板块每日交易信息.`交易日期` as workday, "
+//						+ " 	DATE(通达信板块每日交易信息.交易日期 + INTERVAL (2 - DAYOFWEEK(通达信板块每日交易信息.交易日期)) DAY) as StartOfWeekDate, \r\n"
+//						+ "		DATE(通达信板块每日交易信息.交易日期 + INTERVAL (6 - DAYOFWEEK(通达信板块每日交易信息.交易日期)) DAY) as EndOfWeekDate, \r\n" + 
+//						"		sum(通达信板块每日交易信息.`成交额`) AS AMO , sum(通达信板块每日交易信息.`成交量`) AS VOL \r\n" + 
+//						"from 通达信板块每日交易信息\r\n" + 
+//						"where 代码 = '999999'\r\n" + 
+//						" AND 通达信板块每日交易信息.`交易日期` BETWEEN '" + formatedstartdate + "' AND '" + formatedenddate + "' \r\n"+
+//						" group by YEARWEEK(通达信板块每日交易信息.`交易日期`,2)\r\n" + 
+//						"\r\n" + 
+//						"UNION ALL\r\n" + 
+//						"\r\n" + 
+//						"select  通达信交易所指数每日交易信息.`交易日期` as workday,   "
+//						+"		DATE(通达信交易所指数每日交易信息.交易日期 + INTERVAL (2 - DAYOFWEEK(通达信交易所指数每日交易信息.交易日期)) DAY) as StartOfWeekDate, \r\n"
+//						+" 		DATE(通达信交易所指数每日交易信息.交易日期 + INTERVAL (6 - DAYOFWEEK(通达信交易所指数每日交易信息.交易日期)) DAY) as EndOfWeekDate, \r\n" + 
+//						"		sum(通达信交易所指数每日交易信息.`成交额`) AS AMO, sum(通达信交易所指数每日交易信息.`成交量`) AS VOL \r\n" + 
+//						"from 通达信交易所指数每日交易信息\r\n" + 
+//						"where 代码 = '399001' "
+//						+" AND 通达信交易所指数每日交易信息.`交易日期` BETWEEN '" + formatedstartdate + "' AND '" + formatedenddate + "' \r\n"+ 
+//						"group by YEARWEEK(通达信交易所指数每日交易信息.`交易日期`,2)\r\n" + 
+//						") T,\r\n" + 
+//						"\r\n" + 
+//						"(select " + bkcjltable + ".`代码` AS BKCODE, " + bkcjltable + ".`交易日期` as workday,  "
+//								+ " sum( " + bkcjltable + ".`成交额`) AS 板块周交易额 , \r\n"
+//								+ " sum( " + bkcjltable + ".`成交量`) /100 AS 板块周交易量,  \r\n"
+//								+ " sum( " + bkcjltable + ".`换手率`) AS 板块周换手率 , \r\n"
+//								+ " sum( " + bkcjltable + ".`自由流通换手率`) AS 板块周自由流通换手率 , \r\n"
+//								+ " sum( " + bkcjltable + ".`总市值`) AS 总市值 , \r\n"
+//								+ " sum( " + bkcjltable + ".`流通市值`) AS 总流通市值, \r\n"
+//								+ "  COUNT(1) as JILUTIAOSHU ,\r\n"
+//								+ "  COUNT(" + bkcjltable + ".`总市值`) AS SHIZHIJILUTIAOSHU,"
+//								+ ""
+//								+ "max(" + bkcjltable + ".`涨跌幅`) as 周最大涨跌幅, \r\n"
+//								+ "min(" + bkcjltable + ".`涨跌幅`) as 周最小涨跌幅, \r\n"
+//								+ "COUNT( IF(" + bkcjltable + ".`涨跌幅` >= 9.0,1,NULL) ) AS 涨停, \r\n"
+//								+ "COUNT( IF(" + bkcjltable + ".`涨跌幅` <= -9.0,1,NULL) ) AS 跌停  \r\n"
+//								+ " from " + bkcjltable + "\r\n" +  
+//						" Where 代码  IN (" + bkggstr + " ) \r\n" + 
+//						" AND " + bkcjltable + ".`交易日期` BETWEEN '" + formatedstartdate + "' AND '" + formatedenddate + "' \r\n" +
+//						" GROUP BY 代码,  YEARWEEK( " + bkcjltable +".`交易日期`,2)\r\n" + 
+//						") M\r\n" + 
+//						" WHERE   YEARWEEK(T.WORKDAY,2) = YEARWEEK(M.WORKDAY,2)\r\n" + 
+//						" GROUP BY bkcode,  YEARWEEK(t.workday,2)"
+//						;
+//		CachedRowSetImpl rs = null; Stock stock = null; String curstockcode = ""; NodeXPeriodData nodewkperioddata = null;
+//		try {
+//			rs = tdxconnectdb.sqlQueryStatExecute(sqlquerystat);
+//			while(rs.next()) {
+//				String stockcode = rs.getString("bkcode");
+//				if(!curstockcode.equalsIgnoreCase(stockcode) )  {
+//					curstockcode = stockcode;
+//					stock = (Stock) CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode(stockcode, BkChanYeLianTreeNode.TDXGG);
+//					if(stock == null) continue;
+//					else nodewkperioddata = stock.getNodeXPeroidData(period);
+//				}
+//				java.sql.Date startdayofweek = rs.getDate("StartOfWeekDate");
+//				java.sql.Date lastdayofweek = rs.getDate("EndOfWeekDate");
+//				double stockcje = rs.getDouble("板块周交易额") ;
+//				double dapancje = rs.getDouble("大盘周交易额") ;
+//				double cjezb = rs.getDouble("CJE占比") ;
+//				double stockcjl = rs.getDouble("板块周交易量") ;
+//				double dapancjl = rs.getDouble("大盘周交易量") ;
+//				double cjlzb = rs.getDouble("VOL占比") ;
+//				double huanshoulv = rs.getDouble("板块周换手率") ;
+//				double huanshoulvfree = rs.getDouble("板块周自由流通换手率");
+//				double pingjunzongshizhi = rs.getDouble("周平均总市值") ;
+//				double pingjunliutongshizhi = rs.getDouble("周平均流通市值") ;
+//				double periodhighestzhangdiefu = rs.getDouble("周最大涨跌幅") ;
+//				double periodlowestzhangdiefu = rs.getDouble("周最小涨跌幅") ;
+//				int exchengdaysnumber = rs.getInt("JILUTIAOSHU") ;
+//				int zhangtingnum = rs.getInt("涨停") ;
+//				int dietingnum = rs.getInt("跌停") ;
+//				
+//				org.jfree.data.time.Week recordwk = new org.jfree.data.time.Week (lastdayofweek);
+//
+//				NodeGivenPeriodDataItem stockperiodrecord = new NodeGivenPeriodDataItemForJFC( stock.getMyOwnCode(), NodeGivenPeriodDataItem.WEEK,
+//						recordwk, 0.0, 0.0,  0.0,  0.0, 
+//						stockcjl, stockcje );
+//				
+////				NodeGivenPeriodDataItem stockperiodrecord = new NodeGivenPeriodDataItemForTA4J( stock.getMyOwnCode(), NodeGivenPeriodDataItem.WEEK,
+////						zdtime, PrecisionNum.valueOf(0.0), PrecisionNum.valueOf(0.0),  PrecisionNum.valueOf(0.0),  PrecisionNum.valueOf(0.0), 
+////						PrecisionNum.valueOf(stockcjl), PrecisionNum.valueOf(stockcje) );
+//				
+//				stockperiodrecord.setNodeToDpChenJiaoErZhanbi(cjezb);
+//				stockperiodrecord.setNodeToDpChenJiaoLiangZhanbi(cjlzb);
+//				stockperiodrecord.setUplevelChengJiaoEr(dapancje);
+//				stockperiodrecord.setUplevelChengJiaoLiang(dapancjl);
+//				stockperiodrecord.setPeriodHighestZhangDieFu(periodhighestzhangdiefu);
+//				stockperiodrecord.setPeriodLowestZhangDieFu(periodlowestzhangdiefu);
+//				stockperiodrecord.setExchangeDaysNumber(exchengdaysnumber);
+//				stockperiodrecord.setZhangTingNumber(zhangtingnum);
+//				stockperiodrecord.setDieTingNumber(dietingnum);
+//				stockperiodrecord.setHuanShouLv(huanshoulv);
+//				stockperiodrecord.setHuanShouLvFree(huanshoulvfree);
+//				stockperiodrecord.setLiuTongShiZhi(pingjunliutongshizhi);
+//				stockperiodrecord.setZongShiZhi(pingjunzongshizhi);
+//				
+//				nodewkperioddata.addNewXPeriodData(stockperiodrecord);
+//				
+//				stockperiodrecord = null;
+//
+//			}
+//		} catch(java.lang.NullPointerException e){ e.printStackTrace();
+//	    } catch(Exception e){e.printStackTrace();
+//	    } finally {
+//	    	try { rs.close(); rs = null;	} catch (SQLException e) {e.printStackTrace();}
+//	    	bkcjltable = null;
+//	    }
+//
+//		return bk;
+//	}
 	/*
-	 * 板块设定时间跨度内和大盘相比的按周期占比。
+	 * 
 	 */
-	public  BanKuai getBanKuaiZhanBi (BanKuai bankuai,LocalDate selecteddatestart,LocalDate selecteddateend,String period)
+	public BanKuai getDZHBanKuaiSetForBanKuaiGeGu (BanKuai bk) 
 	{
-		if(bankuai == null  )		return null;
-		
-		selecteddatestart = selecteddatestart.with(DayOfWeek.MONDAY);
-		if(!bankuai.isNodeDataAtNotCalWholeWeekMode() )
-			selecteddateend = selecteddateend.with(DayOfWeek.FRIDAY);
-		
-		//本函数初始是开发为周的占比，所以日/月线的占比掉用其他函数
-		if(period.equals(NodeGivenPeriodDataItem.DAY)) //调用日线查询函数
-			; 
-		else if(period.equals(NodeGivenPeriodDataItem.MONTH)) //调用月线查询函数
-			;
-		
-		NodeXPeriodData nodewkperioddata = bankuai.getNodeXPeroidData(period);
-		
-		String bkcode = bankuai.getMyOwnCode();
-		String bkcjltable = null;
-		String bkcys = bankuai.getNodeJiBenMian().getSuoShuJiaoYiSuo();
-		if(bkcys == null)	return bankuai;
-		if(bkcys.equalsIgnoreCase("BK"))	bkcjltable = "大智慧板块每日交易信息";
-		else return bankuai;
-
-		String formatedstartdate = selecteddatestart.toString();
-		String formatedenddate  = selecteddateend.toString();
-		
-		//包含成交量和成交额的SQL
-		String sqlquerystat = "SELECT YEAR(t.workday) AS CALYEAR, WEEK(t.workday) AS CALWEEK, M.BKCODE AS BKCODE, t.EndOfWeekDate AS EndOfWeekDate," +
-				 "M.板块周交易额 as 板块周交易额, SUM(T.AMO) AS 大盘周交易额 ,  M.板块周交易额/SUM(T.AMO) AS CJE占比,\r\n" +
-
-				"M.板块周交易量 as 板块周交易量, SUM(T.VOL) AS 大盘周交易量 ,  M.板块周交易量/SUM(T.VOL) AS VOL占比, \r\n" +
-				"  M.JILUTIAOSHU  \r\n"+
-				 
-				"FROM\r\n" + 
-				"(\r\n" + 
-				"SELECT  通达信板块每日交易信息.`交易日期` as workday, DATE(通达信板块每日交易信息.交易日期 + INTERVAL (6 - DAYOFWEEK(通达信板块每日交易信息.交易日期)) DAY) as EndOfWeekDate, \r\n" + 
-				"		  sum(通达信板块每日交易信息.`成交额`) AS AMO , sum(通达信板块每日交易信息.`成交量`) AS VOL \r\n" + 
-				"FROM 通达信板块每日交易信息 \r\n" + 
-				"WHERE 代码 = '999999' AND 通达信板块每日交易信息.`交易日期` BETWEEN '" + formatedstartdate + "' AND '" + formatedenddate + "' \r\n" + 
-				" GROUP by YEARWEEK(通达信板块每日交易信息.`交易日期`,2)\r\n" + 
-				"\r\n" + 
-				"UNION ALL\r\n" + 
-				"\r\n" + 
-				"select  通达信交易所指数每日交易信息.`交易日期` as workday,   DATE(通达信交易所指数每日交易信息.交易日期 + INTERVAL (6 - DAYOFWEEK(通达信交易所指数每日交易信息.交易日期)) DAY) as EndOfWeekDate, \r\n" + 
-				"			sum(通达信交易所指数每日交易信息.`成交额`) AS AMO, sum(通达信交易所指数每日交易信息.`成交量`) AS VOL \r\n" + 
-				"from 通达信交易所指数每日交易信息\r\n" + 
-				"where 代码 = '399001' AND 通达信交易所指数每日交易信息.`交易日期` BETWEEN '" + formatedstartdate + "' AND '" + formatedenddate + "' \r\n" + 
-				" group by YEARWEEK(通达信交易所指数每日交易信息.`交易日期`,2)\r\n" + 
-				") T,\r\n" + 
-				"\r\n" + 
-				"(select " + bkcjltable + ".`代码` AS BKCODE, " + bkcjltable + ".`交易日期` as workday,  "
-						+ "sum( " + bkcjltable + ".`成交额`) AS 板块周交易额 , \r\n"
-						+ "sum( " + bkcjltable + ".`成交量`) AS 板块周交易量, \r\n"
-						+ " count(1) as JILUTIAOSHU \r\n"
-						+ "from " + bkcjltable + "\r\n" +
-						
-				"where 代码 = '" + bkcode + "' AND " + bkcjltable + ".`交易日期` BETWEEN '" + formatedstartdate + "' AND '" + formatedenddate + "' \r\n" + 
-				"GROUP BY YEARWEEK( " + bkcjltable + ".`交易日期`,2)\r\n" + 
-				") M\r\n" + 
-				" WHERE YEARWEEK(T.WORKDAY,2) = YEARWEEK(M.WORKDAY,2) \r\n" + 
-				"  GROUP BY YEARWEEK(t.workday,2)"
-				;
-		
-		String sqlquerystatfx = "SELECT 操作记录重点关注.`日期`, COUNT(*) AS RESULT FROM 操作记录重点关注 \r\n" + 
-				" WHERE 股票代码='" + bkcode + "'" + "\r\n" + 
-				" AND 操作记录重点关注.`日期` between '" + formatedstartdate + "' AND '" + formatedenddate + "' \r\n" +
-				" GROUP BY YEAR(操作记录重点关注.`日期`), WEEK(操作记录重点关注.`日期`) "
-				;
-		
-		CachedRowSetImpl rs = null;
-		CachedRowSetImpl rsfx = null;
-		try {
-			//分析
-			rsfx = tdxconnectdb.sqlQueryStatExecute(sqlquerystatfx);
-			while(rsfx.next()) {
-				java.sql.Date recdate = rsfx.getDate("日期");
-				org.jfree.data.time.Week wknum = new org.jfree.data.time.Week(recdate);
-				Integer reccount = rsfx.getInt("RESULT");
-				nodewkperioddata.addFxjgToPeriod(wknum, reccount);
-			}
-			
-			//交易
-			rs = tdxconnectdb.sqlQueryStatExecute(sqlquerystat);
-			
-			while(rs.next()) {
-				java.sql.Date lastdayofweek = rs.getDate("EndOfWeekDate");
-				ZonedDateTime zdtime = lastdayofweek.toLocalDate().with(DayOfWeek.FRIDAY).atStartOfDay(ZoneOffset.UTC);
-				org.jfree.data.time.Week wknum = new org.jfree.data.time.Week(lastdayofweek);
-				
-				Double bankuaicje = rs.getDouble("板块周交易额");
-				Double dapancje = rs.getDouble("大盘周交易额");
-				Double cjezb = rs.getDouble("CJE占比");
-
-				Double bankuaicjl = rs.getDouble("板块周交易量");
-				Double dapancjl = rs.getDouble("大盘周交易量");
-				Double cjlzb = rs.getDouble("VOL占比");
-				
-				int exchangedaysnumber = rs.getInt("JILUTIAOSHU");
-				
-				NodeGivenPeriodDataItem bkperiodrecord = new NodeGivenPeriodDataItemForJFC( bkcode, NodeGivenPeriodDataItem.WEEK,
-						wknum, 0.0, 0.0,  0.0,  0.0,bankuaicjl, bankuaicje );
-				
-//				NodeGivenPeriodDataItem bkperiodrecord = new NodeGivenPeriodDataItemForTA4J( bkcode, NodeGivenPeriodDataItem.WEEK,
-//						zdtime, PrecisionNum.valueOf(0.0), PrecisionNum.valueOf(0.0),  PrecisionNum.valueOf(0.0),  PrecisionNum.valueOf(0.0), 
-//						PrecisionNum.valueOf(bankuaicjl), PrecisionNum.valueOf(bankuaicje) );
-				
-				bkperiodrecord.setNodeToDpChenJiaoErZhanbi(cjezb);
-				bkperiodrecord.setNodeToDpChenJiaoLiangZhanbi(cjlzb);
-				bkperiodrecord.setUplevelChengJiaoEr(dapancje);
-				bkperiodrecord.setUplevelChengJiaoLiang(dapancjl);
-				bkperiodrecord.setExchangeDaysNumber(exchangedaysnumber);
-				
-				nodewkperioddata.addNewXPeriodData(bkperiodrecord);
-				
-				wknum = null;
-				bkperiodrecord = null;
-				bankuaicje = null;
-				dapancje = null;
-				lastdayofweek = null;
-				bankuaicjl = null;
-				dapancjl = null;
-			}
-		}	catch(java.lang.NullPointerException e){e.printStackTrace();
-	    } 	catch(Exception e){e.printStackTrace();
-	    }  	finally {
-	    	try {	rs.close();	rsfx.close();	rs = null;rsfx = null;bkcjltable = null;	} catch (SQLException e) {e.printStackTrace();}
-	    }
-
-		return bankuai;
-	}
-	/*
-	 * 从数据库中获取板块某时间段的日线走势，而个股是从CSV中读取
-	 */
-	public BanKuai getBanKuaiKXianZouShi(BanKuai bk, LocalDate nodestartday, LocalDate nodeendday, String period) 
-	{//本函数初始是开发为日周期的K线数据，
-		if(period.equals(NodeGivenPeriodDataItem.WEEK)) //调用周线查询函数
-			; 
-		else if(period.equals(NodeGivenPeriodDataItem.MONTH)) //调用月线查询函数
-			;
-
-		String searchtable = null;
-		String bkcys = bk.getNodeJiBenMian().getSuoShuJiaoYiSuo();
-		if(bkcys == null)
+		List<BkChanYeLianTreeNode> bkgg = bk.getAllGeGuOfBanKuaiInHistory();
+		if(bkgg == null || bkgg.isEmpty())
 			return bk;
-		if(bkcys.toLowerCase().equals("BK"))
-			searchtable = "大智慧板块每日交易信息";
-		else return bk;
 		
-		TemporalField fieldCH = WeekFields.of(Locale.CHINA).dayOfWeek();
-		try{
-			nodestartday = nodestartday.with(fieldCH, 1); //确保K线总是显示完整得一周
-		} catch (java.lang.NullPointerException e) {return bk;}
-		if(!bk.isNodeDataAtNotCalWholeWeekMode() )
-			nodeendday = nodeendday.with(fieldCH, 7);
+		List<Stock> bkstock = new ArrayList<> ();
+		for(BkChanYeLianTreeNode tmpbkgg : bkgg) 
+			bkstock.add( ((StockOfBanKuai)tmpbkgg).getStock()    );
+		this.getDZHBanKuaiSetForStocks(bkstock);
 		
-		NodeXPeriodData nodedayperioddata = bk.getNodeXPeroidData(period);
-
-		String nodecode = bk.getMyOwnCode();
-		
-		String sqlquerystat = "SELECT *  FROM " + searchtable + " \r\n" + 
-				"WHERE 代码='" + nodecode + "'" + "\r\n" + 
-				"AND 交易日期  between'" + nodestartday + "' AND '" + nodeendday + "'"
-				;
-		
-		CachedRowSetImpl rsfx = tdxconnectdb.sqlQueryStatExecute(sqlquerystat);
-		LocalDate lastdaydate = nodestartday.with(fieldCH, 6); //
-//		org.ta4j.core.TimeSeries nodenewohlc = new BaseTimeSeries.SeriesBuilder().withName(bk.getMyOwnCode()).build();
-		OHLCSeries nodenewohlc = new OHLCSeries (bk.getMyOwnCode());
-		try {  
-			 rsfx = tdxconnectdb.sqlQueryStatExecute(sqlquerystat);
-			
-			 while(rsfx.next()) {
-				 double open = rsfx.getDouble("开盘价");
-				 double high = rsfx.getDouble("最高价");
-				 double low = rsfx.getDouble("最低价");
-				 double close = rsfx.getDouble("收盘价");
-				 double cje = rsfx.getDouble("成交额");
-				 double cjl = rsfx.getDouble("成交量");
-				 java.sql.Date actiondate = rsfx.getDate("交易日期");
-				 ZonedDateTime zdtime = actiondate.toLocalDate().atStartOfDay(ZoneOffset.UTC);
-				 org.jfree.data.time.Day recordday = new org.jfree.data.time.Day (actiondate);
-				 
-				 NodeGivenPeriodDataItem bkperiodrecord = new NodeGivenPeriodDataItemForJFC( bk.getMyOwnCode(), NodeGivenPeriodDataItem.DAY,
-						 recordday, open, high,  low,  close, 
-							cjl, cje );
-				 
-//				 NodeGivenPeriodDataItem bkperiodrecord = new NodeGivenPeriodDataItemForTA4J( bk.getMyOwnCode(), NodeGivenPeriodDataItem.DAY,
-//							zdtime, PrecisionNum.valueOf(open), PrecisionNum.valueOf(high),  PrecisionNum.valueOf(low),  PrecisionNum.valueOf(close), 
-//							PrecisionNum.valueOf(cjl), PrecisionNum.valueOf(cje) );
-				 
-				 
-				 nodedayperioddata.addNewXPeriodData(bkperiodrecord);
-				 
-				 //计算周线OHLC数据
-				 WeekFields weekFields = WeekFields.of(Locale.getDefault()); 
-				 int lastdayweekNumber = lastdaydate.get(weekFields.weekOfWeekBasedYear());
-				 int curweekNumber = actiondate.toLocalDate().get(weekFields.weekOfWeekBasedYear());
-				 if(lastdayweekNumber == curweekNumber) {
-					 try{
-//						 nodenewohlc.addBar( (NodeGivenPeriodDataItemForTA4J)bkperiodrecord);
-						 nodenewohlc.add( (NodeGivenPeriodDataItemForJFC)bkperiodrecord);
-					 } catch (java.lang.IllegalArgumentException e) {
-						 e.printStackTrace();
-					 }
-				 } else {
-					 //换周了，计算上一周周线OHLC 数据
-					 this.getTDXNodesWeeklyKXianZouShiForJFC(bk, lastdaydate.with(DayOfWeek.FRIDAY), nodenewohlc);
-					 
-					 nodenewohlc = null;
-					 nodenewohlc = new OHLCSeries (bk.getMyOwnCode());
-					 lastdaydate = actiondate.toLocalDate().with(DayOfWeek.FRIDAY);
-					 nodenewohlc.add( (NodeGivenPeriodDataItemForJFC)bkperiodrecord);
-				 }
-				 
-				 bkperiodrecord = null;
-			 }
-			 //目前算法最后一周要跳出循环后才能计算
-			 this.getTDXNodesWeeklyKXianZouShiForJFC(bk, lastdaydate.with(DayOfWeek.FRIDAY), nodenewohlc);
-			 
-				
-		} catch(java.lang.NullPointerException e){e.printStackTrace();
-		} catch (SQLException e) {e.printStackTrace();
-		} catch(Exception e){e.printStackTrace();
-		} finally {
-			try {if(rsfx != null) rsfx.close();} catch (SQLException e) {e.printStackTrace();}
-			rsfx = null;
-			searchtable = null;
-			nodenewohlc = null;
-		}
-
 		return bk;
 	}
 	/*
-	 * 函数需要修改
+	 * 
 	 */
-	private TDXNodes getTDXNodesWeeklyKXianZouShiForJFC (TDXNodes tdxnode, LocalDate friday, OHLCSeries nodenewohlc)
+	public Stock getTDXBanKuaiSetForStock(Stock stock)
 	{
-		int newcount = nodenewohlc.getItemCount();
-		if(newcount == 0)
-			return tdxnode;
+		List<Stock> nodeset = new ArrayList<>();
+		nodeset.add((Stock)stock);
+		this.getDZHBanKuaiSetForStocks (nodeset ); //通达信板块信息
 		
-		TDXNodesXPeriodDataForJFC nodexdata =  (TDXNodesXPeriodDataForJFC) tdxnode.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
-		//在前面处理周线成交量等数据的时候，已经存了OHLC的数据，都是0，现在要把这个数据找到，是情况处理
-		Integer spcohlcdataindex = nodexdata.getIndexOfSpecificDateOHLCData(friday, 0);
-		if(spcohlcdataindex != null) {
-			OHLCItem wkohlcdata = nodexdata.getSpecificDateOHLCData(friday,0);
-			double wkclose = wkohlcdata.getCloseValue(); double wkhigh = wkohlcdata.getHighValue();
-			double wklow = wkohlcdata.getLowValue(); double wkopen = wkohlcdata.getOpenValue() ;
-			if(! (wkclose == 0 && wkhigh == 0 && wklow == 0 && wkopen	== 0) ) 
-				return tdxnode; //都不是0，说明正确的数据已经在前面找出来了，直接退出。
-		} 
-		
-		try { //都是0，就把原来的数据移除，然后把新数据放进去
-			if(spcohlcdataindex != null) 
-				nodexdata.getOHLCData().remove(spcohlcdataindex.intValue());
-			
-		} catch (java.lang.ArrayIndexOutOfBoundsException e) {e.printStackTrace();}
-		
-		Double weeklyopen = null;
-		try{
-			OHLCItem newohlcdata0 = (OHLCItem) nodenewohlc.getDataItem(0);
-			weeklyopen = newohlcdata0.getOpenValue();
-		} catch (java.lang.IndexOutOfBoundsException e) {e.printStackTrace();}
-
-		//Close Of this week
-		OHLCItem newohlcdatalast = (OHLCItem) nodenewohlc.getDataItem(nodenewohlc.getItemCount()-1); 
-		Double weeklyclose = newohlcdatalast.getCloseValue();
-
-		Double weeklyhigh=0.0; Double weeklylow=10000000.0; 
-		for(int i=0;i<nodenewohlc.getItemCount();i++) {
-			OHLCItem newohlctmp = (OHLCItem) nodenewohlc.getDataItem(i);
-			if( newohlctmp.getHighValue() > weeklyhigh)
-				weeklyhigh = newohlctmp.getHighValue();
-			
-			if( newohlctmp.getLowValue() < weeklylow)
-				weeklylow = newohlctmp.getLowValue();
-		}
-		
-		java.sql.Date sqldate = null;
-		try {
-			DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
-			 sqldate = new java.sql.Date(format.parse(friday.toString()).getTime());
-		} catch (ParseException e) {e.printStackTrace();}
-		try {
-			org.jfree.data.time.Week recordwk = new org.jfree.data.time.Week (sqldate);
-			nodexdata.getOHLCData().add(new OHLCItem(recordwk,weeklyopen,weeklyhigh,weeklylow,weeklyclose) );
-		} catch(Exception e) {e.printStackTrace();}
-
-		return tdxnode;
+		return stock;
 	}
+	/*
+	 * 
+	 */
+	public List<Stock> getDZHBanKuaiSetForStocks(List<Stock> stocklist) 
+	{
+		String bkggstr = "";
+		for(Stock stock : stocklist ) {
+			if(  stock.getGeGuCurSuoShuDZHSysBanKuaiList() != null && ! stock.getGeGuCurSuoShuDZHSysBanKuaiList().isEmpty() )
+				continue;
+			else bkggstr  = bkggstr + "'" + stock.getMyOwnCode() +  "', ";
+		}
+		if(bkggstr.isEmpty())
+			return stocklist;
+		else
+			bkggstr = bkggstr.substring(0, bkggstr.length() -2);
+		
+		
+//		Set<BkChanYeLianTreeNode> stockbanksset = new HashSet<>();
+		String sqlquerystat = 
+					"SELECT gpgn.`股票代码`,    gpgn.板块代码 板块代码, tdxbk.`板块名称` 板块名称 ,  gpgn.`股票权重`\r\n" + 
+					"FROM 大智慧股票概念板块对应表  gpgn, 大智慧板块列表 tdxbk  \r\n" + 
+					"WHERE 股票代码 IN (" + bkggstr + " )  AND gpgn.板块代码 = tdxbk.`板块ID` AND ISNULL(移除时间)\r\n" + 
+					"GROUP BY 股票代码, 板块代码\r\n"  
+					;
+		CachedRowSetImpl rs_gn = tdxconnectdb.sqlQueryStatExecute(sqlquerystat); 
+		String curstockcode = ""; Stock tmpstock = null;
+		try  {     
+		        while(rs_gn.next()) {
+		        	String stockcode = rs_gn.getString("股票代码");
+		        	if(!stockcode.equalsIgnoreCase(curstockcode)) {
+		        		curstockcode = stockcode;
+		        		tmpstock = (Stock)CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode (stockcode,BkChanYeLianTreeNode.TDXGG);
+		        	}
+		        	
+		        	String bkcode = rs_gn.getString("板块代码");
+		        	BanKuai bk = (BanKuai)CreateExchangeTree.CreateTreeOfDZHBanKuaiAndStocks().getSpecificNodeByHypyOrCode(bkcode, BkChanYeLianTreeNode.DZHBK);
+		        	if(bk == null) continue;
+					StockOfBanKuai bkofst = new StockOfBanKuai(bk,tmpstock);
+					bk.addNewBanKuaiGeGu(bkofst);
+					
+					Integer quanzhong = rs_gn.getInt("股票权重");
+					bkofst.setStockQuanZhong (quanzhong);
+
+					tmpstock.addGeGuDZHSysBanKuai (bk);
+		        } 
+		    } catch(java.lang.NullPointerException e){	e.printStackTrace();
+		    } catch(Exception e) {e.printStackTrace();
+		    } finally {
+		    	if(rs_gn != null) {	try {rs_gn.close();	} catch (SQLException e) {	e.printStackTrace();}
+		    	rs_gn = null;    }
+		    }
+
+		return stocklist;
+	}
+
 
 	/*
 	 * 
@@ -783,8 +1031,8 @@ public class BanKuaiDZHDbOperation
 	 */
 	public List<BanKuai> getDZHBanKuaiList () 
 	{
-		CachedRowSetImpl rs = null;
 		List<BanKuai> dzhbkset = new ArrayList<> ();
+		CachedRowSetImpl rs = null;
 		try {
 			 String sqlquerystat = "select *  FROM 大智慧板块列表   "
 		 			;
@@ -811,6 +1059,34 @@ public class BanKuaiDZHDbOperation
 			try {	rs.close();	} catch (SQLException e) {	e.printStackTrace();}
 			rs = null;
 		}
+		//大智慧的大盘node依然用通达信的代码
+		try {
+			 String sqlquerystat = "select *  FROM 通达信板块列表 WHERE 板块ID IN (999999)  "
+		 			;
+			rs = tdxconnectdb.sqlQueryStatExecute(sqlquerystat);
+			while(rs.next()) {
+				String dzhbkcode = rs.getString("板块ID"); 
+				String dzhbkname = rs.getString("板块名称");
+				
+				BanKuai dzhbk = new BanKuai(dzhbkcode,dzhbkname, "DZH");
+				dzhbk.getNodeJiBenMian().setSuoShuJiaoYiSuo(rs.getString("指数所属交易所"));
+//				dzhbk.setBanKuaiLeiXing( rs.getString("板块类型描述") );
+				dzhbk.getBanKuaiOperationSetting().setExporttogehpi(rs.getBoolean("导出Gephi"));
+				dzhbk.getBanKuaiOperationSetting().setImportdailytradingdata(rs.getBoolean("导入交易数据"));
+				dzhbk.getBanKuaiOperationSetting().setShowinbkfxgui(rs.getBoolean("板块分析"));
+				dzhbk.getBanKuaiOperationSetting().setShowincyltree(rs.getBoolean("产业链树"));
+				dzhbk.getBanKuaiOperationSetting().setExportTowWlyFile(rs.getBoolean("周分析文件"));
+				dzhbk.getBanKuaiOperationSetting().setImportBKGeGu(rs.getBoolean("导入板块个股"));
+				dzhbk.getBanKuaiOperationSetting().setBanKuaiLabelColor(rs.getString("DefaultCOLOUR"));
+
+				dzhbkset.add(dzhbk);
+			}
+		} catch (Exception e) { e.printStackTrace();
+		} finally {
+			try {	rs.close();	} catch (SQLException e) {	e.printStackTrace();}
+			rs = null;
+		}
+
 		
 		return dzhbkset;
 	}
@@ -883,15 +1159,28 @@ public class BanKuaiDZHDbOperation
 	/*
 	 * 
 	 */
-	public BanKuai getDZHBanKuaiGeGuOfHyGnFg(BanKuai bankuai, LocalDate bkstartday, LocalDate bkendday)
+	public BanKuai getDZHBanKuaiGeGuOfHyGnFg(BanKuai bankuai, LocalDate selecteddatestart, LocalDate selecteddateend)
 	{
 		String bkcode = bankuai.getMyOwnCode();
-
-		String sqlquerystat =null;
-		sqlquerystat=  "SELECT *  \r\n" + 
-						"FROM 大智慧股票概念板块对应表 gnb\r\n" + 
-						"WHERE gnb.`板块代码` = '" + bkcode + "'  AND ISNULL(gnb.`移除时间`)			"
-						;
+		String bktypetable = "大智慧股票概念板块对应表";
+		String sqlquerystat =
+				"select "+ bktypetable + ".`股票代码` , a股.`股票名称`, "+ bktypetable + ".`板块代码` , \r\n"
+		 			+ bktypetable + ".`股票权重` , "+ bktypetable + ".`板块龙头`, \r\n "
+		 			+ bktypetable + ".`加入时间`, " + bktypetable + ".`移除时间`  \r\n"
+		 			+ " from "+ bktypetable + ", a股\r\n" + 
+	 		"          where "+ bktypetable + ".`股票代码`  = a股.`股票代码`   \r\n" + 
+	 		
+	 		"and (  (  Date("+ bktypetable + ".`加入时间`) between '" +  selecteddatestart + "'  and '" +  selecteddateend + "')\r\n" + 
+	 		"           		 or( ifnull("+ bktypetable + ".`移除时间`, '2099-12-31') between '" +  selecteddatestart + "'  and '" +  selecteddateend + "')\r\n" + 
+	 		"           		 or( Date("+ bktypetable + ".`加入时间`) <= '" +  selecteddatestart + "' and ifnull(" + bktypetable + ".`移除时间`, '2099-12-31') >= '" +  selecteddateend + "' )\r\n" + 
+	 		"			  )" +
+	 		"           and "+ bktypetable + ".`板块代码` =  '" + bkcode + "'\r\n" + 
+	 		"         \r\n"  
+	 		;
+//		sqlquerystat=  "SELECT *  \r\n" + 
+//						"FROM 大智慧股票概念板块对应表 gnb\r\n" + 
+//						"WHERE gnb.`板块代码` = '" + bkcode + "'  AND ISNULL(gnb.`移除时间`)			"
+//						;
 
 		CachedRowSetImpl rs1 = tdxconnectdb.sqlQueryStatExecute(sqlquerystat);
 		try  {     

@@ -50,6 +50,7 @@ public abstract class BanKuaiGeGuBasicTableModel extends BandKuaiAndGeGuTableBas
 
 	public void refresh (BanKuai bankuai,LocalDate wknum,String period)
 	{
+		int i=0;
 		super.curbk = bankuai;
 		super.showwknum = wknum;
 		super.curperiod = period;

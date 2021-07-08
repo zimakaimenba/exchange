@@ -13,7 +13,8 @@ import org.joda.time.Interval;
 
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.BanKuaiDZHDbOperation;
-
+import com.exchangeinfomanager.database.BanKuaiDbOperation;
+import com.exchangeinfomanager.database.JiGouGuDongDbOperation;
 import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.nodes.Stock;
@@ -24,18 +25,47 @@ import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDa
 public class SvsForNodeOfDZHBanKuai implements ServicesForNode ,ServicesForNodeBanKuai
 {
 	private BanKuaiDZHDbOperation dzhbkdbopt;
+	private BanKuaiDbOperation tdxbkdbopt;
+	private JiGouGuDongDbOperation gddbopt;
 	
 	public SvsForNodeOfDZHBanKuai ()
 	{
 		this.dzhbkdbopt = new BanKuaiDZHDbOperation ();
+		this.tdxbkdbopt = new BanKuaiDbOperation ();
+		gddbopt = new JiGouGuDongDbOperation ();
 	}
 	public void syncBanKuaiAndItsStocksForSpecificTime (BanKuai bk,LocalDate requiredstartday,LocalDate requiredendday,String period,Boolean calwholeweek  ) throws SQLException
 	{
+		this.getNodeData(bk, requiredstartday, requiredendday, period,calwholeweek);
+		this.syncNodeData(bk);
+		//板块数据同步后，板块个股的时间轴如果比板块短，要和板块的时间轴一致。如果比板块时间长，不需要同步时间轴
+		NodeXPeriodData bknodexdata = bk.getNodeXPeroidData(period);
+		LocalDate bkdatastartday = bknodexdata.getAmoRecordsStartDate();
+		if(bkdatastartday != null  && bkdatastartday.isBefore(requiredstartday) )
+			requiredstartday = bkdatastartday;
+		LocalDate bkdataendday = bknodexdata.getAmoRecordsEndDate();
+		if(bkdataendday != null  && bkdataendday.isAfter(requiredendday) )
+			requiredendday = bkdataendday;
+	
 		if(bk.getBanKuaiLeiXing().equals(BanKuai.HASGGWITHSELFCJL)) {
-			SvsForNodeOfStock svstock = new SvsForNodeOfStock ();
-			bk = this.getAllGeGuOfBanKuai (bk); 
+			int bkggbefore = 0;
+			try {	bkggbefore = bk.getAllGeGuOfBanKuaiInHistory().size();
+			} catch (java.lang.NullPointerException e) {}
+			bk = this.getAllGeGuOfBanKuai (bk);
+			int bkggafter = 0;
+			try {	bkggafter = bk.getAllGeGuOfBanKuaiInHistory().size();
+			} catch (java.lang.NullPointerException e) {}
+			
+			if( bkggafter != bkggbefore ) { //说明板块个股有了变化，需要重新计算，否则无需再此计算，浪费时间,其实这里应该是计算板块的数据是否有变化，单比较难，就暂时用这个方法来避免重复计算
+				bk = tdxbkdbopt.getBanKuaiGeGuZhanBi (bk,requiredstartday,requiredendday,period);
+				dzhbkdbopt.getDZHBanKuaiSetForBanKuaiGeGu (bk);
+				tdxbkdbopt.getBanKuaiGeGuGzMrMcYkInfo (bk);
+				gddbopt.checkBanKuaiGeGuHasHuangQinGuoQieAndMingXin(bk, requiredendday); //查询板块个股是否有皇亲国戚
+			}
+
 			List<BkChanYeLianTreeNode> allbkgg = bk.getAllGeGuOfBanKuaiInHistory();
 			if(allbkgg != null) {
+				SvsForNodeOfStock svstock = new SvsForNodeOfStock ();
 				for(BkChanYeLianTreeNode stockofbk : allbkgg)   
 			    	if( ((StockOfBanKuai)stockofbk).isInBanKuaiAtSpecificDate(requiredendday)  ) { 
 			    		 Stock stock = (Stock) svstock.getNodeData( ((StockOfBanKuai)stockofbk).getStock(), requiredstartday, requiredendday, period,calwholeweek);
@@ -43,7 +73,7 @@ public class SvsForNodeOfDZHBanKuai implements ServicesForNode ,ServicesForNodeB
 			    	 }
 			}
 		}
-		
+
 		return;
 	}
 	/*
@@ -62,6 +92,36 @@ public class SvsForNodeOfDZHBanKuai implements ServicesForNode ,ServicesForNodeB
 			bankuai.setBanKuaiGeGuTimeRange (bkstartday,bkendday);
 			return bankuai;
 		} 
+		
+		Interval alreadyinggtimerange = bankuai.getBanKuaiGeGuTimeRange();
+		LocalDate alreadystartday; LocalDate alreadyendday ;
+		if(alreadyinggtimerange == null) {
+			alreadystartday = bkstartday;
+			alreadyendday = bkendday;
+			
+			bankuai = dzhbkdbopt.getDZHBanKuaiGeGuOfHyGnFg (bankuai,alreadystartday,alreadyendday);
+			bankuai.setBanKuaiGeGuTimeRange (bkstartday,bkendday);
+			return bankuai;
+		} 
+		
+		DateTime tmpnewstartdt = alreadyinggtimerange.getStart();
+		DateTime tmpnewenddt = alreadyinggtimerange.getEnd();
+		alreadystartday = LocalDate.of(tmpnewstartdt.getYear(), tmpnewstartdt.getMonthOfYear(), tmpnewstartdt.getDayOfMonth());
+		alreadyendday = LocalDate.of(tmpnewenddt.getYear(), tmpnewenddt.getMonthOfYear(), tmpnewenddt.getDayOfMonth());
+
+		List<Interval> timeintervallist = getTimeIntervalOfNodeTimeIntervalWithRequiredTimeInterval(bkstartday,bkendday,alreadystartday,alreadyendday);
+		if(timeintervallist == null)
+			return bankuai;
+		
+		for(Interval tmpinterval : timeintervallist) {
+				DateTime newstartdt = tmpinterval.getStart();
+				DateTime newenddt = tmpinterval.getEnd();
+				
+				LocalDate requiredstartday = LocalDate.of(newstartdt.getYear(), newstartdt.getMonthOfYear(), newstartdt.getDayOfMonth()).with(DayOfWeek.MONDAY);
+				LocalDate requiredendday = LocalDate.of(newenddt.getYear(), newenddt.getMonthOfYear(), newenddt.getDayOfMonth()).with(DayOfWeek.FRIDAY);
+				
+				bankuai = dzhbkdbopt.getDZHBanKuaiGeGuOfHyGnFg (bankuai,requiredstartday,requiredendday);
+		}
 
 		return bankuai;
 	}
@@ -93,26 +153,26 @@ public class SvsForNodeOfDZHBanKuai implements ServicesForNode ,ServicesForNodeB
 		
 		NodeXPeriodData nodedayperioddata = ((BanKuai)bankuai).getNodeXPeroidData(period);
 		
-		if(!calwholeweek) {
-			LocalDate curdate = ((BanKuai)bankuai).getNodeDataAtNotCalWholeWeekModeLastDate();
-			if(curdate == null) {
-				((BanKuai)bankuai).setNodeDataAtNotCalWholeWeekMode(requiredendday);
-				nodedayperioddata.resetAllData();
-			} else if(!curdate.isEqual(requiredendday)) {
-				((BanKuai)bankuai).setNodeDataAtNotCalWholeWeekMode(requiredendday);
-				nodedayperioddata.resetAllData();
-			} else
-				return bankuai;
-		}
-		if(calwholeweek) {
-			if(((BanKuai)bankuai).isNodeDataAtNotCalWholeWeekMode() ) {
-				((BanKuai)bankuai).setNodeDataAtNotCalWholeWeekMode(null);
-				nodedayperioddata.resetAllData();
-			}
-		}
+//		if(!calwholeweek) {
+//			LocalDate curdate = ((BanKuai)bankuai).getNodeDataAtNotCalWholeWeekModeLastDate();
+//			if(curdate == null) {
+//				((BanKuai)bankuai).setNodeDataAtNotCalWholeWeekMode(requiredendday);
+//				nodedayperioddata.resetAllData();
+//			} else if(!curdate.isEqual(requiredendday)) {
+//				((BanKuai)bankuai).setNodeDataAtNotCalWholeWeekMode(requiredendday);
+//				nodedayperioddata.resetAllData();
+//			} else
+//				return bankuai;
+//		}
+//		if(calwholeweek) {
+//			if(((BanKuai)bankuai).isNodeDataAtNotCalWholeWeekMode() ) {
+//				((BanKuai)bankuai).setNodeDataAtNotCalWholeWeekMode(null);
+//				nodedayperioddata.resetAllData();
+//			}
+//		}
 
 		if(nodedayperioddata.getAmoRecordsStartDate() == null) {
-			bankuai = dzhbkdbopt.getBanKuaiZhanBi ((BanKuai)bankuai,requiredstartday,requiredendday,period);
+			bankuai = tdxbkdbopt.getBanKuaiZhanBi ((BanKuai)bankuai,requiredstartday,requiredendday,period);
 			return bankuai;
 		}
 		
@@ -128,7 +188,7 @@ public class SvsForNodeOfDZHBanKuai implements ServicesForNode ,ServicesForNodeB
 				LocalDate tmprequiredstartday = LocalDate.of(newstartdt.getYear(), newstartdt.getMonthOfYear(), newstartdt.getDayOfMonth());
 				LocalDate tmprequiredendday = LocalDate.of(newenddt.getYear(), newenddt.getMonthOfYear(), newenddt.getDayOfMonth());
 				
-				bankuai = dzhbkdbopt.getBanKuaiZhanBi ((BanKuai) bankuai,tmprequiredstartday,tmprequiredendday,period);
+				bankuai = tdxbkdbopt.getBanKuaiZhanBi ((BanKuai) bankuai,tmprequiredstartday,tmprequiredendday,period);
 		}
 		return bankuai;
 	}
@@ -153,7 +213,7 @@ public class SvsForNodeOfDZHBanKuai implements ServicesForNode ,ServicesForNodeB
 	{
 		NodeXPeriodData nodedayperioddata = ((BanKuai) bankuai).getNodeXPeroidData(period);
 		if(nodedayperioddata.getOHLCRecordsStartDate() == null) {
-			bankuai = dzhbkdbopt.getBanKuaiKXianZouShi (((BanKuai) bankuai),requiredstartday,requiredendday,period);
+			bankuai = tdxbkdbopt.getBanKuaiKXianZouShi (((BanKuai) bankuai),requiredstartday,requiredendday,period);
 			
 			return bankuai;
 		}
@@ -170,7 +230,7 @@ public class SvsForNodeOfDZHBanKuai implements ServicesForNode ,ServicesForNodeB
 				requiredstartday = LocalDate.of(newstartdt.getYear(), newstartdt.getMonthOfYear(), newstartdt.getDayOfMonth()).with(DayOfWeek.MONDAY);
 				requiredendday = LocalDate.of(newenddt.getYear(), newenddt.getMonthOfYear(), newenddt.getDayOfMonth()).with(DayOfWeek.FRIDAY);
 				
-				bankuai = dzhbkdbopt.getBanKuaiKXianZouShi (((BanKuai) bankuai),requiredstartday,requiredendday,period);
+				bankuai = tdxbkdbopt.getBanKuaiKXianZouShi (((BanKuai) bankuai),requiredstartday,requiredendday,period);
 		}
 		
 		return bankuai;
@@ -216,7 +276,6 @@ public class SvsForNodeOfDZHBanKuai implements ServicesForNode ,ServicesForNodeB
 			bkohlcstartday = bkamostartday;
 			bkohlcendday = bkamoendday;
 			bankuai = this.getNodeKXian(bankuai, bkohlcstartday,bkohlcendday, NodeGivenPeriodDataItem.DAY,true);
-//			this.getNodeCjeCjlZhanbiExtremeUpDownLevel (bankuai);
 			return;
 		}
 		
@@ -234,7 +293,6 @@ public class SvsForNodeOfDZHBanKuai implements ServicesForNode ,ServicesForNodeB
 				LocalDate requiredendday = LocalDate.of(newenddt.getYear(), newenddt.getMonthOfYear(), newenddt.getDayOfMonth()).with(DayOfWeek.FRIDAY);
 				
 				bankuai = this.getNodeKXian(bankuai, requiredstartday,requiredendday, NodeGivenPeriodDataItem.DAY,true);
-//				this.getNodeCjeCjlZhanbiExtremeUpDownLevel (bankuai);
 		}
 		
 	

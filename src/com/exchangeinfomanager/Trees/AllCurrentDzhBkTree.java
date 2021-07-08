@@ -57,7 +57,7 @@ public class AllCurrentDzhBkTree
 	public void setupDaPan ()
 	{
 		DaPan treeallstockrootdapan = (DaPan)allbkggtree.getModel().getRoot();
-		BanKuai shdpbankuai = (BanKuai) allbkggtree.getSpecificNodeByHypyOrCode("000001",BkChanYeLianTreeNode.DZHBK);
+		BanKuai shdpbankuai = (BanKuai) allbkggtree.getSpecificNodeByHypyOrCode("999999",BkChanYeLianTreeNode.DZHBK); //大智慧的大盘依然使用通达信的代码
 		BanKuai szdpbankuai = (BanKuai) allbkggtree.getSpecificNodeByHypyOrCode("399001",BkChanYeLianTreeNode.DZHBK);
 		treeallstockrootdapan.setDaPanContents(shdpbankuai,szdpbankuai);
 	}
