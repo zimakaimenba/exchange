@@ -139,6 +139,11 @@ public abstract class BkChanYeLianTreeNode  extends  DefaultMutableTreeNode// In
         return result;
     }
     
+    public static Boolean isBanKuai(BkChanYeLianTreeNode node) {
+    	if(node.getType() == BkChanYeLianTreeNode.DZHBK || node.getType() == BkChanYeLianTreeNode.TDXBK)
+    		return true;
+    	else return false;
+    }
 }
 
 

@@ -182,7 +182,7 @@ public class GetNodeDataFromDbWhenSystemIdle implements Runnable
 			        }
 		    }
 		    
-		    System.out.println("......\n Done! Gotten All BanKuai Nodes ZhanBi And K Data At " + LocalTime.now() + "\r\n");
+		    System.out.println("......\n Done! Gotten All TDX BanKuai Nodes ZhanBi And K Data At " + LocalTime.now() + "\r\n");
 		    
 		    for(int i = bankuaicount-1 ;i >=0  ; i--) {
 		    	 while (running) {
@@ -319,7 +319,148 @@ public class GetNodeDataFromDbWhenSystemIdle implements Runnable
 				        }
 			        }
 		    }
-		    System.out.println("......\n Done! Gotten All Stock Nodes ZhanBi And K Data At " + LocalTime.now() + "\r\n");
+		    System.out.println("......\n Done! Gotten TDX Stock Nodes ZhanBi And K Data At " + LocalTime.now() + "\r\n");
+		    
+		    BanKuaiAndStockTree dzhtree = CreateExchangeTree.CreateTreeOfDZHBanKuaiAndStocks();
+			TDXNodes dzhtreeroot = (TDXNodes)dzhtree.getModel().getRoot();
+			int dzhbankuaicount = dzhtree.getModel().getChildCount(dzhtreeroot);
+		    for(int i = 0;i <= dzhbankuaicount-1  ; i++) {
+		    	 while (running) {
+			            synchronized (pauseLock) {
+			                if (!running) { // may have changed while waiting to
+			                    // synchronize on pauseLock
+			                    break;
+			                }
+			                if (paused) {
+			                    try {
+			                        synchronized (pauseLock) {
+			                            pauseLock.wait(); // will cause this Thread to block until 
+			                            // another thread calls pauseLock.notifyAll()
+			                            // Note that calling wait() will 
+			                            // relinquish the synchronized lock that this 
+			                            // thread holds on pauseLock so another thread
+			                            // can acquire the lock to call notifyAll()
+			                            // (link with explanation below this code)
+			                        }
+			                    } catch (InterruptedException ex) {
+			                        break;
+			                    }
+			                    if (!running) { // running might have changed since we paused
+			                        break;
+			                    }
+			                }
+			            }
+
+			            try {	Thread.sleep(sleepcount);
+						} catch (InterruptedException e) {e.printStackTrace();}
+			            
+			            synchronized (GetNodeDataFromDbWhenSystemIdle.class) {
+				        	    Point newLocation = MouseInfo.getPointerInfo().getLocation();
+						        if(newLocation.equals(currLocation)){
+						            //not moved
+						            idleTime = System.currentTimeMillis() - start;
+						            long seconds = TimeUnit.MILLISECONDS.toSeconds(idleTime);
+//						            System.out.printf(" I am sleeping %s %s \n", seconds, i);
+						            if( seconds > mousenotmoverange ) {
+						            	if(restartscreentips) {
+						            		System.out.printf(" \n System slept long enough. Getting BanKuai Weekly Zhanbi Data from Database starting... \n");
+						            		restartscreentips = false;
+						            	}
+						            	
+						            	synchronized (GetNodeDataFromDbWhenSystemIdle.class) {
+						            		BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode)bkcyltree.getModel().getChild(treeroot, i);
+						            		if(childnode.getType() == BkChanYeLianTreeNode.DZHBK) 
+						            				getNodeZhanbiData (childnode);
+							            	break;
+						            	}
+						            }
+						        } else {
+						        	long seconds = TimeUnit.MILLISECONDS.toSeconds(idleTime);
+//						            System.out.printf("Idle time was: %s seconds \n", seconds);
+						            synchronized (GetNodeDataFromDbWhenSystemIdle.class) {
+						            	idleTime=0;
+						            	start =  System.currentTimeMillis();
+						            	
+						            	restartscreentips = true; counttoentertonewline = 0;
+						            }
+						        }
+						        
+						        synchronized (GetNodeDataFromDbWhenSystemIdle.class) {
+						        	currLocation = newLocation;
+//						        	globlenodeindex = i;
+						        }
+				        }
+			        }
+		    }
+		    System.out.println("......\n Done! Gotten DZH BanKuai Nodes ZhanBi  Data At " + LocalTime.now() + "\r\n");
+		    for(int i = 0;i <=dzhbankuaicount-1  ; i++) {
+		    	 while (running) {
+			            synchronized (pauseLock) {
+			                if (!running) { // may have changed while waiting to
+			                    // synchronize on pauseLock
+			                    break;
+			                }
+			                if (paused) {
+			                    try {
+			                        synchronized (pauseLock) {
+			                            pauseLock.wait(); // will cause this Thread to block until 
+			                            // another thread calls pauseLock.notifyAll()
+			                            // Note that calling wait() will 
+			                            // relinquish the synchronized lock that this 
+			                            // thread holds on pauseLock so another thread
+			                            // can acquire the lock to call notifyAll()
+			                            // (link with explanation below this code)
+			                        }
+			                    } catch (InterruptedException ex) {break; }
+			                    if (!running) { // running might have changed since we paused
+			                        break;
+			                    }
+			                }
+			            }
+
+			            try {  Thread.sleep(sleepcount);
+						} catch (InterruptedException e) {e.printStackTrace();}
+			            
+			            synchronized (GetNodeDataFromDbWhenSystemIdle.class) {
+				        	    Point newLocation = MouseInfo.getPointerInfo().getLocation();
+						        if(newLocation.equals(currLocation)){
+						            //not moved
+						            idleTime = System.currentTimeMillis() - start;
+						            long seconds = TimeUnit.MILLISECONDS.toSeconds(idleTime);
+//						            System.out.printf(" I am sleeping %s %s \n", seconds, i);
+						            if( seconds > mousenotmoverange ) {
+						            	if(restartscreentips) {
+						            		System.out.printf(" \n System slept long enough. Getting BanKuai K Data from Database starting... \n");
+						            		restartscreentips = false;
+						            	}
+						            	
+						            	synchronized (GetNodeDataFromDbWhenSystemIdle.class) {
+						            		BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode)bkcyltree.getModel().getChild(treeroot, i);
+						            		if(childnode.getType() == BkChanYeLianTreeNode.DZHBK)
+						            				getNodeKxianData (childnode);
+							            	break;
+						            	}
+						            }
+						        } else {
+						        	long seconds = TimeUnit.MILLISECONDS.toSeconds(idleTime);
+//						            System.out.printf("Idle time was: %s seconds \n", seconds);
+						            synchronized (GetNodeDataFromDbWhenSystemIdle.class) {
+						            	idleTime=0;
+						            	start =  System.currentTimeMillis();
+						            	
+						            	restartscreentips = true; counttoentertonewline = 0;
+						            }
+						        }
+						        
+						        synchronized (GetNodeDataFromDbWhenSystemIdle.class) {
+						        	currLocation = newLocation;
+//						        	globlenodeindex = i;
+						        }
+				        }
+			        }
+		    }
+		    
+		    System.out.println("......\n Done! Gotten DZH BanKuai Nodes  K Data At " + LocalTime.now() + "\r\n");
 	 }
 	 
 	 public void stop() {
@@ -348,7 +489,7 @@ public class GetNodeDataFromDbWhenSystemIdle implements Runnable
 	{
 		LocalDate requirestart = CommonUtility.getSettingRangeDate(exportdate,"large");
 		
-		if(node.getType() == BkChanYeLianTreeNode.TDXBK) {
+		if(BkChanYeLianTreeNode.isBanKuai(node)) {
 			if( !((BanKuai)node).getBanKuaiOperationSetting().isShowinbkfxgui() )
 				return;
 			
@@ -361,9 +502,9 @@ public class GetNodeDataFromDbWhenSystemIdle implements Runnable
 			
 			animation ();
 			System.out.print("Buffering BanKuai" + node.getMyOwnCode() + node.getMyOwnName() + " Zhanbi\n");
-			SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai  ();
-			node = svsbk.getNodeData( node, requirestart, exportdate,NodeGivenPeriodDataItem.WEEK,true);
-			svsbk = null;
+			node = ((BanKuai)node).getServicesForNode(true).getNodeData( node, requirestart, exportdate,NodeGivenPeriodDataItem.WEEK,true);
+			((BanKuai)node).getServicesForNode(false);
+
 		} else if(node.getType() == BkChanYeLianTreeNode.TDXGG) {
 			if( ((TDXNodes)node).getShuJuJiLuInfo().wetherHasReiewedToday()   )
 				return;
@@ -392,9 +533,8 @@ public class GetNodeDataFromDbWhenSystemIdle implements Runnable
 			
 			animation ();
 			System.out.print("Buffering BanKuai" + node.getMyOwnCode() + node.getMyOwnName() + " KXian\n");
-			SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai  ();
-			node = svsbk.getNodeKXian( node, requirestart, exportdate,NodeGivenPeriodDataItem.DAY,true);
-			svsbk = null;
+			node = ((BanKuai)node).getServicesForNode(true).getNodeKXian( node, requirestart, exportdate,NodeGivenPeriodDataItem.DAY,true);
+			((BanKuai)node).getServicesForNode(false);
 		} else if(node.getType() == BkChanYeLianTreeNode.TDXGG) {
 			animation ();
 			System.out.print("Buffering Stock" + node.getMyOwnName() + " KXian\n");

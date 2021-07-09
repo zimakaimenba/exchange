@@ -34,16 +34,16 @@ public class BkChanYeLianTreeIconFactory {
 	        
 	        if(leaf) {
 	            if (node.getType() == BkChanYeLianTreeNode.BKGEGU) icon = activeLeafIcon;
-	            else if (node.getType() == BkChanYeLianTreeNode.TDXBK) icon = nowLeafIcon;
+	            else if (node.getType() == BkChanYeLianTreeNode.TDXBK || node.getType() == BkChanYeLianTreeNode.DZHBK) icon = nowLeafIcon;
 	            else icon = inactiveLeafIcon;
 	        }
 	        else if (expanded) {
 	            if (node.getType() == BkChanYeLianTreeNode.BKGEGU) icon = activeOpenIcon;
-	            else if (node.getType() == BkChanYeLianTreeNode.TDXBK) icon = nowOpenIcon;
+	            else if (node.getType() == BkChanYeLianTreeNode.TDXBK || node.getType() == BkChanYeLianTreeNode.DZHBK) icon = nowOpenIcon;
 	            else icon = inactiveOpenIcon;
 	        } else {
 	            if (node.getType() == BkChanYeLianTreeNode.BKGEGU) icon = activeClosedIcon;
-	            else if (node.getType() == BkChanYeLianTreeNode .TDXBK) icon = nowClosedIcon;
+	            else if (node.getType() == BkChanYeLianTreeNode .TDXBK || node.getType() == BkChanYeLianTreeNode.DZHBK) icon = nowClosedIcon;
 	            else icon = inactiveClosedIcon;            
 	        }
 	        return icon;
@@ -76,7 +76,7 @@ public class BkChanYeLianTreeIconFactory {
 	    			icon = subGuPiaoHasChildIcon;
 	    		else icon = subGuPiaoNoChildIcon;
 	    	} else
-	    	if (node.getType() == BkChanYeLianTreeNode.TDXBK) {
+	    	if (node.getType() == BkChanYeLianTreeNode.TDXBK || node.getType() == BkChanYeLianTreeNode.DZHBK) {
 	    		if(node.getChildCount() > 0)
 	    			icon = banKuaiHasChildIcon;
 	    		else icon = banKuaiNoChildIcon;

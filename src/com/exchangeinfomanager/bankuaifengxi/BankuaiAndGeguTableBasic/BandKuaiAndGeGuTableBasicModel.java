@@ -183,9 +183,12 @@ public  abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 
 	protected Object getNodeValueByKeyWord(BkChanYeLianTreeNode node, String keyword, LocalDate showdate, String period,String... maformula) 
 	{
-		  Object value = null;
-		  
-		  NodeXPeriodData nodexdatawk =  ((TDXNodes)node).getNodeXPeroidData(period);
+		  Object value = null;NodeXPeriodData nodexdatawk = null;
+		  try {
+			  nodexdatawk =  ((TDXNodes)node).getNodeXPeroidData(period);
+		  } catch( java.lang.NullPointerException e) {
+			  e.printStackTrace();
+		  }
 		  value = nodexdatawk.getNodeDataByKeyWord(keyword,showdate,maformula[0]);
 		  if(value != null)		  return value;
 			  
@@ -283,10 +286,14 @@ public  abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 			this.curbk = (TDXNodes) entryList.get(rowIndex);
 		} else {
 			BkChanYeLianTreeNode node = entryList.get(rowIndex);
-			  if( node.getType() == BkChanYeLianTreeNode.BKGEGU ) 
-				  sendnode = ((StockOfBanKuai)node).getStock();
-			   else if ( node.getType() == BkChanYeLianTreeNode.TDXBK || node.getType() == BkChanYeLianTreeNode.DZHBK ) 
-				  sendnode = node;
+			try {
+				if( node.getType() == BkChanYeLianTreeNode.BKGEGU ) 
+					sendnode = ((StockOfBanKuai)node).getStock();
+				else if ( node.getType() == BkChanYeLianTreeNode.TDXBK || node.getType() == BkChanYeLianTreeNode.DZHBK ) 
+					sendnode = node;
+			} catch(java.lang.NullPointerException e) {
+				e.printStackTrace();
+			}
 		}
 		  		
 		  Object value = null;

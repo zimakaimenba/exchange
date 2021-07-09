@@ -40,20 +40,6 @@ public class BkChanYeLianTreeCellRenderer extends DefaultTreeCellRenderer
 	         String bktreenodename =  ((CylTreeNestedSetNode)value).getMyOwnName();
 	         lblnodenameandcount.setText( bktreenodename );
 	         
-	         // 每日板块分析信息
-//	         Integer patchfilestocknum = 0; Boolean selfisin = false;
-//	         if(nodetype == BkChanYeLianTreeNode.TDXBK ) {
-//	        	 LocalDate diswk = ((BanKuaiAndStockTree)tree).getCurrentDisplayedWk ();
-//	        	 NodesTreeRelated tmptreerelated = ((BkChanYeLianTreeNode)value).getNodeTreeRelated (); 
-//	        	 patchfilestocknum = ((BanKuaiTreeRelated)tmptreerelated).getStocksNumInParsedFileForSpecificDate (diswk);
-//	        	 
-//	        	 selfisin = ((BanKuaiTreeRelated)tmptreerelated).selfIsMatchModel (diswk);
-//	         }
-//	         if( patchfilestocknum != null  && patchfilestocknum > 0) {
-//	        	 lblnodenameandcount.setText( bktreenodename + " " + "(" + patchfilestocknum + ")"  ); 
-//	         } else
-//	        	 lblnodenameandcount.setText( bktreenodename );
-	         
 	        //ICON
 	         lblnodenameandcount.setIcon(bkcyliconfactory.getIcon((CylTreeNestedSetNode) value));
 	         

@@ -623,7 +623,7 @@ public class BanKuaiGuanLi extends JDialog
 		//westbankuaipnl
 		JPanel allbkfriendspnl = JPanelFactory.createPanel(); //°å¿éµÄsocial friend pnl
 		allbkfriendspnl.setLayout(new GridLayout(3, 1));
-		allbkfriendspnl.setPreferredSize(new Dimension(300, 988));
+		allbkfriendspnl.setPreferredSize(new Dimension(300, 900));
 		
 		JTabbedPane tabbedPaneSocialBk =  new JTabbedPane (JTabbedPane.TOP);
 		allbkfriendspnl.add(tabbedPaneSocialBk);

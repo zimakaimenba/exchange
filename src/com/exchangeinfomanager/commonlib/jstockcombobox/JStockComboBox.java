@@ -48,9 +48,7 @@ public class JStockComboBox extends  JComboBox<String> implements OnCalendarDate
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private SetupSystemConfiguration sysconfig;
-//	private BanKuaiAndStockTree bkstktree;
-//	private AllCurrentTdxBKAndStoksTree allbkstock;
+//	private SetupSystemConfiguration sysconfig;
 
 	public JStockComboBox() 
 	{
@@ -76,24 +74,21 @@ public class JStockComboBox extends  JComboBox<String> implements OnCalendarDate
 		
 		this.setRenderer(new JStockComboBoxNodeRenderer());
 	    this.setEditor(new JStockComboBoxEditor());
-	     
-//	    bkstktree = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks();
-		
-		sysconfig = new SetupSystemConfiguration();
-		
+
 		createEvents ();
 		
 		jPopupMenue = new JPopupMenu();
-		if(this.onlyselectnodetype != null && this.onlyselectnodetype == BkChanYeLianTreeNode.TDXBK ) {
-			this.createMenuForBanKuai();
-		} else
-		if(this.onlyselectnodetype != null && this.onlyselectnodetype == BkChanYeLianTreeNode.TDXGG ) {
-			this.createMenuForStock();
-		} else
-		if(this.onlyselectnodetype == -1)  {
+		
+		if(this.onlyselectnodetype != null || this.onlyselectnodetype == -1) {
 			this.createMenuForBanKuai();
 			this.createMenuForStock();
-		}
+		} else
+		if( this.onlyselectnodetype == BkChanYeLianTreeNode.TDXBK ||  this.onlyselectnodetype == BkChanYeLianTreeNode.DZHBK ) {
+			this.createMenuForBanKuai();
+		} else
+		if( this.onlyselectnodetype == BkChanYeLianTreeNode.TDXGG ) {
+			this.createMenuForStock();
+		} 
 	}
 
 	private Integer onlyselectnodetype;
@@ -105,8 +100,6 @@ public class JStockComboBox extends  JComboBox<String> implements OnCalendarDate
 	{
 		Object selectitem = ((JStockComboBoxModel)this.getModel()).getSelectedItem(); 
 		BkChanYeLianTreeNode nodeshouldbedisplayed = (BkChanYeLianTreeNode) selectitem;
-//		nodeshouldbedisplayed = preSearch( nodeshouldbedisplayed.getMyOwnCode(), onlyselectnodetype);
-		
 		return nodeshouldbedisplayed;
 	}
 	/*
@@ -122,25 +115,30 @@ public class JStockComboBox extends  JComboBox<String> implements OnCalendarDate
 		return node;
 	}
 	/*
-	 * 
+	 * Class key funtion 
 	 */
 	public BkChanYeLianTreeNode updateUserSelectedNode (String nodecode)
 	{
-		BkChanYeLianTreeNode nodeshouldbedisplayed_bk = null; BkChanYeLianTreeNode nodeshouldbedisplayed_gg = null;
+		BkChanYeLianTreeNode nodeshouldbedisplayed_tdxbk = null; BkChanYeLianTreeNode nodeshouldbedisplayed_gg = null;
+		BkChanYeLianTreeNode nodeshouldbedisplayed_dzhbk = null;
 		if(this.onlyselectnodetype == -1) {
 		 nodeshouldbedisplayed_gg = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode(nodecode, BkChanYeLianTreeNode.TDXGG);
-		 nodeshouldbedisplayed_bk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode(nodecode, BkChanYeLianTreeNode.TDXBK);
+		 nodeshouldbedisplayed_tdxbk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode(nodecode, BkChanYeLianTreeNode.TDXBK);
 		} else
 		if( this.onlyselectnodetype == BkChanYeLianTreeNode.TDXBK )
-			nodeshouldbedisplayed_bk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode(nodecode, BkChanYeLianTreeNode.TDXBK);
+			nodeshouldbedisplayed_tdxbk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode(nodecode, BkChanYeLianTreeNode.TDXBK);
 		else
 		if( this.onlyselectnodetype == BkChanYeLianTreeNode.TDXGG )
 			nodeshouldbedisplayed_gg = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode(nodecode, BkChanYeLianTreeNode.TDXGG);
+		else
+		if( this.onlyselectnodetype == BkChanYeLianTreeNode.DZHBK )
+			nodeshouldbedisplayed_dzhbk = CreateExchangeTree.CreateTreeOfDZHBanKuaiAndStocks().getSpecificNodeByHypyOrCode(nodecode, BkChanYeLianTreeNode.DZHBK);
+			
 		
 		BkChanYeLianTreeNode nodeshouldbedisplayed = null;
-		if(nodeshouldbedisplayed_bk != null  && nodeshouldbedisplayed_gg != null) { //板块和个股都有该代码出现
+		if(nodeshouldbedisplayed_tdxbk != null  && nodeshouldbedisplayed_gg != null) { //板块和个股都有该代码出现
 			List<BkChanYeLianTreeNode> nodeslist = new ArrayList<> ();
-			nodeslist.add(nodeshouldbedisplayed_bk);
+			nodeslist.add(nodeshouldbedisplayed_tdxbk);
 			nodeslist.add(nodeshouldbedisplayed_gg);
 			
 			SelectMultiNode userselection = new SelectMultiNode(nodeslist);
@@ -156,13 +154,13 @@ public class JStockComboBox extends  JComboBox<String> implements OnCalendarDate
 			 }
 			
 		} else 
-		if(nodeshouldbedisplayed_bk != null  ) {
-			nodeshouldbedisplayed = nodeshouldbedisplayed_bk;
+		if(nodeshouldbedisplayed_tdxbk != null  ) {
+			nodeshouldbedisplayed = nodeshouldbedisplayed_tdxbk;
 		} else
 		if (nodeshouldbedisplayed_gg != null) {
 			nodeshouldbedisplayed = nodeshouldbedisplayed_gg;
 		} else
-		if(nodeshouldbedisplayed_bk == null  && nodeshouldbedisplayed_gg == null)  { //可能是大智慧的板块了
+		if(nodeshouldbedisplayed_tdxbk == null  && nodeshouldbedisplayed_gg == null)  { //可能是大智慧的板块了
 			BkChanYeLianTreeNode nodeshouldbedisplayed_dzh = CreateExchangeTree.CreateTreeOfDZHBanKuaiAndStocks().getSpecificNodeByHypyOrCode(nodecode, BkChanYeLianTreeNode.DZHBK);
 			if(nodeshouldbedisplayed_dzh != null)
 				nodeshouldbedisplayed = nodeshouldbedisplayed_dzh;
@@ -173,11 +171,7 @@ public class JStockComboBox extends  JComboBox<String> implements OnCalendarDate
 		} 
 		
 		this.updateUserSelectedNode(nodeshouldbedisplayed);
-//		if(nodeshouldbedisplayed.getType() == BkChanYeLianTreeNode.TDXGG)
-//			this.updateUserSelectedNode((Stock)nodeshouldbedisplayed);
-//		else
-//			this.updateUserSelectedNode((BanKuai)nodeshouldbedisplayed);
-		
+
 		return nodeshouldbedisplayed;
 	}
 	
@@ -214,8 +208,6 @@ public class JStockComboBox extends  JComboBox<String> implements OnCalendarDate
             	
             }
         });
-
-
 	}
 	private void createMenuForStock ()
 	{
@@ -258,15 +250,9 @@ public class JStockComboBox extends  JComboBox<String> implements OnCalendarDate
 				if (e.getButton() == MouseEvent.BUTTON1) {
                   setEditorToNull ();
               } else if (e.getButton() == MouseEvent.BUTTON3) {
-              
             	  jPopupMenue.show(getEditor().getEditorComponent(), e.getX(),   e.getY());
-              	
               }
-				
 			}
-			
-	
-			
 		});
 		
 		this.getEditor().getEditorComponent().addKeyListener(new KeyAdapter() 
@@ -278,24 +264,15 @@ public class JStockComboBox extends  JComboBox<String> implements OnCalendarDate
 					String nodecode = null;
 					try{
 						String inputtext = ( (JTextField)getEditor().getEditorComponent()).getText();
-
 						nodecode = formatStockCode( inputtext );
-						
-					} catch (java.lang.ClassCastException ex) {
-						ex.printStackTrace();
-					}
+					} catch (java.lang.ClassCastException ex) {	ex.printStackTrace();	}
 					Integer result = ((JStockComboBoxModel)getModel()).hasTheNode (nodecode);
 					BkChanYeLianTreeNode node;
-					if(result == -1) {
-						node = updateUserSelectedNode (nodecode);
-
-					}
+					if(result == -1) 	node = updateUserSelectedNode (nodecode);
 				}
 			}
 			
 		});
-		
-	
 	}
 	/*
 	 * 
@@ -311,15 +288,13 @@ public class JStockComboBox extends  JComboBox<String> implements OnCalendarDate
 		LocalDate searchstart = datachoose.getDatachoosestart();
 		LocalDate searchend = datachoose.getDatachooseend();
 		
-		String zdyguanzhubkname = sysconfig.getCurZdyBanKuaiOfGuanZhuGeGu ();
+		String zdyguanzhubkname = new SetupSystemConfiguration().getCurZdyBanKuaiOfGuanZhuGeGu ();
 		BanKuaiDbOperation bkdbopt = new BanKuaiDbOperation ();
 		 Set<BkChanYeLianTreeNode> result = bkdbopt.sysnRecentGuanZhuGeGu (zdyguanzhubkname,searchstart,searchend);
 		for(BkChanYeLianTreeNode node : result ) {
 //			Stock node = (Stock)bkstktree.getSpecificNodeByHypyOrCode(geguname, BkChanYeLianTreeNode.TDXGG);
 			this.updateUserSelectedNode (node);
 		}
-		
-//		((JStockComboBoxNodeRenderer)this.getRenderer()).setGuanZhuGeGuList(result);
 		
 		hourglassCursor = null;
 		Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
@@ -352,7 +327,6 @@ public class JStockComboBox extends  JComboBox<String> implements OnCalendarDate
 		((JStockComboBoxNodeRenderer)this.getRenderer()).setPreviousChicangGeGuList(result);
 		
 	}
-
 	/*
 	 * 
 	 */
@@ -396,10 +370,6 @@ public class JStockComboBox extends  JComboBox<String> implements OnCalendarDate
 		((JStockComboBoxModel)this.getModel() ).setCurrentDataDate(newdate);
 		
 	}
-
-
-
-
 }
 
 
