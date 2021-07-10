@@ -7831,6 +7831,34 @@ public class BanKuaiDbOperation
 		    }
 			return nodeset;
 		}
+		/*
+		 * 
+		 */
+		public void forcedeleteBanKuaiImportedDailyExchangeData(BanKuai bk) 
+		{
+			String searchtable = null;
+			if(bk.getType() == BkChanYeLianTreeNode.TDXBK) 
+				searchtable = this.getBanKuaiJiaoYiLiangBiaoName(bk);
+			try {
+				String sqlquerystat = "DLETE FROM " + searchtable + "WHERE ´úÂë = '" + bk.getMyOwnCode() + "'";
+				connectdb.sqlQueryStatExecute(sqlquerystat);
+			} catch(java.lang.NullPointerException e) {
+		    } catch(Exception e){e.printStackTrace();
+		    } finally {  }
+		}
+		/*
+		 * 
+		 */
+		public void forcedeleteBanKuaiImportedGeGuData(BanKuai bk) 
+		{
+			try {
+				String searchtable = bk.getShuJuJiLuInfo().getGuPiaoBanKuaiDuiYingBiao();
+				String sqlquerystat = "DLETE FROM " + searchtable + "WHERE °å¿é´úÂë = '" + bk.getMyOwnCode() + "'";
+				connectdb.sqlQueryStatExecute(sqlquerystat);
+			} catch(java.lang.NullPointerException e) {
+		    } catch(Exception e){e.printStackTrace();
+		    } finally {  }
+		}
 
 }
 

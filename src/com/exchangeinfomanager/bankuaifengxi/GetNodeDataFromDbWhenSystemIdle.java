@@ -85,7 +85,7 @@ public class GetNodeDataFromDbWhenSystemIdle implements Runnable
 //						            System.out.printf(" I am sleeping %s %s \n", seconds, i);
 						            if( seconds > mousenotmoverange ) {
 						            	if(restartscreentips) {
-						            		System.out.printf(" \n System slept long enough. Getting BanKuai Weekly Zhanbi Data from Database starting... \n");
+						            		System.out.printf(" \n System slept long enough. Getting BanKuai Weekly Zhanbi Data from Database starting... " + LocalTime.now() + " \n");
 						            		restartscreentips = false;
 						            	}
 						            	
@@ -152,7 +152,7 @@ public class GetNodeDataFromDbWhenSystemIdle implements Runnable
 //						            System.out.printf(" I am sleeping %s %s \n", seconds, i);
 						            if( seconds > mousenotmoverange ) {
 						            	if(restartscreentips) {
-						            		System.out.printf(" \n System slept long enough. Getting BanKuai K Data from Database starting... \n");
+						            		System.out.printf(" \n System slept long enough. Getting BanKuai K Data from Database starting..." + LocalTime.now() + " \n");
 						            		restartscreentips = false;
 						            	}
 						            	
@@ -223,7 +223,7 @@ public class GetNodeDataFromDbWhenSystemIdle implements Runnable
 //						            System.out.printf(" I am sleeping %s %s \n", seconds, i);
 						            if( seconds > mousenotmoverange ) {
 						            	if(restartscreentips) {
-						            		System.out.printf(" \n System slept long enough. Getting Stock Weekly Zhanbi Data from Database starting... \n");
+						            		System.out.printf(" \n System slept long enough. Getting Stock Weekly Zhanbi Data from Database starting..." + LocalTime.now() + " \n");
 						            		restartscreentips = false;
 						            	}
 						            	
@@ -290,7 +290,7 @@ public class GetNodeDataFromDbWhenSystemIdle implements Runnable
 //						            System.out.printf(" I am sleeping %s %s \n", seconds, i);
 						            if( seconds > mousenotmoverange ) {
 						            	if(restartscreentips) {
-						            		System.out.printf(" \n System slept long enough. Getting Stock K Data from Database starting... \n");
+						            		System.out.printf(" \n System slept long enough. Getting Stock K Data from Database starting... " + LocalTime.now() + " \n");
 						            		restartscreentips = false;
 						            	}
 						            	
@@ -363,7 +363,7 @@ public class GetNodeDataFromDbWhenSystemIdle implements Runnable
 //						            System.out.printf(" I am sleeping %s %s \n", seconds, i);
 						            if( seconds > mousenotmoverange ) {
 						            	if(restartscreentips) {
-						            		System.out.printf(" \n System slept long enough. Getting BanKuai Weekly Zhanbi Data from Database starting... \n");
+						            		System.out.printf(" \n System slept long enough. Getting BanKuai Weekly Zhanbi Data from Database starting..." + LocalTime.now() + " \n");
 						            		restartscreentips = false;
 						            	}
 						            	
@@ -430,7 +430,7 @@ public class GetNodeDataFromDbWhenSystemIdle implements Runnable
 //						            System.out.printf(" I am sleeping %s %s \n", seconds, i);
 						            if( seconds > mousenotmoverange ) {
 						            	if(restartscreentips) {
-						            		System.out.printf(" \n System slept long enough. Getting BanKuai K Data from Database starting... \n");
+						            		System.out.printf(" \n System slept long enough. Getting BanKuai K Data from Database starting... " + LocalTime.now() + " \n");
 						            		restartscreentips = false;
 						            	}
 						            	

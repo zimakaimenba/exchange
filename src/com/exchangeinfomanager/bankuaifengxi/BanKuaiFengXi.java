@@ -2440,6 +2440,31 @@ public class BanKuaiFengXi extends JDialog
 				 if (arg0.getClickCount() == 2) { }
 			}
 		});
+		tblDzhBkCurSelectedWkZhanBi.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) 
+			{
+				int row = tblDzhBkCurSelectedWkZhanBi.getSelectedRow();
+				if(row <0) {	JOptionPane.showMessageDialog(null,"请选择一个板块！","Warning",JOptionPane.WARNING_MESSAGE);
+					return;
+				}
+				int modelRow = tblDzhBkCurSelectedWkZhanBi.convertRowIndexToModel(row);
+				BanKuai selectedbk = (BanKuai) ((BanKuaiInfoTableModel)tblDzhBkCurSelectedWkZhanBi.getModel()).getNode(modelRow);
+
+				
+				Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
+				setCursor(hourglassCursor);
+
+				unifiedOperationsAfterUserSelectABanKuai (selectedbk);
+				
+				hourglassCursor = null;
+				Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
+				setCursor(hourglassCursor2);
+
+				playAnaylsisFinishNoticeSound();
+			}
+		});
+
 		
 		tblDzhBkCurWkZhanBi.addMouseListener(new MouseAdapter() {
 			@Override
@@ -4016,7 +4041,7 @@ public class BanKuaiFengXi extends JDialog
 		Component focus = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner();
 		
 		for(BanKuaiandGeGuTableBasic tmptable : this.tablealltableset ) {
-			if(  ((BandKuaiAndGeGuTableBasicModel)tmptable.getModel() ).getRowCount() < 0 ) 
+			if(  ((BandKuaiAndGeGuTableBasicModel)tmptable.getModel() ).getRowCount() <= 0 ) 
 				continue;
 			
 			if(tmptable == focus)
@@ -4028,7 +4053,7 @@ public class BanKuaiFengXi extends JDialog
 			found = true;
 			if (!(tmptable.getParent() instanceof JViewport))	continue;
 
-			int modelRow = tmptable.convertRowIndexToView(rowindex);
+			int modelRow = tmptable.convertRowIndexToView(rowindex); //convertRowIndexToModel
 //		    JViewport viewport = (JViewport)tmptable.getParent();
 //		        // This rectangle is relative to the table where the
 //		        // northwest corner of cell (0,0) is always (0,0).
@@ -4060,12 +4085,11 @@ public class BanKuaiFengXi extends JDialog
 	        }
 
 	        // '+ veiw dimension - cell dimension' to set first selected row on the top
-
 	        rect.setLocation(rect.x+dim.width-dimOne.width, rect.y+dim.height-dimOne.height);
 
 	        tmptable.scrollRectToVisible(rect);
-			
-		    tmptable.setRowSelectionInterval(modelRow, modelRow);
+			try {	tmptable.setRowSelectionInterval(modelRow, modelRow);
+			} catch ( java.lang.IllegalArgumentException e) { e.printStackTrace(); System.out.print(modelRow ); return false;}
 //				int curselectrow = tmptable.getSelectedRow();
 //				try {
 //					tmptable.setRowSelectionInterval(modelRow, modelRow);
@@ -4097,6 +4121,17 @@ public class BanKuaiFengXi extends JDialog
 		BanKuai bankuai = (BanKuai) ((BanKuaiInfoTableModel) tableBkZhanBi.getModel()).getNode(modelRow);
 		return bankuai;
 	}
+	private BanKuai getXuanDingZhouSelectedTDXBanKuai ()
+	{
+		int row = tableselectedwkbkzb.getSelectedRow();
+		if(row <0) {
+			JOptionPane.showMessageDialog(null,"请选择一个板块","Warning",JOptionPane.WARNING_MESSAGE);
+			return null;
+		}
+		int modelRow = tableselectedwkbkzb.convertRowIndexToModel(row); 
+		BanKuai bankuai = (BanKuai) ((BanKuaiInfoTableModel) tableselectedwkbkzb.getModel()).getNode(modelRow);
+		return bankuai;
+	}
 	private BanKuai getSelectedDZHBanKuai ()
 	{
 		int row = tblDzhBkCurWkZhanBi.getSelectedRow();
@@ -4105,6 +4140,16 @@ public class BanKuaiFengXi extends JDialog
 		}
 		int modelRow = tblDzhBkCurWkZhanBi.convertRowIndexToModel(row);
 		BanKuai selectedbk = (BanKuai) ((BanKuaiInfoTableModel)tblDzhBkCurWkZhanBi.getModel()).getNode(modelRow);
+		return selectedbk;
+	}
+	private BanKuai getXuanDingZhouSelectedDZHBanKuai ()
+	{
+		int row = tblDzhBkCurSelectedWkZhanBi.getSelectedRow();
+		if(row <0) {	JOptionPane.showMessageDialog(null,"请选择一个板块！","Warning",JOptionPane.WARNING_MESSAGE);
+			return null;
+		}
+		int modelRow = tblDzhBkCurSelectedWkZhanBi.convertRowIndexToModel(row);
+		BanKuai selectedbk = (BanKuai) ((BanKuaiInfoTableModel)tblDzhBkCurSelectedWkZhanBi.getModel()).getNode(modelRow);
 		return selectedbk;
 	}
 	/**

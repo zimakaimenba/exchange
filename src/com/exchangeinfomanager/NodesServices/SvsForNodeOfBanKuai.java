@@ -619,5 +619,16 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 		node =  bkdbopt.getNodeGzMrMcYkInfo((TDXNodes)node, selecteddatestart,selecteddateend, period);
 		return node;
 	}
+
+	@Override
+	public void forcedeleteBanKuaiImportedDailyExchangeData(BanKuai bk) {
+		bkdbopt.forcedeleteBanKuaiImportedDailyExchangeData (bk);
+		
+	}
+
+	@Override
+	public void forcedeleteBanKuaiImportedGeGuData(BanKuai bk) {
+		bkdbopt.forcedeleteBanKuaiImportedGeGuData (bk);
+	}
 	
 }

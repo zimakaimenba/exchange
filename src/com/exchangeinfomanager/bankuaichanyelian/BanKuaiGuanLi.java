@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.KeyboardFocusManager;
 import java.awt.Rectangle;
 
 import javax.swing.JButton;
@@ -35,12 +36,15 @@ import com.exchangeinfomanager.Trees.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
 import com.exchangeinfomanager.Trees.CreateExchangeTree;
 import com.exchangeinfomanager.Trees.TreeOfChanYeLian;
+import com.exchangeinfomanager.bankuaifengxi.BankuaiAndGeguTableBasic.BanKuaiandGeGuTableBasic;
+import com.exchangeinfomanager.bankuaifengxi.BankuaiAndGeguTableBasic.BandKuaiAndGeGuTableBasicModel;
 import com.exchangeinfomanager.bankuaifengxi.bankuaiinfotable.BanKuaiInfoTableModel;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.commonlib.JUpdatedTextField;
 import com.exchangeinfomanager.commonlib.SystemAudioPlayed;
 import com.exchangeinfomanager.commonlib.JTreeTable.AbstractTreeTableModel;
 import com.exchangeinfomanager.commonlib.JTreeTable.JTreeTable;
+import com.exchangeinfomanager.commonlib.JTreeTable.TreeTableModelAdapter;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.CylTreeDbOperation;
 import com.exchangeinfomanager.gui.StockInfoManager;
@@ -54,7 +58,7 @@ import com.exchangeinfomanager.nodes.HanYuPinYing;
 import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
-
+import com.google.common.base.Strings;
 import com.google.common.collect.Ordering;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
@@ -124,12 +128,16 @@ import javax.swing.border.MatteBorder;
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
 import javax.swing.JTree;
+import javax.swing.JViewport;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 
 public class BanKuaiGuanLi extends JDialog 
 {
+private Set<JTreeTable> tableallbktableset;
+
 //	private CylTreeDbOperation cyltreedb;
 
 	/**
@@ -146,9 +154,12 @@ public class BanKuaiGuanLi extends JDialog
 		initializeBaiKuaiOfNoGeGuWithSelfCJLTree ();
 		initializeGui2 ();
 		createEvents ();
-	}
-
 		
+		 this.tableallbktableset = new HashSet<> ();
+		 tableallbktableset.add(tableSysBk);
+		 tableallbktableset.add(tableDzhBk);
+	}
+	
 	private BanKuaiDbOperation bkdbopt;
 //	private HashMap<String,BanKuai> zhishulist;
 	private BanKuaiAndStockTree treebkonlynoggwithselfcjl;
@@ -192,6 +203,23 @@ public class BanKuaiGuanLi extends JDialog
 
 	private void createEvents() 
 	{
+		tfldsearchsysbk.addActionListener(new ActionListener(){
+
+            public void actionPerformed(ActionEvent e){
+            	if(!Strings.isNullOrEmpty(tfldsearchsysbk.getText() ) )
+					findInputedNodeInTable (tfldsearchsysbk.getText().trim());
+            }});
+		btnsearchsysbk.addMouseListener(new MouseAdapter() 
+		{
+			@Override
+			public void mouseClicked(MouseEvent arg0) 
+			{
+				if(!Strings.isNullOrEmpty(tfldsearchsysbk.getText() ) )
+					findInputedNodeInTable (tfldsearchsysbk.getText().trim());
+			}
+			
+		});
+
 		btndelnode.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
@@ -530,8 +558,6 @@ public class BanKuaiGuanLi extends JDialog
 		Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
 		setCursor(hourglassCursor);
 
-		LocalDate requiredstart = CommonUtility.getSettingRangeDate( LocalDate.now(), "Large");
-	
 		Set<BkChanYeLianTreeNode> bkrelatedbks = new HashSet<> ();
 		SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai ();
 		selectnode = svsbk.getAllGeGuOfBanKuai (selectnode);
@@ -570,7 +596,7 @@ public class BanKuaiGuanLi extends JDialog
 	}
 
 	private final ButtonGroup buttonGroup = new ButtonGroup();
-	private JTreeTable tableSysBk;
+	
 //	private final JPanel contentPanel = new JPanel();
 //	private AllCurrentTdxBKAndStoksTree allbkstks;
 //	private JPanel panelSys;
@@ -579,8 +605,11 @@ public class BanKuaiGuanLi extends JDialog
 	private JUpdatedTextField tfldsearchsysbk;
 	private BanKuaiShuXingSheZhi panelsetting;
 	private JMenuBar menuBar;
+	private JTreeTable tableSysBk;
 	private JTable tableBkfriends;
 	private JTable tablebkgegu;
+	private JTreeTable tableDzhBk;
+	private JTreeTable tabledazsocial;
 	private JMenuItem menuItemSocialFriendPostivefortoppesttable;
 	private JMenuItem menuItemSocialFriendNegtivefortoppesttable;
 	private JTreeTable tablenoggbk;
@@ -588,8 +617,6 @@ public class BanKuaiGuanLi extends JDialog
 	private JMenuItem menuItemSocialFriendNegtiveformiddletable;
 	private JMenuItem menuItemrelatedbk;
 	private JTabbedPane tabbedPaneBk;
-	private JTreeTable tableDzhBk;
-	private JTreeTable tabledazsocial;
 	private JMenuItem menuItemSocialFriendPostiveformiddletablefordzh;
 	private JMenuItem menuItemSocialFriendNegtiveformiddletablefordzh;
 	private SubnodeButton btnAddBktotree;
@@ -597,6 +624,7 @@ public class BanKuaiGuanLi extends JDialog
 	private JButton btnfindnode;
 	private JUpdatedTextField tfldfindnodeintree;
 	ImageIcon addBelowIcon, addAboveIcon, addChildIcon, addSubnodeIcon;
+	private JButton btnsearchsysbk;
 	
 	private void initializeGui2() 
 	{
@@ -858,9 +886,9 @@ public class BanKuaiGuanLi extends JDialog
 		 JPanel searchpnl = JPanelFactory.createFixedSizePanel(new FlowLayout ());
 		 searchpnl.setPreferredSize(new Dimension(200, 38));
 			tfldsearchsysbk = new JUpdatedTextField();
-			tfldsearchsysbk.setPreferredSize( new Dimension( 200, 50 ) );
-			tfldsearchsysbk.setColumns(80);
-			JButton btnsearchsysbk = new JButton("\u67E5\u627E\u677F\u5757");
+			tfldsearchsysbk.setPreferredSize( new Dimension( 100, 33 ) );
+//			tfldsearchsysbk.setColumns(10);
+			btnsearchsysbk = new JButton("\u67E5\u627E\u677F\u5757");
 			searchpnl.add(tfldsearchsysbk);
 			searchpnl.add(btnsearchsysbk);
 			allbkskpnl.add(searchpnl);
@@ -915,6 +943,7 @@ public class BanKuaiGuanLi extends JDialog
 		JPopupMenu popupMenunosysbk = new JPopupMenu();
 		this.addPopup (tableSysBk,popupMenunosysbk);
 		menuItemrelatedbk = new JMenuItem("¼ÆËã¹ØÁª°å¿é");
+		popupMenunosysbk.add(menuItemrelatedbk);
 		popupMenunosysbk.add(menuItemrelatedbk);
 		
 		JScrollPane scrollPanedzhsysbk = new JScrollPane (); 
@@ -1064,6 +1093,64 @@ public class BanKuaiGuanLi extends JDialog
     	        }
            }
 	    }
+	 
+	private Boolean findInputedNodeInTable(String nodecode) 
+	{
+			Boolean found = false; int rowindex;
+			nodecode = nodecode.substring(0,6);
+			
+			for( JTreeTable tmptable: tableallbktableset) {
+				int tblrowcount = tmptable.getTree ().getRowCount();
+				for(int row=0;row<tblrowcount;row++) {
+					BkChanYeLianTreeNode bk =  (BkChanYeLianTreeNode) ((TreeTableModelAdapter)tmptable.getModel()).getValueAt(row, 0);
+					if(bk.getMyOwnCode().equalsIgnoreCase(nodecode) && BkChanYeLianTreeNode.isBanKuai(bk) ) {
+//					    JViewport viewport = (JViewport)tmptable.getParent();
+//				        // This rectangle is relative to the table where the
+//				        // northwest corner of cell (0,0) is always (0,0).
+//				    Rectangle rect = tmptable.getCellRect(modelRow, 0, true);
+//				        // The location of the viewport relative to the table
+//				    Point pt = viewport.getViewPosition();
+//				        // Translate the cell location so that it is relative
+//				        // to the view, assuming the northwest corner of the
+//				        // view is (0,0)
+//				    rect.setLocation(rect.x-pt.x, rect.y-pt.y);
+		//
+//				    tmptable.scrollRectToVisible(rect);
+					
+					JViewport viewport = (JViewport)tmptable.getParent();
+			        // view dimension
+			        Dimension dim = viewport.getExtentSize();
+			        // cell dimension
+			        Dimension dimOne = new Dimension(0,0);
+
+			        // This rectangle is relative to the table where the
+			        // northwest corner of cell (0,0) is always (0,0).
+			        Rectangle rect = tmptable.getCellRect(row, 0, true);
+			        Rectangle rectOne;
+			        if (row+1<tmptable.getTree().getRowCount()) {
+			            
+			            rectOne = tmptable.getCellRect(row+1, 0, true);
+			            dimOne.width=rectOne.x-rect.x;
+			            dimOne.height=rectOne.y-rect.y;
+			        }
+
+			        // '+ veiw dimension - cell dimension' to set first selected row on the top
+			        rect.setLocation(rect.x+dim.width-dimOne.width, rect.y+dim.height-dimOne.height);
+
+			        tmptable.scrollRectToVisible(rect);
+					try {	tmptable.setRowSelectionInterval(row, row);
+					} catch ( java.lang.IllegalArgumentException e) { e.printStackTrace(); System.out.print(row ); return false;}
+//						int curselectrow = tmptable.getSelectedRow();
+//						try {
+//							tmptable.setRowSelectionInterval(modelRow, modelRow);
+//							tmptable.scrollRectToVisible(new Rectangle(tmptable.getCellRect(modelRow, 0, true)));
+//						} catch (java.lang.IllegalArgumentException ex) {}
+					}
+				}
+			}
+
+			return true;
+	}
 	
 }
 
@@ -1107,7 +1194,7 @@ class BanKuaiDetailTableModel extends AbstractTreeTableModel
          case 1:
              return ((BkChanYeLianTreeNode)node).getMyOwnName();
          case 2:
-        	 if ( ((BkChanYeLianTreeNode)node).getType() == BkChanYeLianTreeNode.TDXBK  )
+        	 if (  BkChanYeLianTreeNode.isBanKuai((BkChanYeLianTreeNode)node))
         		 return ((BanKuai)node).getBanKuaiLeiXing();
         	 else 
         		 return "";
@@ -1129,6 +1216,12 @@ class BanKuaiDetailTableModel extends AbstractTreeTableModel
 	      }
 	      return 0;
 	}
+	
+//	public int getRowCount() 
+//	{
+//		 return 0;
+//	}
+	
 
 }
 /*

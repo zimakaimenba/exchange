@@ -20,6 +20,7 @@ import com.exchangeinfomanager.News.Labels.ColorChooser;
 import com.exchangeinfomanager.NodesServices.ServicesForNodeBanKuai;
 import com.exchangeinfomanager.database.BanKuaiDZHDbOperation;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
+import com.exchangeinfomanager.gudong.JiGouService;
 import com.exchangeinfomanager.guifactory.JLabelFactory;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.google.common.collect.Multimap;
@@ -38,6 +39,7 @@ import java.awt.Font;
 import java.awt.MouseInfo;
 import java.awt.Point;
 
+import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
 
 
@@ -104,7 +106,7 @@ public class BanKuaiShuXingSheZhi extends JPanel
 	{
 		this.settingnode = node;
 		
-		if(settingnode.getType() == BkChanYeLianTreeNode.TDXBK || settingnode.getType() == BkChanYeLianTreeNode.DZHBK) {
+		if(BkChanYeLianTreeNode.isBanKuai(node)) {
 			
 			cbxnotimport.setEnabled(true);
 			cbxnotbkfx.setEnabled(true);
@@ -114,14 +116,7 @@ public class BanKuaiShuXingSheZhi extends JPanel
 			chkbxnotexportwklyfile.setEnabled(true);
 			
 			initializeGuiValue ();
-						
-//			if(cbxnotimport.isSelected()) {
-//				cbxnotbkfx.setEnabled(false);
-//				cbxnotgephi.setEnabled(false);
-//				cbxnotshowincyltree.setEnabled(false);
-//				chkbxnotexportwklyfile.setEnabled(false);
-//			}
-				
+
 		} else { //个股，不能设置
 			cbxnotimport.setSelected(false);
 			cbxnotbkfx.setSelected(false);
@@ -201,7 +196,23 @@ public class BanKuaiShuXingSheZhi extends JPanel
 //		((BanKuai)settingnode).setShowincyltree(!cbxnotshowincyltree.isSelected());
 //		((BanKuai)settingnode).setExportTowWlyFile(!chkbxnotexportwklyfile.isSelected());
 //		((BanKuai)settingnode).setImportBKGeGu(!chbxnotimportgegu.isSelected());
-		 
+		
+		JPanel myPanel = new JPanel();
+	    myPanel.setLayout(new BoxLayout(myPanel, BoxLayout.PAGE_AXIS));
+	      
+		JCheckBox forcetodeletepreviousimporteddailydata = new JCheckBox("强制删除已导入的板块每日交易数据。"); 
+		JCheckBox forcetodeletepreviousimportedbkgg = new JCheckBox("强制删除已导入的板块个股数据。");
+		Boolean compadded = false;
+		if(cbxnotimport.isSelected()) { forcetodeletepreviousimporteddailydata.setSelected(true);	myPanel.add(forcetodeletepreviousimporteddailydata); compadded = true;}
+		if(chbxnotimportgegu.isSelected()) { forcetodeletepreviousimportedbkgg.setSelected(true);	myPanel.add(forcetodeletepreviousimportedbkgg); compadded = true;}
+		if(compadded ) {
+			int result = JOptionPane.showConfirmDialog(null, myPanel, "操作", JOptionPane.OK_CANCEL_OPTION);
+		      if (result == JOptionPane.OK_OPTION) {
+		    	  if(forcetodeletepreviousimporteddailydata.isSelected()) svsbk.forcedeleteBanKuaiImportedDailyExchangeData((BanKuai)settingnode); ;
+		    	  if(forcetodeletepreviousimportedbkgg.isSelected()) svsbk.forcedeleteBanKuaiImportedGeGuData((BanKuai)settingnode);;
+		      }
+		}
+
 		buttonapplybksetting.setEnabled(false);
 	}
 

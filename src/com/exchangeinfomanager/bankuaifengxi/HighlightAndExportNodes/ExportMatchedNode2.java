@@ -38,14 +38,12 @@ public class ExportMatchedNode2
 	public Set<TDXNodes> checkTDXNodeMatchedCurSettingConditons (LocalDate exportdate, String period)
 	{
 		this.exportdate = exportdate;
-		BanKuaiAndStockTree bkcyltree = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks();
-		
-		TDXNodes treeroot = (TDXNodes)bkcyltree.getModel().getRoot();
-		int bankuaicount = bkcyltree.getModel().getChildCount(treeroot);
-		
 		Set<TDXNodes> matchednodeset = new HashSet<> ();
 		Set<String> checkednodesset = new HashSet<> ();
 		
+		BanKuaiAndStockTree bkcyltree = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks();
+		TDXNodes treeroot = (TDXNodes)bkcyltree.getModel().getRoot();
+		int bankuaicount = bkcyltree.getModel().getChildCount(treeroot);
 		for(int i=0;i< bankuaicount; i++) {
 			BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode)bkcyltree.getModel().getChild(treeroot, i);
 			//Yellow sign part
@@ -105,7 +103,7 @@ public class ExportMatchedNode2
 						
 						Boolean result = this.checkNodesMatchedCurSettingConditions ((Stock)ggstock);
 						if(result && !matchednodeset.contains(ggstock))	matchednodeset.add((TDXNodes) ggstock);
-						if(!checkednodesset.contains(ggstock))  checkednodesset.add( ggstock.getMyOwnCode() );
+						if(!checkednodesset.contains(ggstock.getMyOwnCode()))  checkednodesset.add( ggstock.getMyOwnCode() );
 				}
 			}
 			
@@ -134,6 +132,75 @@ public class ExportMatchedNode2
 				if(result != null && result && !matchednodeset.contains(childnode))	matchednodeset.add((TDXNodes) childnode);
 				if(!checkednodesset.contains(childnode.getMyOwnCode() ) )  checkednodesset.add( childnode.getMyOwnCode() );
 			}
+		}
+		//DZH part
+		BanKuaiAndStockTree dzhbkcyltree = CreateExchangeTree.CreateTreeOfDZHBanKuaiAndStocks();
+		TDXNodes dzhtreeroot = (TDXNodes)dzhbkcyltree.getModel().getRoot();
+		bankuaicount = dzhbkcyltree.getModel().getChildCount(dzhtreeroot);
+		for(int i=0;i< bankuaicount; i++) {
+			BkChanYeLianTreeNode childnode = (BkChanYeLianTreeNode)dzhbkcyltree.getModel().getChild(treeroot, i);
+			//Yellow sign part
+			Boolean yellowsignresult = checkNodeMatchedCurSettingConditonsOfYellowSign (childnode, exportdate, period);
+			if(yellowsignresult != null  ) {
+				if(!matchednodeset.contains(childnode)  && yellowsignresult ) matchednodeset.add((TDXNodes) childnode);
+//				if(!checkednodesset.contains(childnode.getMyOwnCode()))  checkednodesset.add( childnode.getMyOwnCode() );
+			} 
+			// Red sign part
+			Boolean redsignresult = checkNodeMatchedCurSettingConditonsOfRedSign (childnode, exportdate, period);
+			if(redsignresult != null  ) {
+				if(!matchednodeset.contains(childnode)  && redsignresult ) matchednodeset.add((TDXNodes) childnode);
+//				if(!checkednodesset.contains(childnode.getMyOwnCode()))  checkednodesset.add( childnode.getMyOwnCode() );
+			}
+			
+			if(this.cond.shouldExportOnlyRedSignBkStk() || this.cond.shouldExportOnlyYellowSignBkStk() ) continue;
+			
+			//normal part
+			if(childnode.getType() == BkChanYeLianTreeNode.DZHBK ) {
+				if( ! ((BanKuai)childnode).getBanKuaiOperationSetting().isImportdailytradingdata() )
+					continue;
+				if( ! ((BanKuai)childnode).getBanKuaiOperationSetting().isExportTowWlyFile() )
+					continue;
+				
+				if( ((BanKuai)childnode).getBanKuaiLeiXing().equals(BanKuai.HASGGNOSELFCJL) 
+						 ||  ((BanKuai)childnode).getBanKuaiLeiXing().equals(BanKuai.NOGGNOSELFCJL) //有些指数是没有个股和成交量的，不列入比较范围 
+						 ||  ((BanKuai)childnode).getBanKuaiLeiXing().equals(BanKuai.NOGGWITHSELFCJL) ) //仅导出有个股的板块
+					continue;
+				
+				if( checkednodesset.contains(childnode.getMyOwnCode() ) ) 
+					continue;
+				
+				String checkresult = this.checkBanKuaiMatchedCurSettingConditons((BanKuai)childnode, exportdate, period);
+				checkednodesset.add( childnode.getMyOwnCode() );
+				
+				if( checkresult.toUpperCase().contains("UNMATCH") ) continue;
+				
+				if(checkresult.toUpperCase().contains("MATCHED") ) {
+					if( !this.cond.shouldExportOnlyGeGuNotBanKuai() ) //只导出板块个股
+						if(!matchednodeset.contains(childnode)) 
+							matchednodeset.add((TDXNodes) childnode);
+				}  
+					
+				if( this.cond.shouldExportOnlyBankuaiNotGeGu() )		continue;
+								
+				if( !checkresult.toUpperCase().contains("WITHCHECKGEGU") )			continue;
+				
+				childnode = ((SvsForNodeOfBanKuai)((BanKuai) childnode).getServicesForNode(true)).getAllGeGuOfBanKuai((BanKuai) childnode);
+				((BanKuai) childnode).getServicesForNode(false);
+//				
+				Collection<BkChanYeLianTreeNode> nowbkallgg = ((BanKuai)childnode).getSpecificPeriodBanKuaiGeGu(exportdate,0);
+				if(nowbkallgg == null) continue;
+
+				for (BkChanYeLianTreeNode ggstock : nowbkallgg) {
+						if( checkednodesset.contains(ggstock.getMyOwnCode() ) ) //已经检查过的stock就不用了，加快速度
+							continue;
+						
+						Boolean result = this.checkNodesMatchedCurSettingConditions ((Stock)ggstock);
+						if(result && !matchednodeset.contains(ggstock))	matchednodeset.add((TDXNodes) ggstock);
+						if(!checkednodesset.contains(ggstock.getMyOwnCode()))  checkednodesset.add( ggstock.getMyOwnCode() );
+				}
+			}
+
+			
 		}
 		
 		checkednodesset = null;
@@ -186,31 +253,6 @@ public class ExportMatchedNode2
 		checkresult = node.checkNodeDataMatchedWithFormula(formula);
 		return checkresult;
 	}
-//	private String getKeywordValue(TDXNodes node, String kw, LocalDate selectdate, String curperiod,String factor)
-//	{
-//		  Object value = null;
-//		  factor = factor.replaceAll(" ", "");
-//		  NodeXPeriodData nodexdata = node.getNodeXPeroidData(curperiod);
-//          
-//		  if(kw.equals("CLOSEVSMA")) {
-//	          Pattern p = Pattern.compile("\'.*?\'", Pattern.CASE_INSENSITIVE);
-//	          Matcher m = p.matcher(factor);
-//	          int indexofeq ;  int indexofend = 0;
-//	          while (m.find()) {
-//	        	  indexofeq = m.start();
-//	        	  indexofend = m.end();
-//	          }
-//	          String maformula = factor.substring(indexofend + 1, factor.length()-1);
-//			  value =  nodexdata.getNodeDataByKeyWord( kw, selectdate,  maformula);
-//		  }
-//		  else try {  value = nodexdata.getNodeDataByKeyWord(kw,selectdate,"");
-//		  } catch (java.lang.NullPointerException e) {  e.printStackTrace();
-//			  System.out.println(node.getMyOwnCode() + node.getMyOwnName() + "Get keyword failed. keyword is" + kw + selectdate.toString() + ". FACTOR is" + factor + "PERIOD is " + curperiod);
-//		  }
-//		  
-//		  if(value != null)		  return value.toString();
-//		  else	  return null;
-//	}
 	/*
 	 * 检查板块是否符合设定
 	 */

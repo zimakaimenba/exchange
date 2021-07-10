@@ -421,5 +421,16 @@ public class SvsForNodeOfDZHBanKuai implements ServicesForNode ,ServicesForNodeB
 		
 		return result;
 	}
+	
+	@Override
+	public void forcedeleteBanKuaiImportedDailyExchangeData(BanKuai bk) {
+		dzhbkdbopt.forcedeleteBanKuaiImportedDailyExchangeData (bk);
+		
+	}
+
+	@Override
+	public void forcedeleteBanKuaiImportedGeGuData(BanKuai bk) {
+		dzhbkdbopt.forcedeleteBanKuaiImportedGeGuData (bk);
+	}
 
 }

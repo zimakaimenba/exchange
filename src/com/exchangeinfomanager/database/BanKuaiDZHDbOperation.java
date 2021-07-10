@@ -1666,5 +1666,48 @@ public class BanKuaiDZHDbOperation
 	      }
 	      return result;
 	}
+	
+	/*
+	 * 
+	 */
+	public void forcedeleteBanKuaiImportedDailyExchangeData(BanKuai bk) 
+	{
+		String searchtable = null;
+		if(bk.getType() == BkChanYeLianTreeNode.DZHBK) 
+			searchtable = "大智慧板块每日交易信息";
+		try {
+			String sqlquerystat = "DELETE FROM " + searchtable + " WHERE 代码 = '" + bk.getMyOwnCode() + "'";
+			tdxconnectdb.sqlDeleteStatExecute(sqlquerystat);
+		} catch(java.lang.NullPointerException e) {
+	    } catch(Exception e){e.printStackTrace();
+	    } finally {  }
+	}
+	/*
+	 * 
+	 */
+	public void forcedeleteBanKuaiImportedGeGuData(BanKuai bk) 
+	{
+		try {
+			String searchtable = bk.getShuJuJiLuInfo().getGuPiaoBanKuaiDuiYingBiao();
+			if(searchtable == null) {
+				searchtable = "大智慧股票概念板块对应表";
+				bk.getShuJuJiLuInfo().setGuPiaoBanKuaiDuiYingBiao(searchtable);
+			}
+			String sqlquerystat = "DELETE FROM " + searchtable + " WHERE 板块代码 = '" + bk.getMyOwnCode() + "'";
+			tdxconnectdb.sqlDeleteStatExecute(sqlquerystat);
+		} catch(java.lang.NullPointerException e) {
+	    } catch(Exception e){e.printStackTrace();
+	    } finally {  }
+	}
+	
+	/*
+	 * 
+	 */
+	public void getTDXBanKuaiGeGuDuiYingBiaoByJiaoYiSuo (String jiaoyisuo)
+	{
+//		bk.getShuJuJiLuInfo().setGuPiaoBanKuaiDuiYingBiao(dyb);
+	}
+	
+
 }
 
