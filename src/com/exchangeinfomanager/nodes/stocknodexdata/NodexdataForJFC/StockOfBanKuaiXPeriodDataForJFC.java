@@ -494,6 +494,21 @@ public class StockOfBanKuaiXPeriodDataForJFC implements NodeXPeriodData
 		// TODO Auto-generated method stub
 		return null;
 	}
+	@Override
+	public void removeNodeDataFromSpecificDate(LocalDate requireddate, int difference) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void setNotCalWholeWeekMode(LocalDate date) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public LocalDate isInNotCalWholeWeekMode() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 
 	

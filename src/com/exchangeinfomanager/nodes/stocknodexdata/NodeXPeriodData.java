@@ -109,6 +109,8 @@ public interface NodeXPeriodData
 	
 	public String[] getNodeXDataCsvData (TDXNodes superbk, LocalDate requireddate, int difference);
 	public Object getNodeDataByKeyWord( String keyword, LocalDate requireddate, String... maformula);
+
+	public void removeNodeDataFromSpecificDate (LocalDate requireddate, int difference);
 	
 	public static String[] NODEXDATACSVDATAHEADLINE = { 		 
 			"成交额占比",
@@ -169,5 +171,8 @@ public interface NodeXPeriodData
 			"#1B2631","#1B2631","#1B2631","#1B2631","#1B2631",
 			"#AF7AC5"
 	};
+
+	public void setNotCalWholeWeekMode(LocalDate date);
+	public LocalDate isInNotCalWholeWeekMode();
 	
 }

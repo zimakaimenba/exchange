@@ -2895,12 +2895,12 @@ public class StockInfoManager
 		menuOperationList.add(menuItemTongdaxinbb);
 		
 		menuItembkconfg = new JMenuItem("∞ÂøÈ…Ë÷√");
-		menuItembkconfg.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/focus.png")));
+		menuItembkconfg.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/settings.png")));
 		
 		menuOperationList.add(menuItembkconfg);
 		
 		menuItemChanYeLian = new JMenuItem("\u4EA7\u4E1A\u94FE\u8BBE\u7F6E");
-		menuItemChanYeLian.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/focus.png")));
+		menuItemChanYeLian.setIcon(new ImageIcon(StockInfoManager.class.getResource("/images/settings.png")));
 		
 		menuOperationList.add(menuItemChanYeLian);
 		

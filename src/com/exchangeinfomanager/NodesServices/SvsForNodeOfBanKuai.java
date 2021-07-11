@@ -48,33 +48,89 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 		node = bkdbopt.getBanKuaiBasicInfo ((BanKuai) node);
 		return node;
 	}
+	private LocalDate getNodeCaculateEndDateAndRelatedActions(BkChanYeLianTreeNode bankuai, String period, LocalDate requiredendday, Boolean calwholeweek)
+	{
+		LocalDate result = null;
+		
+		DayOfWeek dayofweek = requiredendday.getDayOfWeek();
+		if(dayofweek.equals(DayOfWeek.SUNDAY) ) 
+			requiredendday = requiredendday.minus(2,ChronoUnit.DAYS);
+		else if(dayofweek.equals(DayOfWeek.SATURDAY) ) 
+			requiredendday = requiredendday.minus(1,ChronoUnit.DAYS);
+		
+		NodeXPeriodData nodeperioddata = ((BanKuai)bankuai).getNodeXPeroidData(period);
+		NodeXPeriodData nodexdataday = ((BanKuai)bankuai).getNodeXPeroidData(NodeGivenPeriodDataItem.DAY);
+		
+		Boolean origmode = true; //原来数据是否处于NCW / CW状态, true表示是计算whole wk
+		LocalDate isInNotCalWholeWeekModeData = nodeperioddata.isInNotCalWholeWeekMode ();
+		if(nodeperioddata.isInNotCalWholeWeekMode () != null ) 
+			origmode = false;
+		
+		if(calwholeweek && origmode) { //CW TO CW
+			nodeperioddata.setNotCalWholeWeekMode (null);
+			nodexdataday.setNotCalWholeWeekMode (null);
+			
+			result  = requiredendday.with(DayOfWeek.FRIDAY);
+			return result;
+		}
+		if(calwholeweek && !origmode) { //NCW TO CW，那就把最后一周的数据删除
+			LocalDate amorecordsenddate = nodeperioddata.getAmoRecordsEndDate();
+			if(amorecordsenddate != null) {
+				nodeperioddata.removeNodeDataFromSpecificDate(amorecordsenddate, 0);
+				
+				nodexdataday.removeNodeDataFromSpecificDate(amorecordsenddate.with(DayOfWeek.MONDAY), 0); //那一周的数据都不要了
+				nodeperioddata.setNotCalWholeWeekMode (null);
+				nodexdataday.setNotCalWholeWeekMode (null);
+			}
+			
+			result  = requiredendday.with(DayOfWeek.FRIDAY);
+			return result; 
+		}
+		
+		if(!calwholeweek && !origmode) {  //NCW TO NCW
+			LocalDate amorecordsenddate = nodeperioddata.getAmoRecordsEndDate();
+			if(amorecordsenddate != null && amorecordsenddate.isBefore(requiredendday))
+				nodeperioddata.removeNodeDataFromSpecificDate(amorecordsenddate, 0);
+			else if(amorecordsenddate != null && amorecordsenddate.isAfter(requiredendday))
+				nodeperioddata.removeNodeDataFromSpecificDate(requiredendday, 0);
+			
+			LocalDate ohlcrecordsenddate = nodexdataday.getOHLCRecordsEndDate();
+			if(ohlcrecordsenddate != null && ohlcrecordsenddate.isBefore(requiredendday))
+				nodexdataday.removeNodeDataFromSpecificDate(ohlcrecordsenddate, 0);
+			else if(ohlcrecordsenddate != null && ohlcrecordsenddate.isAfter(requiredendday))
+				nodexdataday.removeNodeDataFromSpecificDate(requiredendday, 0);
+			
+			nodeperioddata.setNotCalWholeWeekMode (requiredendday);
+			nodexdataday.setNotCalWholeWeekMode (requiredendday);
+			result  = requiredendday;
+			return result;
+		}
+		
+		if(!calwholeweek && origmode) {  //CW TO NCW
+			LocalDate amorecordsenddate = nodeperioddata.getAmoRecordsEndDate();
+			if(amorecordsenddate != null && amorecordsenddate.isAfter(requiredendday))
+				nodeperioddata.removeNodeDataFromSpecificDate(requiredendday, 0);
+			
+			LocalDate ohlcrecordsenddate = nodexdataday.getOHLCRecordsEndDate();
+			if(ohlcrecordsenddate != null && ohlcrecordsenddate.isAfter(requiredendday))
+				nodexdataday.removeNodeDataFromSpecificDate(requiredendday, 0);
+			
+			nodeperioddata.setNotCalWholeWeekMode (requiredendday);
+			nodexdataday.setNotCalWholeWeekMode (requiredendday);
+			result  = requiredendday;
+			return result;
+		}
+		
+		return null;
+	}
 	@Override
 	public BkChanYeLianTreeNode getNodeData(BkChanYeLianTreeNode bankuai, LocalDate requiredstartday,
 			LocalDate requiredendday, String period, Boolean calwholeweek) 
 	{
 		requiredstartday = requiredstartday.with(DayOfWeek.MONDAY);
-		requiredendday   = requiredendday.with(DayOfWeek.FRIDAY);
+		requiredendday = this.getNodeCaculateEndDateAndRelatedActions(bankuai, period, requiredendday, calwholeweek);
 		
 		NodeXPeriodData nodedayperioddata = ((BanKuai)bankuai).getNodeXPeroidData(period);
-		
-		if(!calwholeweek) {
-			LocalDate curdate = ((BanKuai)bankuai).getNodeDataAtNotCalWholeWeekModeLastDate();
-			if(curdate == null) {
-				((BanKuai)bankuai).setNodeDataAtNotCalWholeWeekMode(requiredendday);
-				nodedayperioddata.resetAllData();
-			} else if(!curdate.isEqual(requiredendday)) {
-				((BanKuai)bankuai).setNodeDataAtNotCalWholeWeekMode(requiredendday);
-				nodedayperioddata.resetAllData();
-			} else
-				return bankuai;
-		}
-		if(calwholeweek) {
-			if(((BanKuai)bankuai).isNodeDataAtNotCalWholeWeekMode() ) {
-				((BanKuai)bankuai).setNodeDataAtNotCalWholeWeekMode(null);
-				nodedayperioddata.resetAllData();
-			}
-		}
-
 		if(nodedayperioddata.getAmoRecordsStartDate() == null) {
 			bankuai = bkdbopt.getBanKuaiZhanBi ((BanKuai)bankuai,requiredstartday,requiredendday,period);
 			return bankuai;
@@ -96,6 +152,54 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 		}
 		return bankuai;
 	}
+	
+//	private BkChanYeLianTreeNode getNodeDataInNotCalWholeWeekMode(BkChanYeLianTreeNode bankuai, LocalDate requiredstartday,
+//			LocalDate requiredendday, String period, Boolean calwholeweek) 
+//	{
+//		requiredstartday = requiredstartday.with(DayOfWeek.MONDAY);
+//		
+//		NodeXPeriodData nodedayperioddata = ((BanKuai)bankuai).getNodeXPeroidData(period);
+//		nodedayperioddata.setNotCalWholeWeekMode (requiredendday);
+//		NodeXPeriodData nodexdataday = ((BanKuai)bankuai).getNodeXPeroidData(NodeGivenPeriodDataItem.DAY);
+//		nodexdataday.setNotCalWholeWeekMode (requiredendday);
+//		
+//		if(nodedayperioddata.getAmoRecordsStartDate() == null) {
+//			bankuai = bkdbopt.getBanKuaiZhanBi ((BanKuai)bankuai,requiredstartday,requiredendday,period);
+//			return bankuai;
+//		}
+//		
+//		LocalDate amorecordsenddate = nodedayperioddata.getAmoRecordsEndDate();
+//		if(amorecordsenddate.isBefore(requiredendday))
+//			nodedayperioddata.removeNodeDataFromSpecificDate(amorecordsenddate, 0);
+//		else if(amorecordsenddate.isAfter(requiredendday))
+//			nodedayperioddata.removeNodeDataFromSpecificDate(requiredendday, 0);
+//		else
+//			nodedayperioddata.removeNodeDataFromSpecificDate(requiredendday, 0);
+//		
+//		LocalDate ohlcrecordsenddate = nodexdataday.getOHLCRecordsEndDate();
+//		if(ohlcrecordsenddate != null && ohlcrecordsenddate.isBefore(requiredendday))
+//			nodexdataday.removeNodeDataFromSpecificDate(ohlcrecordsenddate, 0);
+//		else if(ohlcrecordsenddate != null && ohlcrecordsenddate.isAfter(requiredendday))
+//			nodexdataday.removeNodeDataFromSpecificDate(requiredendday, 0);
+//		else if(ohlcrecordsenddate != null)
+//			nodexdataday.removeNodeDataFromSpecificDate(requiredendday, 0);
+//		
+//		List<Interval> timeintervallist = getTimeIntervalOfNodeTimeIntervalWithRequiredTimeInterval
+//				(requiredstartday,requiredendday,nodedayperioddata.getAmoRecordsStartDate(),nodedayperioddata.getAmoRecordsEndDate());
+//		if(timeintervallist == null) 
+//			return bankuai;
+//		
+//		for(Interval tmpinterval : timeintervallist) {
+//				DateTime newstartdt = tmpinterval.getStart();
+//				DateTime newenddt = tmpinterval.getEnd();
+//				
+//				LocalDate tmprequiredstartday = LocalDate.of(newstartdt.getYear(), newstartdt.getMonthOfYear(), newstartdt.getDayOfMonth());
+//				LocalDate tmprequiredendday = LocalDate.of(newenddt.getYear(), newenddt.getMonthOfYear(), newenddt.getDayOfMonth());
+//				
+//				bankuai = bkdbopt.getBanKuaiZhanBi ((BanKuai) bankuai,tmprequiredstartday,tmprequiredendday,period);
+//		}
+//		return bankuai;
+//	}
 
 	@Override
 	public BkChanYeLianTreeNode getNodeData(String bkcode, LocalDate requiredstartday, LocalDate requiredendday,
@@ -116,7 +220,16 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 	public BkChanYeLianTreeNode getNodeKXian(BkChanYeLianTreeNode bankuai, LocalDate requiredstartday,
 			LocalDate requiredendday, String period,Boolean calwholeweek) 
 	{
+		if(!calwholeweek) {} //目前不需要
+		
+		requiredstartday = requiredstartday.with(DayOfWeek.MONDAY);
+		
 		NodeXPeriodData nodedayperioddata = ((BanKuai) bankuai).getNodeXPeroidData(period);
+		if(nodedayperioddata.isInNotCalWholeWeekMode() == null) 
+			requiredendday   = requiredendday.with(DayOfWeek.FRIDAY);
+		else { //在getnodedata里面已经把日线OHLC删除了，最好在这里再保证一下
+		}
+
 		if(nodedayperioddata.getOHLCRecordsStartDate() == null) {
 			bankuai = bkdbopt.getBanKuaiKXianZouShi (((BanKuai) bankuai),requiredstartday,requiredendday,period);
 			return bankuai;
@@ -138,7 +251,44 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 		
 		return bankuai;
 	}
-
+//	public BkChanYeLianTreeNode getNodeKXianInNotCalWholeWeekMode(BkChanYeLianTreeNode bankuai, LocalDate requiredstartday,
+//			LocalDate requiredendday, String period,Boolean calwholeweek) 
+//	{
+//		requiredstartday = requiredstartday.with(DayOfWeek.MONDAY);
+//		
+//		NodeXPeriodData nodedayperioddata = ((BanKuai)bankuai).getNodeXPeroidData(period);
+//		nodedayperioddata.setNotCalWholeWeekMode (requiredendday);
+//		((BanKuai)bankuai).getNodeXPeroidData(NodeGivenPeriodDataItem.DAY).setNotCalWholeWeekMode (requiredendday);
+//		
+//		if(nodedayperioddata.getOHLCRecordsStartDate() == null) {
+//			bankuai = bkdbopt.getBanKuaiKXianZouShi (((BanKuai) bankuai),requiredstartday,requiredendday,period);
+//			return bankuai;
+//		}
+//		
+//		LocalDate ohlcrecordsenddate = nodedayperioddata.getOHLCRecordsEndDate();
+//		if(ohlcrecordsenddate.isBefore(requiredendday))
+//			nodedayperioddata.removeNodeDataFromSpecificDate(ohlcrecordsenddate, 0);
+//		else if(ohlcrecordsenddate.isAfter(requiredendday))
+//			nodedayperioddata.removeNodeDataFromSpecificDate(requiredendday, 0);
+//		else
+//			nodedayperioddata.removeNodeDataFromSpecificDate(requiredendday, 0);
+//		
+//		List<Interval> timeintervallist = getTimeIntervalOfNodeTimeIntervalWithRequiredTimeInterval
+//				(requiredstartday,requiredendday,nodedayperioddata.getOHLCRecordsStartDate(),nodedayperioddata.getOHLCRecordsEndDate() );
+//		if(timeintervallist == null)
+//			return bankuai;
+//		
+//		for(Interval tmpinterval : timeintervallist) {
+//				DateTime newstartdt = tmpinterval.getStart();
+//				DateTime newenddt = tmpinterval.getEnd();
+//				
+//				requiredstartday = LocalDate.of(newstartdt.getYear(), newstartdt.getMonthOfYear(), newstartdt.getDayOfMonth()).with(DayOfWeek.MONDAY);
+//				requiredendday = LocalDate.of(newenddt.getYear(), newenddt.getMonthOfYear(), newenddt.getDayOfMonth()).with(DayOfWeek.FRIDAY);
+//				bankuai = bkdbopt.getBanKuaiKXianZouShi (((BanKuai) bankuai),requiredstartday,requiredendday,period);
+//		}
+//		
+//		return bankuai;
+//	}
 	@Override
 	public BkChanYeLianTreeNode getNodeZhangDieTingInfo(BkChanYeLianTreeNode bankuai, LocalDate requiredstartday,
 			LocalDate requiredendday, String period) 
@@ -312,8 +462,13 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 		LocalDate bkohlcstartday = bk.getNodeXPeroidData(NodeGivenPeriodDataItem.DAY).getOHLCRecordsStartDate();
 		LocalDate bkohlcendday = bk.getNodeXPeroidData(NodeGivenPeriodDataItem.DAY).getOHLCRecordsEndDate();
 		
-		LocalDate bkamostartday = bk.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK).getAmoRecordsStartDate();
-		LocalDate bkamoendday = bk.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK).getAmoRecordsEndDate();
+		NodeXPeriodData nodexdatawk = bk.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
+		LocalDate bkamostartday =	nodexdatawk.getAmoRecordsStartDate();
+		LocalDate notcalwholewkmodedate = nodexdatawk.isInNotCalWholeWeekMode() ;
+		LocalDate bkamoendday;
+		if(notcalwholewkmodedate == null)
+			bkamoendday = bk.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK).getAmoRecordsEndDate();
+		else bkamoendday = notcalwholewkmodedate;
 		
 		if(bkohlcstartday == null && bkamostartday == null) //都为空，
 			return ;
@@ -322,7 +477,8 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 			bkohlcstartday = bkamostartday;
 			bkohlcendday = bkamoendday;
 			bankuai = this.getNodeKXian(bankuai, bkohlcstartday,bkohlcendday, NodeGivenPeriodDataItem.DAY,true);
-//			this.getNodeCjeCjlZhanbiExtremeUpDownLevel (bankuai);
+//			this.getNodeQueKouInfo(bk, bkohlcstartday, bkohlcendday, NodeGivenPeriodDataItem.WEEK);
+//			this.getNodeZhangDieTingInfo(bk, bkohlcstartday, bkohlcendday, NodeGivenPeriodDataItem.WEEK);
 			return;
 		}
 		
@@ -337,19 +493,16 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 				DateTime newenddt = tmpinterval.getEnd();
 				
 				LocalDate requiredstartday = LocalDate.of(newstartdt.getYear(), newstartdt.getMonthOfYear(), newstartdt.getDayOfMonth()).with(DayOfWeek.MONDAY);
-				LocalDate requiredendday = LocalDate.of(newenddt.getYear(), newenddt.getMonthOfYear(), newenddt.getDayOfMonth()).with(DayOfWeek.FRIDAY);
+				LocalDate requiredendday = LocalDate.of(newenddt.getYear(), newenddt.getMonthOfYear(), newenddt.getDayOfMonth());//.with(DayOfWeek.FRIDAY);
 				
 				bankuai = this.getNodeKXian(bankuai, requiredstartday,requiredendday, NodeGivenPeriodDataItem.DAY,true);
-//				this.getNodeCjeCjlZhanbiExtremeUpDownLevel (bankuai);
 		}
-		
 	}
 	
 	private List<Interval> getTimeIntervalOfNodeTimeIntervalWithRequiredTimeInterval
 	(LocalDate requiredstartday,LocalDate requiredendday,LocalDate nodestart,LocalDate nodeend)
 	{
-		if(nodestart == null)
-		return null;
+		if(nodestart == null)	return null;
 		
 		List<Interval> result = new ArrayList<Interval> ();
 		
@@ -362,32 +515,30 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 		
 		Interval overlapinterval = requiredinterval.overlap(nodeinterval);
 		if(overlapinterval != null) {
-		DateTime overlapstart = overlapinterval.getStart();
-		DateTime overlapend = overlapinterval.getEnd();
-		
-		Interval resultintervalpart1 = null ;
-		if(requiredstartday.isBefore(nodestart)) {
-			resultintervalpart1 = new Interval(requiredstartdt,overlapstart);
-		} 
-		
-		Interval resultintervalpart2 = null;
-		if (requiredendday.isAfter(nodeend)) {
-			resultintervalpart2 = new Interval(overlapend,requiredenddt);
-		}
-		if(resultintervalpart1 != null)
-			result.add(resultintervalpart1);
-		if(resultintervalpart2 != null)
-			result.add(resultintervalpart2);
-		//return result;
+			DateTime overlapstart = overlapinterval.getStart();
+			DateTime overlapend = overlapinterval.getEnd();
+			
+			Interval resultintervalpart1 = null ;
+			if(requiredstartday.isBefore(nodestart)) {
+				resultintervalpart1 = new Interval(requiredstartdt,overlapstart);
+			} 
+			
+			Interval resultintervalpart2 = null;
+			if (requiredendday.isAfter(nodeend)) {
+				resultintervalpart2 = new Interval(overlapend,requiredenddt);
+			}
+			if(resultintervalpart1 != null)
+				result.add(resultintervalpart1);
+			if(resultintervalpart2 != null)
+				result.add(resultintervalpart2);
 		}
 		if(requiredinterval.abuts(nodeinterval)) {
-		result.add(requiredinterval);
-		// return result;
+			result.add(requiredinterval);
 		}
 		Interval gapinterval = requiredinterval.gap(nodeinterval);
 		if(gapinterval != null) {
-		result.add(requiredinterval);
-		result.add(gapinterval);
+			result.add(requiredinterval);
+			result.add(gapinterval);
 		}
 		
 		return result;
@@ -480,20 +631,29 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 
 		return stock;
 	}
-	
+	/*
+	 * 
+	 */
 	public void syncBanKuaiAndItsStocksForSpecificTime (BanKuai bk,LocalDate requiredstartday,LocalDate requiredendday,String period,Boolean calwholeweek  ) throws SQLException
 	{
-		this.getNodeData(bk, requiredstartday, requiredendday, period,calwholeweek);
+//		this.getNodeData(bk, requiredstartday, requiredendday, period,calwholeweek); //没有必要再计算一遍本身的数据，因为调用前肯定已经有基本的数据了
 		this.syncNodeData(bk);
 		//板块数据同步后，板块个股的时间轴如果比板块短，要和板块的时间轴一致。如果比板块时间长，不需要同步时间轴
 		NodeXPeriodData bknodexdata = bk.getNodeXPeroidData(period);
 		LocalDate bkdatastartday = bknodexdata.getAmoRecordsStartDate();
 		if(bkdatastartday != null  && bkdatastartday.isBefore(requiredstartday) )
 			requiredstartday = bkdatastartday;
-		LocalDate bkdataendday = bknodexdata.getAmoRecordsEndDate();
-		if(bkdataendday != null  && bkdataendday.isAfter(requiredendday) )
-			requiredendday = bkdataendday;
-	
+
+		LocalDate notcalwholewkmodedate = bknodexdata.isInNotCalWholeWeekMode();
+		if(notcalwholewkmodedate == null) { //如果是计算整周， 则数据轴大小没关系，只要是整周都可以
+			LocalDate bkdataendday = bknodexdata.getAmoRecordsEndDate();
+			if(bkdataendday != null  && bkdataendday.isAfter(requiredendday) )
+				requiredendday = bkdataendday;
+		}	else { //如果是计算不完全周，那最后一周必须是要求计算的周
+			requiredendday = notcalwholewkmodedate; 
+			calwholeweek = false;
+		}
+
 		if(bk.getBanKuaiLeiXing().equals(BanKuai.HASGGWITHSELFCJL)) {
 			int bkggbefore = 0;
 			try {	bkggbefore = bk.getAllGeGuOfBanKuaiInHistory().size();
@@ -514,9 +674,14 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 			if(allbkgg != null) {
 				SvsForNodeOfStock svstock = new SvsForNodeOfStock ();
 				for(BkChanYeLianTreeNode stockofbk : allbkgg)   
-			    	if( ((StockOfBanKuai)stockofbk).isInBanKuaiAtSpecificDate(requiredendday)  ) { 
-			    		 Stock stock = (Stock) svstock.getNodeData( ((StockOfBanKuai)stockofbk).getStock(), requiredstartday, requiredendday, period,calwholeweek);
-		    			 svstock.syncNodeData(stock);
+			    	if( ((StockOfBanKuai)stockofbk).isInBanKuaiAtSpecificDate(requiredendday)  ) {
+			    		Stock stock = ((StockOfBanKuai)stockofbk).getStock();
+			    		if(!calwholeweek) {
+			    			stock.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK).setNotCalWholeWeekMode (notcalwholewkmodedate);
+			    			stock.getNodeXPeroidData(NodeGivenPeriodDataItem.DAY).setNotCalWholeWeekMode (notcalwholewkmodedate);
+			    		}
+//			    		Stock stock = (Stock) svstock.getNodeData( ((StockOfBanKuai)stockofbk).getStock(), requiredstartday, requiredendday, period,calwholeweek); //数据在前面已经获取了
+		    			svstock.syncNodeData(stock);
 			    	 }
 			}
 

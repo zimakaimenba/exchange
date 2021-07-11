@@ -154,7 +154,7 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 		if(this.firstdayinhistory == null)
 			return null;
 		
-		RegularTimePeriod requiredperiod = this.getJFreeChartFormateTimePeriodForAMO (requireddate,difference);
+		RegularTimePeriod requiredperiod = this.getJFreeChartFormateTimePeriodForAMOZhanBi (requireddate,difference);
 		if(requiredperiod == null)
 			return null;
 		
@@ -256,7 +256,7 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 		if( this.nodedietingnum == null)
 			this.nodedietingnum = new TimeSeries(this.nodeperiodtype);
 		
-		RegularTimePeriod period = getJFreeChartFormateTimePeriodForAMO(tjdate,0);
+		RegularTimePeriod period = getJFreeChartFormateTimePeriodForAMOZhanBi(tjdate,0);
 		if(period == null)
 			return;
 		
@@ -314,7 +314,7 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 		if( nodeqktjhuibudown == null)
 			nodeqktjhuibudown = new TimeSeries(this.nodeperiodtype);
 		
-		RegularTimePeriod period = getJFreeChartFormateTimePeriodForAMO(qkdate,0);
+		RegularTimePeriod period = getJFreeChartFormateTimePeriodForAMOZhanBi(qkdate,0);
 		if(period == null)
 			return;
 		
@@ -404,7 +404,7 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 		if(this.nodezhangtingnum == null)
 			return null;
 		
-		RegularTimePeriod curperiod = getJFreeChartFormateTimePeriodForAMO(requireddate,difference);
+		RegularTimePeriod curperiod = getJFreeChartFormateTimePeriodForAMOZhanBi(requireddate,difference);
 		if(curperiod == null)
 			return null;
 		
@@ -423,7 +423,7 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 		if(this.nodedietingnum == null)
 			return null;
 		
-		RegularTimePeriod curperiod = getJFreeChartFormateTimePeriodForAMO(requireddate,difference);
+		RegularTimePeriod curperiod = getJFreeChartFormateTimePeriodForAMOZhanBi(requireddate,difference);
 		if(curperiod == null)
 			return null;
 		
@@ -442,7 +442,7 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 		if(this.nodeqktjopenup == null)
 			return null;
 		
-		RegularTimePeriod curperiod = getJFreeChartFormateTimePeriodForAMO(requireddate,difference);
+		RegularTimePeriod curperiod = getJFreeChartFormateTimePeriodForAMOZhanBi(requireddate,difference);
 		if(curperiod == null )
 			return null;
 		
@@ -458,7 +458,7 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 		if(this.nodeqktjopendown == null)
 			return null;
 		
-		RegularTimePeriod curperiod = getJFreeChartFormateTimePeriodForAMO(requireddate,difference);
+		RegularTimePeriod curperiod = getJFreeChartFormateTimePeriodForAMOZhanBi(requireddate,difference);
 		if(curperiod == null )
 			return null;
 		
@@ -474,7 +474,7 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 		if(this.nodeqktjhuibuup == null)
 			return null;
 		
-		RegularTimePeriod curperiod = getJFreeChartFormateTimePeriodForAMO(requireddate,difference);
+		RegularTimePeriod curperiod = getJFreeChartFormateTimePeriodForAMOZhanBi(requireddate,difference);
 		if(curperiod == null )
 			return null;
 		
@@ -490,7 +490,7 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 		if(this.nodeqktjhuibudown == null)
 			return null;
 		
-		RegularTimePeriod curperiod = getJFreeChartFormateTimePeriodForAMO(requireddate,difference);
+		RegularTimePeriod curperiod = getJFreeChartFormateTimePeriodForAMOZhanBi(requireddate,difference);
 		if(curperiod == null )
 			return null;
 		
@@ -555,7 +555,7 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 		if(nodeamozhanbi == null)
 			return null;
 		
-		RegularTimePeriod curperiod = getJFreeChartFormateTimePeriodForAMO(requireddate,difference);
+		RegularTimePeriod curperiod = getJFreeChartFormateTimePeriodForAMOZhanBi(requireddate,difference);
 		if(curperiod == null )
 			return null;
 		
@@ -572,7 +572,7 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 	 */
 	public Double getChenJiaoErZhanBiGrowthRateOfSuperBanKuai(LocalDate requireddate,int difference) 
 	{
-		RegularTimePeriod expectedperiod = getJFreeChartFormateTimePeriodForAMO(requireddate,difference);
+		RegularTimePeriod expectedperiod = getJFreeChartFormateTimePeriodForAMOZhanBi(requireddate,difference);
 		if(expectedperiod == null)
 			return null;
 		
@@ -605,7 +605,7 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 	 */
 	public Integer getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(LocalDate requireddate,int difference) 
 	{
-		RegularTimePeriod expectedperiod = getJFreeChartFormateTimePeriodForAMO(requireddate,difference);
+		RegularTimePeriod expectedperiod = getJFreeChartFormateTimePeriodForAMOZhanBi(requireddate,difference);
 		if(expectedperiod == null)
 			return null;
 		
@@ -642,7 +642,7 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 		if(this.nodeamozhanbi == null)
 			return null;
 		
-		RegularTimePeriod curperiod = getJFreeChartFormateTimePeriodForAMO(requireddate,difference);
+		RegularTimePeriod curperiod = getJFreeChartFormateTimePeriodForAMOZhanBi(requireddate,difference);
 		if(curperiod == null )
 			return null;
 		
@@ -676,7 +676,7 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 		if(this.nodeamozhanbi == null)
 			return null;
 		
-		RegularTimePeriod curperiod = getJFreeChartFormateTimePeriodForAMO(requireddate,difference);
+		RegularTimePeriod curperiod = getJFreeChartFormateTimePeriodForAMOZhanBi(requireddate,difference);
 		if(curperiod == null )
 			return null;
 		
@@ -714,7 +714,7 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 		 if(nodeexchangedaysnumber == null)
 			 return null;
 		 
-		 RegularTimePeriod curperiod = getJFreeChartFormateTimePeriodForAMO(requireddate,difference);
+		 RegularTimePeriod curperiod = getJFreeChartFormateTimePeriodForAMOZhanBi(requireddate,difference);
 		 if(curperiod == null )
 				return null;
 		 
@@ -730,7 +730,7 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 		 */
 		public Double getChenJiaoLiangZhanBiGrowthRateOfSuperBanKuai(LocalDate requireddate, int difference) 
 		{
-			RegularTimePeriod curperiod = getJFreeChartFormateTimePeriodForAMO(requireddate,difference);
+			RegularTimePeriod curperiod = getJFreeChartFormateTimePeriodForAMOZhanBi(requireddate,difference);
 			if(curperiod == null )
 				return null;
 			
@@ -764,7 +764,7 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 		 */
 		public Integer getChenJiaoLiangZhanBiMaxWeekOfSuperBanKuai(LocalDate requireddate, int difference) 
 		{
-			RegularTimePeriod curperiod = getJFreeChartFormateTimePeriodForAMO(requireddate,difference);
+			RegularTimePeriod curperiod = getJFreeChartFormateTimePeriodForAMOZhanBi(requireddate,difference);
 			if(curperiod == null )
 				return null;
 			
@@ -801,7 +801,7 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 			if(this.nodevolzhanbi == null)
 				return null;
 			
-			RegularTimePeriod curperiod = getJFreeChartFormateTimePeriodForAMO(requireddate,difference);
+			RegularTimePeriod curperiod = getJFreeChartFormateTimePeriodForAMOZhanBi(requireddate,difference);
 			if(curperiod == null )
 				return null;
 			
@@ -835,7 +835,7 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 			if(this.nodevolzhanbi == null)
 				return null;
 			
-			RegularTimePeriod curperiod = getJFreeChartFormateTimePeriodForAMO(requireddate,difference);
+			RegularTimePeriod curperiod = getJFreeChartFormateTimePeriodForAMOZhanBi(requireddate,difference);
 			if(curperiod == null )
 				return null;
 			
@@ -1043,7 +1043,30 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 					return csvline;
 		 }
 		
-		protected RegularTimePeriod getJFreeChartFormateTimePeriodForAMO (LocalDate requireddate,int difference) 
+		 public void removeNodeDataFromSpecificDate (LocalDate requireddate, int difference)
+		 {
+			 int itemcount = this.nodeamozhanbi.getItemCount();
+			 RegularTimePeriod period = this.getJFreeChartFormateTimePeriodForAMOZhanBi(requireddate, difference);
+			 if(period == null) return;
+			 
+			 Integer curindex = this.nodeamozhanbi.getIndex(period);
+			 try {
+					if(curindex >= 0 ) {
+						nodeamozhanbi.delete(curindex, itemcount-1);
+						nodevolzhanbi.delete(curindex, itemcount-1);
+					}
+			} catch (java.lang.IndexOutOfBoundsException e) {	e.printStackTrace();	}
+			 
+			 itemcount = this.nodeexchangedaysnumber.getItemCount(); 
+			 curindex =  this.nodeexchangedaysnumber.getIndex(period);
+			 try {
+					if(curindex >= 0 ) {
+						nodeexchangedaysnumber.delete(curindex, itemcount-1);
+					}
+			} catch (java.lang.IndexOutOfBoundsException e) {	e.printStackTrace();	}
+			  
+		 }
+		protected RegularTimePeriod getJFreeChartFormateTimePeriodForAMOZhanBi (LocalDate requireddate,int difference) 
 		{
 			if(nodeamozhanbi == null)
 				return null;
@@ -1051,8 +1074,12 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 			String nodeperiod = this.getNodeperiodtype();
 			RegularTimePeriod period = null;
 			if(nodeperiod.equals(NodeGivenPeriodDataItem.WEEK)) { 
-				java.sql.Date lastweek = java.sql.Date.valueOf(requireddate);
-				period = new org.jfree.data.time.Week (lastweek);
+				try {
+					java.sql.Date lastweek = java.sql.Date.valueOf(requireddate);
+					period = new org.jfree.data.time.Week (lastweek);
+				} catch( java.lang.NullPointerException e) {
+					e.printStackTrace();
+				}
 			} else if(nodeperiod.equals(NodeGivenPeriodDataItem.DAY)) {
 				java.sql.Date lastdayofweek = java.sql.Date.valueOf(requireddate);
 				period = new org.jfree.data.time.Day (lastdayofweek);

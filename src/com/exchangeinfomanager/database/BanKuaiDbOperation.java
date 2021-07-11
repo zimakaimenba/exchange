@@ -2562,8 +2562,8 @@ public class BanKuaiDbOperation
 			return null;
 		
 		selecteddatestart = selecteddatestart.with(DayOfWeek.MONDAY);
-		if(!bankuai.isNodeDataAtNotCalWholeWeekMode() )
-			selecteddateend = selecteddateend.with(DayOfWeek.FRIDAY);
+//		if(!bankuai.isNodeDataAtNotCalWholeWeekMode() )
+//			selecteddateend = selecteddateend.with(DayOfWeek.FRIDAY);
 		
 		//本函数初始是开发为周的占比，所以日/月线的占比掉用其他函数
 		if(period.equals(NodeGivenPeriodDataItem.DAY)) //调用日线查询函数
@@ -2572,6 +2572,8 @@ public class BanKuaiDbOperation
 			;
 		
 		NodeXPeriodData nodewkperioddata = bankuai.getNodeXPeroidData(period);
+//		if(nodewkperioddata.isInNotCalWholeWeekMode() == null)
+//			selecteddateend = selecteddateend.with(DayOfWeek.FRIDAY);
 		
 		String bkcys = bankuai.getNodeJiBenMian().getSuoShuJiaoYiSuo();
 		if(bkcys == null)	return bankuai;
@@ -2843,8 +2845,6 @@ public class BanKuaiDbOperation
 			return null;
 		
 		selecteddatestart = selecteddatestart.with(DayOfWeek.MONDAY);
-		if(!stock.isNodeDataAtNotCalWholeWeekMode())
-			selecteddateend = selecteddateend.with(DayOfWeek.FRIDAY);
 		
 		if(period.equals(NodeGivenPeriodDataItem.DAY)) //调用日线查询函数
 			; 
@@ -2852,6 +2852,8 @@ public class BanKuaiDbOperation
 			;
 		
 		NodeXPeriodData nodewkperioddata = stock.getNodeXPeroidData(period);
+		if( nodewkperioddata.isInNotCalWholeWeekMode() == null)
+			selecteddateend = selecteddateend.with(DayOfWeek.FRIDAY);
 
 		String stockcode = stock.getMyOwnCode();
 		String bkcjltable;
@@ -3232,8 +3234,6 @@ public class BanKuaiDbOperation
 			return null;
 		
 		selecteddatestart = selecteddatestart.with(DayOfWeek.MONDAY);
-		if(!stock.isNodeDataAtNotCalWholeWeekMode())
-			selecteddateend = selecteddateend.with(DayOfWeek.FRIDAY);
 		
 		if(period.equals(NodeGivenPeriodDataItem.DAY)) //调用日线查询函数
 			; 
@@ -3241,6 +3241,8 @@ public class BanKuaiDbOperation
 			;
 		
 		NodeXPeriodData nodewkperioddata = stock.getNodeXPeroidData(period);
+		if( nodewkperioddata.isInNotCalWholeWeekMode() == null )
+			selecteddateend = selecteddateend.with(DayOfWeek.FRIDAY);
 
 		String stockcode = stock.getMyOwnCode();
 		
@@ -3492,8 +3494,9 @@ public class BanKuaiDbOperation
 		
 		TemporalField fieldCH = WeekFields.of(Locale.CHINA).dayOfWeek();
 		requiredstartday = requiredstartday.with(fieldCH, 1); //确保K线总是显示完整得一周
-		if(!stock.isNodeDataAtNotCalWholeWeekMode() )
-			requiredendday = requiredendday.with(fieldCH, 7); 
+//		LocalDate notcalwholewkmodedate = nodedayperioddata.isInNotCalWholeWeekMode();
+//		if(notcalwholewkmodedate == null)	requiredendday = requiredendday.with(fieldCH, 7);
+//		else requiredendday = notcalwholewkmodedate;
 		
 		String csvfilepath = sysconfig.getCsvPathOfExportedTDXVOLFiles();
 		String stockcode = stock.getMyOwnCode();
@@ -3813,8 +3816,7 @@ public class BanKuaiDbOperation
 	private TDXNodes getTDXNodesWeeklyKXianZouShiForJFC (TDXNodes tdxnode, LocalDate friday, OHLCSeries nodenewohlc)
 	{
 		int newcount = nodenewohlc.getItemCount();
-		if(newcount == 0)
-			return tdxnode;
+		if(newcount == 0)	return tdxnode;
 		
 		TDXNodesXPeriodDataForJFC nodexdata =  (TDXNodesXPeriodDataForJFC) tdxnode.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
 		//在前面处理周线成交量等数据的时候，已经存了OHLC的数据，都是0，现在要把这个数据找到，是情况处理
@@ -3830,7 +3832,6 @@ public class BanKuaiDbOperation
 		try { //都是0，就把原来的数据移除，然后把新数据放进去
 			if(spcohlcdataindex != null) 
 				nodexdata.getOHLCData().remove(spcohlcdataindex.intValue());
-			
 		} catch (java.lang.ArrayIndexOutOfBoundsException e) {e.printStackTrace();}
 		
 		Double weeklyopen = null;
@@ -3882,16 +3883,14 @@ public class BanKuaiDbOperation
 			searchtable = "大智慧板块每日交易信息";
 		
 		TemporalField fieldCH = WeekFields.of(Locale.CHINA).dayOfWeek();
-		try{
-			nodestartday = nodestartday.with(fieldCH, 1); //确保K线总是显示完整得一周
-		} catch (java.lang.NullPointerException e) {return bk;}
-		if(!bk.isNodeDataAtNotCalWholeWeekMode() )
-			nodeendday = nodeendday.with(fieldCH, 7);
-		
 		NodeXPeriodData nodedayperioddata = bk.getNodeXPeroidData(period);
+//		try{	nodestartday = nodestartday.with(fieldCH, 1); //确保K线总是显示完整得一周
+//		} catch (java.lang.NullPointerException e) {return bk;}
+//		LocalDate notcalwholewkmodedate = nodedayperioddata.isInNotCalWholeWeekMode();
+//		if(notcalwholewkmodedate == null)	nodeendday = nodeendday.with(fieldCH, 7);
+//		else nodeendday = notcalwholewkmodedate;
 
 		String nodecode = bk.getMyOwnCode();
-		
 		String sqlquerystat = "SELECT *  FROM " + searchtable + " \r\n" + 
 				"WHERE 代码='" + nodecode + "'" + "\r\n" + 
 				"AND 交易日期  between'" + nodestartday + "' AND '" + nodeendday + "'"
@@ -7610,16 +7609,6 @@ public class BanKuaiDbOperation
 			} catch ( java.lang.IllegalArgumentException e) {e.printStackTrace();}
 			stockdailyxdate.setPeriodQueKou(qklist);
 			
-//			//标记缺口统计的时间，
-//			NodeXPeriodData stockxwkdate = stock.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
-//			LocalDate qkstartdate = qklist.get(0).getQueKouDate();
-//			LocalDate qkenddate = qklist.get(qklist.size() -1 ).getQueKouDate();
-//			 if(!qkstartdate.equals(requiredstartday) && requiredstartday.isBefore(qkstartdate)) { //特别标记完整的openupquekou的起始日期，用于获得缺口统计的起始时间
-//				 ( (TDXNodesXPeriodData)stockxwkdate ).addQueKouTongJiJieGuo ( requiredstartday, -1, null, null, null,true);
-//			 }  
-//			 if(!qkenddate.equals(requiredendday)  && requiredendday.isAfter(qkenddate) )  //特别标记完整的openupquekou的结束日期，用于获得缺口统计的结束时间
-//       		 ( (TDXNodesXPeriodData)stockxwkdate ).addQueKouTongJiJieGuo ( requiredendday, -1, null, null, null,true);
-			 
 			 return stock;
 		}
 		

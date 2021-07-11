@@ -40,7 +40,7 @@ public abstract class TDXNodes extends BkChanYeLianTreeNode
 	protected Collection<Tag> nodetags;
 	
 
-	private LocalDate lastdayofbxfx;
+//	private LocalDate lastdayofbxfx;
 	
 	protected List<Interval> qiangshirange;
 	private List<Interval> ruoshirange;
@@ -242,21 +242,21 @@ public abstract class TDXNodes extends BkChanYeLianTreeNode
 	/*
 	 * 
 	 */
-	public Boolean isNodeDataAtNotCalWholeWeekMode ()
-	{
-		if(this.lastdayofbxfx == null)
-			return false;
-		else
-			return true;
-	}
-	public void setNodeDataAtNotCalWholeWeekMode (LocalDate lastdayofbxfx)
-	{
-		this.lastdayofbxfx = lastdayofbxfx;
-	}
-	public LocalDate getNodeDataAtNotCalWholeWeekModeLastDate ()
-	{
-		return this.lastdayofbxfx;
-	}
+//	public Boolean isNodeDataAtNotCalWholeWeekMode ()
+//	{
+//		if(this.lastdayofbxfx == null)
+//			return false;
+//		else
+//			return true;
+//	}
+//	public void setNodeDataAtNotCalWholeWeekMode (LocalDate lastdayofbxfx)
+//	{
+//		this.lastdayofbxfx = lastdayofbxfx;
+//	}
+//	public LocalDate getNodeDataAtNotCalWholeWeekModeLastDate ()
+//	{
+//		return this.lastdayofbxfx;
+//	}
 	
 	public abstract ServicesForNode getServicesForNode (Boolean getornot);
 	
