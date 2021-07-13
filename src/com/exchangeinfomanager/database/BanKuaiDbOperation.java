@@ -138,32 +138,47 @@ public class BanKuaiDbOperation
 		
 		String sqlquerystat;
 		if(!jys.toLowerCase().equals("all"))
-			 sqlquerystat = 
-							"SELECT * \r\n" + 
-							"FROM\r\n" + 
-							" (\r\n" + 
-							"SELECT *   FROM 通达信板块列表 WHERE 指数所属交易所 = '" + jys +"'" + 
-							") AS node\r\n" + 
-							"\r\n" + 
-							"LEFT   JOIN \r\n" + 
-							"(SELECT * FROM 板块股票占比阈值 \r\n" + 
-							") AS nodezbextremelevel\r\n" + 
-							"\r\n" + 
-							"ON node.板块ID = nodezbextremelevel.代码"
-							;
+			 sqlquerystat = "SELECT * FROM\r\n" + 
+			 		"(\r\n" + 
+			 		"SELECT *   FROM 通达信板块列表 WHERE 指数所属交易所 = '" + jys + "') AS node\r\n" + 
+			 		"LEFT   JOIN \r\n" + 
+			 		"(SELECT * FROM 板块股票占比阈值 )\r\n" + 
+			 		"AS nodezbextremelevel\r\n" + 
+			 		"ON node.板块ID = nodezbextremelevel.代码\r\n" + 
+			 		"\r\n" + 
+			 		"LEFT   JOIN \r\n" + 
+			 		"(SELECT 代码, MIN(交易日期)  SHminjytime , MAX(交易日期)  SHmaxjytime fROM   通达信板块每日交易信息\r\n" + 
+			 		"GROUP BY 代码) shjyt \r\n" + 
+			 		"\r\n" + 
+			 		"ON shjyt.代码 = node.板块ID AND node.指数所属交易所 = 'SH'\r\n" + 
+			 		"\r\n" + 
+			 		"LEFT   JOIN \r\n" + 
+			 		"(SELECT 代码, MIN(交易日期)  SZminjytime , MAX(交易日期)  SZmaxjytime fROM   通达信交易所指数每日交易信息\r\n" + 
+			 		"GROUP BY 代码) szjyt \r\n" + 
+			 		"\r\n" + 
+			 		"ON szjyt.代码 = node.板块ID AND node.指数所属交易所='SZ'\r\n"  
+					;
 		else
 			 sqlquerystat = 
-						"SELECT * \r\n" + 
-						"FROM\r\n" + 
-						" (\r\n" + 
-						"SELECT *   FROM 通达信板块列表" + 
-						") AS node\r\n" + 
+						"SELECT * FROM\r\n" + 
+						"(\r\n" + 
+						"SELECT *   FROM 通达信板块列表 ) AS node\r\n" + 
+						"LEFT   JOIN \r\n" + 
+						"(SELECT * FROM 板块股票占比阈值 )\r\n" + 
+						"AS nodezbextremelevel\r\n" + 
+						"ON node.板块ID = nodezbextremelevel.代码\r\n" + 
 						"\r\n" + 
 						"LEFT   JOIN \r\n" + 
-						"(SELECT * FROM 板块股票占比阈值 \r\n" + 
-						") AS nodezbextremelevel\r\n" + 
+						"(SELECT 代码, MIN(交易日期)  SHminjytime , MAX(交易日期)  SHmaxjytime fROM   通达信板块每日交易信息\r\n" + 
+						"GROUP BY 代码) shjyt \r\n" + 
 						"\r\n" + 
-						"ON node.板块ID = nodezbextremelevel.代码"
+						"ON shjyt.代码 = node.板块ID AND node.指数所属交易所 = 'SH'\r\n" + 
+						"\r\n" + 
+						"LEFT   JOIN \r\n" + 
+						"(SELECT 代码, MIN(交易日期)  SZminjytime , MAX(交易日期)  SZmaxjytime fROM   通达信交易所指数每日交易信息\r\n" + 
+						"GROUP BY 代码) szjyt \r\n" + 
+						"\r\n" + 
+						"ON szjyt.代码 = node.板块ID AND node.指数所属交易所='SZ'\r\n"  
 						;
 		
 		CachedRowSetImpl rs = null;
@@ -171,7 +186,8 @@ public class BanKuaiDbOperation
 	    	rs = connectdb.sqlQueryStatExecute(sqlquerystat);
 	        while(rs.next()) {
 	        	BanKuai tmpbk = new BanKuai (rs.getString("板块ID"),rs.getString("板块名称"),"TDX" );
-	        	tmpbk.getNodeJiBenMian().setSuoShuJiaoYiSuo(rs.getString("指数所属交易所"));
+	        	String zhishujys = rs.getString("指数所属交易所");
+	        	tmpbk.getNodeJiBenMian().setSuoShuJiaoYiSuo(zhishujys);
 	        	tmpbk.setBanKuaiLeiXing( rs.getString("板块类型描述") );
 	        	tmpbk.getBanKuaiOperationSetting().setImportBKGeGu(rs.getBoolean("导入板块个股"));
 	        	tmpbk.getBanKuaiOperationSetting().setExporttogehpi(rs.getBoolean("导出Gephi"));
@@ -184,6 +200,30 @@ public class BanKuaiDbOperation
 	        	tmpbk.getNodeJiBenMian().setNodeCjeZhanbiLevel (rs.getDouble("成交额占比下限"), rs.getDouble("成交额占比上限"));
 	        	tmpbk.getNodeJiBenMian().setIsCoreZhiShu (rs.getBoolean("核心指数"));
 	        	
+	        	if(zhishujys.equalsIgnoreCase("SH")) {
+	        		try {	LocalDate shmaxdate = rs.getDate("SHmaxjytime").toLocalDate();
+	        				tmpbk.getShuJuJiLuInfo().setJyjlmaxdate(shmaxdate);
+	        		} catch(java.lang.NullPointerException e) {
+	        			tmpbk.getShuJuJiLuInfo().setJyjlmaxdate(null);
+	        		}
+	        		try {	LocalDate shmindate = rs.getDate("SHminjytime").toLocalDate();
+	        				tmpbk.getShuJuJiLuInfo().setJyjlmindate(shmindate);
+	        		} catch(java.lang.NullPointerException e) {
+	        			tmpbk.getShuJuJiLuInfo().setJyjlmaxdate(null);
+	        		}
+	        	} else if(zhishujys.equalsIgnoreCase("SZ")) {
+	        		try {	LocalDate szmaxdate = rs.getDate("SZmaxjytime").toLocalDate();
+	        				tmpbk.getShuJuJiLuInfo().setJyjlmaxdate(szmaxdate);
+		    		} catch(java.lang.NullPointerException e) {
+		    				tmpbk.getShuJuJiLuInfo().setJyjlmaxdate(null);
+		    		}
+		    		try {	LocalDate szmindate = rs.getDate("SZminjytime").toLocalDate();
+	        				tmpbk.getShuJuJiLuInfo().setJyjlmindate(szmindate);
+		    		} catch(java.lang.NullPointerException e) {
+		    				tmpbk.getShuJuJiLuInfo().setJyjlmaxdate(null);
+		    		}
+	        	}
+	        	
 	        	tmpsysbankuailiebiaoinfo.add(tmpbk);
 	        }
 	    } catch(java.lang.NullPointerException e){ e.printStackTrace();
@@ -193,6 +233,8 @@ public class BanKuaiDbOperation
 	    } 
 	    
 	    return tmpsysbankuailiebiaoinfo;
+	    
+
 	}
 	/*
 	 * 
@@ -1849,7 +1891,7 @@ public class BanKuaiDbOperation
 	/*
 	 * 
 	 */
-	private void getTDXBanKuaiShuJuJiLuMaxMinDateByJiaoYiSuo (String jiaoyisuo)
+	public void getTDXBanKuaiShuJuJiLuMaxMinDateByJiaoYiSuo (String jiaoyisuo)
 	{
 		String cjltablename;
 		if(jiaoyisuo.toLowerCase().equals("sh"))			cjltablename = "通达信板块每日交易信息";
@@ -3724,7 +3766,7 @@ public class BanKuaiDbOperation
 		//This part is for get stock highest and lowest zhangfu in the week. //Temperailly abandon.
 		StockXPeriodDataForJFC nodexdata =  (StockXPeriodDataForJFC) stock.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
 
-		Integer spcohlcdataindex = nodexdata.getIndexOfSpecificDateOHLCData(friday, 0);
+		Integer spcohlcdataindex = nodexdata.getIndexOfSpecificDateOHLCData(friday);
 		OHLCItem weeklyohlcdatalast;
 		try {
 			weeklyohlcdatalast = (OHLCItem) nodexdata.getOHLCData().getDataItem(spcohlcdataindex-1);
@@ -3820,9 +3862,9 @@ public class BanKuaiDbOperation
 		
 		TDXNodesXPeriodDataForJFC nodexdata =  (TDXNodesXPeriodDataForJFC) tdxnode.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
 		//在前面处理周线成交量等数据的时候，已经存了OHLC的数据，都是0，现在要把这个数据找到，是情况处理
-		Integer spcohlcdataindex = nodexdata.getIndexOfSpecificDateOHLCData(friday, 0);
+		Integer spcohlcdataindex = nodexdata.getIndexOfSpecificDateOHLCData(friday);
 		if(spcohlcdataindex != null) {
-			OHLCItem wkohlcdata = nodexdata.getSpecificDateOHLCData(friday,0);
+			OHLCItem wkohlcdata = nodexdata.getSpecificDateOHLCData(friday);
 			double wkclose = wkohlcdata.getCloseValue(); double wkhigh = wkohlcdata.getHighValue();
 			double wklow = wkohlcdata.getLowValue(); double wkopen = wkohlcdata.getOpenValue() ;
 			if(! (wkclose == 0 && wkhigh == 0 && wklow == 0 && wkopen	== 0) ) 
@@ -3857,7 +3899,7 @@ public class BanKuaiDbOperation
 		java.sql.Date sqldate = null;
 		try {
 			DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
-			 sqldate = new java.sql.Date(format.parse(friday.toString()).getTime());
+			sqldate = new java.sql.Date(format.parse(friday.toString()).getTime());
 		} catch (ParseException e) {e.printStackTrace();}
 		try {
 			org.jfree.data.time.Week recordwk = new org.jfree.data.time.Week (sqldate);
@@ -3951,7 +3993,6 @@ public class BanKuaiDbOperation
 			 //目前算法最后一周要跳出循环后才能计算
 			 this.getTDXNodesWeeklyKXianZouShiForJFC(bk, lastdaydate.with(DayOfWeek.FRIDAY), nodenewohlc);
 			 
-				
 		} catch(java.lang.NullPointerException e){e.printStackTrace();
 		} catch (SQLException e) {e.printStackTrace();
 		} catch(Exception e){e.printStackTrace();
@@ -7847,6 +7888,35 @@ public class BanKuaiDbOperation
 			} catch(java.lang.NullPointerException e) {
 		    } catch(Exception e){e.printStackTrace();
 		    } finally {  }
+		}
+		/*
+		 * 
+		 */
+		public void saveBanKuaiExtraDataToDatabase(BanKuai bk, LocalDate date, String extradatakeywords[] ) 
+		{
+			NodeXPeriodData nodexdatawk = null;NodeXPeriodData nodexdataday = null;
+			try {
+				  nodexdatawk =  bk.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
+				  nodexdataday =  bk.getNodeXPeroidData(NodeGivenPeriodDataItem.DAY);
+			} catch( java.lang.NullPointerException e) {	e.printStackTrace();	}
+			
+			String setString = "";
+			for(String keyword : extradatakeywords ) {
+				Object value = nodexdatawk.getNodeDataByKeyWord(keyword,date,"");
+				switch(keyword) {
+				case "CjeZbGrowRate":	setString = setString + "DPCJEZB增加率 = " + ((Double)value).toString() + ",";
+				break;
+				case "CjlZbGrowRate":	setString = setString + "DPCJLZB增加率 = " + ((Double)value).toString() + ",";
+				break;
+				}
+			}
+			
+			String sqlupdatestat = "UPDATE 股票通达信行业板块对应表 "
+//						+ "  SET 移除时间 = " + "'" +  LocalDate.now().toString()  + "'"
+//						+ "  WHERE  股票通达信行业板块对应表.`股票代码` = " + "'" + stockcode.trim() + "'"
+//						+ "  AND isnull(移除时间)"
+//						+ "  AND 股票通达信行业板块对应表.`对应TDXSWID` = " + "'" + stockbkanameindb + "'"
+			
 		}
 
 }

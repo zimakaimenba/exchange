@@ -201,7 +201,7 @@ public class BanKuaiFengXiCategoryBarChartCjlPnl extends BanKuaiFengXiCategoryBa
 			LocalDate tmpdate = requirestart;
 			do  {
 				//这里应该根据周期类型来选择日期类型，现在因为都是周线，就不细化了
-				Double cjl = nodexdata.getChengJiaoLiang(tmpdate, 0);
+				Double cjl = nodexdata.getChengJiaoLiang(tmpdate);
 				LocalDate wkfriday = tmpdate.with(DayOfWeek.FRIDAY);
 				if(cjl != null) {
 					barchartdataset.setValue(cjl,super.getRowKey(), wkfriday);
@@ -215,7 +215,7 @@ public class BanKuaiFengXiCategoryBarChartCjlPnl extends BanKuaiFengXiCategoryBa
 //						this.averagelinechartdataset.setValue(avecje,"AverageDailyCje", wkfriday);
 //					}l
 
-					Double zhangdiefu = nodexdata.getSpecificOHLCZhangDieFu(tmpdate, 0);
+					Double zhangdiefu = nodexdata.getSpecificOHLCZhangDieFu(tmpdate);
 					if(zhangdiefu != null && zhangdiefu >0) {
 						CategoryTextAnnotation cpa  = new CategoryTextAnnotation ("\u2B08", wkfriday , 0.0);
 						//cpa.setBaseRadius(0.0);
@@ -255,7 +255,7 @@ public class BanKuaiFengXiCategoryBarChartCjlPnl extends BanKuaiFengXiCategoryBa
 //					}
 					
 				} else {
-					if( !dapan.isDaPanXiuShi(tmpdate,0,period) ) {
+					if( !dapan.isDaPanXiuShi(tmpdate,period) ) {
 						barchartdataset.setValue(0.0,super.getRowKey(),wkfriday);
 						averagelinechartdataset.setValue(0.0,"AverageDailyCje",wkfriday);
 					}
@@ -301,7 +301,7 @@ public class BanKuaiFengXiCategoryBarChartCjlPnl extends BanKuaiFengXiCategoryBa
 				LocalDate wkfriday = tmpdate.with(DayOfWeek.FRIDAY);
 				
 //				if(super.getCurDisplayedNode().getType() != BkChanYeLianTreeNode.DAPAN) {
-					Double avecjl =  nodexdata.getAverageDailyChengJiaoLiangOfWeek(wkfriday, 0);
+					Double avecjl =  nodexdata.getAverageDailyChengJiaoLiangOfWeek(wkfriday);
 					
 					if(avecjl != null) {
 						averagelinechartdataset.setValue( 5* avecjl,"AverageDailyCje", wkfriday);
@@ -309,7 +309,7 @@ public class BanKuaiFengXiCategoryBarChartCjlPnl extends BanKuaiFengXiCategoryBa
 						if(5* avecjl > avecjeaxix)
 							avecjeaxix = 5*avecjl;
 					} else {
-						if( !dapan.isDaPanXiuShi(tmpdate,0,period) ) 
+						if( !dapan.isDaPanXiuShi(tmpdate,period) ) 
 							averagelinechartdataset.setValue(0.0,"AverageDailyCje",wkfriday);
 					}
 					
@@ -349,7 +349,7 @@ public class BanKuaiFengXiCategoryBarChartCjlPnl extends BanKuaiFengXiCategoryBa
 			LocalDate tmpdate = requirestart;
 			do  {
 				//这里应该根据周期类型来选择日期类型，现在因为都是周线，就不细化了
-				Double cjl = nodexdata.getAverageDailyChengJiaoLiangOfWeek(tmpdate, 0);
+				Double cjl = nodexdata.getAverageDailyChengJiaoLiangOfWeek(tmpdate);
 				LocalDate wkfriday = tmpdate.with(DayOfWeek.FRIDAY);
 				if(cjl != null) {
 					barchartdataset.setValue( cjl,super.getRowKey(), wkfriday);
@@ -357,7 +357,7 @@ public class BanKuaiFengXiCategoryBarChartCjlPnl extends BanKuaiFengXiCategoryBa
 					if(cjl > highestHigh)
 						highestHigh = cjl;
 					
-					Double zhangdiefu = nodexdata.getSpecificOHLCZhangDieFu(tmpdate, 0);
+					Double zhangdiefu = nodexdata.getSpecificOHLCZhangDieFu(tmpdate);
 					if(zhangdiefu != null && zhangdiefu >0) {
 						CategoryTextAnnotation cpa  = new CategoryTextAnnotation ("\u21B1", wkfriday , 0.0);
 						//cpa.setBaseRadius(0.0);
@@ -389,7 +389,7 @@ public class BanKuaiFengXiCategoryBarChartCjlPnl extends BanKuaiFengXiCategoryBa
 //					}
 					
 				} else {
-					if( !dapan.isDaPanXiuShi(tmpdate,0,period) ) {
+					if( !dapan.isDaPanXiuShi(tmpdate,period) ) {
 						barchartdataset.setValue(0.0,super.getRowKey(),wkfriday);
 						this.averagelinechartdataset.setValue(0.0,"AverageDailyCje",wkfriday);
 					}
@@ -464,7 +464,7 @@ public class BanKuaiFengXiCategoryBarChartCjlPnl extends BanKuaiFengXiCategoryBa
 			do  {
 				LocalDate wkfriday = tmpdate.with(DayOfWeek.FRIDAY);
 				
-				Double avecjl = nodexdata.getAverageDailyChengJiaoLiangOfWeek(wkfriday, 0);
+				Double avecjl = nodexdata.getAverageDailyChengJiaoLiangOfWeek(wkfriday);
 					
 					if(avecjl != null) {
 						linechartdataset.setValue(avecjl,"AverageDailyCje", wkfriday);
@@ -472,7 +472,7 @@ public class BanKuaiFengXiCategoryBarChartCjlPnl extends BanKuaiFengXiCategoryBa
 						if(avecjl > avecjeaxix)
 							avecjeaxix = avecjl;
 					} else {
-						if( !dapan.isDaPanXiuShi(tmpdate,0,period) ) 
+						if( !dapan.isDaPanXiuShi(tmpdate,period) ) 
 							linechartdataset.setValue(0.0,"AverageDailyCje",wkfriday);
 					}
 					
@@ -646,7 +646,7 @@ class CustomRendererForCjl extends BanKuaiFengXiCategoryBarRenderer
 		
     	LocalDate selecteddate = CommonUtility.formateStringToDate(selected);
     	 
-		Integer maxweek = nodexdata.getAverageDailyChenJiaoLiangMaxWeekOfSuperBanKuai(selecteddate,0);
+		Integer maxweek = nodexdata.getAverageDailyChenJiaoLiangMaxWeek(selecteddate);
 		
 		if(maxweek != null && maxweek >= super.displayedmaxwklevel)
 			return new Color(0,204,204);
@@ -685,7 +685,7 @@ class BkfxItemLabelGeneratorForCjl extends BkfxItemLabelGenerator
 
     	Integer maxweek;
     	try{
-    		maxweek = nodexdata.getAverageDailyChenJiaoLiangMaxWeekOfSuperBanKuai(selecteddate,0);
+    		maxweek = nodexdata.getAverageDailyChenJiaoLiangMaxWeek(selecteddate);
     	} catch ( java.lang.NullPointerException e) {
     		return null;
     	}
@@ -721,9 +721,9 @@ class CustomCategoryToolTipGeneratorForChenJiaoLiang extends BanKuaiFengXiCatego
 		String html;
 		DaPan dapan = (DaPan)  super.node.getRoot();
 		if(super.node.getType() == BkChanYeLianTreeNode.TDXGG ) {
-			 html = nodexdata.getNodeXDataInHtml(dapan,selecteddate, 0);
+			 html = nodexdata.getNodeXDataInHtml(dapan,selecteddate);
 		} else {
-			html = nodexdata.getNodeXDataInHtml(dapan,selecteddate, 0);
+			html = nodexdata.getNodeXDataInHtml(dapan,selecteddate);
 		}
 		
 		return html;

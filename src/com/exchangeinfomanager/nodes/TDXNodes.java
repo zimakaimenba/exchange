@@ -210,9 +210,9 @@ public abstract class TDXNodes extends BkChanYeLianTreeNode
 		String html;
 		NodeXPeriodData nodexdata = this.getNodeXPeroidData(period);
 		if(super.getType() == BkChanYeLianTreeNode.TDXGG ) {
-			 html =  nodexdata.getNodeXDataInHtml((DaPan)this.getRoot(),requireddate, 0);
+			 html =  nodexdata.getNodeXDataInHtml((DaPan)this.getRoot(),requireddate);
 		} else {
-			html = nodexdata.getNodeXDataInHtml((DaPan)this.getRoot(),requireddate, 0);
+			html = nodexdata.getNodeXDataInHtml((DaPan)this.getRoot(),requireddate);
 		}
 		
 		org.jsoup.nodes.Document htmldoc = Jsoup.parse(html);

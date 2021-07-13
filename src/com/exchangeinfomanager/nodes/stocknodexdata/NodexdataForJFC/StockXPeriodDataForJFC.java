@@ -76,7 +76,7 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 	{
 		if(this.stockmairujl == null)
 			return null;
-		RegularTimePeriod period = getJFreeChartFormateTimePeriodForAMO(requireddate,difference);
+		RegularTimePeriod period = super.getJFreeChartFormateTimePeriod(requireddate);
 		if(period == null)
 			return null;
 		TimeSeriesDataItem gzjlitem = stockmairujl.getDataItem(period );
@@ -107,7 +107,7 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 		if(this.stockmaichuujl == null)
 			return null;
 		
-		RegularTimePeriod period = getJFreeChartFormateTimePeriodForAMO(requireddate,difference);
+		RegularTimePeriod period = super.getJFreeChartFormateTimePeriod(requireddate);
 		if(period == null)
 			return null;
 		TimeSeriesDataItem gzjlitem = stockmaichuujl.getDataItem( period);
@@ -124,7 +124,7 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 	{
 		Double hsl = this.getSpecificTimeHuanShouLv(requireddate, 0);
 		if(hsl != null) {
-			Integer daynum = super.getExchangeDaysNumberForthePeriod(requireddate, 0);
+			Integer daynum = super.getExchangeDaysNumberForthePeriod(requireddate);
 			if(daynum != null)
 				return hsl/daynum;
 			else
@@ -141,7 +141,7 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 		if(this.stockgzjl == null)
 			return null;
 		
-		RegularTimePeriod curperiod = getJFreeChartFormateTimePeriodForAMO(requireddate,difference);
+		RegularTimePeriod curperiod = super.getJFreeChartFormateTimePeriod(requireddate);
 		if(curperiod == null)
 			return null;
 		
@@ -316,7 +316,7 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 	public Double getSpecificTimeHuanShouLv (LocalDate requireddate,int difference)
 	{
 		try{
-			RegularTimePeriod period = getJFreeChartFormateTimePeriodForAMO(requireddate,difference);
+			RegularTimePeriod period = super.getJFreeChartFormateTimePeriod(requireddate);
 			if(period == null)
 				return null;
 			TimeSeriesDataItem curhslrecord = stockhuanshoulv.getDataItem(period );
@@ -329,7 +329,7 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 	public Double getSpecificTimeHuanShouLvFree (LocalDate requireddate,int difference)
 	{
 		try{
-			RegularTimePeriod period = getJFreeChartFormateTimePeriodForAMO(requireddate,difference);
+			RegularTimePeriod period = super.getJFreeChartFormateTimePeriod(requireddate);
 			if(period == null)
 				return null;
 			TimeSeriesDataItem curhslrecord = stockhuanshoulvfree.getDataItem(period );
@@ -345,7 +345,7 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 	 */
 	public Double getSpecificTimeZongShiZhi (LocalDate requireddate,int difference)
 	{
-		RegularTimePeriod period = getJFreeChartFormateTimePeriodForAMO(requireddate,difference);
+		RegularTimePeriod period = super.getJFreeChartFormateTimePeriod(requireddate);
 		if(period == null)
 			return null;
 		TimeSeriesDataItem curzszrecord = stockzongshizhi.getDataItem(period);
@@ -360,7 +360,7 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 //	 */
 //	public Double getSpecificTimeHighestZhangDieFu (LocalDate requireddate,int difference)
 //	{
-//		RegularTimePeriod period = getJFreeChartFormateTimePeriodForAMO(requireddate,difference);
+//		RegularTimePeriod period = super.getJFreeChartFormateTimePeriod(requireddate);
 //		if(period == null)
 //			return null;
 //		
@@ -376,7 +376,7 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 //	 */
 //	public Double getSpecificTimeLowestZhangDieFu (LocalDate requireddate,int difference)
 //	{
-//		RegularTimePeriod period = getJFreeChartFormateTimePeriodForAMO(requireddate,difference);
+//		RegularTimePeriod period = super.getJFreeChartFormateTimePeriod(requireddate);
 //		if(period == null)
 //			return null;
 //		TimeSeriesDataItem curlowzdfrecord = periodlowestzhangdiefu.getDataItem(period);
@@ -392,7 +392,7 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 	 */
 	public Double getSpecificTimeLiuTongShiZhi (LocalDate requireddate,int difference)
 	{
-		RegularTimePeriod curperiod = getJFreeChartFormateTimePeriodForAMO(requireddate,difference);
+		RegularTimePeriod curperiod = super.getJFreeChartFormateTimePeriod(requireddate);
 		if(curperiod == null)
 			return null;
 		
@@ -436,9 +436,9 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 	 * (non-Javadoc)
 	 * @see com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC.TDXNodesXPeriodDataForJFC#getNodeXDataCsvData(com.exchangeinfomanager.nodes.TDXNodes, java.time.LocalDate, int)
 	 */
-	 public String[] getNodeXDataCsvData (TDXNodes superbk, LocalDate requireddate, int difference)
+	 public String[] getNodeXDataCsvData (TDXNodes superbk, LocalDate requireddate)
 	 {
-		 String[] supcsv = super.getNodeXDataCsvData(superbk, requireddate, 0);
+		 String[] supcsv = super.getNodeXDataCsvData(superbk, requireddate);
 		 if(supcsv == null)
 			 return null;
 		 
@@ -461,9 +461,9 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 	 /*
 	  * 
 	  */
-		public String getNodeXDataInHtml2(TDXNodes superbk,LocalDate requireddate, int difference) 
+		public String getNodeXDataInHtml2(TDXNodes superbk,LocalDate requireddate) 
 		{
-			String[] csvresult = this.getNodeXDataCsvData(superbk,requireddate,difference);
+			String[] csvresult = this.getNodeXDataCsvData(superbk,requireddate);
 			
 			org.jsoup.nodes.Document doc = Jsoup.parse("");
 			org.jsoup.select.Elements content = doc.select("body");
@@ -547,9 +547,9 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 		 * (non-Javadoc)
 		 * @see com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic#getNodeXDataInHtml(java.time.LocalDate, int)
 		 */
-		public String getNodeXDataInHtml(TDXNodes superbk,LocalDate requireddate, int difference) 
+		public String getNodeXDataInHtml(TDXNodes superbk,LocalDate requireddate) 
 		{
-			String datahtml = super.getNodeXDataInHtml(superbk,requireddate,difference);
+			String datahtml = super.getNodeXDataInHtml(superbk,requireddate);
 			
 			org.jsoup.nodes.Document doc = Jsoup.parse(datahtml);
 			org.jsoup.select.Elements content = doc.select("body");
@@ -600,9 +600,19 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 
 	 
 		@Override
-	public Boolean hasFxjgInPeriod(LocalDate requireddate, int difference) {
+	public Boolean hasFxjgInPeriod(LocalDate requireddate) {
 		// TODO Auto-generated method stub
 		return null;
 	}
+		@Override
+		public Double getSpecificTimeHighestZhangDieFu(LocalDate requireddate, int difference) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		@Override
+		public Double getSpecificTimeLowestZhangDieFu(LocalDate requireddate, int difference) {
+			// TODO Auto-generated method stub
+			return null;
+		}
 	
 }

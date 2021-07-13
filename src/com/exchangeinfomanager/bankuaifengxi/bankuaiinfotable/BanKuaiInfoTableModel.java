@@ -32,31 +32,29 @@ public class BanKuaiInfoTableModel extends BandKuaiAndGeGuTableBasicModel
 	/*
 	 * 
 	 */
-	public void refresh  (LocalDate curselectdate,int difference2, String period )
+	public void refresh  (LocalDate curselectdate, String period )
 	{
 		super.showwknum = curselectdate;
-		super.difference = difference2;
 		super.curperiod = period;
 		super.curbk =  (DaPan)CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getModel().getRoot();
 		
 		try{ if(entryList != null) //按成交额排序
-				Collections.sort(entryList, new NodeChenJiaoErComparator(showwknum,difference,curperiod) );
+				Collections.sort(entryList, new NodeChenJiaoErComparator(showwknum,curperiod) );
 		} catch (java.lang.IllegalArgumentException e) {//			e.printStackTrace();
 		}
 	 	
 		this.fireTableDataChanged();
 	}
 	
-	public void refresh  (List<BkChanYeLianTreeNode> bklist,LocalDate curselectdate,int difference2, String period )
+	public void refresh  (List<BkChanYeLianTreeNode> bklist,LocalDate curselectdate, String period )
 	{
 		super.entryList = bklist;
 		super.showwknum = curselectdate;
-		super.difference = difference2;
 		super.curperiod = period;
 		super.curbk = (DaPan)CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getModel().getRoot();
 		
 		try{ if(entryList != null) //按成交额排序
-				Collections.sort(entryList, new NodeChenJiaoErComparator(showwknum,difference,curperiod) );
+				Collections.sort(entryList, new NodeChenJiaoErComparator(showwknum,curperiod) );
 		} catch (java.lang.IllegalArgumentException e) {//			e.printStackTrace();
 		}
 	 	
@@ -65,8 +63,8 @@ public class BanKuaiInfoTableModel extends BandKuaiAndGeGuTableBasicModel
 	public void addBanKuai ( BanKuai bankuai)
 	{
 		if(entryList == null)	entryList = new ArrayList<BkChanYeLianTreeNode> ();
-		
-		entryList.add(bankuai);
+		if(!entryList.contains(bankuai))
+			entryList.add(bankuai);
 	}
 	public void addBanKuai ( List<BkChanYeLianTreeNode> bankuaiwithcje)
 	{

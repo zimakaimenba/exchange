@@ -24,7 +24,7 @@ public class RuleOfHuanShouLv
 	boolean iszjezbdpmatched = false;
 	@Condition
 	public boolean evaluate(@Fact("evanode") TDXNodes evanode,
-			@Fact("evadate") LocalDate evadate, @Fact("evadatedifference") Integer evadatedifference, 
+			@Fact("evadate") LocalDate evadate,  
 			@Fact("evaperiod") String evaperiod,
     		@Fact("evacond") BanKuaiAndGeGuMatchingConditions evacond ) 
 	{
@@ -44,7 +44,7 @@ public class RuleOfHuanShouLv
 	
 	@Action
     public void execute(@Fact("evanode") TDXNodes evanode, 
-    		@Fact("evadate") LocalDate evadate, @Fact("evadatedifference") Integer evadatedifference, 
+    		@Fact("evadate") LocalDate evadate,  
     		@Fact("evaperiod") String evaperiod,
     		@Fact("evacond") BanKuaiAndGeGuMatchingConditions evacond )
     {
@@ -73,7 +73,7 @@ public class RuleOfHuanShouLv
     // MUST IMPLEMENT THIS METHOD
 //    @Override 
     public String getName() {
-        return "ChenJiaoEr Rule";
+        return "HUANSHOULV";
     }
 
 }

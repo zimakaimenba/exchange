@@ -1034,7 +1034,19 @@ public class BanKuaiDZHDbOperation
 		List<BanKuai> dzhbkset = new ArrayList<> ();
 		CachedRowSetImpl rs = null;
 		try {
-			 String sqlquerystat = "select *  FROM 大智慧板块列表   "
+			 String sqlquerystat = "SELECT * FROM\r\n" + 
+			 		"(\r\n" + 
+			 		"select *  FROM 大智慧板块列表 ) AS node\r\n" + 
+			 		"LEFT   JOIN \r\n" + 
+			 		"(SELECT * FROM 板块股票占比阈值 )\r\n" + 
+			 		"AS nodezbextremelevel\r\n" + 
+			 		"ON node.板块ID = nodezbextremelevel.代码\r\n" + 
+			 		"\r\n" + 
+			 		"LEFT   JOIN \r\n" + 
+			 		"(SELECT 代码, MIN(交易日期)  DZHminjytime , MAX(交易日期)  DZHmaxjytime fROM   大智慧板块每日交易信息\r\n" + 
+			 		"GROUP BY 代码) shjyt \r\n" + 
+			 		"\r\n" + 
+			 		"ON shjyt.代码 = node.板块ID AND node.指数所属交易所 = 'BK'   "
 		 			;
 			rs = tdxconnectdb.sqlQueryStatExecute(sqlquerystat);
 			while(rs.next()) {
@@ -1042,8 +1054,9 @@ public class BanKuaiDZHDbOperation
 				String dzhbkname = rs.getString("板块名称");
 				
 				BanKuai dzhbk = new BanKuai(dzhbkcode,dzhbkname, "DZH");
-				dzhbk.getNodeJiBenMian().setSuoShuJiaoYiSuo(rs.getString("指数所属交易所"));
-//				dzhbk.setBanKuaiLeiXing( rs.getString("板块类型描述") );
+				String zhishujys = rs.getString("指数所属交易所");
+				dzhbk.getNodeJiBenMian().setSuoShuJiaoYiSuo(zhishujys);
+				dzhbk.setBanKuaiLeiXing( rs.getString("板块类型描述") );
 				dzhbk.getBanKuaiOperationSetting().setExporttogehpi(rs.getBoolean("导出Gephi"));
 				dzhbk.getBanKuaiOperationSetting().setImportdailytradingdata(rs.getBoolean("导入交易数据"));
 				dzhbk.getBanKuaiOperationSetting().setShowinbkfxgui(rs.getBoolean("板块分析"));
@@ -1051,6 +1064,19 @@ public class BanKuaiDZHDbOperation
 				dzhbk.getBanKuaiOperationSetting().setExportTowWlyFile(rs.getBoolean("周分析文件"));
 				dzhbk.getBanKuaiOperationSetting().setImportBKGeGu(rs.getBoolean("导入板块个股"));
 				dzhbk.getBanKuaiOperationSetting().setBanKuaiLabelColor(rs.getString("DefaultCOLOUR"));
+				
+				if(zhishujys.equalsIgnoreCase("BK")) {
+					try {	LocalDate shmaxdate = rs.getDate("DZHmaxjytime").toLocalDate();
+							dzhbk.getShuJuJiLuInfo().setJyjlmaxdate(shmaxdate);
+		    		} catch(java.lang.NullPointerException e) {
+		    				dzhbk.getShuJuJiLuInfo().setJyjlmaxdate(null);
+		    		}
+		    		try {	LocalDate shmindate = rs.getDate("DZHminjytime").toLocalDate();
+		    				dzhbk.getShuJuJiLuInfo().setJyjlmindate(shmindate);
+		    		} catch(java.lang.NullPointerException e) {
+		    				dzhbk.getShuJuJiLuInfo().setJyjlmaxdate(null);
+		    		}
+				}
 
 				dzhbkset.add(dzhbk);
 			}
@@ -1299,7 +1325,7 @@ public class BanKuaiDZHDbOperation
 	/*
 	 * 
 	 */
-	private void getTDXBanKuaiShuJuJiLuMaxMinDateByJiaoYiSuo (String jiaoyisuo)
+	public void getTDXBanKuaiShuJuJiLuMaxMinDateByJiaoYiSuo (String jiaoyisuo)
 	{
 		String cjltablename;
 		if(jiaoyisuo.equalsIgnoreCase("BK") )	cjltablename = "大智慧板块每日交易信息";

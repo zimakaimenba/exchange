@@ -688,7 +688,7 @@ class CategoryLabelCustomizableCategoryAxis extends CategoryAxis
     		if(nodexdata == null)
     			return Color.black;
     			
-    		else if(nodexdata.hasFxjgInPeriod(selecteddate, 0)) 
+    		else if(nodexdata.hasFxjgInPeriod(selecteddate)) 
         		return Color.magenta.darker();
         	else 
         		return Color.BLACK;

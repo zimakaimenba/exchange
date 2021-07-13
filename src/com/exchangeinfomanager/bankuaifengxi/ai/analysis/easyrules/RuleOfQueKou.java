@@ -22,7 +22,7 @@ public class RuleOfQueKou
 	
 	@Condition
 	public boolean evaluate(@Fact("evanode") TDXNodes evanode,
-			@Fact("evadate") LocalDate evadate,@Fact("evadatedifference") Integer evadatedifference, 
+			@Fact("evadate") LocalDate evadate, 
 			@Fact("evaperiod") String evaperiod,
     		@Fact("evacond") BanKuaiAndGeGuMatchingConditions evacond ) 
 	{
@@ -33,9 +33,9 @@ public class RuleOfQueKou
 	    if(hlqk ) {
 	    	NodeXPeriodData nodexdata = evanode.getNodeXPeroidData(evaperiod);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
 	    	
-		    Integer hbqkdown = nodexdata.getQueKouTongJiHuiBuDown(evadate, 0);
-		    Integer openupqk = nodexdata.getQueKouTongJiOpenUp(evadate, 0);
-		    Integer opendown = nodexdata.getQueKouTongJiOpenDown(evadate,0);
+		    Integer hbqkdown = nodexdata.getQueKouTongJiHuiBuDown(evadate);
+		    Integer openupqk = nodexdata.getQueKouTongJiOpenUp(evadate);
+		    Integer opendown = nodexdata.getQueKouTongJiOpenDown(evadate);
 		    if( (hbqkdown != null && hbqkdown >0) ||  (openupqk != null && openupqk>0)  ) {//缺口 
 		    	analysisresultforvoice = analysisresultforvoice + "本周有向上跳空缺口。";
 		    	return true;
@@ -50,7 +50,7 @@ public class RuleOfQueKou
 	
 	@Action
     public void execute(@Fact("evanode") TDXNodes evanode, 
-    		@Fact("evadate") LocalDate evadate,@Fact("evadatedifference") Integer evadatedifference, 
+    		@Fact("evadate") LocalDate evadate, 
     		@Fact("evaperiod") String evaperiod,
     		@Fact("evacond") BanKuaiAndGeGuMatchingConditions evacond )
     {

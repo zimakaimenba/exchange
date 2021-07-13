@@ -17,12 +17,11 @@ public class NodeChenJiaoErComparator implements Comparator<BkChanYeLianTreeNode
 {
 	private String period;
 	private LocalDate compareDate;
-	private int difference;
-	public NodeChenJiaoErComparator (LocalDate compareDate, int difference, String period )
+	
+	public NodeChenJiaoErComparator (LocalDate compareDate,String period )
 	{
 		this.period = period;
 		this.compareDate = compareDate;
-		this.difference = difference;
 	}
     public int compare(BkChanYeLianTreeNode node1,  BkChanYeLianTreeNode node2) { 
     	
@@ -31,17 +30,17 @@ public class NodeChenJiaoErComparator implements Comparator<BkChanYeLianTreeNode
         try {
         	if(node1.getType() == BkChanYeLianTreeNode.BKGEGU) {
         		Stock node1stock = ((StockOfBanKuai)node1).getStock();
-        		cje1 = (node1stock.getNodeXPeroidData( period)).getChengJiaoEr(compareDate, difference) ;
+        		cje1 = (node1stock.getNodeXPeroidData( period)).getChengJiaoEr(compareDate ) ;
         	} else {
-        		cje1 = ( ((TDXNodes)node1).getNodeXPeroidData( period)).getChengJiaoEr(compareDate, difference) ;
+        		cje1 = ( ((TDXNodes)node1).getNodeXPeroidData( period)).getChengJiaoEr(compareDate ) ;
         	}
         	
         	if(node2.getType() == BkChanYeLianTreeNode.BKGEGU){
         		Stock node2stock = ((StockOfBanKuai)node2).getStock();
-                cje2 = (node2stock.getNodeXPeroidData( period)).getChengJiaoEr(compareDate, difference);
+                cje2 = (node2stock.getNodeXPeroidData( period)).getChengJiaoEr(compareDate);
                 
         	} else {
-        		cje2 = ( ((TDXNodes)node2).getNodeXPeroidData( period)).getChengJiaoEr(compareDate, difference);
+        		cje2 = ( ((TDXNodes)node2).getNodeXPeroidData( period)).getChengJiaoEr(compareDate);
         	}
         } catch (java.lang.NullPointerException e) {
         	e.printStackTrace();

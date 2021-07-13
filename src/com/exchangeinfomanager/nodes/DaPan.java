@@ -48,10 +48,10 @@ public class DaPan extends TDXNodes
 	/*
 	 * 
 	 */
-	public Boolean  isDaPanXiuShi (LocalDate date,int difference,String period)
+	public Boolean  isDaPanXiuShi (LocalDate date,String period)
 	{
 		NodeXPeriodData shnodexdata = this.shanghai.getNodeXPeroidData(period);
-		if(shnodexdata.getIndexOfSpecificDateOHLCData(date,difference) != null )
+		if(shnodexdata.getIndexOfSpecificDateOHLCData(date) != null )
 			return false;
 		else
 			return true;

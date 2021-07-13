@@ -3,6 +3,7 @@ package com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC;
 import org.apache.log4j.Logger;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
@@ -58,16 +59,16 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 	/*
 	 * 
 	 */
-	public Double getChengJiaoErDifferenceWithLastPeriod (LocalDate requireddate,int difference)
+	public Double getChengJiaoErDifferenceWithLastPeriod (LocalDate requireddate)
 	{
 		Double dapanchaer = null;
 		
 		String recordsperiod = getNodeperiodtype();
 		NodeXPeriodData shanghaiperiodrecords = shanghai.getNodeXPeroidData(recordsperiod);
-		Double shcurrecord = shanghaiperiodrecords.getChengJiaoErDifferenceWithLastPeriod(requireddate,difference);
+		Double shcurrecord = shanghaiperiodrecords.getChengJiaoErDifferenceWithLastPeriod(requireddate);
 		
 		NodeXPeriodData shenzhenperiodrecords = shenzhen.getNodeXPeroidData(recordsperiod);
-		Double szcurrecord = shenzhenperiodrecords.getChengJiaoErDifferenceWithLastPeriod(requireddate,difference);
+		Double szcurrecord = shenzhenperiodrecords.getChengJiaoErDifferenceWithLastPeriod(requireddate);
 		
 		try{
 			dapanchaer = szcurrecord + shcurrecord ;
@@ -79,16 +80,16 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 	}
 
 	@Override
-	public Double getChengJiaoEr(LocalDate requireddate, int difference) 
+	public Double getChengJiaoEr(LocalDate requireddate) 
 	{
 		String recordsperiod = getNodeperiodtype();
 		NodeXPeriodData shanghaiperiodrecords = shanghai.getNodeXPeroidData(recordsperiod);
-		Double shcurrecord = shanghaiperiodrecords.getChengJiaoEr(requireddate,difference);
+		Double shcurrecord = shanghaiperiodrecords.getChengJiaoEr(requireddate);
 		if(shcurrecord == null)
 			return null;
 		
 		NodeXPeriodData shenzhenperiodrecords = shenzhen.getNodeXPeroidData(recordsperiod);
-		Double szcurrecord = shenzhenperiodrecords.getChengJiaoEr(requireddate,difference);
+		Double szcurrecord = shenzhenperiodrecords.getChengJiaoEr(requireddate);
 		
 		Double dapancje = null;
 		try {
@@ -107,23 +108,23 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 	}
 
 	@Override
-	public Integer getExchangeDaysNumberForthePeriod(LocalDate requireddate, int difference) 
+	public Integer getExchangeDaysNumberForthePeriod(LocalDate requireddate) 
 	{
 		String recordsperiod = getNodeperiodtype();
 		NodeXPeriodData shanghaiperiodrecords = shanghai.getNodeXPeroidData(recordsperiod);
-		Integer exchangedays = shanghaiperiodrecords.getExchangeDaysNumberForthePeriod(requireddate,difference);
+		Integer exchangedays = shanghaiperiodrecords.getExchangeDaysNumberForthePeriod(requireddate);
 		return exchangedays;
 	}
 	@Override
-	public Double getChengJiaoErDailyAverageDifferenceWithLastPeriod(LocalDate requireddate, int difference) 
-	{int i=0;
+	public Double getChengJiaoErDailyAverageDifferenceWithLastPeriod(LocalDate requireddate) 
+	{
 		String recordsperiod = getNodeperiodtype();
 		
 		NodeXPeriodData shanghaiperiodrecords = shanghai.getNodeXPeroidData(recordsperiod);
-		Double shdiff = shanghaiperiodrecords.getChengJiaoErDailyAverageDifferenceWithLastPeriod(requireddate,difference);
+		Double shdiff = shanghaiperiodrecords.getChengJiaoErDailyAverageDifferenceWithLastPeriod(requireddate);
 		
 		NodeXPeriodData shenzhenperiodrecords = shenzhen.getNodeXPeroidData(recordsperiod);
-		Double szdiff = shenzhenperiodrecords.getChengJiaoErDailyAverageDifferenceWithLastPeriod(requireddate,difference);
+		Double szdiff = shenzhenperiodrecords.getChengJiaoErDailyAverageDifferenceWithLastPeriod(requireddate);
 		
 		if(shdiff == null)
 			return null;
@@ -137,7 +138,7 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 	}
 	
 	@Override
-	public String getNodeXDataInHtml(TDXNodes superbk, LocalDate requireddate, int difference)
+	public String getNodeXDataInHtml(TDXNodes superbk, LocalDate requireddate)
 	{
 		DecimalFormat decimalformate = new DecimalFormat("#0.000"); //",###";
     	NumberFormat percentFormat = NumberFormat.getPercentInstance(Locale.CHINA);
@@ -155,7 +156,7 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 			 fontdate.appendText(requireddate.toString());
 			 fontdate.attr("color", "#17202A");
 			 
-			 Double curcje = this.getChengJiaoEr(requireddate, 0);
+			 Double curcje = this.getChengJiaoEr(requireddate);
 			 String cjedanwei = null;
 			 try{
 					cjedanwei = FormatDoubleToShort.getNumberChineseDanWei(curcje);
@@ -169,7 +170,7 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 			 fontcje.appendText("成交额" + decimalformate.format(curcje) + cjedanwei);
 			 fontcje.attr("color", "#AF7AC5");
 			 
-			 Double avecje = this.getAverageDailyChengJiaoErOfWeek (requireddate, 0);
+			 Double avecje = this.getAverageDailyChengJiaoErOfWeek (requireddate);
 			 cjedanwei = null;
 			 try{
 					cjedanwei = FormatDoubleToShort.getNumberChineseDanWei(avecje);
@@ -185,7 +186,7 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 			 
 			 Double avecjegrowingrate = null;;
 			 try {
-				 avecjegrowingrate = this.getAverageDailyChenJiaoErGrowingRate(requireddate,0);
+				 avecjegrowingrate = this.getAverageDailyChenJiaoErGrowingRate(requireddate);
 				 if(avecjegrowingrate != null) {
 					 htmlstring = "周日均成交额增长率" + percentFormat.format (avecjegrowingrate) ;
 					 org.jsoup.nodes.Element liavecjechangerate = dl.appendElement("li");
@@ -195,7 +196,7 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 				 }
 			 } catch (java.lang.NullPointerException e) {    }
 			 
-			 Integer avecjemaxwk = this.getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(requireddate,0);
+			 Integer avecjemaxwk = this.getAverageDailyChenJiaoErMaxWeek (requireddate);
 			 org.jsoup.nodes.Element liavecjemaxwk = dl.appendElement("li");
 			 org.jsoup.nodes.Element fontavecjemaxwk = liavecjemaxwk.appendElement("font");
 			 fontavecjemaxwk.appendText("周日平均成交额MaxWK= " + avecjemaxwk);
@@ -203,7 +204,7 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 			 
 			 Integer cjemaxwk = null;
 		     try{
-		    	cjemaxwk = this.getChenJiaoErMaxWeekOfSuperBanKuai(requireddate,0);//显示成交额是多少周最大,成交额多少周最小没有意义，因为如果不是完整周成交量就是会很小
+		    	cjemaxwk = this.getChenJiaoErMaxWeek (requireddate);//显示成交额是多少周最大,成交额多少周最小没有意义，因为如果不是完整周成交量就是会很小
 		     } catch (java.lang.NullPointerException e) {
 		    		
 		     }
@@ -215,7 +216,7 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 			 } 
 			 
 			 //
-			 Double curcjl = this.getChengJiaoLiang(requireddate, 0);
+			 Double curcjl = this.getChengJiaoLiang(requireddate);
 	    	 String cjldanwei = FormatDoubleToShort.getNumberChineseDanWei(curcjl);
 	    	 curcjl = FormatDoubleToShort.formateDoubleToShort (curcjl);
 			 org.jsoup.nodes.Element licjl = dl.appendElement("li");
@@ -225,7 +226,7 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 			 //
 			 Integer cjlmaxwk = null;
 		     try{
-		    		cjlmaxwk = this.getChenJiaoLiangMaxWeekOfSuperBanKuai(requireddate,0);//显示cjl是多少周最大
+		    		cjlmaxwk = this.getChenJiaoLiangMaxWeek (requireddate);//显示cjl是多少周最大
 		     } catch (java.lang.NullPointerException e) {
 		     }
 			 if(cjlmaxwk != null && cjlmaxwk>0) {
@@ -245,7 +246,7 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 	}
 
 	@Override
-	public Boolean isLocalDateReachFristDayInHistory(LocalDate requireddate, int difference) {
+	public Boolean isLocalDateReachFristDayInHistory(LocalDate requireddate) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -263,7 +264,7 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 	}
 
 	@Override
-	public Boolean hasFxjgInPeriod(LocalDate requireddate, int difference) {
+	public Boolean hasFxjgInPeriod(LocalDate requireddate) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -307,37 +308,37 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 	}
 
 	@Override
-	public Integer getZhangTingTongJi(LocalDate requireddate, Integer difference) {
+	public Integer getZhangTingTongJi(LocalDate requireddate) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Integer getDieTingTongJi(LocalDate requireddate, Integer difference) {
+	public Integer getDieTingTongJi(LocalDate requireddate) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Integer getQueKouTongJiOpenUp(LocalDate requireddate, Integer difference) {
+	public Integer getQueKouTongJiOpenUp(LocalDate requireddate) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Integer getQueKouTongJiOpenDown(LocalDate requireddate, Integer difference) {
+	public Integer getQueKouTongJiOpenDown(LocalDate requireddate) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Integer getQueKouTongJiHuiBuUp(LocalDate requireddate, Integer difference) {
+	public Integer getQueKouTongJiHuiBuUp(LocalDate requireddate) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Integer getQueKouTongJiHuiBuDown(LocalDate requireddate, Integer difference) {
+	public Integer getQueKouTongJiHuiBuDown(LocalDate requireddate) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -355,65 +356,31 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 	}
 
 	@Override
-	public Double getChenJiaoErZhanBi(LocalDate requireddate, int difference) {
+	public Double getChenJiaoErZhanBi(LocalDate requireddate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	
+
+	@Override
+	public Double getChenJiaoLiangZhanBi(LocalDate requireddate) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Double getChenJiaoErZhanBiGrowthRateOfSuperBanKuai(LocalDate requireddate, int difference) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Integer getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(LocalDate requireddate, int difference) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Integer getChenJiaoErZhanBiMinWeekOfSuperBanKuai(LocalDate requireddate, int difference) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Double getChenJiaoLiangZhanBi(LocalDate requireddate, int difference) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Double getChenJiaoLiangZhanBiGrowthRateOfSuperBanKuai(LocalDate requireddate, int difference) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Integer getChenJiaoLiangZhanBiMaxWeekOfSuperBanKuai(LocalDate requireddate, int difference) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Integer getChenJiaoLiangZhanBiMinWeekOfSuperBanKuai(LocalDate requireddate, int difference) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Integer getIndexOfSpecificDateOHLCData(LocalDate requireddate, int difference)
+	public Integer getIndexOfSpecificDateOHLCData(LocalDate requireddate)
 	{
 		// TODO Auto-generated method stub
 		String recordsperiod = getNodeperiodtype();
 		NodeXPeriodData shanghaiperiodrecords = shanghai.getNodeXPeroidData(recordsperiod);
-		Integer index = shanghaiperiodrecords.getIndexOfSpecificDateOHLCData(requireddate, difference);
+		Integer index = shanghaiperiodrecords.getIndexOfSpecificDateOHLCData(requireddate);
 		return index;
 	}
 
 	@Override
-	public Double getSpecificOHLCZhangDieFu(LocalDate requireddate, int difference) {
+	public Double getSpecificOHLCZhangDieFu(LocalDate requireddate) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -452,159 +419,121 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 		return ((TDXNodesXPeriodDataForJFC)shanghaiperiodrecords).getMA60();
 	}
 	@Override
-	public Integer getChenJiaoErMaxWeekOfSuperBanKuai(LocalDate requireddate, int difference) 
+	public Integer getChenJiaoErMaxWeek (LocalDate requireddate) 
 	{
- 		Double dpcurcje = this.getChengJiaoEr(requireddate, 0);
+ 		Double dpcurcje = this.getChengJiaoEr(requireddate);
 		
-		if(dpcurcje == null)
-			return null;
+		if(dpcurcje == null)	return null;
 		
 		int maxweek = 0;
 		String recordsperiod = getNodeperiodtype();
 		NodeXPeriodData shanghaiperiodrecords = shanghai.getNodeXPeroidData(recordsperiod);
 		
-		Integer indexofcur = shanghaiperiodrecords.getIndexOfSpecificDateOHLCData(requireddate, 0);
-		if(indexofcur == 0)
-			return maxweek;
+		Integer indexofcur = shanghaiperiodrecords.getIndexOfSpecificDateOHLCData(requireddate);
+		if(indexofcur == 0)	return maxweek;
 		
 		Boolean indexclosetofront = false;
-		for(int i = -1; indexclosetofront == false ; i--) {
-			LocalDate expecteddate = getRequiredLocalDate (requireddate,i);
+		for(int i = 1; indexclosetofront == false ; i++) {
+			LocalDate expecteddate = requireddate.minus(i,ChronoUnit.WEEKS).with(DayOfWeek.FRIDAY);	
 			
-			Integer indexoflast = shanghaiperiodrecords.getIndexOfSpecificDateOHLCData(requireddate, i);
+			Integer indexoflast = shanghaiperiodrecords.getIndexOfSpecificDateOHLCData(requireddate);
 			if(indexoflast != null && indexoflast == 0) //大盘成交额为空要不是休市，要不是到达记录顶点，要区分
 				indexclosetofront = true;
 			
-			Double expectcje = this.getChengJiaoEr (expecteddate,0);
-			
+			Double expectcje = this.getChengJiaoEr (expecteddate);
 			if(expectcje == null && indexclosetofront == false) //还没到顶点，说明是休市，继续往前找
 				continue;
 			
 			if(expectcje != null && dpcurcje > expectcje)
 				maxweek ++;
-			else
-				break;
+			else	break;
 		}
 		
 		return maxweek;
 	}
 
 	@Override
-	public Double getChenJiaoErChangeGrowthRateOfSuperBanKuai(TDXNodes superbk, LocalDate requireddate,
-			int difference) {
+	public Double getChenJiaoErChangeGrowthRateOfSuperBanKuai(TDXNodes superbk, LocalDate requireddate	) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	
 	@Override
-	public Double getChengJiaoLiang(LocalDate requireddate, int difference) 
+	public Double getChengJiaoLiang(LocalDate requireddate) 
 	{
 		String recordsperiod = getNodeperiodtype();
 		NodeXPeriodData shanghaiperiodrecords = shanghai.getNodeXPeroidData(recordsperiod);
-		Double shcurrecord = shanghaiperiodrecords.getChengJiaoLiang(requireddate,difference);
+		Double shcurrecord = shanghaiperiodrecords.getChengJiaoLiang(requireddate);
 		if(shcurrecord == null)
 			return null;
 		
 		NodeXPeriodData shenzhenperiodrecords = shenzhen.getNodeXPeroidData(recordsperiod);
-		Double szcurrecord = shenzhenperiodrecords.getChengJiaoLiang(requireddate,difference);
+		Double szcurrecord = shenzhenperiodrecords.getChengJiaoLiang(requireddate);
 		
 		Double dapancjl = null;
-		try {
-		 dapancjl = shcurrecord + szcurrecord;
-		} catch (java.lang.NullPointerException e) {
-//			System.out.println(requireddate);
-		}
+		try {	dapancjl = shcurrecord + szcurrecord;
+		} catch (java.lang.NullPointerException e) {e.printStackTrace();}
 		return dapancjl;
-	}
-	@Override
-	public Double getChenJiaoErChangeGrowthRateOfSuperBanKuaiOnDailyAverage(TDXNodes superbk, LocalDate requireddate,
-			int difference) 
-	{
-		return null;
-	}
-
-	@Override
-	public Double getChenJiaoLiangDifferenceWithLastPeriod(LocalDate requireddate, int difference) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Integer getChenJiaoLiangMaxWeekOfSuperBanKuai(LocalDate requireddate, int difference) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Double getChenJiaoLiangChangeGrowthRateOfSuperBanKuai(TDXNodes superbk, LocalDate requireddate,
-			int difference) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-
-	@Override
-	public Double[] getNodeOhlcSMA(LocalDate requireddate, int difference) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Boolean checkCloseComparingToMAFormula(String maformula, LocalDate requireddate, int difference) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Multimap<LocalDate, LocalDate> isMacdButtomDivergenceInSpecificMonthRange(LocalDate requireddate,
-			int difference, int monthrange) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Multimap<LocalDate, LocalDate> isMacdTopDivergenceInSpecificMonthRange(LocalDate requireddate,
-			int difference, int monthrange) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Double getAverageDailyChengJiaoErOfWeek(LocalDate requireddate, int difference) 
-	{
-		Double cje = this.getChengJiaoEr(requireddate, difference);
-		if(cje != null) {
-			Integer daynum = this.getExchangeDaysNumberForthePeriod(requireddate, difference);
-			if(daynum != null)
-				return cje/daynum;
-			else
-				return cje/5;
-		} else
-			return null;
 	}
 	
 	@Override
-	public Integer getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(LocalDate requireddate, int difference) 
+	public Double getChenJiaoErChangeGrowthRateOfSuperBanKuaiOnDailyAverage(TDXNodes superbk, LocalDate requireddate) 
 	{
-		Double curcje = this.getAverageDailyChengJiaoErOfWeek(requireddate, difference);
+		return null;
+	}
+
+	@Override
+	public Double getChenJiaoLiangDifferenceWithLastPeriod(LocalDate requireddate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	
+	@Override
+	public Double getChenJiaoLiangChangeGrowthRateOfSuperBanKuai(TDXNodes superbk, LocalDate requireddate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+
+	@Override
+	public Double[] getNodeOhlcSMA(LocalDate requireddate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Double getAverageDailyChengJiaoErOfWeek(LocalDate requireddate) 
+	{
+		Double cje = this.getChengJiaoEr(requireddate);
+		if(cje != null) {
+			Integer daynum = this.getExchangeDaysNumberForthePeriod(requireddate);
+			if(daynum != null)	return cje/daynum;
+			else	return cje/5;
+		} else	return null;
+	}
+	
+	@Override
+	public Integer getAverageDailyChenJiaoErMaxWeek (LocalDate requireddate) 
+	{
+		Double curcje = this.getAverageDailyChengJiaoErOfWeek(requireddate);
 		int maxweek = 0;
 		
 		String recordsperiod = getNodeperiodtype();
 		NodeXPeriodData shanghaiperiodrecords = shanghai.getNodeXPeroidData(recordsperiod);
-		int index = this.getIndexOfSpecificDateOHLCData(requireddate, difference);
+		int index = this.getIndexOfSpecificDateOHLCData(requireddate);
 		for(int i = index-1;i >=0; i--) {
 			
 			LocalDate lastcjlrecorddate = shanghaiperiodrecords.getLocalDateOfSpecificIndexOfOHLCData(i);
 			if(lastcjlrecorddate == null ) //可能到了记录的头部了，或者是个诞生时间不长的板块
 				return maxweek;
 			try {
-				Double lastcje = this.getAverageDailyChengJiaoErOfWeek(lastcjlrecorddate,0);
+				Double lastcje = this.getAverageDailyChengJiaoErOfWeek(lastcjlrecorddate);
 				if(curcje > lastcje)
 					maxweek ++;
-				else
-					break;
+				else	break;
 			} catch (java.lang.NullPointerException e) {
 				logger.info(requireddate.toString() + " value is null.");
 				break;
@@ -621,7 +550,7 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 	}
 
 	@Override
-	public String[] getNodeXDataCsvData(TDXNodes superbk, LocalDate requireddate, int difference) {
+	public String[] getNodeXDataCsvData(TDXNodes superbk, LocalDate requireddate) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -631,45 +560,40 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 		// TODO Auto-generated method stub
 		
 	}
-	
-	/*
+	 /*
 	 * 
 	 */
-	protected RegularTimePeriod getJFreeChartFormateTimePeriod (LocalDate requireddate,int difference) 
+	protected RegularTimePeriod getJFreeChartFormateTimePeriod (LocalDate requireddate) 
 	{
 		String nodeperiod = this.getNodeperiodtype();
-		LocalDate expectedate = null;
 		RegularTimePeriod period = null;
 		if(nodeperiod.equals(NodeGivenPeriodDataItem.WEEK)) { 
-			expectedate = requireddate.plus(difference,ChronoUnit.WEEKS);
-			java.sql.Date lastdayofweek = java.sql.Date.valueOf(expectedate);
-			period = new org.jfree.data.time.Week (lastdayofweek);
-//			period = new org.jfree.data.time.Week (Date.from(expectedate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+			java.sql.Date lastweek = java.sql.Date.valueOf(requireddate);
+			period = new org.jfree.data.time.Week (lastweek);
 		} else if(nodeperiod.equals(NodeGivenPeriodDataItem.DAY)) {
-			expectedate = requireddate.plus(difference,ChronoUnit.DAYS);
-			java.sql.Date lastdayofweek = java.sql.Date.valueOf(expectedate);
+			java.sql.Date lastdayofweek = java.sql.Date.valueOf(requireddate);
 			period = new org.jfree.data.time.Day (lastdayofweek);
-//			period = new org.jfree.data.time.Day(Date.from(expectedate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
 		}  else if(nodeperiod.equals(NodeGivenPeriodDataItem.MONTH)) {
-			expectedate = requireddate.plus(difference,ChronoUnit.MONTHS);
+//			expectedate = requireddate.plus(difference,ChronoUnit.MONTHS);
 		}
 		
 		return period;
 	}
-	protected LocalDate getRequiredLocalDate (LocalDate requireddate,int difference)
-	{
-		String nodeperiod = this.getNodeperiodtype();
-		LocalDate expectedate = null;
-		if(nodeperiod.equals(NodeGivenPeriodDataItem.WEEK)) { 
-			expectedate = requireddate.plus(difference,ChronoUnit.WEEKS);
-		} else if(nodeperiod.equals(NodeGivenPeriodDataItem.DAY)) {
-			expectedate = requireddate.plus(difference,ChronoUnit.DAYS);
-		}  else if(nodeperiod.equals(NodeGivenPeriodDataItem.MONTH)) {
-			expectedate = requireddate.plus(difference,ChronoUnit.MONTHS);
-		}
-		
-		return expectedate;
-	}
+	
+//	protected LocalDate getRequiredLocalDate (LocalDate requireddate)
+//	{
+//		String nodeperiod = this.getNodeperiodtype();
+//		LocalDate expectedate = null;
+//		if(nodeperiod.equals(NodeGivenPeriodDataItem.WEEK)) { 
+//			expectedate = requireddate.plus(difference,ChronoUnit.WEEKS);
+//		} else if(nodeperiod.equals(NodeGivenPeriodDataItem.DAY)) {
+//			expectedate = requireddate.plus(difference,ChronoUnit.DAYS);
+//		}  else if(nodeperiod.equals(NodeGivenPeriodDataItem.MONTH)) {
+//			expectedate = requireddate.plus(difference,ChronoUnit.MONTHS);
+//		}
+//		
+//		return expectedate;
+//	}
 
 	@Override
 	public LocalDate getAmoRecordsStartDate() {
@@ -682,23 +606,8 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-		@Override
-	public Integer getCjeDpMaxLianXuFangLiangPeriodNumber(LocalDate requireddate, int difference, int settindpgmaxwk) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-
 	@Override
-	public Integer getAverageDailyCjeLianXuFangLiangPeriodNumber(LocalDate requireddate, int difference) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Double[] getNodeOhlcMA(LocalDate requireddate, int difference) {
+	public Double[] getNodeOhlcMA(LocalDate requireddate) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -716,24 +625,16 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 	}
 
 	@Override
-	public Double[] getNodeAMOMA(LocalDate requireddate, int difference) {
+	public Double[] getNodeAMOMA(LocalDate requireddate) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 	@Override
-	public Integer getChenJiaoErZhanBiMinestWeekOfSuperBanKuaiInSpecificPeriod(LocalDate requireddate, int difference,
-			int checkrange) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Double getAverageDailyChengJiaoLiangOfWeek(LocalDate requireddate, int difference) 
+	public Double getAverageDailyChengJiaoLiangOfWeek(LocalDate requireddate) 
 	{
-		Double cje = this.getChengJiaoLiang(requireddate, 0);
+		Double cje = this.getChengJiaoLiang(requireddate);
 		if(cje != null) {
-			Integer daynum = this.getExchangeDaysNumberForthePeriod(requireddate, 0);
+			Integer daynum = this.getExchangeDaysNumberForthePeriod(requireddate);
 			if(daynum != null)
 				return cje/daynum;
 			else
@@ -742,39 +643,32 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 		
 		return null;
 	}
-
 	@Override
-	public Integer getAverageDailyChenJiaoLiangMaxWeekOfSuperBanKuai(LocalDate requireddate, int difference) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Double getAverageDailyChenJiaoErGrowingRate(LocalDate requireddate, int difference) 
+	public Double getAverageDailyChenJiaoErGrowingRate(LocalDate requireddate) 
 	{
-		Double avecjecur = this.getAverageDailyChengJiaoErOfWeek (requireddate, difference);
-		Double avecjelast = this.getAverageDailyChengJiaoErOfWeek (requireddate, difference -1);
+		Double avecjecur = this.getAverageDailyChengJiaoErOfWeek (requireddate);
+		requireddate = requireddate.minus(1,ChronoUnit.WEEKS).with(DayOfWeek.FRIDAY);  
+		Double avecjelast = this.getAverageDailyChengJiaoErOfWeek (requireddate);
 		
 		return (avecjecur - avecjelast) / avecjelast;
 	}
 
 	@Override
-	public Double getChenJiaoLiangChangeGrowthRateOfSuperBanKuaiOnDailyAverage(TDXNodes superbk, LocalDate requireddate,
-			int difference) {
+	public Double getChenJiaoLiangChangeGrowthRateOfSuperBanKuaiOnDailyAverage(TDXNodes superbk, LocalDate requireddate	) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Double getChengJiaoLiangDailyAverageDifferenceWithLastPeriod(LocalDate requireddate, int difference) 
+	public Double getChengJiaoLiangDailyAverageDifferenceWithLastPeriod(LocalDate requireddate) 
 	{
 		String recordsperiod = getNodeperiodtype();
 		
 		NodeXPeriodData shanghaiperiodrecords = shanghai.getNodeXPeroidData(recordsperiod);
-		Double shdiff = shanghaiperiodrecords.getChengJiaoLiangDailyAverageDifferenceWithLastPeriod(requireddate,difference);
+		Double shdiff = shanghaiperiodrecords.getChengJiaoLiangDailyAverageDifferenceWithLastPeriod(requireddate);
 		
 		NodeXPeriodData shenzhenperiodrecords = shenzhen.getNodeXPeroidData(recordsperiod);
-		Double szcurrecord = shenzhenperiodrecords.getChengJiaoLiangDailyAverageDifferenceWithLastPeriod(requireddate,difference);
+		Double szcurrecord = shenzhenperiodrecords.getChengJiaoLiangDailyAverageDifferenceWithLastPeriod(requireddate);
 		
 		if(shdiff == null)
 			return null;
@@ -786,6 +680,13 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 			return null;
 		}
 	}
+	@Override
+	public TimeSeries getAMOData() {
+		String recordsperiod = getNodeperiodtype();
+		NodeXPeriodData shanghaiperiodrecords = shanghai.getNodeXPeroidData(recordsperiod);
+		TimeSeries shamodata = shanghaiperiodrecords.getAMOData();
+		return shamodata;
+	}
 
 	@Override
 	public Object getNodeDataByKeyWord(String keyword, LocalDate date, String... maformula) {
@@ -794,7 +695,7 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 	}
 
 	@Override
-	public void removeNodeDataFromSpecificDate(LocalDate requireddate, int difference) {
+	public void removeNodeDataFromSpecificDate(LocalDate requireddate) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -811,12 +712,89 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 		return null;
 	}
 
-//	@Override
-//	public Boolean checkMAsRelationShip(String maformula, LocalDate requireddate, int difference) {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
+	@Override
+	public Double getChenJiaoErZhanBiGrowthRateForDaPan(LocalDate requireddate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
+	@Override
+	public Integer getChenJiaoErZhanBiMaxWeekForDaPan(LocalDate requireddate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
+	@Override
+	public Integer getChenJiaoErZhanBiMinWeekForDaPan(LocalDate requireddate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Integer getChenJiaoErZhanBiMinestWeekForDaPanInSpecificPeriod(LocalDate requireddate, int checkrange) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Double getChenJiaoLiangZhanBiGrowthRateForDaPan(LocalDate requireddate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Integer getChenJiaoLiangZhanBiMaxWeekForDaPan(LocalDate requireddate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Integer getChenJiaoLiangZhanBiMinWeekForDaPan(LocalDate requireddate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Integer getAverageDailyChenJiaoErLianXuFangLiangPeriodNumber(LocalDate requireddate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Integer getChenJiaoLiangMaxWeek(LocalDate requireddate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Integer getAverageDailyChenJiaoLiangMaxWeek(LocalDate requireddate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Boolean checkCloseComparingToMAFormula(LocalDate requireddate, String maformula) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Multimap<LocalDate, LocalDate> isMacdButtomDivergenceInSpecificMonthRange(LocalDate requireddate,
+			int monthrange) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Multimap<LocalDate, LocalDate> isMacdTopDivergenceInSpecificMonthRange(LocalDate requireddate,
+			int monthrange) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public Integer getChenJiaoErZhanBiDpMaxWkLianXuFangLiangPeriodNumber(LocalDate requireddate, int settindpgmaxwk) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
 

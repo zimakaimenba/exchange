@@ -338,7 +338,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		
 		Integer indexstart = null; //确保START/END日期都有数据
 		do {
-			indexstart = nodexdata.getIndexOfSpecificDateOHLCData(overlapldstartday, 0);
+			indexstart = nodexdata.getIndexOfSpecificDateOHLCData(overlapldstartday);
 			if(indexstart == null) {
 				if(period.equals(NodeGivenPeriodDataItem.WEEK))
 					overlapldstartday = overlapldstartday.plus(1, ChronoUnit.WEEKS) ;
@@ -350,7 +350,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		} while (indexstart == null);
 		Integer indexend = null;
 		do {
-			indexend = nodexdata.getIndexOfSpecificDateOHLCData(overlapldendday, 0);
+			indexend = nodexdata.getIndexOfSpecificDateOHLCData(overlapldendday);
 			if(indexend == null) {
 				if(period.equals(NodeGivenPeriodDataItem.WEEK))
 					overlapldendday = overlapldendday.minus(1, ChronoUnit.WEEKS) ;
@@ -440,7 +440,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		
 		Integer indexstart = null; //确保START/END日期都有数据
 		do {
-			indexstart = nodexdata.getIndexOfSpecificDateOHLCData(overlapldstartday, 0);
+			indexstart = nodexdata.getIndexOfSpecificDateOHLCData(overlapldstartday);
 			if(indexstart == null) {
 				if(period.equals(NodeGivenPeriodDataItem.WEEK))
 					overlapldstartday = overlapldstartday.plus(1, ChronoUnit.WEEKS) ;
@@ -452,7 +452,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		} while (indexstart == null);
 		Integer indexend = null;
 		do {
-			indexend = nodexdata.getIndexOfSpecificDateOHLCData(overlapldendday, 0);
+			indexend = nodexdata.getIndexOfSpecificDateOHLCData(overlapldendday);
 			if(indexend == null) {
 				if(period.equals(NodeGivenPeriodDataItem.WEEK))
 					overlapldendday = overlapldendday.minus(1, ChronoUnit.WEEKS) ;
@@ -590,7 +590,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		LocalDate tmpdate = requirestart;
 		double lowestLow =10000.0;  double highestHigh = 0.0;
 		do  {
-			OHLCItem tmpohlc = nodexdata.getSpecificDateOHLCData(tmpdate, 0);
+			OHLCItem tmpohlc = nodexdata.getSpecificDateOHLCData(tmpdate);
 			if(tmpohlc == null) {
 				if(period.equals(NodeGivenPeriodDataItem.WEEK))
 					tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ;
@@ -743,7 +743,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 			return;
 		
 		NodeXPeriodData nodexdata = this.curdisplayednode.getNodeXPeroidData(checkperiod);
-		Multimap<LocalDate, LocalDate> mdvgc = nodexdata.isMacdButtomDivergenceInSpecificMonthRange(this.getDispalyEndDate(), 0, 4);
+		Multimap<LocalDate, LocalDate> mdvgc = nodexdata.isMacdButtomDivergenceInSpecificMonthRange(this.getDispalyEndDate(), 4);
 		
 		if(mdvgc == null)
 			return;
@@ -754,7 +754,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		Set<LocalDate> keysets = mdvgc.keySet();
 		for(LocalDate basedate : keysets) {
 			long basexPoint = new org.jfree.data.time.Day (java.sql.Date.valueOf(basedate)).getMiddleMillisecond();
-			OHLCItem basebar = ((TDXNodesXPeriodDataForJFC)nodexdata).getSpecificDateOHLCData(basedate, 0);
+			OHLCItem basebar = ((TDXNodesXPeriodDataForJFC)nodexdata).getSpecificDateOHLCData(basedate);
 			double baselowprice = basebar.getLowValue();
 			
 			XYPointerAnnotation xypointerannotation = new XYPointerAnnotation("背S", basexPoint, baselowprice, 200D);//
@@ -766,7 +766,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 			Collection<LocalDate> divdatelist = mdvgc.get(basedate);
 			for(LocalDate divdate : divdatelist) {
 				long divxPoint = new org.jfree.data.time.Day (java.sql.Date.valueOf(divdate)).getMiddleMillisecond();
-				OHLCItem divbar = ((TDXNodesXPeriodDataForJFC)nodexdata).getSpecificDateOHLCData(divdate, 0);
+				OHLCItem divbar = ((TDXNodesXPeriodDataForJFC)nodexdata).getSpecificDateOHLCData(divdate);
 				double divlowprice = divbar.getLowValue();
 				
 				//For creating line on mouse click.

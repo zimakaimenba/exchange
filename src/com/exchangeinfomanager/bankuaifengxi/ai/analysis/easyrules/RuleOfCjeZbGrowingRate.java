@@ -23,12 +23,12 @@ public class RuleOfCjeZbGrowingRate
 	
 	@Condition
 	public boolean evaluate(@Fact("evanode") TDXNodes evanode,
-			@Fact("evadate") LocalDate evadate, @Fact("evadatedifference") Integer evadatedifference, 
+			@Fact("evadate") LocalDate evadate,  
 			@Fact("evaperiod") String evaperiod,
     		@Fact("evacond") BanKuaiAndGeGuMatchingConditions evacond ) 
 	{
 		NodeXPeriodData nodexdata = evanode.getNodeXPeroidData(evaperiod);
-		Double cjedpzbgr = nodexdata.getChenJiaoErZhanBiGrowthRateOfSuperBanKuai(evadate,evadatedifference);
+		Double cjedpzbgr = nodexdata.getChenJiaoErZhanBiGrowthRateForDaPan(evadate);
 		if(cjedpzbgr!= null ) {
 			if(evacond.getCjezbGrowingRateMin() == null && evacond.getCjezbGrowingRateMax() == null)
 				return false;
@@ -48,7 +48,7 @@ public class RuleOfCjeZbGrowingRate
 	
 	@Action
     public void execute(@Fact("evanode") TDXNodes evanode, 
-    		@Fact("evadate") LocalDate evadate, @Fact("evadatedifference") Integer evadatedifference, 
+    		@Fact("evadate") LocalDate evadate,  
     		@Fact("evaperiod") String evaperiod,
     		@Fact("evacond") BanKuaiAndGeGuMatchingConditions evacond )
     {

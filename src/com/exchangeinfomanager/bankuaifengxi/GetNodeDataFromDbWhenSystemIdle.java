@@ -2,6 +2,7 @@ package com.exchangeinfomanager.bankuaifengxi;
 
 import java.awt.MouseInfo;
 import java.awt.Point;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashSet;
@@ -30,7 +31,7 @@ public class GetNodeDataFromDbWhenSystemIdle implements Runnable
 	private String period;
 
 	public GetNodeDataFromDbWhenSystemIdle (LocalDate exportdate1, String period1) {
-		this.exportdate = exportdate1;
+		this.exportdate = exportdate1.with(DayOfWeek.FRIDAY);
 		this.period = period1;
 	}
 	
@@ -499,6 +500,11 @@ public class GetNodeDataFromDbWhenSystemIdle implements Runnable
 			
 			if( ((TDXNodes)node).getShuJuJiLuInfo().wetherHasReiewedToday()   )
 				return;
+			
+			LocalDate jlmaxdate = ((BanKuai)node).getShuJuJiLuInfo().getJyjlmaxdate();
+			LocalDate jlmindate = ((BanKuai)node).getShuJuJiLuInfo().getJyjlmindate();
+			if(jlmaxdate == null && jlmindate == null)
+				return; //bankuai without data records should not be displayed
 			
 			animation ();
 			System.out.print("Buffering BanKuai" + node.getMyOwnCode() + node.getMyOwnName() + " Zhanbi\n");

@@ -26,18 +26,18 @@ public class RuleOfCjeZbDpMaxWk
 	boolean iszjezbdpmatched = false;
 	@Condition
 	public boolean evaluate(@Fact("evanode") TDXNodes evanode,
-			@Fact("evadate") LocalDate evadate, @Fact("evadatedifference") Integer evadatedifference, 
+			@Fact("evadate") LocalDate evadate,  
 			@Fact("evaperiod") String evaperiod,
     		@Fact("evacond") BanKuaiAndGeGuMatchingConditions evacond ) 
 	{
 		NodeXPeriodData nodexdata = evanode.getNodeXPeroidData(evaperiod);
-		Integer cjedpmaxwk = nodexdata.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai (evadate,evadatedifference);
+		Integer cjedpmaxwk = nodexdata.getChenJiaoErZhanBiMaxWeekForDaPan (evadate);
 		if(cjedpmaxwk!= null && cjedpmaxwk > 0 ) {
     		int settingmaxfazhi;
 	    	try { settingmaxfazhi = evacond.getSettingCjeZbDpMaxWkMin();
 	    	} catch (java.lang.NullPointerException e) { 		settingmaxfazhi = 100000000;}
 	    	
-	    	Integer lianxuflnum = nodexdata.getCjeDpMaxLianXuFangLiangPeriodNumber (evadate,evadatedifference, settingmaxfazhi);
+	    	Integer lianxuflnum = nodexdata.getChenJiaoErZhanBiDpMaxWkLianXuFangLiangPeriodNumber (evadate, settingmaxfazhi);
 	    	 
 	    	if(cjedpmaxwk >= settingmaxfazhi &&  lianxuflnum >=2 ) {//连续放量,深色显示
 	    		background = new Color(102,0,0) ;
@@ -55,7 +55,7 @@ public class RuleOfCjeZbDpMaxWk
     	
     	if(cjedpmaxwk == null || cjedpmaxwk <= 0 ) {
     		Integer cjedpminwk = null;
-    		try { cjedpminwk = 0- nodexdata.getChenJiaoErZhanBiMinWeekOfSuperBanKuai(evadate,evadatedifference);
+    		try { cjedpminwk = 0- nodexdata.getChenJiaoErZhanBiMinWeekForDaPan (evadate);
     		} catch (java.lang.NullPointerException ex) { logger.info(evanode.getMyOwnName() + "reach the oldest data!");return false;}
     		
     		int minfazhi;
@@ -72,7 +72,7 @@ public class RuleOfCjeZbDpMaxWk
 	
 	@Action
     public void execute(@Fact("evanode") TDXNodes evanode, 
-    		@Fact("evadate") LocalDate evadate, @Fact("evadatedifference") Integer evadatedifference, 
+    		@Fact("evadate") LocalDate evadate,  
     		@Fact("evaperiod") String evaperiod,
     		@Fact("evacond") BanKuaiAndGeGuMatchingConditions evacond )
     {

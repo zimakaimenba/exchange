@@ -39,11 +39,11 @@ public class AllCurrentTdxBKAndStoksTree
 	private AllCurrentTdxBKAndStoksTree ()
 	{
 		this.bkdbopt = new BanKuaiDbOperation ();
+		
 		initializeAllStocksTree ();
 		setupDaPan ();
 	}
 	
-	// ����ʵ��  
 	 public static AllCurrentTdxBKAndStoksTree getInstance ()
 	 {  
 	        return Singtonle.instance;  
@@ -89,4 +89,6 @@ public class AllCurrentTdxBKAndStoksTree
 		BanKuai szdpbankuai = (BanKuai) allbkggtree.getSpecificNodeByHypyOrCode("399001",BkChanYeLianTreeNode.TDXBK);
 		treeallstockrootdapan.setDaPanContents(shdpbankuai,szdpbankuai);
 	}
+	
+	
 }

@@ -29,7 +29,7 @@ public class RuleOfMA
 	
 	@Condition
 	public boolean evaluate(@Fact("evanode") TDXNodes evanode, 
-			@Fact("evadate") LocalDate evadate, @Fact("evadatedifference") Integer evadatedifference, 
+			@Fact("evadate") LocalDate evadate,  
 			@Fact("evaperiod") String evaperiod,
     		@Fact("evacond") BanKuaiAndGeGuMatchingConditions evacond ) 
 	{
@@ -40,19 +40,32 @@ public class RuleOfMA
 		if (Strings.isNullOrEmpty(displayma)) return false;
 	
 		NodeXPeriodData nodexdataday = evanode.getNodeXPeroidData(NodeGivenPeriodDataItem.DAY);
-		DayOfWeek dayOfWeek = evadate.getDayOfWeek();
-	    int dayOfWeekIntValue = dayOfWeek.getValue();
-	    Double[] dailyma = null;
-	    for(int i = 0;i < dayOfWeekIntValue;i++) { //日线有可能当日是停牌的，如果停牌，就找到本周有数据的最新天
-	    	dailyma = nodexdataday.getNodeOhlcMA (evadate,0-i);
-	    	if(dailyma != null)
-	    		break;
-	    }
+	    OHLCItem ohlcdata =  ((TDXNodesXPeriodDataForJFC)nodexdataday).getSpecificDateOHLCData (evadate);
+		LocalDate expectdate = evadate;
+		if(ohlcdata == null) { //日线有可能当日是停牌的，如果停牌，就找到本周有数据的最新天
+			String nodeperiod = evaperiod;
+			if( nodeperiod.equals(NodeGivenPeriodDataItem.DAY ) ) {
+				DayOfWeek dayOfWeek = evadate.getDayOfWeek();
+				int dayOfWeekIntValue = dayOfWeek.getValue();
+				for(int i = 0;i < dayOfWeekIntValue;i++) { 
+					expectdate = evadate.plus(0-i,ChronoUnit.DAYS);
+					OHLCItem ohlcdataexpectdate =  ((TDXNodesXPeriodDataForJFC)nodexdataday).getSpecificDateOHLCData (expectdate);
+					if(ohlcdataexpectdate != null) {
+						expectdate = adjustDate(expectdate);
+						evadate = expectdate;
+			    		break;
+					}
+			    }
+			} else if( nodeperiod.equals(NodeGivenPeriodDataItem.WEEK ) ) { //一周没有数据，说明停牌，目前周线MA不怎么用，直接回F
+				return false;
+			}
+		}
 		
+		Double[] dailyma = nodexdataday.getNodeOhlcMA (evadate);
 		if (dailyma != null) {
 			//用周K线的CLOSE
 			TDXNodesXPeriodDataForJFC nodexdata = (TDXNodesXPeriodDataForJFC)evanode.getNodeXPeroidData(evaperiod);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
-			OHLCItem ohlcdata = ((TDXNodesXPeriodDataForJFC)nodexdata).getSpecificDateOHLCData (evadate,0);
+			ohlcdata = ((TDXNodesXPeriodDataForJFC)nodexdata).getSpecificDateOHLCData (evadate);
 		    Double close = ohlcdata.getCloseValue();
 
 		    analysisresultforvoice = analysisresultforvoice + "周收盘价" + close;
@@ -67,7 +80,7 @@ public class RuleOfMA
 		} else
 			return true; //没有均线数据，可能是系统没有导入，所以就不还任何判断，默认为有。
 		
-	    Boolean checkresult = nodexdataday.checkCloseComparingToMAFormula(displayma,evadate,0);
+	    Boolean checkresult = nodexdataday.checkCloseComparingToMAFormula(evadate, displayma);
 	    if( checkresult != null && checkresult)	    	return true;
 	    
     	return false;
@@ -75,7 +88,7 @@ public class RuleOfMA
 	
 	@Action
     public void execute(@Fact("evanode") TDXNodes evanode,
-    		@Fact("evadate") LocalDate evadate, @Fact("evadatedifference") Integer evadatedifference, 
+    		@Fact("evadate") LocalDate evadate,  
     		@Fact("evaperiod") String evaperiod,
     		@Fact("evacond") BanKuaiAndGeGuMatchingConditions evacond )
     {
@@ -107,6 +120,21 @@ public class RuleOfMA
     // MUST IMPLEMENT THIS METHOD
 //    @Override 
     public String getName() {
-        return "Weekly Average ChenJiaoEr Rule";
+        return "RULE MA";
     }
+    
+    protected LocalDate adjustDate(LocalDate dateneedtobeadjusted)
+	 {
+		 LocalDate friday;
+		 DayOfWeek dayofweek = dateneedtobeadjusted.getDayOfWeek();
+		 if( dayofweek.equals(DayOfWeek.SUNDAY)  ) {
+			friday = dateneedtobeadjusted.minus(2,ChronoUnit.DAYS);
+			return friday;
+		 } else if (  dayofweek.equals(DayOfWeek.SATURDAY)  ) {
+			friday = dateneedtobeadjusted.minus(1,ChronoUnit.DAYS);
+			return friday;
+		 }
+					
+		return dateneedtobeadjusted;
+	 }
 }

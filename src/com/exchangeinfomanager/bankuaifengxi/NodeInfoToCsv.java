@@ -219,12 +219,12 @@ public class NodeInfoToCsv extends JPanel
 				
 				LocalDate tmpdate = tmpstartdate;
 				do  {
-					if(dapan.isDaPanXiuShi(tmpdate, 0, NodeGivenPeriodDataItem.WEEK)) {
+					if(dapan.isDaPanXiuShi(tmpdate, NodeGivenPeriodDataItem.WEEK)) {
 						tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ;
 						continue;
 					}
 					
-					 String[] nodecsvline = nodexdata.getNodeXDataCsvData(dapan, tmpdate, 0);						
+					 String[] nodecsvline = nodexdata.getNodeXDataCsvData(dapan, tmpdate);						
 					 String[] csvheadline = {	"'" + node.getMyOwnCode() + "'", node.getMyOwnName(), tmpdate.with(DayOfWeek.FRIDAY).toString()	};
 					
 					 if(nodecsvline != null  ) {

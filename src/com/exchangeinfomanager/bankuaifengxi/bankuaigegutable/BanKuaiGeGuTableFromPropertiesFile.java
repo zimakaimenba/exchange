@@ -73,7 +73,7 @@ public class BanKuaiGeGuTableFromPropertiesFile extends BanKuaiGeGuBasicTable
         	String period = ((BanKuaiGeGuBasicTableModel)this.getModel()).getCurDisplayPeriod();
         	LocalDate requireddate = ((BanKuaiGeGuTableModelFromPropertiesFile)this.getModel()).getCurDisplayedDate ();
         	NodeXPeriodData nodexdata = stkofbk.getStock().getNodeXPeroidData(period);
-        	Double zhangdiefu = nodexdata.getSpecificOHLCZhangDieFu (requireddate,0);
+        	Double zhangdiefu = nodexdata.getSpecificOHLCZhangDieFu (requireddate);
         	if(zhangdiefu != null) {
         		zhangdiefu = zhangdiefu * 100;
         		tip = "ÖÜÕÇ·ù" + zhangdiefu .toString() + "%";

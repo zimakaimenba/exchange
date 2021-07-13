@@ -25,7 +25,7 @@ public class RuleOfWeeklyAverageChenJiaoErMaxWk
 	private Boolean isweeklyavergecjemaxwkmatched = false;
 	@Condition
 	public boolean evaluate(@Fact("evanode") TDXNodes evanode, 
-			@Fact("evadate") LocalDate evadate, @Fact("evadatedifference") Integer evadatedifference, 
+			@Fact("evadate") LocalDate evadate,  
 			@Fact("evaperiod") String evaperiod,
     		@Fact("evacond") BanKuaiAndGeGuMatchingConditions evacond ) 
 	{
@@ -34,12 +34,12 @@ public class RuleOfWeeklyAverageChenJiaoErMaxWk
 		
 		NodeXPeriodData nodexdata = evanode.getNodeXPeroidData(evaperiod);
 		int dpmaxwk;
-		try { dpmaxwk = nodexdata.getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(evadate,evadatedifference);
+		try { dpmaxwk = nodexdata.getAverageDailyChenJiaoErMaxWeek (evadate);
 		} catch (java.lang.NullPointerException ex) { logger.info(evanode.getMyOwnName() + "reach the oldest data!");
 			return false;
 		}
     	
-		int lianxuxjeflnum = nodexdata.getAverageDailyCjeLianXuFangLiangPeriodNumber(evadate, evadatedifference);
+		int lianxuxjeflnum = nodexdata.getAverageDailyChenJiaoErLianXuFangLiangPeriodNumber(evadate);
 		
     	Integer settingcjemaxwk = evacond.getSettingChenJiaoErMaxWkMin();
     	if(settingcjemaxwk == null) settingcjemaxwk =  10000000;
@@ -60,7 +60,7 @@ public class RuleOfWeeklyAverageChenJiaoErMaxWk
 	
 	@Action
     public void execute(@Fact("evanode") TDXNodes evanode, 
-    		@Fact("evadate") LocalDate evadate, @Fact("evadatedifference") Integer evadatedifference, 
+    		@Fact("evadate") LocalDate evadate, 
     		@Fact("evaperiod") String evaperiod,
     		@Fact("evacond") BanKuaiAndGeGuMatchingConditions evacond )
     {
@@ -88,7 +88,7 @@ public class RuleOfWeeklyAverageChenJiaoErMaxWk
     // MUST IMPLEMENT THIS METHOD
 //    @Override 
     public String getName() {
-        return "Weekly Average ChenJiaoEr Rule";
+        return "Weekly Average ChenJiaoEr MAX WK Rule";
     }
 
 }

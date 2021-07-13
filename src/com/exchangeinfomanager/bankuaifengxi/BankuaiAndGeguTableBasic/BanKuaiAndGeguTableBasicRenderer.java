@@ -391,7 +391,6 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 	    else
 	    	lwfacts.put("evanode", node);
         lwfacts.put("evadate", requireddate);
-        lwfacts.put("evadatedifference", -1);
         lwfacts.put("evaperiod", period);
         lwfacts.put("evacond", matchcond);
         
@@ -412,8 +411,8 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         } catch (Exception ex  ) {ex.printStackTrace();}
         
         NodeXPeriodData nodexdata = node.getNodeXPeroidData(period);
-    	Double lwzhangdiefu = nodexdata.getSpecificOHLCZhangDieFu (requireddate,-1);
-    	Double zhangdiefu = nodexdata.getSpecificOHLCZhangDieFu (requireddate,0);
+//    	Double lwzhangdiefu = nodexdata.getSpecificOHLCZhangDieFu (requireddate,-1);
+//    	Double zhangdiefu = nodexdata.getSpecificOHLCZhangDieFu (requireddate);
     	
 		switch (column_keyword) {
 		case "HasHqgq":
@@ -422,7 +421,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 			break;
 		case "ExtremeCjlZhanbi" :
 			Double[] extremecjl = node.getNodeJiBenMian().getNodeCjlZhanbiLevel();
-			Double zhanbi = nodexdata.getChenJiaoLiangZhanBi(requireddate, 0);
+			Double zhanbi = nodexdata.getChenJiaoLiangZhanBi(requireddate);
 			if(extremecjl[0] != null && zhanbi < extremecjl[0] && matchcond.getHighlightExtremeCjlZhanbiBenchMark())
 				foreground = Color.RED;
 			else
@@ -431,7 +430,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 			break;
 		case "ExtremeCjeZhanbi" :
 			Double[] extremecje = node.getNodeJiBenMian().getNodeCjeZhanbiLevel();
-			Double cjezhanbi = nodexdata.getChenJiaoErZhanBi(requireddate, 0);
+			Double cjezhanbi = nodexdata.getChenJiaoErZhanBi(requireddate);
 			if(extremecje[0] != null && cjezhanbi < extremecje[0] && matchcond.getHighlightExtremeCjeZhanbiBenchMark())
 				foreground = Color.RED;
 			else
@@ -461,14 +460,14 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         case "LastWkDpcjezbGrowingRate": 
         	foreground = lwcjezbgr.getForeGround();
         	break;
-        case "LastWkDpCjezbMatch":
-	    	if(lwzhangdiefu != null &&  lwzhangdiefu <0 && lwdpmaxwkRule.getRuleResult() && zhangdiefu !=null &&  zhangdiefu >0 )
-	    		foreground = Color.YELLOW;
-        	break;
-        case "LastWkAverageCjeMatch" :
-	    	if(lwzhangdiefu != null && lwzhangdiefu <0 && lwaveragecjemaxwk.getRuleResult() && zhangdiefu != null && zhangdiefu >0 )
-	    		foreground = Color.YELLOW;
-        	break;
+//        case "LastWkDpCjezbMatch":
+//	    	if(lwzhangdiefu != null &&  lwzhangdiefu <0 && lwdpmaxwkRule.getRuleResult() && zhangdiefu !=null &&  zhangdiefu >0 )
+//	    		foreground = Color.YELLOW;
+//        	break;
+//        case "LastWkAverageCjeMatch" :
+//	    	if(lwzhangdiefu != null && lwzhangdiefu <0 && lwaveragecjemaxwk.getRuleResult() && zhangdiefu != null && zhangdiefu >0 )
+//	    		foreground = Color.YELLOW;
+//        	break;
 	    };
 	    
 	    return foreground;
@@ -501,7 +500,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 		switch (column_keyword) {
 		case "ExtremeCjlZhanbi" :
 			Double[] extremecjl = node.getNodeJiBenMian().getNodeCjlZhanbiLevel();
-			Double zhanbi = nodexdata.getChenJiaoLiangZhanBi(requireddate, 0);
+			Double zhanbi = nodexdata.getChenJiaoLiangZhanBi(requireddate);
 			if(extremecjl[0] != null && zhanbi < extremecjl[0] && matchcond.getHighlightExtremeCjlZhanbiBenchMark())
 				background = Color.RED;
 			else
@@ -511,7 +510,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 			
 		case "ExtremeCjeZhanbi" :
 			Double[] extremecje = node.getNodeJiBenMian().getNodeCjeZhanbiLevel();
-			Double cjezhanbi = nodexdata.getChenJiaoErZhanBi(requireddate, 0);
+			Double cjezhanbi = nodexdata.getChenJiaoErZhanBi(requireddate);
 			if(cjezhanbi == null || matchcond == null)
 				background = Color.WHITE;
 			else
@@ -527,7 +526,7 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         		 nodexdata = ((StockOfBanKuai)node).getStock().getNodeXPeroidData(period);
     	    else
     	    	 nodexdata = node.getNodeXPeroidData(period);
-		    Double zhangdiefu = nodexdata.getSpecificOHLCZhangDieFu (requireddate,0);
+		    Double zhangdiefu = nodexdata.getSpecificOHLCZhangDieFu (requireddate);
 		    if(predefinedcolor != null && !predefinedcolor.toUpperCase().equals("SYSTEM") )
 		    	background = Color.decode( predefinedcolor );
 		    else if( predefinedcolor != null && predefinedcolor.toUpperCase().equals("SYSTEM") )

@@ -24,7 +24,7 @@ public class RuleOfGeGuDailyHighestZhangFuInWeek
 	
 	@Condition
 	public boolean evaluate(@Fact("evanode") TDXNodes evanode,
-			@Fact("evadate") LocalDate evadate, @Fact("evadatedifference") Integer evadatedifference, 
+			@Fact("evadate") LocalDate evadate,  
 			@Fact("evaperiod") String evaperiod,
     		@Fact("evacond") BanKuaiAndGeGuMatchingConditions evacond ) 
 	{
@@ -45,7 +45,7 @@ public class RuleOfGeGuDailyHighestZhangFuInWeek
     	} catch (java.lang.ClassCastException e) {return false;}
     	
 //		OHLCItem ohlcdata = ((TDXNodesXPeriodDataForJFC)nodexdata).getSpecificDateOHLCData (evadate,0);
-    	Double wkzhangdiefu = nodexdata.getSpecificOHLCZhangDieFu (evadate, evadatedifference);
+    	Double wkzhangdiefu = nodexdata.getSpecificOHLCZhangDieFu (evadate);
     	if(wkzhangdiefu != null)
     		analysisresultforvoice = analysisresultforvoice + "本周涨幅百分之" +  Math.floor(wkzhangdiefu * 100);
     	
@@ -53,7 +53,7 @@ public class RuleOfGeGuDailyHighestZhangFuInWeek
 		if(wkhighdiefu != null && wkhighdiefu < -0.09)
 			analysisresultforvoice = analysisresultforvoice + "本周有大跌百分之" +  Math.floor(wkhighdiefu * 100);
 		
-		Double wkhighzhangfu = nodexdata.getSpecificTimeHighestZhangDieFu(evadate, evadatedifference);
+		Double wkhighzhangfu = nodexdata.getSpecificTimeHighestZhangDieFu(evadate);
 		
 			if(wkhighzhangfu == null) return false;
 		    else if( wkhighzhangfu >= zfmin && wkhighzhangfu <= zfmax ) {
@@ -66,7 +66,7 @@ public class RuleOfGeGuDailyHighestZhangFuInWeek
 	
 	@Action
     public void execute(@Fact("evanode") TDXNodes evanode, 
-    		@Fact("evadate") LocalDate evadate,@Fact("evadatedifference") Integer evadatedifference, 
+    		@Fact("evadate") LocalDate evadate, 
     		@Fact("evaperiod") String evaperiod,
     		@Fact("evacond") BanKuaiAndGeGuMatchingConditions evacond )
     {
@@ -95,7 +95,7 @@ public class RuleOfGeGuDailyHighestZhangFuInWeek
     // MUST IMPLEMENT THIS METHOD
 //    @Override 
     public String getName() {
-        return "GeGuZhangFu Rule";
+        return "GeGu Highest ZhangFu Rule";
     }
 
 }

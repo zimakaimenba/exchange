@@ -220,7 +220,7 @@ public class  BanKuaiFengXiCategoryBarRenderer extends BarRenderer
 	     
 	     Integer exchangesdaynumber = 5;
 	     try{
-	    	 exchangesdaynumber  = nodexdata.getExchangeDaysNumberForthePeriod(selecteddate,0).intValue();
+	    	 exchangesdaynumber  = nodexdata.getExchangeDaysNumberForthePeriod(selecteddate).intValue();
 	     } catch (java.lang.NullPointerException e) {
 	    	 exchangesdaynumber = 5;
 	     }

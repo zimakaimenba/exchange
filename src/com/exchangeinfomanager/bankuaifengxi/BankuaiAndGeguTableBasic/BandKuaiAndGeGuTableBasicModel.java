@@ -45,7 +45,6 @@ public  abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 	protected TDXNodes curnode;
 	protected List<BkChanYeLianTreeNode> entryList;
 	protected LocalDate showwknum;
-	protected int difference;
 	protected String curperiod;
 	protected LocalDate[] timerangezhangfu = new LocalDate[2]; //区间日期，用于判断区间涨幅
 	protected BanKuaiAndGeGuMatchingConditions highlightcond;
@@ -236,11 +235,11 @@ public  abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 			       	  value = thisbkname;
 			       	   break;
 		       case "BanKuaiChengJiaoErGongXian":
-			     	  Double cjechangegrowthrate = nodexdatawk.getChenJiaoErChangeGrowthRateOfSuperBanKuaiOnDailyAverage(this.curbk,showdate,0);// fxrecord.getGgbkcjegrowthzhanbi();
+			     	  Double cjechangegrowthrate = nodexdatawk.getChenJiaoErChangeGrowthRateOfSuperBanKuaiOnDailyAverage(this.curbk,showdate);// fxrecord.getGgbkcjegrowthzhanbi();
 			     	  value = cjechangegrowthrate;
 			     	 break;
 		       case "BanKuaiChengJiaoLiangGongXian":
-			     	  Double cjlchangegrowthrate = nodexdatawk.getChenJiaoLiangChangeGrowthRateOfSuperBanKuaiOnDailyAverage(this.curbk,showdate,0);// fxrecord.getGgbkcjegrowthzhanbi();
+			     	  Double cjlchangegrowthrate = nodexdatawk.getChenJiaoLiangChangeGrowthRateOfSuperBanKuaiOnDailyAverage(this.curbk,showdate);// fxrecord.getGgbkcjegrowthzhanbi();
 			     	  value = cjlchangegrowthrate;
 			     	  break;	
 		       case "HighLevelPaiXuRank" :
@@ -253,7 +252,7 @@ public  abstract class BandKuaiAndGeGuTableBasicModel extends DefaultTableModel
 			    	   }
 			    	   break;
 		       case "NCjeZbDpMinWk":
-			     	  Integer nCjeZbDpMinWk = nodexdatawk.getChenJiaoErZhanBiMinestWeekOfSuperBanKuaiInSpecificPeriod(showdate,0,15);
+			     	  Integer nCjeZbDpMinWk = nodexdatawk.getChenJiaoErZhanBiMinestWeekForDaPanInSpecificPeriod(showdate,15);
 			       	  value = nCjeZbDpMinWk;
 			       	 break;
 		       case "QuanZhongInBanKuai" :

@@ -68,7 +68,7 @@ public abstract class BanKuaiGeGuBasicTableModel extends BandKuaiAndGeGuTableBas
 		    	 Stock stock = sob.getStock();
 				 NodeXPeriodData stockxdata = stock.getNodeXPeroidData(period);
 		    	 
-		    	 Double cje = stockxdata.getChengJiaoEr(showwknum, 0);
+		    	 Double cje = stockxdata.getChengJiaoEr(showwknum);
 		    	 if(cje == null)
 		    		 itr.remove();
 	    	 }
@@ -147,7 +147,7 @@ public abstract class BanKuaiGeGuBasicTableModel extends BandKuaiAndGeGuTableBas
 	}
 	public void sortTableByChenJiaoEr ()
 	{
-		try{ 	Collections.sort(entryList, new NodeChenJiaoErComparator(showwknum,0,curperiod) );
+		try{ 	Collections.sort(entryList, new NodeChenJiaoErComparator(showwknum,curperiod) );
 				this.fireTableDataChanged();
 		} catch (java.lang.NullPointerException e) {logger.debug("该表内容为空，表排序出错");
 		} catch (java.lang.Exception ex) {ex.printStackTrace();}

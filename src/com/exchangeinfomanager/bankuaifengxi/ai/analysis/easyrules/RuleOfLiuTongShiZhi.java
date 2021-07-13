@@ -23,7 +23,7 @@ public class RuleOfLiuTongShiZhi //extends BasicRule //extends RuleOfNodeXdataBa
 	private String analysisresultforvoice = "";
 	@Condition
     public boolean evaluate(@Fact("evanode") TDXNodes evanode, 
-    		@Fact("evadate") LocalDate evadate, @Fact("evadatedifference") Integer evadatedifference, 
+    		@Fact("evadate") LocalDate evadate,  
     		@Fact("evaperiod") String evaperiod,
     		@Fact("evacond") BanKuaiAndGeGuMatchingConditions evacond ) 
 	{
@@ -68,7 +68,7 @@ public class RuleOfLiuTongShiZhi //extends BasicRule //extends RuleOfNodeXdataBa
     
     @Action
     public void execute(@Fact("evanode") TDXNodes evanode, 
-    		@Fact("evadate") LocalDate evadate, @Fact("evadatedifference") Integer evadatedifference, 
+    		@Fact("evadate") LocalDate evadate,  
     		@Fact("evaperiod") String evaperiod,
     		@Fact("evacond") BanKuaiAndGeGuMatchingConditions evacond )
     {
@@ -98,7 +98,7 @@ public class RuleOfLiuTongShiZhi //extends BasicRule //extends RuleOfNodeXdataBa
     // MUST IMPLEMENT THIS METHOD
 //    @Override 
     public String getName() {
-        return "ChenJiaoEr Rule";
+        return "RULE LIUTONGSHIZHI";
     }
 
 }

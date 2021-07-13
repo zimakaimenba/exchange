@@ -25,12 +25,10 @@ public class StockOfBanKuaiXPeriodDataForJFC implements NodeXPeriodData
 {
 	
 	private TimeSeries stockamo;
-	private String bkcode;
-
+	
 	public StockOfBanKuaiXPeriodDataForJFC (String nodecode, String bkcode,String nodeperiodtype1) 
 	{
 		this.nodecode = nodecode;
-		this.bkcode = bkcode;
 		this.nodeperiodtype = nodeperiodtype1;
 		
 		stockamo = new TimeSeries(nodeperiodtype1);
@@ -47,20 +45,20 @@ public class StockOfBanKuaiXPeriodDataForJFC implements NodeXPeriodData
 	 */
 	public Double getChenJiaoErChangeGrowthRateOfSuperBanKuai(TDXNodes superbk,LocalDate requireddate,int difference) 
 	{
-			TimeSeriesDataItem curcjlrecord = this.stockamo.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference) );
+			TimeSeriesDataItem curcjlrecord = this.stockamo.getDataItem( getJFreeChartFormateTimePeriod(requireddate) );
 			if( curcjlrecord == null) 
 				return null;
 			
 			//判断上级板块(大盘或者板块)是否缩量,所以了没有比较的意义，直接返回-100；
 			String nodept = getNodeperiodtype();
 			NodeXPeriodData bkxdata = superbk.getNodeXPeroidData(nodept);
-			Double bkcjediff = bkxdata.getChengJiaoErDifferenceWithLastPeriod(requireddate,difference);
+			Double bkcjediff = bkxdata.getChengJiaoErDifferenceWithLastPeriod(requireddate);
 			if( bkcjediff == null || bkcjediff < 0   ) {//板块缩量，
 				return -100.0;
 			}
 			
 			
-			int index = this.stockamo.getIndex( getJFreeChartFormateTimePeriod(requireddate,difference) );
+			int index = this.stockamo.getIndex( getJFreeChartFormateTimePeriod(requireddate) );
 			TimeSeriesDataItem lastcjlrecord = stockamo.getDataItem( index - 1);
 			if(lastcjlrecord == null) { //休市前还是空，说明是停牌后复牌了
 				Double curggcje = curcjlrecord.getValue().doubleValue(); //新板块所有成交量都应该计算入
@@ -74,26 +72,21 @@ public class StockOfBanKuaiXPeriodDataForJFC implements NodeXPeriodData
 			return cjechange/bkcjediff;
 		
 	}
-	/*
+	 /*
 	 * 
 	 */
-	protected RegularTimePeriod getJFreeChartFormateTimePeriod (LocalDate requireddate,int difference) 
+	protected RegularTimePeriod getJFreeChartFormateTimePeriod (LocalDate requireddate) 
 	{
 		String nodeperiod = this.getNodeperiodtype();
-		LocalDate expectedate = null;
 		RegularTimePeriod period = null;
 		if(nodeperiod.equals(NodeGivenPeriodDataItem.WEEK)) { 
-			expectedate = requireddate.plus(difference,ChronoUnit.WEEKS);
-			java.sql.Date lastdayofweek = java.sql.Date.valueOf(expectedate);
-			period = new org.jfree.data.time.Week (lastdayofweek);
-//			period = new org.jfree.data.time.Week (Date.from(expectedate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+			java.sql.Date lastweek = java.sql.Date.valueOf(requireddate);
+			period = new org.jfree.data.time.Week (lastweek);
 		} else if(nodeperiod.equals(NodeGivenPeriodDataItem.DAY)) {
-			expectedate = requireddate.plus(difference,ChronoUnit.DAYS);
-			java.sql.Date lastdayofweek = java.sql.Date.valueOf(expectedate);
+			java.sql.Date lastdayofweek = java.sql.Date.valueOf(requireddate);
 			period = new org.jfree.data.time.Day (lastdayofweek);
-//			period = new org.jfree.data.time.Day(Date.from(expectedate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
 		}  else if(nodeperiod.equals(NodeGivenPeriodDataItem.MONTH)) {
-			expectedate = requireddate.plus(difference,ChronoUnit.MONTHS);
+//			expectedate = requireddate.plus(difference,ChronoUnit.MONTHS);
 		}
 		
 		return period;
@@ -111,10 +104,10 @@ public class StockOfBanKuaiXPeriodDataForJFC implements NodeXPeriodData
 	}
 
 	@Override
-	public Double getChengJiaoEr(LocalDate requireddate, int difference) {
+	public Double getChengJiaoEr(LocalDate requireddate) {
 		TimeSeriesDataItem curcjlrecord = null;
 //		if(difference >=0 )
-			curcjlrecord = stockamo.getDataItem( getJFreeChartFormateTimePeriod(requireddate,difference));
+			curcjlrecord = stockamo.getDataItem( getJFreeChartFormateTimePeriod(requireddate));
 		
 		if( curcjlrecord == null) 
 			return null;
@@ -127,7 +120,7 @@ public class StockOfBanKuaiXPeriodDataForJFC implements NodeXPeriodData
 		
 	}
 	@Override
-	public Boolean isLocalDateReachFristDayInHistory(LocalDate requireddate, int difference) {
+	public Boolean isLocalDateReachFristDayInHistory(LocalDate requireddate) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -137,7 +130,7 @@ public class StockOfBanKuaiXPeriodDataForJFC implements NodeXPeriodData
 		
 	}
 	@Override
-	public Boolean hasFxjgInPeriod(LocalDate requireddate, int difference) {
+	public Boolean hasFxjgInPeriod(LocalDate requireddate) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -174,36 +167,6 @@ public class StockOfBanKuaiXPeriodDataForJFC implements NodeXPeriodData
 		
 	}
 	@Override
-	public Integer getZhangTingTongJi(LocalDate requireddate, Integer difference) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public Integer getDieTingTongJi(LocalDate requireddate, Integer difference) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public Integer getQueKouTongJiOpenUp(LocalDate requireddate, Integer difference) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public Integer getQueKouTongJiOpenDown(LocalDate requireddate, Integer difference) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public Integer getQueKouTongJiHuiBuUp(LocalDate requireddate, Integer difference) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public Integer getQueKouTongJiHuiBuDown(LocalDate requireddate, Integer difference) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
 	public LocalDate getQueKouRecordsStartDate() {
 		// TODO Auto-generated method stub
 		return null;
@@ -214,57 +177,27 @@ public class StockOfBanKuaiXPeriodDataForJFC implements NodeXPeriodData
 		return null;
 	}
 	@Override
-	public Integer getExchangeDaysNumberForthePeriod(LocalDate requireddate, int difference) {
+	public Integer getExchangeDaysNumberForthePeriod(LocalDate requireddate) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	@Override
-	public Double getChenJiaoErZhanBi(LocalDate requireddate, int difference) {
+	public Double getChenJiaoErZhanBi(LocalDate requireddate) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	@Override
-	public Double getChenJiaoErZhanBiGrowthRateOfSuperBanKuai(LocalDate requireddate, int difference) {
+	public Double getChenJiaoLiangZhanBi(LocalDate requireddate) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	@Override
-	public Integer getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(LocalDate requireddate, int difference) {
+	public Integer getIndexOfSpecificDateOHLCData(LocalDate requireddate) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	@Override
-	public Integer getChenJiaoErZhanBiMinWeekOfSuperBanKuai(LocalDate requireddate, int difference) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public Double getChenJiaoLiangZhanBi(LocalDate requireddate, int difference) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public Double getChenJiaoLiangZhanBiGrowthRateOfSuperBanKuai(LocalDate requireddate, int difference) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public Integer getChenJiaoLiangZhanBiMaxWeekOfSuperBanKuai(LocalDate requireddate, int difference) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public Integer getChenJiaoLiangZhanBiMinWeekOfSuperBanKuai(LocalDate requireddate, int difference) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public Integer getIndexOfSpecificDateOHLCData(LocalDate requireddate, int difference) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public Double getSpecificOHLCZhangDieFu(LocalDate requireddate, int difference) {
+	public Double getSpecificOHLCZhangDieFu(LocalDate requireddate) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -279,91 +212,32 @@ public class StockOfBanKuaiXPeriodDataForJFC implements NodeXPeriodData
 		return null;
 	}
 	@Override
-	public Double getChengJiaoErDifferenceWithLastPeriod(LocalDate requireddate, int difference) {
+	public Double getChengJiaoErDifferenceWithLastPeriod(LocalDate requireddate) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	@Override
-	public Integer getChenJiaoErMaxWeekOfSuperBanKuai(LocalDate requireddate, int difference) {
+	public Double getChengJiaoLiang(LocalDate requireddate) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	@Override
-	public Double getChengJiaoLiang(LocalDate requireddate, int difference) {
+	public Double getChenJiaoLiangDifferenceWithLastPeriod(LocalDate requireddate) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	@Override
-	public Double getChenJiaoLiangDifferenceWithLastPeriod(LocalDate requireddate, int difference) {
+	public Double[] getNodeOhlcSMA(LocalDate requireddate) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	@Override
-	public Integer getChenJiaoLiangMaxWeekOfSuperBanKuai(LocalDate requireddate, int difference) {
+	public String getNodeXDataInHtml(TDXNodes superbk, LocalDate requireddate) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	@Override
-	public Double getChenJiaoLiangChangeGrowthRateOfSuperBanKuai(TDXNodes superbk, LocalDate requireddate,
-			int difference) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Double[] getNodeOhlcSMA(LocalDate requireddate, int difference) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public Boolean checkCloseComparingToMAFormula(String maformula, LocalDate requireddate, int difference) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public Multimap<LocalDate, LocalDate> isMacdButtomDivergenceInSpecificMonthRange(LocalDate requireddate,
-			int difference, int monthrange) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public String getNodeXDataInHtml(TDXNodes superbk, LocalDate requireddate, int difference) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-//	@Override
-//	public Double getSpecificTimeHuanShouLv(LocalDate requireddate, int difference) {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
-//	@Override
-//	public Double getSpecificTimeZongShiZhi(LocalDate requireddate, int difference) {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
-//	@Override
-//	public Double getSpecificTimeHighestZhangDieFu(LocalDate requireddate, int difference) {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
-//	@Override
-//	public Double getSpecificTimeLowestZhangDieFu(LocalDate requireddate, int difference) {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
-//	@Override
-//	public Double getSpecificTimeLiuTongShiZhi(LocalDate requireddate, int difference) {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
-	@Override
-	public Multimap<LocalDate, LocalDate> isMacdTopDivergenceInSpecificMonthRange(LocalDate requireddate,
-			int difference, int monthrange) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public Double getAverageDailyChengJiaoErOfWeek(LocalDate requireddate, int difference) {
+	public Double getAverageDailyChengJiaoErOfWeek(LocalDate requireddate) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -373,7 +247,7 @@ public class StockOfBanKuaiXPeriodDataForJFC implements NodeXPeriodData
 		return null;
 	}
 	@Override
-	public String[] getNodeXDataCsvData(TDXNodes superbk, LocalDate requireddate, int difference) {
+	public String[] getNodeXDataCsvData(TDXNodes superbk, LocalDate requireddate) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -383,22 +257,10 @@ public class StockOfBanKuaiXPeriodDataForJFC implements NodeXPeriodData
 		
 	}
 	@Override
-	public Double getChengJiaoErDailyAverageDifferenceWithLastPeriod(LocalDate requireddate, int difference) {
+	public Double getChengJiaoErDailyAverageDifferenceWithLastPeriod(LocalDate requireddate) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	@Override
-	public Double getChenJiaoErChangeGrowthRateOfSuperBanKuaiOnDailyAverage(TDXNodes superbk, LocalDate requireddate,
-			int difference) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-//	@Override
-//	public Double getChenJiaoErChangeGrowthRateOfSuperBanKuaiOnDailyAverage(DaPan superbk, LocalDate requireddate,
-//			int difference) {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
 	@Override
 	public LocalDate getLocalDateOfSpecificIndexOfOHLCData(Integer index) {
 		// TODO Auto-generated method stub
@@ -415,25 +277,7 @@ public class StockOfBanKuaiXPeriodDataForJFC implements NodeXPeriodData
 		return null;
 	}
 	@Override
-	public Integer getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(LocalDate requireddate, int difference) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	@Override
-	public Integer getCjeDpMaxLianXuFangLiangPeriodNumber(LocalDate requireddate, int difference, int settindpgmaxwk) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	
-	@Override
-	public Integer getAverageDailyCjeLianXuFangLiangPeriodNumber(LocalDate requireddate, int difference) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public Double[] getNodeOhlcMA(LocalDate requireddate, int difference) {
+	public Double[] getNodeOhlcMA(LocalDate requireddate) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -448,44 +292,22 @@ public class StockOfBanKuaiXPeriodDataForJFC implements NodeXPeriodData
 		
 	}
 	@Override
-	public Double[] getNodeAMOMA(LocalDate requireddate, int difference) {
+	public Double[] getNodeAMOMA(LocalDate requireddate) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	@Override
-	public Integer getChenJiaoErZhanBiMinestWeekOfSuperBanKuaiInSpecificPeriod(LocalDate requireddate, int difference,
-			int checkrange) {
+	public Double getAverageDailyChenJiaoErGrowingRate(LocalDate requireddate) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	@Override
-	public Double getAverageDailyChengJiaoLiangOfWeek(LocalDate requireddate, int difference) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public Integer getAverageDailyChenJiaoLiangMaxWeekOfSuperBanKuai(LocalDate requireddate, int difference) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public Double getAverageDailyChenJiaoErGrowingRate(LocalDate requireddate, int difference) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public Double getChenJiaoLiangChangeGrowthRateOfSuperBanKuaiOnDailyAverage(TDXNodes superbk, LocalDate requireddate,
-			int difference) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public Double getChengJiaoLiangDailyAverageDifferenceWithLastPeriod(LocalDate requireddate, int difference) {
+	public Double getChengJiaoLiangDailyAverageDifferenceWithLastPeriod(LocalDate requireddate) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 //	@Override
-//	public Boolean checkMAsRelationShip(String maformula, LocalDate requireddate, int difference) {
+//	public Boolean checkMAsRelationShip(String maformula, LocalDate requireddate) {
 //		// TODO Auto-generated method stub
 //		return null;
 //	}
@@ -495,7 +317,7 @@ public class StockOfBanKuaiXPeriodDataForJFC implements NodeXPeriodData
 		return null;
 	}
 	@Override
-	public void removeNodeDataFromSpecificDate(LocalDate requireddate, int difference) {
+	public void removeNodeDataFromSpecificDate(LocalDate requireddate) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -506,6 +328,154 @@ public class StockOfBanKuaiXPeriodDataForJFC implements NodeXPeriodData
 	}
 	@Override
 	public LocalDate isInNotCalWholeWeekMode() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public Integer getZhangTingTongJi(LocalDate requireddate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public Integer getDieTingTongJi(LocalDate requireddate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public Integer getQueKouTongJiOpenUp(LocalDate requireddate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public Integer getQueKouTongJiOpenDown(LocalDate requireddate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public Integer getQueKouTongJiHuiBuUp(LocalDate requireddate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public Integer getQueKouTongJiHuiBuDown(LocalDate requireddate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public Double getChenJiaoErZhanBiGrowthRateForDaPan(LocalDate requireddate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public Integer getChenJiaoErZhanBiMaxWeekForDaPan(LocalDate requireddate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public Integer getChenJiaoErZhanBiMinWeekForDaPan(LocalDate requireddate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public Integer getChenJiaoErZhanBiMinestWeekForDaPanInSpecificPeriod(LocalDate requireddate, int checkrange) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public Double getChenJiaoLiangZhanBiGrowthRateForDaPan(LocalDate requireddate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public Integer getChenJiaoLiangZhanBiMaxWeekForDaPan(LocalDate requireddate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public Integer getChenJiaoLiangZhanBiMinWeekForDaPan(LocalDate requireddate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public Integer getChenJiaoErMaxWeek(LocalDate requireddate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public Double getChenJiaoErChangeGrowthRateOfSuperBanKuai(TDXNodes superbk, LocalDate requireddate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public Double getChenJiaoErChangeGrowthRateOfSuperBanKuaiOnDailyAverage(TDXNodes superbk, LocalDate requireddate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public Integer getAverageDailyChenJiaoErMaxWeek(LocalDate requireddate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public Integer getAverageDailyChenJiaoErLianXuFangLiangPeriodNumber(LocalDate requireddate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public Integer getChenJiaoLiangMaxWeek(LocalDate requireddate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public Double getChenJiaoLiangChangeGrowthRateOfSuperBanKuai(TDXNodes superbk, LocalDate requireddate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public Double getChenJiaoLiangChangeGrowthRateOfSuperBanKuaiOnDailyAverage(TDXNodes superbk,
+			LocalDate requireddate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public Double getAverageDailyChengJiaoLiangOfWeek(LocalDate requireddate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public Integer getAverageDailyChenJiaoLiangMaxWeek(LocalDate requireddate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public Boolean checkCloseComparingToMAFormula(LocalDate requireddate, String maformula) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public Multimap<LocalDate, LocalDate> isMacdButtomDivergenceInSpecificMonthRange(LocalDate requireddate,
+			int monthrange) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public Multimap<LocalDate, LocalDate> isMacdTopDivergenceInSpecificMonthRange(LocalDate requireddate,
+			int monthrange) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public OHLCSeries getOHLCData() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public TimeSeries getAMOData() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public Integer getChenJiaoErZhanBiDpMaxWkLianXuFangLiangPeriodNumber(LocalDate requireddate, int settindpgmaxwk) {
 		// TODO Auto-generated method stub
 		return null;
 	}

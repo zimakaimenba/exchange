@@ -22,7 +22,7 @@ public class RuleOfChenJiaoEr
 	boolean iszjezbdpmatched = false;
 	@Condition
 	public boolean evaluate(@Fact("evanode") TDXNodes evanode,
-			@Fact("evadate") LocalDate evadate, @Fact("evadatedifference") Integer evadatedifference, 
+			@Fact("evadate") LocalDate evadate,  
 			@Fact("evaperiod") String evaperiod,
     		@Fact("evacond") BanKuaiAndGeGuMatchingConditions evacond ) 
 	{
@@ -42,7 +42,7 @@ public class RuleOfChenJiaoEr
 			cjemin  = 0.0;
 			    
 	    NodeXPeriodData nodexdata = evanode.getNodeXPeroidData(evaperiod);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
-	    Double curcje = nodexdata.getChengJiaoEr(evadate, 0);
+	    Double curcje = nodexdata.getChengJiaoEr(evadate);
 	    if(curcje == null)
 	    	return false;
 	    
@@ -54,7 +54,7 @@ public class RuleOfChenJiaoEr
 	
 	@Action
     public void execute(@Fact("evanode") TDXNodes evanode, 
-    		@Fact("evadate") LocalDate evadate, @Fact("evadatedifference") Integer evadatedifference, 
+    		@Fact("evadate") LocalDate evadate,  
     		@Fact("evaperiod") String evaperiod,
     		@Fact("evacond") BanKuaiAndGeGuMatchingConditions evacond )
     {

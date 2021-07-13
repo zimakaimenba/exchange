@@ -86,49 +86,15 @@ import com.udojava.evalex.Expression;
 	/*
 	 * 
 	 */
-	protected RegularTimePeriod getJFreeChartFormateTimePeriodForAMO (LocalDate requireddate,int difference) 
-	{
-		if(nodeamo == null)
-			return null;
-		
-		String nodeperiod = this.getNodeperiodtype();
-		RegularTimePeriod period = null;
-		if(nodeperiod.equals(NodeGivenPeriodDataItem.WEEK)) { 
-			java.sql.Date lastweek = java.sql.Date.valueOf(requireddate);
-			period = new org.jfree.data.time.Week (lastweek);
-		} else if(nodeperiod.equals(NodeGivenPeriodDataItem.DAY)) {
-			java.sql.Date lastdayofweek = java.sql.Date.valueOf(requireddate);
-			period = new org.jfree.data.time.Day (lastdayofweek);
-		}  else if(nodeperiod.equals(NodeGivenPeriodDataItem.MONTH)) {
-//			expectedate = requireddate.plus(difference,ChronoUnit.MONTHS);
-		}
-
-		Integer curindex = this.nodeamo.getIndex(period);
-		try {
-			if(curindex >= 0 ) {
-				TimeSeriesDataItem dataitem = this.nodeamo.getDataItem(curindex + difference);
-				if(dataitem != null) {
-					RegularTimePeriod expectedperiod = dataitem.getPeriod();
-					return expectedperiod;
-				}
-			}
-		} catch (java.lang.IndexOutOfBoundsException e) {//				e.printStackTrace();
-			return null;
-		}
-		return null;
-	}
-	/*
-	 * 
-	 */
-	public void removeNodeDataFromSpecificDate (LocalDate requireddate, int difference)
+	public void removeNodeDataFromSpecificDate (LocalDate requireddate)
 	 {
-		super.removeNodeDataFromSpecificDate(requireddate, difference);
+		super.removeNodeDataFromSpecificDate(requireddate);
 
-		RegularTimePeriod period = this.getJFreeChartFormateTimePeriodForAMO(requireddate, difference);
+		RegularTimePeriod period = super.getJFreeChartFormateTimePeriod(requireddate);
 		if(period == null) return;
-		
-		Integer curindex = this.nodeamo.getIndex(period);
+
 		try {
+			Integer curindex = this.nodeamo.getIndex(period);
 				if(curindex >= 0 ) {
 					int itemcount = this.nodeamo.getItemCount();
 					nodeamo.delete(curindex, itemcount-1);
@@ -136,54 +102,92 @@ import com.udojava.evalex.Expression;
 				}
 		} catch (java.lang.IndexOutOfBoundsException e) {	e.printStackTrace();	}
 		 
-		curindex =  this.periodhighestzhangdiefu.getIndex(period);
 		 try {
+			 	Integer curindex = this.periodhighestzhangdiefu.getIndex(period);
 				if(curindex >= 0 ) {
 					int itemcount = this.periodhighestzhangdiefu.getItemCount();
 					periodhighestzhangdiefu.delete(curindex, itemcount-1);
+				}
+		} catch (java.lang.IndexOutOfBoundsException e) {	e.printStackTrace();	}
+
+		 try {	int  curindex =  this.periodlowestzhangdiefu.getIndex(period);
+				if(curindex >= 0 ) {
+					int itemcount = this.periodlowestzhangdiefu.getItemCount();
 					periodlowestzhangdiefu.delete(curindex, itemcount-1);
 				}
 		} catch (java.lang.IndexOutOfBoundsException e) {	e.printStackTrace();	}
 		 
-		 curindex =  this.nodeohlcma5.getIndex(period);
-		 try {
+		 try { int curindex =  this.nodeohlcma250.getIndex(period);
 				if(curindex >= 0 ) {
-					int itemcount = this.nodeohlcma5.getItemCount();
-					nodeohlcma5.delete(curindex, itemcount-1);
-					nodeohlcma10.delete(curindex, itemcount-1);
-					nodeohlcma20.delete(curindex, itemcount-1);
-					nodeohlcma60.delete(curindex, itemcount-1);
+					int itemcount = this.nodeohlcma250.getItemCount();
 					nodeohlcma250.delete(curindex, itemcount-1);
 				}
 		} catch (java.lang.IndexOutOfBoundsException e) {	e.printStackTrace();	}
+		 
+		 try { int curindex =  this.nodeohlcma60.getIndex(period);
+				if(curindex >= 0 ) {
+					int itemcount = this.nodeohlcma60.getItemCount();
+					nodeohlcma60.delete(curindex, itemcount-1);
+				}
+		} catch (java.lang.IndexOutOfBoundsException e) {	e.printStackTrace();	}
+
+		 try {	int curindex =  this.nodeohlcma5.getIndex(period);
+				if(curindex >= 0 ) {
+					int itemcount = this.nodeohlcma5.getItemCount();
+					nodeohlcma5.delete(curindex, itemcount-1);
+				}
+		} catch (java.lang.IndexOutOfBoundsException e) {	e.printStackTrace();	}
+		 
+		 try {	int curindex =  this.nodeohlcma10.getIndex(period);
+				if(curindex >= 0 ) {
+					int itemcount = this.nodeohlcma10.getItemCount();
+					nodeohlcma10.delete(curindex, itemcount-1);
+				}
+		} catch (java.lang.IndexOutOfBoundsException e) {	e.printStackTrace();	}
+		 
+		 try {	int curindex =  this.nodeohlcma20.getIndex(period);
+				if(curindex >= 0 ) {
+					int itemcount = this.nodeohlcma20.getItemCount();
+					nodeohlcma20.delete(curindex, itemcount-1);
+				}
+		} catch (java.lang.IndexOutOfBoundsException e) {	e.printStackTrace();	}
 		
-		 curindex =  this.nodeohlcma30.getIndex(period);
-		 try {
+		 try {	int curindex =  this.nodeohlcma30.getIndex(period);
 				if(curindex >= 0 ) {
 					int itemcount = this.nodeohlcma30.getItemCount();
 					nodeohlcma30.delete(curindex, itemcount-1);
 				}
 		} catch (java.lang.IndexOutOfBoundsException e) {	e.printStackTrace();	}
 		  
-		 curindex =  this.nodeohlcma120.getIndex(period);
-		 try {
+		 try {	int curindex =  this.nodeohlcma120.getIndex(period);
 				if(curindex >= 0 ) {
 					int itemcount = this.nodeohlcma120.getItemCount();
 					nodeohlcma120.delete(curindex, itemcount-1);
 				}
 		} catch (java.lang.IndexOutOfBoundsException e) {	e.printStackTrace();	}
  
-		 curindex =  this.nodeamoma5.getIndex(period);
-		 try {
+		 try {	int curindex =  this.nodeamoma5.getIndex(period);
 				if(curindex >= 0 ) {
 					int itemcount = this.nodeamoma5.getItemCount();
 					nodeamoma5.delete(curindex, itemcount-1);
+				}
+		} catch (java.lang.IndexOutOfBoundsException e) {	e.printStackTrace();	}
+		 
+		 try {	int curindex =  this.nodeamoma10.getIndex(period);
+				if(curindex >= 0 ) {
+					int itemcount = this.nodeamoma10.getItemCount();
 					nodeamoma10.delete(curindex, itemcount-1);
 				}
 		} catch (java.lang.IndexOutOfBoundsException e) {	e.printStackTrace();	}
 		 
-		 curindex = this.nodeohlc.indexOf(period);
-		 try {
+		 try {	int curindex =  this.nodeamoma10.getIndex(period);
+				if(curindex >= 0 ) {
+					int itemcount = this.nodeamoma10.getItemCount();
+					nodeamoma10.delete(curindex, itemcount-1);
+				}
+		} catch (java.lang.IndexOutOfBoundsException e) {	e.printStackTrace();	}
+		 
+		 try {	int curindex = this.nodeohlc.indexOf(period);
 				if(curindex >= 0 ) {
 					int itemcount = nodeohlc.getItemCount();
 					int recordsshouldberemovecount = itemcount  - curindex ;
@@ -196,8 +200,7 @@ import com.udojava.evalex.Expression;
 						nodeohlc.remove(rmperiod);
 					}
 				}
-		} catch (java.lang.IndexOutOfBoundsException e) {	
-			e.printStackTrace();	}
+		} catch (java.lang.IndexOutOfBoundsException e) {	e.printStackTrace();	}
 	 }
 	
 	private Logger logger = Logger.getLogger(TDXNodesXPeriodDataForJFC.class);
@@ -205,6 +208,7 @@ import com.udojava.evalex.Expression;
 	protected OHLCSeries nodeohlc; 
 	protected TimeSeries nodeamo; 
 	protected TimeSeries nodevol; 
+
 
 	//均线
 	protected TimeSeries nodeohlcma5;
@@ -232,9 +236,9 @@ import com.udojava.evalex.Expression;
 			nodeohlc.setNotify(false);
 			nodeohlc.add( (NodeGivenPeriodDataItemForJFC)kdata);
 		} catch (org.jfree.data.general.SeriesException e) {
-//			logger.debug(kdata.getMyOwnCode() + kdata.getJFreeChartPeriod( super.getNodeperiodtype() ) + "锟斤拷锟斤拷锟窖撅拷锟斤拷锟节ｏ拷" + kdata.getJFreeChartPeriod( super.getNodeperiodtype() ).getStart() + "," + kdata.getJFreeChartPeriod( super.getNodeperiodtype() ).getEnd() + ")");
+			logger.debug(kdata.getMyOwnCode() + kdata.getJFreeChartPeriod( super.getNodeperiodtype() )  + kdata.getJFreeChartPeriod( super.getNodeperiodtype() ).getStart() + "," + kdata.getJFreeChartPeriod( super.getNodeperiodtype() ).getEnd() + ")");
 		} catch (java.lang.IllegalArgumentException e) {
-//			e.printStackTrace();
+			e.printStackTrace();
 		}
 		
 		try {
@@ -244,37 +248,38 @@ import com.udojava.evalex.Expression;
 			nodevol.add(kdata.getJFreeChartPeriod( super.getNodeperiodtype() ), kdata.getMyOwnChengJiaoLiang(),false);
 
 		} catch (org.jfree.data.general.SeriesException e) {
-//			logger.debug(kdata.getMyOwnCode() + kdata.getJFreeChartPeriod( super.getNodeperiodtype() ) + "锟斤拷锟斤拷锟窖撅拷锟斤拷锟节ｏ拷" + kdata.getJFreeChartPeriod( super.getNodeperiodtype() ).getStart() + "," + kdata.getJFreeChartPeriod( super.getNodeperiodtype() ).getEnd() + ")");
+			logger.debug(kdata.getMyOwnCode() + kdata.getJFreeChartPeriod( super.getNodeperiodtype() )  + kdata.getJFreeChartPeriod( super.getNodeperiodtype() ).getStart() + "," + kdata.getJFreeChartPeriod( super.getNodeperiodtype() ).getEnd() + ")");
 		}
 		
 		try {	
 			periodhighestzhangdiefu.setNotify(false);
 			if( kdata.getPeriodHighestZhangDieFu() != null && kdata.getPeriodHighestZhangDieFu() != 0)
 				periodhighestzhangdiefu.add(kdata.getJFreeChartPeriod(super.getNodeperiodtype()),kdata.getPeriodHighestZhangDieFu(),false);
-		} catch (org.jfree.data.general.SeriesException e) {}
+		} catch (org.jfree.data.general.SeriesException e) {
+			logger.debug(kdata.getMyOwnCode() + kdata.getJFreeChartPeriod( super.getNodeperiodtype() )  + kdata.getJFreeChartPeriod( super.getNodeperiodtype() ).getStart() + "," + kdata.getJFreeChartPeriod( super.getNodeperiodtype() ).getEnd() + ")");
+		}
 		try {	
 			periodlowestzhangdiefu.setNotify(false);
 			if( kdata.getPeriodLowestZhangDieFu() != null && kdata.getPeriodLowestZhangDieFu() != 0)
 				periodlowestzhangdiefu.add(kdata.getJFreeChartPeriod(super.getNodeperiodtype()), kdata.getPeriodLowestZhangDieFu(),false);
-		} catch (org.jfree.data.general.SeriesException e) {}
-
+		} catch (org.jfree.data.general.SeriesException e) {
+			logger.debug(kdata.getMyOwnCode() + kdata.getJFreeChartPeriod( super.getNodeperiodtype() )  + kdata.getJFreeChartPeriod( super.getNodeperiodtype() ).getStart() + "," + kdata.getJFreeChartPeriod( super.getNodeperiodtype() ).getEnd() + ")");
+		}
+		
 		super.addNewXPeriodData(kdata);
 	}
 	
 	public LocalDate getAmoRecordsStartDate ()
 	{
-		if(super.nodeamozhanbi.getItemCount() == 0)
-			return null;
+		if(super.nodeamozhanbi.getItemCount() == 0)	return null;
 		
-		int itemcount = super.nodeamozhanbi.getItemCount();
 		TimeSeriesDataItem dataitem = super.nodeamozhanbi.getDataItem(0);
 		Date start = dataitem.getPeriod().getStart();
 		LocalDate startdate = start.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-		LocalDate enddate = dataitem.getPeriod().getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();;
+		LocalDate enddate = dataitem.getPeriod().getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 	
 		if(super.getNodeperiodtype() == NodeGivenPeriodDataItem.WEEK) {
-			TemporalField fieldUS = WeekFields.of(Locale.US).dayOfWeek();
-			LocalDate mondayday = startdate.with(fieldUS, 2);
+			LocalDate mondayday = startdate.with(DayOfWeek.MONDAY);
 			return mondayday;
 		} else if(super.getNodeperiodtype() == NodeGivenPeriodDataItem.DAY) 
 			return startdate;
@@ -283,8 +288,7 @@ import com.udojava.evalex.Expression;
 	}
 	public LocalDate getAmoRecordsEndDate ()
 	{
-		if(super.nodeamozhanbi.getItemCount() == 0)
-			return null;
+		if(super.nodeamozhanbi.getItemCount() == 0)	return null;
 		
 		int itemcount = super.nodeamozhanbi.getItemCount();
 		TimeSeriesDataItem dataitem = super.nodeamozhanbi.getDataItem(itemcount - 1);
@@ -293,8 +297,7 @@ import com.udojava.evalex.Expression;
 		LocalDate enddate = dataitem.getPeriod().getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();;
 	
 		if(super.getNodeperiodtype() == NodeGivenPeriodDataItem.WEEK) {
-			TemporalField fieldUS = WeekFields.of(Locale.US).dayOfWeek();
-			LocalDate fridayday = enddate.with(fieldUS, 6);
+			LocalDate fridayday = enddate.with(DayOfWeek.FRIDAY);
 			return fridayday;
 		} else if(super.getNodeperiodtype() == NodeGivenPeriodDataItem.DAY) {
 			return enddate;
@@ -351,8 +354,7 @@ import com.udojava.evalex.Expression;
 	 */
 	public org.ta4j.core.TimeSeries getOHLCDataOfTa4jFormat (LocalDate requiredstart, LocalDate requiredend)
 	{
-		if(this.nodeohlc == null)
-			return null;
+		if(this.nodeohlc == null)	return null;
 		
 		org.ta4j.core.TimeSeries ohlcvaseries = new BaseTimeSeries.SeriesBuilder().withName(super.getNodeCode() + super.getNodeperiodtype()).build();
 		LocalDate tmpdate = requiredstart;
@@ -360,10 +362,8 @@ import com.udojava.evalex.Expression;
 			 OHLCItem dataitem = (OHLCItem)this.nodeohlc.getDataItem(i);
 			 RegularTimePeriod period = dataitem.getPeriod();
 			 tmpdate = period.getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-			 if(tmpdate.isBefore(requiredstart) )
-				 continue;
-			 if(tmpdate.isAfter(requiredend))
-				 break;
+			 if(tmpdate.isBefore(requiredstart) )	continue;
+			 if(tmpdate.isAfter(requiredend))	break;
 			 
 			 double close = dataitem.getCloseValue();
 			 double high = dataitem.getHighValue();
@@ -371,11 +371,9 @@ import com.udojava.evalex.Expression;
 			 double open = dataitem.getOpenValue();
 			 
 			 ZonedDateTime zdtime = tmpdate.atStartOfDay(ZoneOffset.UTC);
-			 
-			 
+
 			 Bar ohlcbar = new BaseBar (zdtime,PrecisionNum.valueOf(open),PrecisionNum.valueOf(high),PrecisionNum.valueOf(low),PrecisionNum.valueOf(close),null,null);
 			 ohlcvaseries.addBar(ohlcbar);
-			
 		}
 		
 		return ohlcvaseries;
@@ -384,12 +382,11 @@ import com.udojava.evalex.Expression;
 	 * (non-Javadoc)
 	 * @see com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic#getSpecificDateOHLCData(java.time.LocalDate, int)
 	 */
-	public Integer getIndexOfSpecificDateOHLCData (LocalDate requireddate,int difference)
+	public Integer getIndexOfSpecificDateOHLCData (LocalDate requireddate )
 	{
 		int itemcount = this.nodeohlc.getItemCount();
-		RegularTimePeriod curperiod = getJFreeChartFormateTimePeriodForOHLC (requireddate, difference);
-		if(curperiod == null)
-			return null;
+		RegularTimePeriod curperiod = getJFreeChartFormateTimePeriod (requireddate);
+		if(curperiod == null)	return null;
 		
 		for(int i=0;i<itemcount;i++) {
 			RegularTimePeriod dataitemp = this.nodeohlc.getPeriod(i);
@@ -402,77 +399,42 @@ import com.udojava.evalex.Expression;
 	/*
 	 * 
 	 */
-	protected RegularTimePeriod getJFreeChartFormateTimePeriodForOHLC (LocalDate requireddate,int difference) 
-	{
-		int itemcount = this.nodeohlc.getItemCount();
-		String nodeperiod = this.getNodeperiodtype();
-		
-		RegularTimePeriod period = null;
-		if(nodeperiod.equals(NodeGivenPeriodDataItem.WEEK)) { 
-			LocalDate expectdate = requireddate.plus(difference,ChronoUnit.WEEKS);
-			expectdate = super.adjustDate(expectdate); //先确保日期是在交易日内
-			java.sql.Date lastdayofweek = java.sql.Date.valueOf(expectdate);
-			period = new org.jfree.data.time.Week (lastdayofweek);
-		} else if(nodeperiod.equals(NodeGivenPeriodDataItem.DAY)) {
-			LocalDate expectdate = requireddate.plus(difference,ChronoUnit.DAYS);
-			expectdate = super.adjustDate(expectdate);
-			java.sql.Date lastdayofweek = java.sql.Date.valueOf(expectdate);
-			period = new org.jfree.data.time.Day (lastdayofweek);
-		}  else if(nodeperiod.equals(NodeGivenPeriodDataItem.MONTH)) {
-		}
-
-		int curindex = 0;
-		for(int i=0;i<itemcount;i++) {
-			RegularTimePeriod dataitemp = this.nodeohlc.getPeriod(i);
-			if(dataitemp.equals(period) ) {
-				curindex = i;
-				return period;
-			}
-		}
-		
-		return null;
-	}
 	public LocalDate getLocalDateOfSpecificIndexOfOHLCData (Integer index)
 	{
 		OHLCItem indexrecord = (OHLCItem)this.nodeohlc.getDataItem(index);
+		Date start = indexrecord.getPeriod().getStart();
 		Date end = indexrecord.getPeriod().getEnd();
-		return end.toInstant()
-			      .atZone(ZoneId.systemDefault())
-			      .toLocalDate();
+		return end.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 	}
 	/*
 	 * (non-Javadoc)
 	 * @see com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic#getOHLCData(java.time.LocalDate, int)
+	 * 这个函数之所以不能放到interface里面去，是应为她用到了JFC特有的结构OHLCITEM
 	 */
-	public OHLCItem getSpecificDateOHLCData (LocalDate requireddate,int difference)
+	public OHLCItem getSpecificDateOHLCData (LocalDate requireddate )
 	{
 		int itemcount = this.nodeohlc.getItemCount();
-		RegularTimePeriod curperiod = getJFreeChartFormateTimePeriodForOHLC (requireddate,difference);
-		if(curperiod == null)
-			return null;
+		RegularTimePeriod curperiod = super.getJFreeChartFormateTimePeriod (requireddate );
+		if(curperiod == null)	return null;
 		
 		for(int i=0;i<itemcount;i++) {
 			RegularTimePeriod dataitemp = this.nodeohlc.getPeriod(i);
 			if(dataitemp.equals(curperiod) )
 				 return (OHLCItem)this.nodeohlc.getDataItem(i);
 		}
-
 		return null;
 	}
 	
 	/*
 	 * 某天的涨跌幅
 	 */
-	public Double getSpecificOHLCZhangDieFu (LocalDate requireddate,int difference)
+	public Double getSpecificOHLCZhangDieFu (LocalDate requireddate )
 	{
+		Integer indexofcur = this.getIndexOfSpecificDateOHLCData(requireddate);
+		if(indexofcur == null)	return null;
 		
-		Integer indexofcur = this.getIndexOfSpecificDateOHLCData(requireddate, difference);
-		if(indexofcur == null)
-			return null;
-		
-		OHLCItem curohlc;
 		try {
-			curohlc = (OHLCItem) this.getOHLCData().getDataItem(indexofcur.intValue());
+			OHLCItem curohlc = (OHLCItem) this.getOHLCData().getDataItem(indexofcur.intValue());
 			
 			double curclose = curohlc.getCloseValue();
 			if(curclose == 0.0) { //0.0可能是没有数据，也可能是前复权导致的，要判断一下
@@ -491,10 +453,7 @@ import com.udojava.evalex.Expression;
 			
 			double zhangfu = (curclose - lastclose) / lastclose;
 			return zhangfu;
-		} catch (java.lang.NullPointerException e) {
-//			String code = super.getNodeCode();
-			e.printStackTrace();
-		}
+		} catch (java.lang.NullPointerException e) {e.printStackTrace();}
 		
 		return null;
 	}
@@ -506,6 +465,7 @@ import com.udojava.evalex.Expression;
 	{
 		if(requiredstart == null || requiredend == null)
 			return null; 
+		
 		 DayOfWeek d_requiredstart = requiredstart.getDayOfWeek();
 		 if(d_requiredstart == DayOfWeek.SATURDAY) requiredstart  = requiredstart.plus(2,ChronoUnit.DAYS);
 		 else if( d_requiredstart == DayOfWeek.SUNDAY) requiredstart = requiredstart.plus(1,ChronoUnit.DAYS);
@@ -516,13 +476,10 @@ import com.udojava.evalex.Expression;
 		    
 		LocalDate curohlcstart = this.getOHLCRecordsStartDate();
 		LocalDate curohlcend = this.getOHLCRecordsEndDate();
-		if(requiredstart.isBefore(curohlcstart) )
-			return null;
-		
-		if(requiredend.isAfter(curohlcend))
-			requiredend = curohlcend;
+		if(requiredstart.isBefore(curohlcstart) )	return null;
+		if(requiredend.isAfter(curohlcend))	requiredend = curohlcend;
 
-		Integer indexofstart = this.getIndexOfSpecificDateOHLCData(requiredstart, 0);
+		Integer indexofstart = this.getIndexOfSpecificDateOHLCData(requiredstart);
 		if(indexofstart == null) { //没有可能是停牌，往后找
 			int itemcount = this.nodeohlc.getItemCount();
 			for(int i=0;i<itemcount;i++) {
@@ -537,7 +494,7 @@ import com.udojava.evalex.Expression;
 			}
 		}
 		
-		Integer indexofend = this.getIndexOfSpecificDateOHLCData(requiredend, 0);
+		Integer indexofend = this.getIndexOfSpecificDateOHLCData(requiredend);
 		if(indexofend == null) { //没有可能是停牌，往后找
 			int itemcount = this.nodeohlc.getItemCount();
 			for(int i=itemcount -1; i>=0; i--) {
@@ -552,9 +509,7 @@ import com.udojava.evalex.Expression;
 			}
 		}
 		
-		if(indexofstart == null || indexofend == null)
-			return null;
-		
+		if(indexofstart == null || indexofend == null)	return null;
 		
 		if(indexofstart < indexofend) { //不是同一天
 			OHLCItem dataitem = (OHLCItem) this.getOHLCData().getDataItem(indexofstart.intValue());
@@ -568,11 +523,11 @@ import com.udojava.evalex.Expression;
 					highest = tmphigh;
 			}
 			
-			double result = (highest - startclose) / startclose + this.getSpecificOHLCZhangDieFu(requiredstart, 0);
+			double result = (highest - startclose) / startclose + this.getSpecificOHLCZhangDieFu(requiredstart);
 			return result;
 			
 		} else { //start 和 end是同一天
-			return this.getSpecificOHLCZhangDieFu(requiredstart, 0);
+			return this.getSpecificOHLCZhangDieFu(requiredstart);
 		}
 	}
 	/*
@@ -581,17 +536,14 @@ import com.udojava.evalex.Expression;
 	 */
 	public LocalDate getOHLCRecordsStartDate ()
 	{
-		if(this.nodeohlc.getItemCount() == 0)
-			return null;
+		if(this.nodeohlc.getItemCount() == 0)	return null;
 		
-		int itemcount = nodeohlc.getItemCount();
 		RegularTimePeriod firstperiod = nodeohlc.getPeriod(0);
 		LocalDate startdate = firstperiod.getStart().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 		LocalDate enddate = firstperiod.getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();;
 	
 		if(super.getNodeperiodtype() == NodeGivenPeriodDataItem.WEEK) {
-			TemporalField fieldUS = WeekFields.of(Locale.US).dayOfWeek();
-			LocalDate mondayday = startdate.with(fieldUS, 2);
+			LocalDate mondayday = startdate.with(DayOfWeek.MONDAY);
 			return mondayday;
 		} else if(super.getNodeperiodtype() == NodeGivenPeriodDataItem.DAY) {
 			return startdate;
@@ -599,10 +551,12 @@ import com.udojava.evalex.Expression;
 		
 		return null;
 	}
+	/*
+	 * 
+	 */
 	public LocalDate getOHLCRecordsEndDate ()
 	{
-		if(this.nodeohlc.getItemCount() == 0)
-			return null;
+		if(this.nodeohlc.getItemCount() == 0)	return null;
 		
 		int itemcount = nodeohlc.getItemCount();
 		RegularTimePeriod firstperiod = nodeohlc.getPeriod( itemcount-1);
@@ -610,7 +564,7 @@ import com.udojava.evalex.Expression;
 		LocalDate enddate = firstperiod.getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();;
 	
 		if(super.getNodeperiodtype() == NodeGivenPeriodDataItem.WEEK) {
-			LocalDate saturday = enddate.with(DayOfWeek.SATURDAY);
+			LocalDate saturday = enddate.with(DayOfWeek.FRIDAY);
 			return saturday;
 		} else if(super.getNodeperiodtype() == NodeGivenPeriodDataItem.DAY) {
 			return enddate;
@@ -622,52 +576,43 @@ import com.udojava.evalex.Expression;
 	/*
 	 * 
 	 */
-	public Double getChengJiaoEr (LocalDate requireddate,int difference)
+	public Double getChengJiaoEr (LocalDate requireddate )
 	{
 		TimeSeriesDataItem curcjlrecord = null;
-		RegularTimePeriod period = this.getJFreeChartFormateTimePeriodForAMO(requireddate,difference);
-		if(period == null)
-			return null;
+		RegularTimePeriod period = this.getJFreeChartFormateTimePeriod(requireddate );
+		if(period == null)	return null;
 					
 		curcjlrecord = nodeamo.getDataItem(period);
-		if( curcjlrecord == null) 
-			return null;
+		if( curcjlrecord == null)	return null;
 		else
 			return curcjlrecord.getValue().doubleValue();
 	}
 	/*
 	 * 
 	 */
-	public Double getAverageDailyChengJiaoErOfWeek (LocalDate requireddate,int difference)
+	public Double getAverageDailyChengJiaoErOfWeek (LocalDate requireddate )
 	{
-		Double cje = this.getChengJiaoEr(requireddate, difference);
+		Double cje = this.getChengJiaoEr(requireddate);
 		if(cje != null) {
-			Integer daynum = super.getExchangeDaysNumberForthePeriod(requireddate, difference);
-			if(daynum != null)
-				return cje/daynum;
-			else
-				return cje/5;
-		} else
-			return null;
+			Integer daynum = super.getExchangeDaysNumberForthePeriod(requireddate);
+			if(daynum != null)	return cje/daynum;
+			else	return cje/5;
+		} else	return null;
 	}
-	
 	/*
 	 * /*
 			 * 计算指定周期和上周期的成交额差额，适合stock/bankuai，dapan有自己的计算方法
 	 */
 
-	public Double getChengJiaoErDifferenceWithLastPeriod(LocalDate requireddate,int difference)
+	public Double getChengJiaoErDifferenceWithLastPeriod(LocalDate requireddate )
 	{
-		if(nodeohlc == null)
-			return null;
+		if(nodeohlc == null)	return null;
 		
-		RegularTimePeriod curperiod = this.getJFreeChartFormateTimePeriodForAMO(requireddate,difference) ;
-		if(curperiod == null)
-			return null;
+		RegularTimePeriod curperiod = super.getJFreeChartFormateTimePeriod(requireddate ) ;
+		if(curperiod == null)	return null;
 		
 		TimeSeriesDataItem curcjlrecord = nodeamo.getDataItem( curperiod);
-		if( curcjlrecord == null) 
-			return null;
+		if( curcjlrecord == null)	return null;
 		
 		int index = nodeamo.getIndex(curperiod);
 		try{
@@ -677,40 +622,34 @@ import com.udojava.evalex.Expression;
 			
 			Double curcje = curcjlrecord.getValue().doubleValue();
 			Double lastcje = lastcjlrecord.getValue().doubleValue();
-			
 			return curcje - lastcje;
-		}	catch (java.lang.IndexOutOfBoundsException ex) {
-			return 100.0;
-		}
+		}	catch (java.lang.IndexOutOfBoundsException ex) {return 100.0;}
 
 	}
 	/*
 	 * 每日均量和上周均量的差额
 	 */
-	public Double getChengJiaoErDailyAverageDifferenceWithLastPeriod(LocalDate requireddate,int difference)
-	{int i=0;
-		if(nodeohlc == null)
-			return null;
+	public Double getChengJiaoErDailyAverageDifferenceWithLastPeriod(LocalDate requireddate )
+	{
+		if(nodeohlc == null)	return null;
 		
-		RegularTimePeriod curperiod = this.getJFreeChartFormateTimePeriodForAMO(requireddate,difference) ;
+		RegularTimePeriod curperiod = super.getJFreeChartFormateTimePeriod(requireddate ) ;
 		if(curperiod == null)
 			return null;
 		
 		TimeSeriesDataItem curcjlrecord = nodeamo.getDataItem( curperiod );
-		if( curcjlrecord == null) 
-			return null;
+		if( curcjlrecord == null) 	return null;
 		
-		Integer curexchangedaynum = super.getExchangeDaysNumberForthePeriod(requireddate,difference);
+		Integer curexchangedaynum = super.getExchangeDaysNumberForthePeriod(requireddate );
 		int index = nodeamo.getIndex(curperiod);
 		try{
 			TimeSeriesDataItem lastcjlrecord = nodeamo.getDataItem( index -1 );
-			if(lastcjlrecord == null) 
-				return null;
+			if(lastcjlrecord == null)	return null;
 			
 			RegularTimePeriod lastp = lastcjlrecord.getPeriod();
 			Date end = lastp.getEnd();
 			LocalDate lastdate = end.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-			Integer lastexchangedaynum = super.getExchangeDaysNumberForthePeriod(lastdate,difference);
+			Integer lastexchangedaynum = super.getExchangeDaysNumberForthePeriod(lastdate );
 			
 			double curcje = curcjlrecord.getValue().doubleValue() ;
 			Double curcjeave = curcje/ curexchangedaynum;
@@ -719,54 +658,43 @@ import com.udojava.evalex.Expression;
 			
 			double result = curcjeave - lastcjeave;
 			return result;
-		}	catch (java.lang.IndexOutOfBoundsException ex) {
-			return 100.0;
-		}
+		}	catch (java.lang.IndexOutOfBoundsException ex) {return null;}
 
 	}
 	@Override
-	public Integer getChenJiaoErMaxWeekOfSuperBanKuai(LocalDate requireddate,int difference) 
+	public Integer getChenJiaoErMaxWeek (LocalDate requireddate ) 
 	{
-		RegularTimePeriod curperiod = getJFreeChartFormateTimePeriodForAMO(requireddate,difference) ;
-		if(curperiod == null)
-			return null;
+		RegularTimePeriod curperiod = super.getJFreeChartFormateTimePeriod(requireddate ) ;
+		if(curperiod == null)	return null;
 		
 		TimeSeriesDataItem curcjlrecord = nodeamo.getDataItem(curperiod);
-		if( curcjlrecord == null) 
-			return null;
+		if( curcjlrecord == null)	return null;
 		
 		Double curcje = curcjlrecord.getValue().doubleValue();
 		int maxweek = 0;
-		
 		int index = nodeamo.getIndex(curperiod );
-		
 		for(int i = index-1;i >=0; i--) {
-			
 			TimeSeriesDataItem lastcjlrecord = nodeamo.getDataItem( i );
 			if(lastcjlrecord == null ) //可能到了记录的头部了，或者是个诞生时间不长的板块
 			return maxweek;
 			
 			Double lastcje = lastcjlrecord.getValue().doubleValue();
-			if(curcje > lastcje)
-				maxweek ++;
-			else
-				break;
+			if(curcje > lastcje)	maxweek ++;
+			else	break;
 		}
 
 		return maxweek;
 	}
 	@Override
-	public Integer getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(LocalDate requireddate,int difference)
+	public Integer getAverageDailyChenJiaoErMaxWeek (LocalDate requireddate )
 	{
-		RegularTimePeriod curperiod = this.getJFreeChartFormateTimePeriodForAMO(requireddate,difference) ;
-		if(curperiod == null)
-			return null;
+		RegularTimePeriod curperiod = super.getJFreeChartFormateTimePeriod(requireddate ) ;
+		if(curperiod == null)	return null;
 		
 		TimeSeriesDataItem curcjlrecord = nodeamo.getDataItem( curperiod);
-		if( curcjlrecord == null) 
-			return null;
+		if( curcjlrecord == null)	return null;
 		
-		int curexchangedaynum = this.getExchangeDaysNumberForthePeriod(requireddate, difference);
+		int curexchangedaynum = super.getExchangeDaysNumberForthePeriod(requireddate);
 		Double curcje = curcjlrecord.getValue().doubleValue() / curexchangedaynum;
 		
 		int maxweek = 0;
@@ -778,54 +706,46 @@ import com.udojava.evalex.Expression;
 				return maxweek;
 			
 			LocalDate lastdate = lastcjlrecord.getPeriod().getStart().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-			int lastexchangedaynum = this.getExchangeDaysNumberForthePeriod(lastdate, 0);
+			int lastexchangedaynum = super.getExchangeDaysNumberForthePeriod(lastdate);
 			Double lastcje = lastcjlrecord.getValue().doubleValue() / lastexchangedaynum;
-			if(curcje > lastcje)
-				maxweek ++;
-			else
-				break;
+			if(curcje > lastcje)	maxweek ++;
+			else	break;
 		}
 
 		return maxweek;
 	}
-	
 	/*
 	 * 计算成交额变化贡献率，即板块成交额的变化占整个上级板块成交额增长量的比率，
 	 */
-	public Double getChenJiaoErChangeGrowthRateOfSuperBanKuai (TDXNodes superbk, LocalDate requireddate,int difference) 
+	public Double getChenJiaoErChangeGrowthRateOfSuperBanKuai (TDXNodes superbk, LocalDate requireddate ) 
 	{
-		RegularTimePeriod curperiod = this.getJFreeChartFormateTimePeriodForAMO(requireddate,difference) ;
-		if(curperiod == null)
-			return null;
+		RegularTimePeriod curperiod = super.getJFreeChartFormateTimePeriod(requireddate ) ;
+		if(curperiod == null)	return null;
 		
 		TimeSeriesDataItem curcjlrecord = this.nodeamo.getDataItem( curperiod );
-		if( curcjlrecord == null) 
-			return null;
+		if( curcjlrecord == null)	return null;
 		
 		//判断上级板块(大盘或者板块)是否缩量,所以了没有比较的意义，直接返回-100；
 		String nodept = getNodeperiodtype();
 		NodeXPeriodData bkxdata = superbk.getNodeXPeroidData(nodept);
-		Double bkcjediff = bkxdata.getChengJiaoErDifferenceWithLastPeriod(requireddate,difference);
-		if( bkcjediff == null || bkcjediff < 0   ) {//板块缩量，
+		Double bkcjediff = bkxdata.getChengJiaoErDifferenceWithLastPeriod(requireddate );
+		if( bkcjediff == null || bkcjediff < 0   ) //板块缩量，
 			return -100.0;
-		}
+		
 		
 		TimeSeriesDataItem lastcjlrecord = null;
 		int index = this.nodeamo.getIndex( curperiod );
-		try{
-			lastcjlrecord = nodeamo.getDataItem( index - 1);
+		try{	lastcjlrecord = nodeamo.getDataItem( index - 1);
 		} catch (java.lang.ArrayIndexOutOfBoundsException e) {
 			logger.debug("index = 0，可能是新股第一周，可能是数据记录最早记录周，无法判断");
 //			return 100.0; //一般不会查到记录的第一周，多数发生这种情况是新股第一周，所以默认为新股第一周
 //			e.printStackTrace();
 		}
+		
 		if(lastcjlrecord == null) { //说明是停牌后复牌了，或者新股
-			try {
-			Double curggcje = curcjlrecord.getValue().doubleValue(); //新板块所有成交量都应该计算入
-			return curggcje/bkcjediff;
-			} catch (java.lang.ArrayIndexOutOfBoundsException e) {
-				e.printStackTrace();
-			}
+			try {	Double curggcje = curcjlrecord.getValue().doubleValue(); //新板块所有成交量都应该计算入
+					return curggcje/bkcjediff;
+			} catch (java.lang.ArrayIndexOutOfBoundsException e) {e.printStackTrace();}
 		}
 		
 		Double curcje = curcjlrecord.getValue().doubleValue();
@@ -837,90 +757,65 @@ import com.udojava.evalex.Expression;
 	/*
 	 * 平均成交额和上周的变化率
 	 */
-	public Double getAverageDailyChenJiaoErGrowingRate(LocalDate requireddate,int difference)
+	public Double getAverageDailyChenJiaoErGrowingRate (LocalDate requireddate )
 	{
-		RegularTimePeriod curperiod = this.getJFreeChartFormateTimePeriodForAMO(requireddate,difference) ;
-		if(curperiod == null)
-			return null;
+		RegularTimePeriod curperiod = this.getJFreeChartFormateTimePeriod(requireddate ) ;
+		if(curperiod == null)	return null;
 		
 		TimeSeriesDataItem curcjlrecord = this.nodeamo.getDataItem( curperiod );
-		if( curcjlrecord == null) 
-			return null;
+		if( curcjlrecord == null)	return null;
 		
 		TimeSeriesDataItem lastcjlrecord = null;
 		int index = this.nodeamo.getIndex( curperiod );
-		try{
-			lastcjlrecord = nodeamo.getDataItem( index - 1);
+		try{	lastcjlrecord = nodeamo.getDataItem( index - 1);
 		}	catch (java.lang.IndexOutOfBoundsException ex) {
-			Boolean reachfirstday = super.isLocalDateReachFristDayInHistory (requireddate,difference); 
+			Boolean reachfirstday = super.isLocalDateReachFristDayInHistory (requireddate ); 
 			if(reachfirstday != null && reachfirstday == true)
 				return null;
 		}
-		Double avelastwkcje = this.getAverageDailyChengJiaoErOfWeek(requireddate,difference-1);
-		if(avelastwkcje == null)
-			return 1.0;
-//		if(this.isNodeDataFuPaiAfterTingPai((DaPan)CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getModel().getRoot(),requireddate,0)) { //说明是停牌后复牌了，或者新股
-//			try {
-//				Double curggcje = this.getAverageDailyChengJiaoErOfWeek(requireddate, difference); //新板块所有成交量都应该计算入
-//				return curggcje / lastwkcje;
-//			} catch (java.lang.ArrayIndexOutOfBoundsException e) {
-//				e.printStackTrace();
-//			}
-//		}
 		
-		Double nodeavediff = this.getChengJiaoErDailyAverageDifferenceWithLastPeriod(requireddate,difference);
-		if(nodeavediff != null)
-			return nodeavediff / avelastwkcje;
-		else
-			return 1.0;
+		LocalDate lascjlrecorddate = lastcjlrecord.getPeriod().getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		Double avelastwkcje = this.getAverageDailyChengJiaoErOfWeek(lascjlrecorddate);
+		if(avelastwkcje == null)	return 1.0; //new stock
+		
+		Double nodeavediff = this.getChengJiaoErDailyAverageDifferenceWithLastPeriod(requireddate );
+		if(nodeavediff != null)	return nodeavediff / avelastwkcje;
+		else	return 1.0;
 	}
 	/*
 	 * 计算成交额日平均变化贡献率，即基于日平均成交额，板块成交额的变化占整个上级板块成交额增长量的比率，
 	 */
-	public Double getChenJiaoErChangeGrowthRateOfSuperBanKuaiOnDailyAverage (TDXNodes superbk, LocalDate requireddate,int difference) 
+	public Double getChenJiaoErChangeGrowthRateOfSuperBanKuaiOnDailyAverage (TDXNodes superbk, LocalDate requireddate ) 
 	{	
-		RegularTimePeriod curperiod = this.getJFreeChartFormateTimePeriodForAMO(requireddate,difference) ;
-		if(curperiod == null)
-			return null;
+		RegularTimePeriod curperiod = this.getJFreeChartFormateTimePeriod(requireddate ) ;
+		if(curperiod == null)	return null;
 		
 		TimeSeriesDataItem curcjlrecord = this.nodeamo.getDataItem( curperiod );
-		if( curcjlrecord == null) 
-			return null;
-		
-//		Double curavecje = this.getAverageDailyChengJiaoErOfWeek(requireddate, difference);
-//		if( curavecje == null) 
-//			return null;
-		
+		if( curcjlrecord == null)	return null;
+
 		//判断上级板块(大盘或者板块)是否缩量,所以了没有比较的意义，直接返回-100；
 		String nodept = getNodeperiodtype();
 		NodeXPeriodData bkxdata = superbk.getNodeXPeroidData(nodept);
-		Double bkcjediff = bkxdata.getChengJiaoErDailyAverageDifferenceWithLastPeriod(requireddate,difference);
-		if(bkcjediff == null )
-			return null;
-		if(  bkcjediff < 0   ) {//板块缩量，
-			return -100.0;
-		}
+		Double bkcjediff = bkxdata.getChengJiaoErDailyAverageDifferenceWithLastPeriod(requireddate );
+		if(bkcjediff == null )	return null;
+		if(  bkcjediff < 0   )		return -100.0; //板块缩量，
 		
 		TimeSeriesDataItem lastcjlrecord = null;
 		int index = this.nodeamo.getIndex( curperiod );
-		try{
-			lastcjlrecord = nodeamo.getDataItem( index - 1);
+		try{	lastcjlrecord = nodeamo.getDataItem( index - 1);
 		}	catch (java.lang.IndexOutOfBoundsException ex) {
 			logger.debug("index = 0，可能是新股第一周，可能是数据记录最早记录周，无法判断");
-			Boolean reachfirstday = super.isLocalDateReachFristDayInHistory (requireddate,difference); 
+			Boolean reachfirstday = super.isLocalDateReachFristDayInHistory (requireddate ); 
 			if(reachfirstday != null && reachfirstday == true)
 				return null;
 		}
-		if(this.isNodeDataFuPaiAfterTingPai(superbk,requireddate,0)) { //说明是停牌后复牌了，或者新股
-			try {
-				Double curggcje = this.getAverageDailyChengJiaoErOfWeek(requireddate, difference); //新板块所有成交量都应该计算入
-				return curggcje/bkcjediff;
-			} catch (java.lang.ArrayIndexOutOfBoundsException e) {
-				e.printStackTrace();
-			}
+		if(this.isNodeDataFuPaiAfterTingPai(superbk,requireddate)) { //说明是停牌后复牌了，或者新股
+			try {	Double curggcje = this.getAverageDailyChengJiaoErOfWeek(requireddate); //新板块所有成交量都应该计算入
+					return curggcje/bkcjediff;
+			} catch (java.lang.ArrayIndexOutOfBoundsException e) {e.printStackTrace();}
 		}
 		
-		Double nodeavediff = this.getChengJiaoErDailyAverageDifferenceWithLastPeriod(requireddate,difference);
+		Double nodeavediff = this.getChengJiaoErDailyAverageDifferenceWithLastPeriod(requireddate );
 		return nodeavediff/bkcjediff;
 	}
 	/*
@@ -928,117 +823,83 @@ import com.udojava.evalex.Expression;
 	  * @see com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic#getLianXuFangLiangPeriodNumber(java.time.LocalDate, int, int)
 	  * 计算连续放指定的量的周期数
 	  */
-	 public Integer getAverageDailyCjeLianXuFangLiangPeriodNumber (LocalDate requireddate,int difference)
+	 public Integer getAverageDailyChenJiaoErLianXuFangLiangPeriodNumber (LocalDate requireddate )
 	 {
-		 RegularTimePeriod curperiod = this.getJFreeChartFormateTimePeriodForAMO(requireddate,difference) ;
-			if(curperiod == null)
-				return null;
+		RegularTimePeriod curperiod = this.getJFreeChartFormateTimePeriod(requireddate ) ;
+		if(curperiod == null)	return null;
 			
 		 TimeSeriesDataItem curcjlrecord = nodeamo.getDataItem( curperiod);
-		 if( curcjlrecord == null) 
-				return null;
+		 if( curcjlrecord == null) return null;
 			
-		 int curexchangedaynum = this.getExchangeDaysNumberForthePeriod(requireddate, difference);
+		 int curexchangedaynum = this.getExchangeDaysNumberForthePeriod(requireddate);
 		 Double curcje = curcjlrecord.getValue().doubleValue() / curexchangedaynum;
+		 
 		 int maxweek = 0;
-			
 		 int index = nodeamo.getIndex(curperiod );
-			
 		 for(int i = index-1;i >=0; i--) {
-				
 				TimeSeriesDataItem lastcjlrecord = nodeamo.getDataItem( i );
-				if(lastcjlrecord == null ) //可能到了记录的头部了，或者是个诞生时间不长的板块
-					return maxweek;
-				
+				if(lastcjlrecord == null )	return maxweek; //可能到了记录的头部了，或者是个诞生时间不长的板块
+
 				LocalDate lastdate = lastcjlrecord.getPeriod().getStart().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-				int lastexchangedaynum = this.getExchangeDaysNumberForthePeriod(lastdate, 0);
+				int lastexchangedaynum = this.getExchangeDaysNumberForthePeriod(lastdate);
 				Double lastcje = lastcjlrecord.getValue().doubleValue() / lastexchangedaynum;
 				if(curcje > lastcje) {
 					maxweek ++;
 					curcje = lastcje;
 				}
-				else
-					break;
+				else	break;
 		}
 
 		return maxweek;
-		 
 	 }
-	 /*
-	  *  @Override
-	  */
-	 public Integer getCjeDpMaxLianXuFangLiangPeriodNumber (LocalDate requireddate,int difference,int settindpgmaxwk)
-	 {
-		 	
-		 	int recordnum = this.nodeohlc.getItemCount();
-			int lianxu = 0;
-			for(int wkindex = 0;wkindex > (0 - recordnum) ; wkindex--) { 
-				Integer recordmaxbkwklast = this.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(requireddate,wkindex);
-				if( recordmaxbkwklast != null && recordmaxbkwklast >= settindpgmaxwk) 
-					lianxu ++;
-				else if( recordmaxbkwklast != null && recordmaxbkwklast < settindpgmaxwk)
-					return lianxu;
-			}
-			
-			return -1;
-	 }
+	
 	 @Override
-		public Double getChengJiaoLiang(LocalDate requireddate, int difference) 
+		public Double getChengJiaoLiang(LocalDate requireddate) 
 		{
-		 	RegularTimePeriod curperiod = this.getJFreeChartFormateTimePeriodForAMO(requireddate,difference) ;
-			if(curperiod == null)
-				return null;
+		 	RegularTimePeriod curperiod = super.getJFreeChartFormateTimePeriod(requireddate ) ;
+			if(curperiod == null)	return null;
 			
 			TimeSeriesDataItem curcjlrecord = null;
 			curcjlrecord = nodevol.getDataItem( curperiod);
 			
-			if( curcjlrecord == null) 
-				return null;
-			else
-				return curcjlrecord.getValue().doubleValue();
+			if( curcjlrecord == null)	return null;
+			else	return curcjlrecord.getValue().doubleValue();
 		}
 	 @Override
 	 /*
 		 * 
 		 */
-		public Double getAverageDailyChengJiaoLiangOfWeek (LocalDate requireddate,int difference)
+		public Double getAverageDailyChengJiaoLiangOfWeek (LocalDate requireddate )
 		{
-			Double cjl = this.getChengJiaoLiang(requireddate, 0);
+			Double cjl = this.getChengJiaoLiang(requireddate);
 			if(cjl != null) {
-				Integer daynum = super.getExchangeDaysNumberForthePeriod(requireddate, 0);
-				if(daynum != null)
-					return cjl/daynum;
-				else
-					return cjl/5;
-			} else
-				return null;
+				Integer daynum = super.getExchangeDaysNumberForthePeriod(requireddate);
+				if(daynum != null)	return cjl/daynum;
+				else	return cjl/5;
+			} else	return null;
 		}
+	 
 	 @Override
-	 public Double getChengJiaoLiangDailyAverageDifferenceWithLastPeriod (LocalDate requireddate,int difference)
+	 public Double getChengJiaoLiangDailyAverageDifferenceWithLastPeriod (LocalDate requireddate )
 	 {
-
-			if(nodeohlc == null)
-				return null;
+			if(nodeohlc == null)	return null;
 			
-			RegularTimePeriod curperiod = this.getJFreeChartFormateTimePeriodForAMO(requireddate,difference) ;
-			if(curperiod == null)
-				return null;
+			RegularTimePeriod curperiod = this.getJFreeChartFormateTimePeriod(requireddate ) ;
+			if(curperiod == null)	return null;
 			
 			TimeSeriesDataItem curcjlrecord = nodevol.getDataItem( curperiod );
-			if( curcjlrecord == null) 
-				return null;
+			if( curcjlrecord == null)	return null;
 			
-			Integer curexchangedaynum = super.getExchangeDaysNumberForthePeriod(requireddate,difference);
+			Integer curexchangedaynum = super.getExchangeDaysNumberForthePeriod(requireddate );
 			int index = nodevol.getIndex(curperiod);
 			try{
 				TimeSeriesDataItem lastcjlrecord = nodevol.getDataItem( index -1 );
-				if(lastcjlrecord == null) 
-					return null;
+				if(lastcjlrecord == null) 	return null;
 				
 				RegularTimePeriod lastp = lastcjlrecord.getPeriod();
 				Date end = lastp.getEnd();
 				LocalDate lastdate = end.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-				Integer lastexchangedaynum = super.getExchangeDaysNumberForthePeriod(lastdate,difference);
+				Integer lastexchangedaynum = super.getExchangeDaysNumberForthePeriod(lastdate );
 				
 				double curcje = curcjlrecord.getValue().doubleValue() ;
 				Double curcjeave = curcje/ curexchangedaynum;
@@ -1047,56 +908,40 @@ import com.udojava.evalex.Expression;
 				
 				double result = curcjeave - lastcjeave;
 				return result;
-			}	catch (java.lang.IndexOutOfBoundsException ex) {
-				return 100.0;
-			}
-
-		
+			}	catch (java.lang.IndexOutOfBoundsException ex) {return 100.0;	}
 	 }
+	 
 	 @Override
-		public Double getChenJiaoLiangDifferenceWithLastPeriod(LocalDate requireddate, int difference) 
+		public Double getChenJiaoLiangDifferenceWithLastPeriod(LocalDate requireddate) 
 		{
-			if(nodeohlc == null)
-				return null;
+			if(nodeohlc == null)	return null;
 			
-			RegularTimePeriod curperiod = this.getJFreeChartFormateTimePeriodForAMO(requireddate,difference) ;
-			if(curperiod == null)
-				return null;
+			RegularTimePeriod curperiod = super.getJFreeChartFormateTimePeriod(requireddate ) ;
+			if(curperiod == null)	return null;
 			
 			TimeSeriesDataItem curcjlrecord = nodevol.getDataItem( curperiod);
-			if( curcjlrecord == null) 
-				return null;
+			if( curcjlrecord == null)	return null;
 			
-			int index = nodevol.getIndex(curperiod);
-//			DaPan dapan = (DaPan)getRoot();
-//			while ( dapan.isDaPanXiuShi(requireddate, index ,getNodeperiodtype()) && index >-1000 ) {  //上周可能大盘修饰
-//				index --;
-//			}
-			try{
-				TimeSeriesDataItem lastcjlrecord = nodevol.getDataItem( index -1 );
-				if(lastcjlrecord == null) //休市前还是空，说明要是新板块。板块没有停牌的
-					return null;
-				
-				Double curcje = curcjlrecord.getValue().doubleValue();
-				Double lastcje = lastcjlrecord.getValue().doubleValue();
-				
-				return curcje - lastcje;
-			} catch (java.lang.ArrayIndexOutOfBoundsException e) {
-				return 100.0;
-			}
+			try{	int index = nodevol.getIndex(curperiod);
+					TimeSeriesDataItem lastcjlrecord = nodevol.getDataItem( index -1 );
+					if(lastcjlrecord == null)	return null; //休市前还是空，说明要是新板块。板块没有停牌的
+
+					Double curcje = curcjlrecord.getValue().doubleValue();
+					Double lastcje = lastcjlrecord.getValue().doubleValue();
+					
+					return curcje - lastcje;
+			} catch (java.lang.ArrayIndexOutOfBoundsException e) {return 100.0;}
 		}
 	 	@Override
-		public Integer getAverageDailyChenJiaoLiangMaxWeekOfSuperBanKuai(LocalDate requireddate,int difference)
+		public Integer getAverageDailyChenJiaoLiangMaxWeek (LocalDate requireddate )
 		{
-			RegularTimePeriod curperiod = this.getJFreeChartFormateTimePeriodForAMO(requireddate,difference) ;
-			if(curperiod == null)
-				return null;
+			RegularTimePeriod curperiod = this.getJFreeChartFormateTimePeriod(requireddate ) ;
+			if(curperiod == null)	return null;
 			
 			TimeSeriesDataItem curcjlrecord = nodevol.getDataItem( curperiod);
-			if( curcjlrecord == null) 
-				return null;
+			if( curcjlrecord == null)	return null;
 			
-			int curexchangedaynum = this.getExchangeDaysNumberForthePeriod(requireddate, difference);
+			int curexchangedaynum = this.getExchangeDaysNumberForthePeriod(requireddate);
 			Double curcje = curcjlrecord.getValue().doubleValue() / curexchangedaynum;
 			
 			int maxweek = 0;
@@ -1104,37 +949,29 @@ import com.udojava.evalex.Expression;
 			for(int i = index-1;i >=0; i--) {
 				
 				TimeSeriesDataItem lastcjlrecord = nodevol.getDataItem( i );
-				if(lastcjlrecord == null ) //可能到了记录的头部了，或者是个诞生时间不长的板块
-					return maxweek;
-				
+				if(lastcjlrecord == null )	return maxweek; //可能到了记录的头部了，或者是个诞生时间不长的板块
+
 				LocalDate lastdate = lastcjlrecord.getPeriod().getStart().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-				int lastexchangedaynum = this.getExchangeDaysNumberForthePeriod(lastdate, 0);
+				int lastexchangedaynum = this.getExchangeDaysNumberForthePeriod(lastdate);
 				Double lastcje = lastcjlrecord.getValue().doubleValue() / lastexchangedaynum;
-				if(curcje > lastcje)
-					maxweek ++;
-				else
-					break;
+				if(curcje > lastcje)	maxweek ++;
+				else	break;
 			}
 
 			return maxweek;
 		}
 	 @Override
-		public Integer getChenJiaoLiangMaxWeekOfSuperBanKuai(LocalDate requireddate, int difference) 
+		public Integer getChenJiaoLiangMaxWeek (LocalDate requireddate) 
 		{
-		 	RegularTimePeriod curperiod = this.getJFreeChartFormateTimePeriodForAMO(requireddate,difference) ;
-			if(curperiod == null)
-				return null;
+		 	RegularTimePeriod curperiod = this.getJFreeChartFormateTimePeriod(requireddate ) ;
+			if(curperiod == null)	return null;
 			
 			TimeSeriesDataItem curcjlrecord = nodevol.getDataItem( curperiod);
-			if( curcjlrecord == null) 
-				return null;
+			if( curcjlrecord == null)	return null;
 			
 			Double curcje = curcjlrecord.getValue().doubleValue();
-			int itemcount = nodevol.getItemCount();
 			int maxweek = 0;
-			
 			int index = nodevol.getIndex(curperiod );
-			
 			for(int i = index-1;i >=0; i--) {
 				
 				TimeSeriesDataItem lastcjlrecord = nodevol.getDataItem( i );
@@ -1149,41 +986,32 @@ import com.udojava.evalex.Expression;
 			return maxweek;
 		}
 		@Override
-		public Double getChenJiaoLiangChangeGrowthRateOfSuperBanKuai(TDXNodes superbk, LocalDate requireddate,	int difference) 
+		public Double getChenJiaoLiangChangeGrowthRateOfSuperBanKuai (TDXNodes superbk, LocalDate requireddate) 
 		{
-			RegularTimePeriod curperiod = this.getJFreeChartFormateTimePeriodForAMO(requireddate,difference) ;
-			if(curperiod == null)
-				return null;
+			RegularTimePeriod curperiod = this.getJFreeChartFormateTimePeriod(requireddate ) ;
+			if(curperiod == null)	return null;
 			
 			TimeSeriesDataItem curcjlrecord = this.nodevol.getDataItem( curperiod );
-			if( curcjlrecord == null) 
-				return null;
+			if( curcjlrecord == null)	return null;
 			
 			//判断上级板块(大盘或者板块)是否缩量,所以了没有比较的意义，直接返回-100；
 			String nodept = getNodeperiodtype();
 			NodeXPeriodData bkxdata = superbk.getNodeXPeroidData(nodept);
-			Double bkcjediff = bkxdata.getChenJiaoLiangDifferenceWithLastPeriod(requireddate,difference);
-									   
-			if( bkcjediff == null || bkcjediff < 0   ) {//板块缩量，
-				return -100.0;
-			}
+			Double bkcjediff = bkxdata.getChenJiaoLiangDifferenceWithLastPeriod(requireddate );
+			if( bkcjediff == null || bkcjediff < 0   )		return -100.0; //板块缩量，
 			
 			TimeSeriesDataItem lastcjlrecord = null;
 			int index = this.nodevol.getIndex( curperiod );
-			try{
-				lastcjlrecord = nodevol.getDataItem( index - 1);
+			try{	lastcjlrecord = nodevol.getDataItem( index - 1);
 			} catch (java.lang.ArrayIndexOutOfBoundsException e) {
 				logger.debug("index = 0，无法判断");
 				return 100.0;
 //				e.printStackTrace();
 			}
 			if(lastcjlrecord == null) { //休市前还是空，说明是停牌后复牌了
-				try {
-				Double curggcje = curcjlrecord.getValue().doubleValue(); //新板块所有成交量都应该计算入
-				return curggcje/bkcjediff;
-				} catch (java.lang.ArrayIndexOutOfBoundsException e) {
-					e.printStackTrace();
-				}
+				try {	Double curggcje = curcjlrecord.getValue().doubleValue(); //新板块所有成交量都应该计算入
+						return curggcje/bkcjediff;
+				} catch (java.lang.ArrayIndexOutOfBoundsException e) {e.printStackTrace();}
 			}
 			
 			Double curcje = curcjlrecord.getValue().doubleValue();
@@ -1195,9 +1023,9 @@ import com.udojava.evalex.Expression;
 		/*
 		 * 计算成交额日平均变化贡献率，即基于日平均成交额，板块成交额的变化占整个上级板块成交额增长量的比率，
 		 */
-		public Double getChenJiaoLiangChangeGrowthRateOfSuperBanKuaiOnDailyAverage (TDXNodes superbk, LocalDate requireddate,int difference) 
+		public Double getChenJiaoLiangChangeGrowthRateOfSuperBanKuaiOnDailyAverage (TDXNodes superbk, LocalDate requireddate ) 
 		{	
-			RegularTimePeriod curperiod = this.getJFreeChartFormateTimePeriodForAMO(requireddate,difference) ;
+			RegularTimePeriod curperiod = this.getJFreeChartFormateTimePeriod(requireddate ) ;
 			if(curperiod == null) return null;
 			
 			TimeSeriesDataItem curcjlrecord = this.nodevol.getDataItem( curperiod );
@@ -1206,7 +1034,7 @@ import com.udojava.evalex.Expression;
 			//判断上级板块(大盘或者板块)是否缩量,所以了没有比较的意义，直接返回-100；
 			String nodept = getNodeperiodtype();
 			NodeXPeriodData bkxdata = superbk.getNodeXPeroidData(nodept);
-			Double bkcjediff = bkxdata.getChengJiaoLiangDailyAverageDifferenceWithLastPeriod(requireddate,difference);
+			Double bkcjediff = bkxdata.getChengJiaoLiangDailyAverageDifferenceWithLastPeriod(requireddate );
 			if(bkcjediff == null )	return null;
 			if(  bkcjediff < 0   )  return -100.0;//板块缩量，
 			
@@ -1215,26 +1043,26 @@ import com.udojava.evalex.Expression;
 			try{ lastcjlrecord = nodevol.getDataItem( index - 1);
 			}	catch (java.lang.IndexOutOfBoundsException ex) {
 				logger.debug("index = 0，可能是新股第一周，可能是数据记录最早记录周，无法判断");
-				Boolean reachfirstday = super.isLocalDateReachFristDayInHistory (requireddate,difference); 
+				Boolean reachfirstday = super.isLocalDateReachFristDayInHistory (requireddate ); 
 				if(reachfirstday != null && reachfirstday == true)	return null;
 			}
-			if(this.isNodeDataFuPaiAfterTingPai(superbk,requireddate,0)) { //说明是停牌后复牌了，或者新股
-				try {	Double curggcje = this.getAverageDailyChengJiaoLiangOfWeek(requireddate, difference); //新板块所有成交量都应该计算入
+			if(this.isNodeDataFuPaiAfterTingPai(superbk,requireddate)) { //说明是停牌后复牌了，或者新股
+				try {	Double curggcje = this.getAverageDailyChengJiaoLiangOfWeek(requireddate); //新板块所有成交量都应该计算入
 					return curggcje/bkcjediff;
 				} catch (java.lang.ArrayIndexOutOfBoundsException e) {	e.printStackTrace();}
 			}
 			
-			Double nodeavediff = this.getChengJiaoLiangDailyAverageDifferenceWithLastPeriod(requireddate,difference);
+			Double nodeavediff = this.getChengJiaoLiangDailyAverageDifferenceWithLastPeriod(requireddate );
 			return nodeavediff/bkcjediff;
 		}
 //		@Override
-//		public Integer getCjlLianXuFangLiangPeriodNumber(LocalDate requireddate, int difference) 
+//		public Integer getCjlLianXuFangLiangPeriodNumber(LocalDate requireddate) 
 //		{
 //			int recordnum = this.nodevol.getItemCount();
 //			int lianxu = 0;
-//			Double curcje = this.getChengJiaoEr(requireddate,difference);
+//			Double curcje = this.getChengJiaoEr(requireddate );
 //			for(int wkindex = 1;wkindex > (0 - recordnum) ; wkindex--) { 
-//				Double recordcjelast = this.getChengJiaoEr(requireddate, difference - wkindex);
+//				Double recordcjelast = this.getChengJiaoEr(requireddate - wkindex);
 //				if( curcje >= recordcjelast ) 
 //					lianxu ++;
 //				else
@@ -1244,7 +1072,7 @@ import com.udojava.evalex.Expression;
 //			return lianxu;
 //		}
 //		@Override
-//		public Integer getCjlDpMaxLianXuFangLiangPeriodNumber(LocalDate requireddate,int difference,int settindpgmaxwk)
+//		public Integer getCjlDpMaxLianXuFangLiangPeriodNumber(LocalDate requireddate ,int settindpgmaxwk)
 //		{
 //			int recordnum = this.nodeohlc.getItemCount();
 //			int lianxu = 0;
@@ -1263,7 +1091,7 @@ import com.udojava.evalex.Expression;
 		/*
 		 * 通过apache math计算AMO的MA
 		 */
-		public Double[] getNodeAMOMA (LocalDate  requireddate,int difference)
+		public Double[] getNodeAMOMA (LocalDate  requireddate )
 		{
 			int itemcount = this.nodeamo.getItemCount();
 			double[] amodata = new double[itemcount];
@@ -1274,7 +1102,7 @@ import com.udojava.evalex.Expression;
 			}
 			
 //			requireddate = super.adjustDate(requireddate); //先确保日期是在交易日内
-			RegularTimePeriod expectedperiod = this.getJFreeChartFormateTimePeriodForOHLC(requireddate,difference);
+			RegularTimePeriod expectedperiod = this.getJFreeChartFormateTimePeriod(requireddate );
 			Integer itemindex = this.nodeamo.getIndex(expectedperiod);
 			
 			Double ma5 = null;
@@ -1395,21 +1223,6 @@ import com.udojava.evalex.Expression;
 	private void checkNodeOhlcMA ()
 	{
 		double checkvalue = 0.0; int duplicatecount = 0;RegularTimePeriod dupperiod = null;
-//		int itemcount = this.nodeohlcma5.getItemCount();
-//		for(int i=0;i<itemcount;i++) {
-//			TimeSeriesDataItem ma5item = this.nodeohlcma5.getDataItem(i);
-//			double ma5 = ma5item.getValue().doubleValue();
-//			if(ma5 == checkvalue) {
-//				duplicatecount ++;
-//				dupperiod = ma5item.getPeriod();
-//			}
-//			else { checkvalue = ma5; duplicatecount =0;};
-//			
-//			if(duplicatecount >= 5) {
-//				logger.info(super.getNodeCode() + "MA5计算有误，出现连续等值数据，请检查.!" + "日期：" + dupperiod.getEnd().toString());
-//				break;
-//			}
-//		}
 		checkvalue = 0.0;duplicatecount = 0;
 		int itemcount = this.nodeohlcma10.getItemCount();
 		for(int i=0;i<itemcount;i++) {
@@ -1501,12 +1314,11 @@ import com.udojava.evalex.Expression;
 	/*
 	 * 通过apache math计算MA
 	 */
-	 public Double[] getNodeOhlcMA (LocalDate  requireddate,int difference)
+	 public Double[] getNodeOhlcMA (LocalDate  requireddate )
 	 {
 //		requireddate = super.adjustDate(requireddate); //先确保日期是在交易周内
-		RegularTimePeriod expectedperiod = this.getJFreeChartFormateTimePeriodForOHLC(requireddate,difference);
-		if(expectedperiod == null)
-			return null;
+		RegularTimePeriod expectedperiod = this.getJFreeChartFormateTimePeriod(requireddate );
+		if(expectedperiod == null)	return null;
 			
 		int itemcount = this.nodeohlc.getItemCount();
 		double[] closedata = new double[itemcount];
@@ -1516,7 +1328,7 @@ import com.udojava.evalex.Expression;
 			closedata[i] = close;
 		}
 		
-		Integer itemindex = this.getIndexOfSpecificDateOHLCData(requireddate,difference);
+		Integer itemindex = this.getIndexOfSpecificDateOHLCData(requireddate );
 		Double ma5 = null;
 		Integer ma5index = this.nodeohlcma5.getIndex(expectedperiod);
 		if(ma5index == -1 && itemindex>=5) {
@@ -1581,7 +1393,7 @@ import com.udojava.evalex.Expression;
 	 /*
 	  * 用TA4J计算均线
 	  */
-	 public Double[] getNodeOhlcSMA (LocalDate  requireddate,int difference)
+	 public Double[] getNodeOhlcSMA (LocalDate  requireddate )
 	 {
 		 requireddate = super.adjustDate(requireddate); //先确保日期是在交易日内
 		 
@@ -1642,7 +1454,7 @@ import com.udojava.evalex.Expression;
 	 /*
 	  * 
 	  */
-	 public Multimap<LocalDate, LocalDate> isMacdTopDivergenceInSpecificMonthRange (LocalDate  requireddate,int difference, int monthrange)
+	 public Multimap<LocalDate, LocalDate> isMacdTopDivergenceInSpecificMonthRange (LocalDate  requireddate , int monthrange)
 	 {
 		 requireddate = super.adjustDate(requireddate); //先确保日期是在交易日内
 		 
@@ -1652,17 +1464,11 @@ import com.udojava.evalex.Expression;
 
 		 ClosePriceIndicator closePrice = new ClosePriceIndicator(ohlcvaseries);
 		 MACDIndicator macd = new MACDIndicator (closePrice);
-		 org.ta4j.core.TimeSeries macdorgohlc = macd.getTimeSeries();
-		 int mac = macdorgohlc.getBarCount();
-		 int ohlccount = ohlcvaseries.getBarCount();
-		  
 		 
 		 List<LocalDate> macdreversedatelist = new ArrayList <> (); 
 		 List<Integer> macdreverseIndexlist = new ArrayList <> ();
 		 LocalDate requrestart = requireddate.minusMonths(monthrange);
 		 int indexcursor = ohlcvaseries.getEndIndex();
-		 
-		 ZonedDateTime endtime = ohlcvaseries.getBar(indexcursor).getEndTime();
 		 for(int i = indexcursor-2; i>=0; i--) {
 			 double macdsecond = macd.getValue(i+1).doubleValue();
 			 Bar barsecond = ohlcvaseries.getBar(i +1);
@@ -1676,9 +1482,6 @@ import com.udojava.evalex.Expression;
 			 
 			 double macdfirst = macd.getValue(i+2).doubleValue();
 			 double macdthird = macd.getValue(i).doubleValue();
-			 
-			 
-			 
 			 if(macdthird < macdsecond && macdfirst <= macdsecond) {
 				 macdreversedatelist.add(seconddate);
 				 macdreverseIndexlist.add(Integer.valueOf(i+1));
@@ -1726,7 +1529,7 @@ import com.udojava.evalex.Expression;
 	 /*
 	  * 
 	  */
-	 public Multimap<LocalDate, LocalDate> isMacdButtomDivergenceInSpecificMonthRange (LocalDate  requireddate,int difference, int monthrange)
+	 public Multimap<LocalDate, LocalDate> isMacdButtomDivergenceInSpecificMonthRange (LocalDate  requireddate , int monthrange)
 	 {
 		 requireddate = this.adjustDate(requireddate); //先确保日期是在交易日内
 		 
@@ -1736,11 +1539,6 @@ import com.udojava.evalex.Expression;
 
 		 ClosePriceIndicator closePrice = new ClosePriceIndicator(ohlcvaseries);
 		 MACDIndicator macd = new MACDIndicator (closePrice);
-		 org.ta4j.core.TimeSeries macdorgohlc = macd.getTimeSeries();
-		 int mac = macdorgohlc.getBarCount();
-		 int ohlccount = ohlcvaseries.getBarCount();
-		  
-		 
 		 List<LocalDate> macdreversedatelist = new ArrayList <> (); 
 		 List<Integer> macdreverseIndexlist = new ArrayList <> ();
 		 LocalDate requrestart = requireddate.minusMonths(monthrange);
@@ -1805,38 +1603,47 @@ import com.udojava.evalex.Expression;
 		 macdreverseIndexlist = null;
 		 
 		 return macddivergencemap;
-
-
 	 }
 	 /*
 	  * (non-Javadoc)
 	  * @see com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic#checkCloseComparingToMAFormula(java.lang.String, java.time.LocalDate, int)
 	  */
-	 public Boolean checkCloseComparingToMAFormula (String maformula, LocalDate requireddate, int difference)
+	 public Boolean checkCloseComparingToMAFormula (LocalDate requireddate, String maformula)
 	 {
-		 DayOfWeek dayOfWeek = requireddate.getDayOfWeek();
-		 int dayOfWeekIntValue = dayOfWeek.getValue();
-		 OHLCItem ohlcdata = null;
-		 for(int i = 0;i < dayOfWeekIntValue;i++) { //日线有可能当日是停牌的，如果停牌，就找到本周有数据的最新天
-			 	ohlcdata = this.getSpecificDateOHLCData (requireddate,0-i);
-		    	if(ohlcdata != null) {
-		    		LocalDate expectdate = requireddate.plus(0-i,ChronoUnit.DAYS);
-					expectdate = super.adjustDate(expectdate);
-					requireddate = expectdate;
-		    		break;
-		    	}
-		 }
-		    
-		 if (ohlcdata != null) {
-		    	Double close = (Double)ohlcdata.getCloseValue();
-		    	Double[] maresult = this.getNodeOhlcMA(requireddate, 0);
-			    Boolean result = checkCloseComparingToMAsettings (close,maresult,maformula);
-			    if( result != null )
-			    	return result;
-		 }
+			OHLCItem ohlcdata =  this.getSpecificDateOHLCData (requireddate);
+			LocalDate expectdate = requireddate;
+			if(ohlcdata == null) { //日线有可能当日是停牌的，如果停牌，就找到本周有数据的最新天
+				String nodeperiod = this.getNodeperiodtype();
+				if( nodeperiod.equals(NodeGivenPeriodDataItem.DAY ) ) {
+					DayOfWeek dayOfWeek = requireddate.getDayOfWeek();
+					int dayOfWeekIntValue = dayOfWeek.getValue();
+					for(int i = 0;i < dayOfWeekIntValue;i++) { 
+						expectdate = requireddate.plus(0-i,ChronoUnit.DAYS);
+						OHLCItem ohlcdataexpectdate =  this.getSpecificDateOHLCData (expectdate);
+						if(ohlcdataexpectdate != null) {
+							expectdate = super.adjustDate(expectdate);
+							requireddate = expectdate;
+				    		break;
+						}
+				    }
+				} else if( nodeperiod.equals(NodeGivenPeriodDataItem.WEEK ) ) { //一周没有数据，说明停牌，目前周线MA不怎么用，直接回F
+					return false;
+				}
+			}
 		 
-		 return null;
+			OHLCItem ohlcdatafinal =  this.getSpecificDateOHLCData (requireddate);
+			if(ohlcdatafinal == null) return true; //所有没有OHLC data 都认为是满足条件
+			
+	    	Double close = (Double)ohlcdatafinal.getCloseValue();
+	    	Double[] maresult = this.getNodeOhlcMA(expectdate);
+		    Boolean result = checkCloseComparingToMAsettings (close,maresult,maformula);
+		    if( result != null )	return result;
+		    
+		    return null;
 	 }
+	 /*
+	  * 
+	  */
 	 private Boolean checkCloseComparingToMAsettings (Double close,Double[] maresult,String maformula1)
 	 {
 			 if(maformula1 == null || maformula1.isEmpty())
@@ -1930,47 +1737,47 @@ import com.udojava.evalex.Expression;
 		 
 		 switch(keyword) {
 		 case "ChenJiaoEr" :
-		      	 Double curcje  = this.getChengJiaoEr(date, 0) ;
+		      	 Double curcje  = this.getChengJiaoEr(date) ;
 		   	     value = curcje;
 		   	     break;
 		 case "AverageChenJiaoEr" :
-			 Double avecje = this.getAverageDailyChengJiaoErOfWeek (date, 0);
+			 Double avecje = this.getAverageDailyChengJiaoErOfWeek (date);
 	   	     value = avecje;
 	   	     break;
 		 case "AverageChenJiaoErMaxWeek" :
-			 Integer cjemaxwk =  this.getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(date,0);//显示成交额是多少周最大,成交额多少周最小没有意义，因为如果不是完整周成交量就是会很小
+			 Integer cjemaxwk =  this.getAverageDailyChenJiaoErMaxWeek(date);//显示成交额是多少周最大,成交额多少周最小没有意义，因为如果不是完整周成交量就是会很小
 	   	     value = cjemaxwk;
 	   	     break;
 		 case "ChengJiaoErDifferenceWithLastPeriod":
-			 Double difference = this.getChengJiaoErDifferenceWithLastPeriod(date, 0);
+			 Double difference = this.getChengJiaoErDifferenceWithLastPeriod(date);
 			 value = difference;
 			 break;
 		 case "ChengJiaoErDailyAverageDifferenceWithLastPeriod":
-			 Double averagediff = this.getChengJiaoErDailyAverageDifferenceWithLastPeriod (date, 0);
+			 Double averagediff = this.getChengJiaoErDailyAverageDifferenceWithLastPeriod (date);
 			 value = averagediff;
 			 break;
 		 case "ChenJiaoLiang" :
-			 Double curcjl = this.getChengJiaoLiang(date, 0);
+			 Double curcjl = this.getChengJiaoLiang(date);
 	   	     value = curcjl;
 	   	     break;
 		 case "AverageChenJiaoLiang" :
-			 Double avecjl = this.getAverageDailyChengJiaoLiangOfWeek (date, 0);
+			 Double avecjl = this.getAverageDailyChengJiaoLiangOfWeek (date);
 	   	     value = avecjl;
 	   	     break;
 		 case "AverageChenJiaoLiangMaxWeek" :
-			 Integer cjlmaxwk = this.getAverageDailyChenJiaoLiangMaxWeekOfSuperBanKuai(date,0);//显示cjl是多少周最大
+			 Integer cjlmaxwk = this.getAverageDailyChenJiaoLiangMaxWeek(date);//显示cjl是多少周最大
 	   	     value = cjlmaxwk;
 	   	     break;
 		 case "ZhangDieFu" :
-			 Double zhangfu = this.getSpecificOHLCZhangDieFu (date,0);
+			 Double zhangfu = this.getSpecificOHLCZhangDieFu (date);
       		 value = zhangfu;
 	   	     break; 
 		 case "CLOSEVSMA":
-			 Boolean maresult = this.checkCloseComparingToMAFormula (maformula[0],date, 0);
+			 Boolean maresult = this.checkCloseComparingToMAFormula (date, maformula[0]);
 			 value = maresult;
 			 break;
 		 case "GuJiaCLOSE":
-			 Integer indexofcur = this.getIndexOfSpecificDateOHLCData(date, 0);
+			 Integer indexofcur = this.getIndexOfSpecificDateOHLCData(date);
 			 if(indexofcur == null)	return null;
 			 
 			 OHLCItem curohlc = (OHLCItem) this.getOHLCData().getDataItem(indexofcur.intValue());
@@ -1978,11 +1785,11 @@ import com.udojava.evalex.Expression;
 			 value = curclose;
 			 break;
 		 case "DailyZhangDieFuRangeInWeek":
-			 Double wkhighzhangfu = this.getSpecificTimeHighestZhangDieFu(date, 0);
+			 Double wkhighzhangfu = this.getSpecificTimeHighestZhangDieFu(date);
 			 value = wkhighzhangfu;
 			 break;
 		 case "CjeLianXuZhang": //周日平均成交额MAXWK
-	        	Integer cjelx = this.getAverageDailyCjeLianXuFangLiangPeriodNumber(date,0); 
+	        	Integer cjelx = this.getAverageDailyChenJiaoErLianXuFangLiangPeriodNumber(date); 
 	        	value = cjelx;
 	        	break; 
 		 }
@@ -1991,22 +1798,22 @@ import com.udojava.evalex.Expression;
 	 /*
 	  * 
 	  */
-	 public String[] getNodeXDataCsvData (TDXNodes superbk, LocalDate requireddate, int difference)
+	 public String[] getNodeXDataCsvData (TDXNodes superbk, LocalDate requireddate)
 	 {
-		String[] supcsv = super.getNodeXDataCsvData(superbk, requireddate, 0); 
+		String[] supcsv = super.getNodeXDataCsvData(superbk, requireddate); 
 		
-		Double curcje = this.getChengJiaoEr(requireddate, 0);
-		Double avecje = this.getAverageDailyChengJiaoErOfWeek (requireddate, 0);
-		Integer cjemaxwk =  this.getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(requireddate,0);//显示成交额是多少周最大,成交额多少周最小没有意义，因为如果不是完整周成交量就是会很小
-		Double cjechangerate = this.getChenJiaoErChangeGrowthRateOfSuperBanKuaiOnDailyAverage(superbk,requireddate,0);//成交额大盘变化贡献率
+		Double curcje = this.getChengJiaoEr(requireddate);
+		Double avecje = this.getAverageDailyChengJiaoErOfWeek (requireddate);
+		Integer cjemaxwk =  this.getAverageDailyChenJiaoErMaxWeek (requireddate);//显示成交额是多少周最大,成交额多少周最小没有意义，因为如果不是完整周成交量就是会很小
+		Double cjechangerate = this.getChenJiaoErChangeGrowthRateOfSuperBanKuaiOnDailyAverage(superbk,requireddate);//成交额大盘变化贡献率
 		
-		Double curcjl = this.getChengJiaoLiang(requireddate, 0);
-		Double avecjl = this.getAverageDailyChengJiaoLiangOfWeek (requireddate, 0);
-		Integer cjlmaxwk = this.getAverageDailyChenJiaoLiangMaxWeekOfSuperBanKuai(requireddate,0);//显示cjl是多少周最大
+		Double curcjl = this.getChengJiaoLiang (requireddate);
+		Double avecjl = this.getAverageDailyChengJiaoLiangOfWeek (requireddate);
+		Integer cjlmaxwk = this.getAverageDailyChenJiaoLiangMaxWeek (requireddate );//显示cjl是多少周最大
 		
-		Double zhangfu = this.getSpecificOHLCZhangDieFu (requireddate,0);
-		Double avecjegrowingrate = this.getAverageDailyChenJiaoErGrowingRate(requireddate,0);
-		Integer indexofcur = this.getIndexOfSpecificDateOHLCData(requireddate, difference);
+		Double zhangfu = this.getSpecificOHLCZhangDieFu (requireddate);
+		Double avecjegrowingrate = this.getAverageDailyChenJiaoErGrowingRate (requireddate);
+		Integer indexofcur = this.getIndexOfSpecificDateOHLCData(requireddate);
 		if(indexofcur == null)
 			return null;
 		
@@ -2037,11 +1844,6 @@ import com.udojava.evalex.Expression;
 		try {strcurcjl = curcjl.toString();} catch (java.lang.NullPointerException e) {strcurcjl = String.valueOf("0");}
 		try {stravecjl = avecjl.toString();} catch (java.lang.NullPointerException e) {stravecjl = String.valueOf("0");}
 		try {strcjlmaxwk =  cjlmaxwk.toString();} catch (java.lang.NullPointerException e) {strcjlmaxwk = String.valueOf("0");}
-//		try {
-//			strcjlchangerate =  cjlchangerate.toString();
-//		} catch (java.lang.NullPointerException e) {
-//			strcjlchangerate = String.valueOf("0");
-//		}
 		try {strzhangfu =  zhangfu.toString();} catch (java.lang.NullPointerException e) {strzhangfu = String.valueOf("0");}
 		try {close = curclose.toString();} catch (java.lang.NullPointerException e) {close = String.valueOf("0");}
 		try {open = curclose.toString();} catch (java.lang.NullPointerException e) {open = String.valueOf("0");}
@@ -2071,12 +1873,11 @@ import com.udojava.evalex.Expression;
 		
 		return joined;
 	 }
-	 
 	 /*
 		 * (non-Javadoc)
 		 * @see com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic#getNodeXDataInHtml(java.time.LocalDate, int)
 		 */
-		public String getNodeXDataInHtml(TDXNodes superbk,LocalDate requireddate, int difference) 
+		public String getNodeXDataInHtml(TDXNodes superbk,LocalDate requireddate) 
 		{
 			DecimalFormat decimalformate = new DecimalFormat("#0.000"); //",###";
 	    	NumberFormat percentFormat = NumberFormat.getPercentInstance(Locale.CHINA);
@@ -2094,47 +1895,57 @@ import com.udojava.evalex.Expression;
 				 fontdate.appendText(requireddate.toString());
 				 fontdate.attr("color", "#17202A");
 				 
-				 Double zhangfu = this.getSpecificOHLCZhangDieFu (requireddate,0);
+				 Double zhangfu = this.getSpecificOHLCZhangDieFu (requireddate);
 				 if(zhangfu != null) {
 					 org.jsoup.nodes.Element li12 = dl.appendElement("li");
 					 org.jsoup.nodes.Element font12 = li12.appendElement("font");
 					 font12.appendText("涨跌幅" + percentFormat.format (zhangfu)  );
 					 font12.attr("color", "#1B2631");
 				 }
-				 //
-				 Double curcje = this.getChengJiaoEr(requireddate, 0);
-				 String cjedanwei = null;
-				 try{
-						cjedanwei = FormatDoubleToShort.getNumberChineseDanWei(curcje);
-						curcje = FormatDoubleToShort.formateDoubleToShort (curcje);
-				 } catch (java.lang.NullPointerException e) {
-//						e.printStackTrace();
-						logger.debug(super.getNodeCode() + "在" + requireddate.toString() + "没有数据，可能停牌。");
-						return "";
-				 }
-				 org.jsoup.nodes.Element licje = dl.appendElement("li");
-				 org.jsoup.nodes.Element fontcje = licje.appendElement("font");
-				 fontcje.appendText("成交额" + decimalformate.format(curcje) + cjedanwei);
-				 fontcje.attr("color", "#AF7AC5");
-				 
-				 Double avecje = this.getAverageDailyChengJiaoErOfWeek (requireddate, 0);
-				 cjedanwei = null;
-				 try{
-						cjedanwei = FormatDoubleToShort.getNumberChineseDanWei(avecje);
-						avecje = FormatDoubleToShort.formateDoubleToShort (avecje);
-				 } catch (java.lang.NullPointerException e) {
-//						e.printStackTrace();
-						logger.debug(super.getNodeCode() + "在" + requireddate.toString() + "没有数据，可能停牌。");
-						return "";
-				 }
-				 org.jsoup.nodes.Element liavecje = dl.appendElement("li");
-				 org.jsoup.nodes.Element fontavecje = liavecje.appendElement("font");
-				 fontavecje.appendText("周日平均成交额" + decimalformate.format(avecje) + cjedanwei);
-				 fontavecje.attr("color", "#AF7AC5");
-				 
-				 Double avecjegrowingrate = null;;
 				 try {
-					 avecjegrowingrate = this.getAverageDailyChenJiaoErGrowingRate(requireddate,0);
+					 Double curcje = this.getChengJiaoEr(requireddate);
+					 String cjedanwei = FormatDoubleToShort.getNumberChineseDanWei(curcje);
+						curcje = FormatDoubleToShort.formateDoubleToShort (curcje);
+						
+						org.jsoup.nodes.Element licje = dl.appendElement("li");
+						org.jsoup.nodes.Element fontcje = licje.appendElement("font");
+						fontcje.appendText("成交额" + decimalformate.format(curcje) + cjedanwei);
+						fontcje.attr("color", "#AF7AC5");
+				 } catch (java.lang.NullPointerException e) {
+						logger.debug(super.getNodeCode() + "在" + requireddate.toString() + "没有数据，可能停牌。");
+						return "";
+				 }
+				 
+				 try{
+					 Double avecje = this.getAverageDailyChengJiaoErOfWeek (requireddate);
+					 String cjedanwei = FormatDoubleToShort.getNumberChineseDanWei(avecje);
+						avecje = FormatDoubleToShort.formateDoubleToShort (avecje);
+						
+						 org.jsoup.nodes.Element liavecje = dl.appendElement("li");
+						 org.jsoup.nodes.Element fontavecje = liavecje.appendElement("font");
+						 fontavecje.appendText("周日平均成交额" + decimalformate.format(avecje) + cjedanwei);
+						 fontavecje.attr("color", "#AF7AC5");
+				 } catch (java.lang.NullPointerException e) {
+						logger.debug(super.getNodeCode() + "在" + requireddate.toString() + "没有数据，可能停牌。");
+						return "";
+				 }
+				 try {
+					 Double avecjediff = this.getChengJiaoErDailyAverageDifferenceWithLastPeriod (requireddate);
+					 String cjedanwei = FormatDoubleToShort.getNumberChineseDanWei(avecjediff);
+						avecjediff = FormatDoubleToShort.formateDoubleToShort (avecjediff);
+						
+						org.jsoup.nodes.Element liavecjediff = dl.appendElement("li");
+						org.jsoup.nodes.Element fontavecjediff = liavecjediff.appendElement("font");
+						fontavecjediff.appendText("周日平均成交额增长" + decimalformate.format(avecjediff) + cjedanwei);
+						fontavecjediff.attr("color", "#AF7AC5");
+				 } catch (java.lang.NullPointerException e) {
+						logger.debug(super.getNodeCode() + "在" + requireddate.toString() + "没有数据，可能停牌。");
+						return "";
+				 }
+
+				 try {
+					 Double avecjegrowingrate = null;
+					 avecjegrowingrate = this.getAverageDailyChenJiaoErGrowingRate(requireddate);
 					 if(avecjegrowingrate != null) {
 						 htmlstring = "周日均成交额增长率" + percentFormat.format (avecjegrowingrate) ;
 						 org.jsoup.nodes.Element liavecjechangerate = dl.appendElement("li");
@@ -2144,31 +1955,28 @@ import com.udojava.evalex.Expression;
 					 }
 				 } catch (java.lang.NullPointerException e) {}
 				 
-				 
-				 Integer cjemaxwk = null;
-			     try{
-			    		cjemaxwk = this.getAverageDailyChenJiaoErMaxWeekOfSuperBanKuai(requireddate,0);//显示成交额是多少周最大,成交额多少周最小没有意义，因为如果不是完整周成交量就是会很小
+			     try {
+			    	 Integer cjemaxwk = null;
+			    		cjemaxwk = this.getAverageDailyChenJiaoErMaxWeek(requireddate);//显示成交额是多少周最大,成交额多少周最小没有意义，因为如果不是完整周成交量就是会很小
+			    		if(cjemaxwk>0) {
+							 org.jsoup.nodes.Element licjemaxwk = dl.appendElement("li");
+							 org.jsoup.nodes.Element fontcjemaxwk = licjemaxwk.appendElement("font");
+							 fontcjemaxwk.appendText("周日平均成交额MaxWk=" + cjemaxwk);
+							 fontcjemaxwk.attr("color", "#AF7AC5 ");
+						 }
 			     } catch (java.lang.NullPointerException e) {}
-				 if(cjemaxwk>0) {
-					 org.jsoup.nodes.Element licjemaxwk = dl.appendElement("li");
-					 org.jsoup.nodes.Element fontcjemaxwk = licjemaxwk.appendElement("font");
-					 fontcjemaxwk.appendText("周日平均成交额MaxWk=" + cjemaxwk);
-					 fontcjemaxwk.attr("color", "#AF7AC5 ");
-				 } 
-				 //
-				 Integer avcjelxwk = null;
 				 try {
-					 avcjelxwk = this.getAverageDailyCjeLianXuFangLiangPeriodNumber(requireddate,0);
+					 Integer avcjelxwk = null;
+					 avcjelxwk = this.getAverageDailyChenJiaoErLianXuFangLiangPeriodNumber(requireddate);
+					 if(avcjelxwk != null && avcjelxwk >0) {
+						 org.jsoup.nodes.Element liavcjelxwk = dl.appendElement("li");
+						 org.jsoup.nodes.Element fontavcjelxwk = liavcjelxwk.appendElement("font");
+						 fontavcjelxwk.appendText("周日平均成交额连续涨=" + avcjelxwk);
+						 fontavcjelxwk.attr("color", "#AF7AC5 ");
+					 }
 				 } catch (java.lang.NullPointerException e) {}
-				 if(avcjelxwk != null && avcjelxwk >0) {
-					 org.jsoup.nodes.Element liavcjelxwk = dl.appendElement("li");
-					 org.jsoup.nodes.Element fontavcjelxwk = liavcjelxwk.appendElement("font");
-					 fontavcjelxwk.appendText("周日平均成交额连续涨=" + avcjelxwk);
-					 fontavcjelxwk.attr("color", "#AF7AC5 ");
-				 }
-				 //
-				 try{
-					 Double cjechangerate = this.getChenJiaoErChangeGrowthRateOfSuperBanKuaiOnDailyAverage(superbk,requireddate,0);//成交额大盘变化贡献率
+				 try {
+					 Double cjechangerate = this.getChenJiaoErChangeGrowthRateOfSuperBanKuaiOnDailyAverage(superbk,requireddate);//成交额大盘变化贡献率
 					 if( cjechangerate != -100.0) {
 						 htmlstring = "CJE板块贡献率(周日均)" + percentFormat.format (cjechangerate) ;
 						 org.jsoup.nodes.Element licjechangerate = dl.appendElement("li");
@@ -2177,14 +1985,13 @@ import com.udojava.evalex.Expression;
 						 fontcjechangerate.attr("color", "#AF7AC5 ");
 					 }
 				 } catch (java.lang.IllegalArgumentException e) {
-//					 li4.appendText("成交额大盘变化贡献率NULL" );
 				 } catch (java.lang.NullPointerException e) {
 					 logger.debug(e.getMessage());
 //			    	e.printStackTrace();	
 			     }
 
 				try {
-					Double curcjezhanbidata = super.getChenJiaoErZhanBi(requireddate, 0);  //占比
+					Double curcjezhanbidata = super.getChenJiaoErZhanBi(requireddate);  //占比
 					
 					org.jsoup.nodes.Element licjezb = dl.appendElement("li");
 					org.jsoup.nodes.Element fontcjezb = licjezb.appendElement("font");
@@ -2195,8 +2002,8 @@ import com.udojava.evalex.Expression;
 //					htmltext = "占比占比NULL" ;
 				}
 				
-				Integer cjemaxweek = this.getChenJiaoErZhanBiMaxWeekOfSuperBanKuai(requireddate,0);//nodefx.getGgbkzhanbimaxweek();
-				Integer cjeminweek = this.getChenJiaoErZhanBiMinWeekOfSuperBanKuai(requireddate,0);
+				Integer cjemaxweek = super.getChenJiaoErZhanBiMaxWeekForDaPan(requireddate);//nodefx.getGgbkzhanbimaxweek();
+				Integer cjeminweek = super.getChenJiaoErZhanBiMinWeekForDaPan(requireddate);
 				if(cjemaxweek > 0) {
 					try {
 						 org.jsoup.nodes.Element licjemaxwk = dl.appendElement("li");
@@ -2217,14 +2024,14 @@ import com.udojava.evalex.Expression;
 					}
 				}
 				
-				Double cjezbgrowthrate = super.getChenJiaoErZhanBiGrowthRateOfSuperBanKuai(requireddate, 0);
+				Double cjezbgrowthrate = super.getChenJiaoErZhanBiGrowthRateForDaPan (requireddate);
 				org.jsoup.nodes.Element licjezbgr = dl.appendElement("li");
 				org.jsoup.nodes.Element fontcjezbgr = licjezbgr.appendElement("font");
 				fontcjezbgr.appendText( "成交额占比增长率=" + decimalformate2.format(cjezbgrowthrate)  );
 				fontcjezbgr.attr("color", "#17202A");
 				
 				 //
-				 Double curcjl = this.getChengJiaoLiang(requireddate, 0);
+				 Double curcjl = this.getChengJiaoLiang(requireddate);
 		    	 String cjldanwei = FormatDoubleToShort.getNumberChineseDanWei(curcjl);
 		    	 curcjl = FormatDoubleToShort.formateDoubleToShort (curcjl);
 				 org.jsoup.nodes.Element licjl = dl.appendElement("li");
@@ -2232,17 +2039,31 @@ import com.udojava.evalex.Expression;
 				 fontcjl.appendText("成交量" + decimalformate.format(curcjl) + cjldanwei);
 				 fontcjl.attr("color", "#641E16");
 				 
-				 Double avecurcjl = this.getAverageDailyChengJiaoLiangOfWeek(requireddate, 0);
+				 Double avecurcjl = this.getAverageDailyChengJiaoLiangOfWeek(requireddate);
 		    	 String avecjldanwei = FormatDoubleToShort.getNumberChineseDanWei(avecurcjl);
 		    	 curcjl = FormatDoubleToShort.formateDoubleToShort (avecurcjl);
 				 org.jsoup.nodes.Element liavecjl = dl.appendElement("li");
 				 org.jsoup.nodes.Element fontavecjl = liavecjl.appendElement("font");
 				 fontavecjl.appendText("周平均成交量" + decimalformate.format(avecurcjl) + avecjldanwei);
 				 fontavecjl.attr("color", "#641E16");
+				 
+				 Double avecjldiff = this.getChengJiaoLiangDailyAverageDifferenceWithLastPeriod (requireddate);
+				 try{
+						cjldanwei = FormatDoubleToShort.getNumberChineseDanWei(avecjldiff);
+						avecjldiff = FormatDoubleToShort.formateDoubleToShort (avecjldiff);
+						org.jsoup.nodes.Element liavecjldiff = dl.appendElement("li");
+						 org.jsoup.nodes.Element fontavecjldiff = liavecjldiff.appendElement("font");
+						 fontavecjldiff.appendText("周日平均成交量增长" + decimalformate.format(avecjldiff) + cjldanwei);
+						 fontavecjldiff.attr("color", "#AF7AC5");
+				 } catch (java.lang.NullPointerException e) {
+//						e.printStackTrace();
+						logger.debug(super.getNodeCode() + "在" + requireddate.toString() + "没有数据，可能停牌。");
+						return "";
+				 }
 				 //
 				 Integer cjlmaxwk = null;
 			     try{
-			    		cjlmaxwk = this.getChenJiaoLiangMaxWeekOfSuperBanKuai(requireddate,0);//显示cjl是多少周最大
+			    		cjlmaxwk = this.getChenJiaoLiangMaxWeek(requireddate);//显示cjl是多少周最大
 			     } catch (java.lang.NullPointerException e) {
 			     }
 				 if(cjlmaxwk>0) {
@@ -2265,7 +2086,7 @@ import com.udojava.evalex.Expression;
 //				 }
 
 				try {
-					Double cjlzhanbidata = this.getChenJiaoLiangZhanBi(requireddate, 0);
+					Double cjlzhanbidata = this.getChenJiaoLiangZhanBi(requireddate);
 					
 					org.jsoup.nodes.Element licjlzb = dl.appendElement("li");
 					org.jsoup.nodes.Element fontzjlzb = licjlzb.appendElement("font");
@@ -2275,8 +2096,8 @@ import com.udojava.evalex.Expression;
 //					htmltext = "占比占比NULL" ;
 				}
 				
-				Integer cjlzbmaxwk = this.getChenJiaoLiangZhanBiMaxWeekOfSuperBanKuai(requireddate, 0);
-				Integer cjlzbminwk = this.getChenJiaoLiangZhanBiMinWeekOfSuperBanKuai(requireddate, 0);
+				Integer cjlzbmaxwk = this.getChenJiaoLiangZhanBiMaxWeekForDaPan(requireddate);
+				Integer cjlzbminwk = this.getChenJiaoLiangZhanBiMinWeekForDaPan(requireddate);
 				if(cjlzbmaxwk > 0) {
 					try {
 						 org.jsoup.nodes.Element licjlmaxwk = dl.appendElement("li");
@@ -2297,35 +2118,34 @@ import com.udojava.evalex.Expression;
 					}
 				}
 				
-				Double cjlzbgrowthrate = this.getChenJiaoLiangZhanBiGrowthRateOfSuperBanKuai(requireddate, 0);
+				Double cjlzbgrowthrate = this.getChenJiaoLiangZhanBiGrowthRateForDaPan(requireddate);
 				org.jsoup.nodes.Element licjlzbgr = dl.appendElement("li");
 				org.jsoup.nodes.Element fontcjlzbgr = licjlzbgr.appendElement("font");
 				fontcjlzbgr.appendText( "成交量占比增长率=" + decimalformate2.format(cjlzbgrowthrate)  );
 				fontcjlzbgr.attr("color", "#512E5F");
-
 	 
-					 Integer opneupquekou = this.getQueKouTongJiOpenUp(requireddate, 0);
+					 Integer opneupquekou = this.getQueKouTongJiOpenUp(requireddate);
 					 if( opneupquekou != null) {
 						 org.jsoup.nodes.Element li6 = dl.appendElement("li");
 						 org.jsoup.nodes.Element font6 = li6.appendElement("font");
 						 font6.appendText("缺口OpenUp =" + opneupquekou);
 						 font6.attr("color", "#F39C12");
 					 }
-					 Integer opendownquekou = this.getQueKouTongJiOpenDown(requireddate, 0);
+					 Integer opendownquekou = this.getQueKouTongJiOpenDown(requireddate);
 					 if( opendownquekou != null) {
 						 org.jsoup.nodes.Element li7 = dl.appendElement("li");
 						 org.jsoup.nodes.Element font7 = li7.appendElement("font");
 						 font7.appendText("缺口OpenDown =" + opendownquekou);
 						 font7.attr("color", "#F39C12");
 					 }
-					 Integer huibuupquekou = this.getQueKouTongJiHuiBuUp(requireddate, 0);
+					 Integer huibuupquekou = this.getQueKouTongJiHuiBuUp(requireddate);
 					 if( huibuupquekou != null) {
 						 org.jsoup.nodes.Element li8 = dl.appendElement("li");
 						 org.jsoup.nodes.Element font8 = li8.appendElement("font");
 						 font8.appendText("缺口HuiBuUp =" + huibuupquekou );
 						 font8.attr("color", "#F39C12");
 					 }
-					 Integer huibudowquekou = this.getQueKouTongJiHuiBuDown(requireddate, 0);
+					 Integer huibudowquekou = this.getQueKouTongJiHuiBuDown(requireddate);
 					 if( huibudowquekou != null) {
 						 org.jsoup.nodes.Element li9 = dl.appendElement("li");
 						 org.jsoup.nodes.Element font9= li9.appendElement("font");
@@ -2333,7 +2153,7 @@ import com.udojava.evalex.Expression;
 						 font9.attr("color", "#F39C12");
 					 }
 					 
-					 Integer zhangtingnum = this.getZhangTingTongJi(requireddate, 0);
+					 Integer zhangtingnum = this.getZhangTingTongJi(requireddate);
 					 if(zhangtingnum != null) {
 						 org.jsoup.nodes.Element li10 = dl.appendElement("li");
 						 org.jsoup.nodes.Element font10 = li10.appendElement("font");
@@ -2341,7 +2161,7 @@ import com.udojava.evalex.Expression;
 						 font10.attr("color", "#1B2631");
 					 }
 					 
-					 Integer dietingnum = this.getDieTingTongJi(requireddate, 0);
+					 Integer dietingnum = this.getDieTingTongJi(requireddate);
 					 if(dietingnum != null) {
 						 org.jsoup.nodes.Element li11 = dl.appendElement("li");
 						 org.jsoup.nodes.Element font11 = li11.appendElement("font");
@@ -2356,15 +2176,14 @@ import com.udojava.evalex.Expression;
 		/*
 		 * 
 		 */
-		protected Boolean isNodeDataFuPaiAfterTingPai (TDXNodes superbk, LocalDate requireddate,int difference)
+		protected Boolean isNodeDataFuPaiAfterTingPai (TDXNodes superbk, LocalDate requireddate )
 		{
-			RegularTimePeriod curperiod = this.getJFreeChartFormateTimePeriodForAMO(requireddate,difference);
+			RegularTimePeriod curperiod = this.getJFreeChartFormateTimePeriod(requireddate );
 			if(curperiod == null)	return null;
 			
 			int index = this.nodeamo.getIndex( curperiod );
-			
 			TimeSeriesDataItem lastcjlrecord = null;
-			try{	lastcjlrecord = nodeamo.getDataItem( index - 1);
+			try {	lastcjlrecord = nodeamo.getDataItem( index - 1);
 			} catch (java.lang.ArrayIndexOutOfBoundsException e ) {
 				logger.debug("index = 0，可能是新股第一周");
 				return true;
@@ -2375,26 +2194,32 @@ import com.udojava.evalex.Expression;
 			Date lastdate = lastcjlrecord.getPeriod().getEnd();
 			LocalDate lastld = lastdate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 			
+			//算法就是把node上周数据的日期和大盘上周的日期比较，如果不一样，说明node停牌过，没停牌的上周数据日期肯定一样。
 			String nodept = getNodeperiodtype();
 			DaPan dapan = (DaPan)superbk.getRoot();
 			NodeXPeriodData dpxata = dapan.getNodeXPeroidData(nodept);
-			Integer bklstindex = null;
-			for(int i= -1;i>=-4;i--) { //大盘连续停牌4周的可能性大概为0
-				Integer bklastxdata = dpxata.getIndexOfSpecificDateOHLCData(requireddate, difference - i);
-				if(bklastxdata != null) {
-					bklstindex = bklastxdata;
-					break;
-				}
+			TimeSeries dpamo = dpxata.getAMOData();
+			Integer dapcurindx = null ;
+			try {			 dapcurindx = dpamo.getIndex(curperiod);
+			} catch ( java.lang.NullPointerException e) {
+				e.printStackTrace();
 			}
-			if(bklstindex == null) 	return false;  //大盘没有数据,默认为没有停牌
-			LocalDate bklastlocaldate = dpxata.getLocalDateOfSpecificIndexOfOHLCData(bklstindex);
+			if(dapcurindx == 0 ) return false ;//大盘都到第一周了，肯定没停牌
+			LocalDate dplstwkdata = null;
+			for(int i= 1;i<=4;i++) { //大盘连续停牌4周的可能性大概为0
+				TimeSeriesDataItem dplstrecords = dpamo.getDataItem(dapcurindx -i);
+				if(dplstrecords != null) { //大盘上周的数据找到
+					dplstwkdata = dplstrecords.getPeriod().getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+					break;
+				} else {} //说明是假期
+			}
 			
 			WeekFields weekFields = WeekFields.of(Locale.getDefault());
 			int year2 = lastld.getYear();
 			int weeknumber2 = lastld.get(weekFields.weekOfWeekBasedYear());
 			
-			int year1 = bklastlocaldate.getYear();
-			int weeknumber1 = bklastlocaldate.get(weekFields.weekOfWeekBasedYear());
+			int year1 = dplstwkdata.getYear();
+			int weeknumber1 = dplstwkdata.get(weekFields.weekOfWeekBasedYear());
 			
 			if(year1 != year2)
 				return true;
@@ -2412,6 +2237,9 @@ import com.udojava.evalex.Expression;
 		{
 			return this.periodlowestzhangdiefu;
 		} 
+		/*
+		 * 
+		 */
 		public void addPeriodHighestZhangDieFu (LocalDate requireddate,Double zhangfu)
 		{
 			try {	
@@ -2422,17 +2250,15 @@ import com.udojava.evalex.Expression;
 					DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
 					java.sql.Date sqldate = new java.sql.Date(format.parse(requireddate.toString()).getTime());
 					recordwk = new org.jfree.data.time.Week (sqldate);
-				} catch (ParseException e) {
-					e.printStackTrace();
+				} catch (ParseException e) {	e.printStackTrace();
 					return ;
 				}
 				
-				Double curzhangfu = this.getSpecificTimeHighestZhangDieFu(requireddate, 0);
+				Double curzhangfu = this.getSpecificTimeHighestZhangDieFu(requireddate);
 				if(curzhangfu == null  ){
 					try{
 						periodhighestzhangdiefu.add(recordwk, zhangfu, false );
-					} catch(Exception e) {
-						e.printStackTrace();
+					} catch(Exception e) {e.printStackTrace();
 						return;
 					}
 					return;
@@ -2442,15 +2268,17 @@ import com.udojava.evalex.Expression;
 					try{
 						this.periodhighestzhangdiefu.delete(recordwk);
 						periodhighestzhangdiefu.add(recordwk, zhangfu, false );
-					} catch(Exception e) {
-						e.printStackTrace();
+					} catch(Exception e) {e.printStackTrace();
 						return;
 					}
 					return;
 				}
 			} catch (org.jfree.data.general.SeriesException e) {}
 		}
-		public void addPeriodLowestZhangDieFu (LocalDate requireddate,Double diefu)
+		/*
+		 * 
+		 */
+		public void addPeriodLowestZhangDieFu (LocalDate requireddate, Double diefu)
 		{
 			try {	
 				periodlowestzhangdiefu.setNotify(false);
@@ -2460,16 +2288,13 @@ import com.udojava.evalex.Expression;
 					DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
 					java.sql.Date sqldate = new java.sql.Date(format.parse(requireddate.toString()).getTime());
 					recordwk = new org.jfree.data.time.Week (sqldate);
-				} catch (ParseException e) {
-					e.printStackTrace();
-				}
+				} catch (ParseException e) {e.printStackTrace();}
 				
-				Double curzhangfu = this.getSpecificTimeLowestZhangDieFu(requireddate, 0);
+				Double curzhangfu = this.getSpecificTimeLowestZhangDieFu(requireddate);
 				if(curzhangfu == null  ){
 					try{
 						periodlowestzhangdiefu.add(recordwk, diefu, false );
-					} catch(Exception e) {
-						e.printStackTrace();
+					} catch(Exception e) {e.printStackTrace();
 						return;
 					}
 					return;
@@ -2479,27 +2304,24 @@ import com.udojava.evalex.Expression;
 					try{
 						this.periodlowestzhangdiefu.delete(recordwk);
 						periodlowestzhangdiefu.add(recordwk, diefu, false );
-					} catch(Exception e) {
-						e.printStackTrace();
+					} catch(Exception e) {e.printStackTrace();
 						return;
 					}
 					return;
 				}
 			} catch (org.jfree.data.general.SeriesException e) {}
 		}
-		
 		/*
 		 * 得到某个时期的涨跌幅  DailyZhangDieFuRangeInWeek
 		 */
-		public Double getSpecificTimeHighestZhangDieFu (LocalDate requireddate,int difference)
+		public Double getSpecificTimeHighestZhangDieFu (LocalDate requireddate )
 		{
-			RegularTimePeriod period = getJFreeChartFormateTimePeriodForAMO(requireddate,difference);
-			if(period == null)
-				return null;
+			RegularTimePeriod period = getJFreeChartFormateTimePeriod(requireddate );
+			if(period == null)	return null;
 			
 			TimeSeriesDataItem curhighzdfrecord = periodhighestzhangdiefu.getDataItem(period);
 			Double curhzdf = null ;
-			try {curhzdf = curhighzdfrecord.getValue().doubleValue();
+			try {	curhzdf = curhighzdfrecord.getValue().doubleValue();
 			} catch (Exception e) {return null;}
 			
 			return curhzdf;
@@ -2507,11 +2329,10 @@ import com.udojava.evalex.Expression;
 		/*
 		 * 
 		 */
-		public Double getSpecificTimeLowestZhangDieFu (LocalDate requireddate,int difference)
+		public Double getSpecificTimeLowestZhangDieFu (LocalDate requireddate )
 		{
-			RegularTimePeriod period = getJFreeChartFormateTimePeriodForAMO(requireddate,difference);
-			if(period == null)
-				return null;
+			RegularTimePeriod period = getJFreeChartFormateTimePeriod(requireddate );
+			if(period == null)	return null;
 			TimeSeriesDataItem curlowzdfrecord = periodlowestzhangdiefu.getDataItem(period);
 			Double curlzdf = null ;
 			try { curlzdf = curlowzdfrecord.getValue().doubleValue();
@@ -2519,6 +2340,7 @@ import com.udojava.evalex.Expression;
 			
 			return curlzdf;
 		}
+		
 		private LocalDate isnotcalwholeweekmodedate;
 		public void setNotCalWholeWeekMode(LocalDate date)
 		{

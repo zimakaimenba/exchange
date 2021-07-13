@@ -54,5 +54,10 @@ public interface  NodeGivenPeriodDataItem
 	public Integer getDieTingNumber() ;
 	public void setDieTingNumber(Integer dietingnumber) ;
 	public RegularTimePeriod getJFreeChartPeriod (String nodeperiodtype);
+	
+	public Double getDaPanChenJiaoErZhanBiGrowingRate();
+	public Double getDaPanChenJiaoLiangZhanBiGrowingRate();
+	public void setDaPanChenJiaoErZhanBiGrowingRate(Double dpcjezbgr);
+	public void setDaPanChenJiaoLiangZhanBiGrowingRate(Double dpcjlzbgr);
 		
 }

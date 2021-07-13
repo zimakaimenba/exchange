@@ -22,41 +22,8 @@ public class BanKuaiXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC
 		}
 
 		@Override
-		public Boolean hasFxjgInPeriod(LocalDate requireddate, int difference) {
+		public Boolean hasFxjgInPeriod(LocalDate requireddate) {
 			// TODO Auto-generated method stub
 			return null;
 		}
-
-//		@Override
-//		public Double getSpecificTimeHuanShouLv(LocalDate requireddate, int difference) {
-//			// TODO Auto-generated method stub
-//			return null;
-//		}
-//
-//		@Override
-//		public Double getSpecificTimeZongShiZhi(LocalDate requireddate, int difference) {
-//			// TODO Auto-generated method stub
-//			return null;
-//		}
-//
-//		@Override
-//		public Double getSpecificTimeHighestZhangDieFu(LocalDate requireddate, int difference) {
-//			// TODO Auto-generated method stub
-//			return null;
-//		}
-//
-//		@Override
-//		public Double getSpecificTimeLowestZhangDieFu(LocalDate requireddate, int difference) {
-//			// TODO Auto-generated method stub
-//			return null;
-//		}
-//
-//		@Override
-//		public Double getSpecificTimeLiuTongShiZhi(LocalDate requireddate, int difference) {
-//			// TODO Auto-generated method stub
-//			return null;
-//		}
-
-		
-		
 }

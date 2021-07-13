@@ -431,11 +431,12 @@ public class BanKuaiFengXi extends JDialog
     	
     	DaPan dapan = (DaPan) CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode("000000", BkChanYeLianTreeNode.DAPAN);
     	dapan.getServicesForNode(true).getNodeData(dapan, requirestart, curselectdate,this.globeperiod,this.globecalwholeweek);
+    	dapan.getServicesForNode(true).getNodeKXian(dapan, requirestart, curselectdate,this.globeperiod,this.globecalwholeweek);
     	dapan.getServicesForNode(false);
     	
 		List<BkChanYeLianTreeNode> bkwithcje = getBanKuaiFenXiQualifiedNodes (curselectdate,this.globeperiod,this.globecalwholeweek,true);
 		((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).addBanKuai( bkwithcje );
-    	((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).refresh(curselectdate,0,globeperiod);
+    	((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).refresh(curselectdate,globeperiod);
     	tableBkZhanBi.validate();
     	tableBkZhanBi.repaint();
 
@@ -457,6 +458,7 @@ public class BanKuaiFengXi extends JDialog
     	//这里必须先同步一下TDXDAN, 因为refresh里面的superbk用的tdx dapan，必须要有数据
     	DaPan tdxdapan = (DaPan) CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode("000000", BkChanYeLianTreeNode.DAPAN);
     	tdxdapan.getServicesForNode(true).getNodeData(tdxdapan, requirestart, curselectdate,this.globeperiod,this.globecalwholeweek);
+    	tdxdapan.getServicesForNode(true).getNodeKXian(tdxdapan, requirestart, curselectdate,this.globeperiod,this.globecalwholeweek);
     	tdxdapan.getServicesForNode(false);
     	
     	DaPan dzhdapan = (DaPan) CreateExchangeTree.CreateTreeOfDZHBanKuaiAndStocks().getSpecificNodeByHypyOrCode("000000", BkChanYeLianTreeNode.DAPAN);
@@ -465,7 +467,7 @@ public class BanKuaiFengXi extends JDialog
     	
     	List<BkChanYeLianTreeNode> dzhbk = getDZHBanKuaiFenXiQualifiedNodes (curselectdate,this.globeperiod,this.globecalwholeweek,true);
 		((BanKuaiInfoTableModel)tblDzhBkCurWkZhanBi.getModel()).addBanKuai( dzhbk );
-		((BanKuaiInfoTableModel)tblDzhBkCurWkZhanBi.getModel()).refresh(curselectdate,0,globeperiod);
+		((BanKuaiInfoTableModel)tblDzhBkCurWkZhanBi.getModel()).refresh(curselectdate,globeperiod);
 		tblDzhBkCurWkZhanBi.validate();
 		tblDzhBkCurWkZhanBi.repaint();
 		
@@ -500,11 +502,16 @@ public class BanKuaiFengXi extends JDialog
 					||  ((BanKuai)childnode).getBanKuaiLeiXing().equals(BanKuai.NOGGNOSELFCJL)  ) //有些指数是没有个股和成交量的，不列入比较范围
 				continue;
 			
+			LocalDate jlmaxdate = ((BanKuai)childnode).getShuJuJiLuInfo().getJyjlmaxdate();
+			LocalDate jlmindate = ((BanKuai)childnode).getShuJuJiLuInfo().getJyjlmindate();
+			if(jlmaxdate == null && jlmindate == null)
+				continue; //bankuai without data records should not be displayed
+			
 			if(forcetogetnodedataagain)
 				childnode = svsbk.getNodeData( (BanKuai)childnode, requirestart, checkdate,globeperiod,globecalwholeweek);
 			
 			NodeXPeriodData bkxdata = ((TDXNodes)childnode).getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
-			if(bkxdata.getIndexOfSpecificDateOHLCData(checkdate, 0) != null)//板块当周没有数据也不考虑，板块一般不可能没有数据，没有数据说明该板块这周还没有诞生，或者过去有，现在成交量已经不存入数据库
+			if(bkxdata.getIndexOfSpecificDateOHLCData(checkdate) != null)//板块当周没有数据也不考虑，板块一般不可能没有数据，没有数据说明该板块这周还没有诞生，或者过去有，现在成交量已经不存入数据库
 				bkwithcje.add( (BanKuai)childnode );
 		}
 		
@@ -534,11 +541,16 @@ public class BanKuaiFengXi extends JDialog
 					||  ((BanKuai)childnode).getBanKuaiLeiXing().equals(BanKuai.NOGGNOSELFCJL)  ) //有些指数是没有个股和成交量的，不列入比较范围
 				continue;
 			
+			LocalDate jlmaxdate = ((BanKuai)childnode).getShuJuJiLuInfo().getJyjlmaxdate();
+			LocalDate jlmindate = ((BanKuai)childnode).getShuJuJiLuInfo().getJyjlmindate();
+			if(jlmaxdate == null && jlmindate == null)
+				continue; //bankuai without data records should not be displayed
+			
 			if(forcetogetnodedataagain) 
 				childnode = ((BanKuai)childnode).getServicesForNode(true).getNodeData( (BanKuai)childnode, requirestart, checkdate,globeperiod,globecalwholeweek);
 
 			NodeXPeriodData bkxdata = ((TDXNodes)childnode).getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
-			if(bkxdata.getIndexOfSpecificDateOHLCData(checkdate, 0) != null)//板块当周没有数据也不考虑，板块一般不可能没有数据，没有数据说明该板块这周还没有诞生，或者过去有，现在成交量已经不存入数据库
+			if(bkxdata.getIndexOfSpecificDateOHLCData(checkdate) != null)//板块当周没有数据也不考虑，板块一般不可能没有数据，没有数据说明该板块这周还没有诞生，或者过去有，现在成交量已经不存入数据库
 				bkwithcje.add( (BanKuai)childnode );
 		}
 		
@@ -602,7 +614,8 @@ public class BanKuaiFengXi extends JDialog
 		if(this.globecalwholeweek)		curselectdate = curselectdate.with(DayOfWeek.FRIDAY);
 		zhishubk.getServicesForNode(true).getNodeData(zhishubk, CommonUtility.getSettingRangeDate(curselectdate, "large"),curselectdate, 
 						 NodeGivenPeriodDataItem.WEEK,this.globecalwholeweek);
-		zhishubk.getServicesForNode(true).syncNodeData(zhishubk);
+		zhishubk.getServicesForNode(true).getNodeKXian(zhishubk, CommonUtility.getSettingRangeDate(curselectdate, "large"),curselectdate, 
+				 		NodeGivenPeriodDataItem.WEEK,this.globecalwholeweek);
 		zhishubk.getServicesForNode(false);
 		pnlBanKuaiCandle.updatedDate(zhishubk,selectedbk,CommonUtility.getSettingRangeDate(curselectdate, "basic"),curselectdate,NodeGivenPeriodDataItem.DAY);
 //		tabpnlKxian.setSelectedIndex(0); 
@@ -668,14 +681,14 @@ public class BanKuaiFengXi extends JDialog
 //				DaPan dapan = (DaPan) CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode("000000", BkChanYeLianTreeNode.DAPAN);
 				List<BkChanYeLianTreeNode> bkwithcje = getBanKuaiFenXiQualifiedNodes(selectdate, globeperiod, globecalwholeweek,false);
 				((BanKuaiInfoTableModel)tableselectedwkbkzb.getModel()).addBanKuai( bkwithcje );
-				((BanKuaiInfoTableModel)tableselectedwkbkzb.getModel()).refresh(selectdate,0,globeperiod);
+				((BanKuaiInfoTableModel)tableselectedwkbkzb.getModel()).refresh(selectdate,globeperiod);
 				
 				unifiedTabbedPanSelectionActions (bkcur,selectdate);
 			} else if(bkcur.getType() == BkChanYeLianTreeNode.DZHBK) {
 //				DaPan dapan = (DaPan) CreateExchangeTree.CreateTreeOfDZHBanKuaiAndStocks().getSpecificNodeByHypyOrCode("000000", BkChanYeLianTreeNode.DAPAN);
 				List<BkChanYeLianTreeNode> bkwithcje = getDZHBanKuaiFenXiQualifiedNodes(selectdate, globeperiod, globecalwholeweek,false);
 				((BanKuaiInfoTableModel)tblDzhBkCurSelectedWkZhanBi.getModel()).addBanKuai( bkwithcje );
-				((BanKuaiInfoTableModel)tblDzhBkCurSelectedWkZhanBi.getModel()).refresh(selectdate,0,globeperiod);
+				((BanKuaiInfoTableModel)tblDzhBkCurSelectedWkZhanBi.getModel()).refresh(selectdate,globeperiod);
 				
 				unifiedTabbedPanSelectionActions (bkcur,selectdate);
 			}
@@ -759,7 +772,7 @@ public class BanKuaiFengXi extends JDialog
 			}
 		}
 		
-		((BanKuaiInfoTableModel)socialtable.getModel()).refresh(curselectdate,0,globeperiod);
+		((BanKuaiInfoTableModel)socialtable.getModel()).refresh(curselectdate,globeperiod);
 	}
 	/*
 	 * 
@@ -808,6 +821,18 @@ public class BanKuaiFengXi extends JDialog
 				
 				xdzdate = ((BanKuaiGeGuBasicTableModel)tablexuandingplusone.getModel()).getCurDisplayedDate(); //突出和当前主板块的交集个股
 				if(xdzdate != null) ((BanKuaiGeGuBasicTableModel)tablexuandingplusone.getModel()).setInterSectionBanKuai(tempbankuai);
+		}
+	}
+	/*
+	 * 
+	 */
+	protected void saveBanKuaiDailyDataToDatabase() 
+	{
+		for( BanKuaiandGeGuTableBasic tmptbl : tableallbktablesset ) {
+			if(((BanKuaiInfoTableModel)tmptbl.getModel()).getRowCount() <=0)
+				continue;
+			
+			((BanKuaiInfoTableModel)tmptbl.getModel()).getAllNodes();
 		}
 	}
 	/*
@@ -1189,6 +1214,67 @@ public class BanKuaiFengXi extends JDialog
 	/*
 	 * 
 	 */
+	private  void displayAnalysisResutByDateChooser (LocalDate userselecteddate)
+	{
+		if(chxbxwholeweek.isSelected() ) { //任何日子都是计算完整周
+			if(globecalwholeweek && lastselecteddate != null && CommonUtility.isInSameWeek(lastselecteddate, userselecteddate) )
+				return;
+			globecalwholeweek = true;
+		} else { //只有周末计算完整周
+			DayOfWeek dayofweek = userselecteddate.getDayOfWeek();
+			if(dayofweek.equals(DayOfWeek.SUNDAY) || dayofweek.equals(DayOfWeek.SATURDAY) || dayofweek.equals(DayOfWeek.FRIDAY)) {
+				globecalwholeweek = true;	
+			} else
+				globecalwholeweek = false;
+		}
+		
+		Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
+		setCursor(hourglassCursor);
+		
+		Boolean tdxtblhasdata = false; Boolean dzhtblhasdata = false;
+		if(((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getRowCount() >0) 
+			tdxtblhasdata = true;
+		if(((BanKuaiInfoTableModel)tblDzhBkCurWkZhanBi.getModel()).getRowCount() >0)
+			dzhtblhasdata = true;
+			
+		clearTheGuiBeforDisplayNewInfoSection1 ();
+		clearTheGuiBeforDisplayNewInfoSection2 ();
+		clearTheGuiBeforDisplayNewInfoSection3 ();
+		
+		if(lastselecteddate == null) { //user first set date
+			String firstshowvendordata = bkfxsettingprop.getProperty ("firstshowvendordata");
+    		if(firstshowvendordata == null || firstshowvendordata.equalsIgnoreCase("TDX")) {
+    			gettBanKuaiZhanBiRangedByGrowthRateOfPeriod (userselecteddate, NodeGivenPeriodDataItem.WEEK);
+    			unifiedTabbedPanSelectionActions ( (BanKuai)CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode("999999", BkChanYeLianTreeNode.TDXBK)
+    				,userselecteddate );
+    		}
+    		else	if(firstshowvendordata.equalsIgnoreCase("DZH")) {
+    			gettDZHBanKuaiZhanBiRangedByGrowthRateOfPeriod (userselecteddate, NodeGivenPeriodDataItem.WEEK);
+    			unifiedTabbedPanSelectionActions ( (BanKuai)CreateExchangeTree.CreateTreeOfDZHBanKuaiAndStocks().getSpecificNodeByHypyOrCode("999999", BkChanYeLianTreeNode.DZHBK)
+	    				,userselecteddate );
+    		}
+    		
+    		
+		}	else  { 
+			lbllastselect.setText(lastselecteddate.toString());
+    		
+    		if(tdxtblhasdata) 
+    			gettBanKuaiZhanBiRangedByGrowthRateOfPeriod (dateChooser.getLocalDate(),globeperiod);
+			if(dzhtblhasdata) 
+    			gettDZHBanKuaiZhanBiRangedByGrowthRateOfPeriod (dateChooser.getLocalDate(),globeperiod);
+		}
+		
+		lastselecteddate = userselecteddate;
+		
+		playAnaylsisFinishNoticeSound();
+		
+		hourglassCursor = null;
+		Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
+		setCursor(hourglassCursor2);
+	}
+	/*
+	 * 
+	 */
 	private void createEvents() 
 	{
 		panelGgDpCjeZhanBi.setProperties(this.bkfxsettingprop);
@@ -1222,35 +1308,7 @@ public class BanKuaiFengXi extends JDialog
 		    		JDateChooser wybieraczDat = (JDateChooser) e.getSource();
 		    		LocalDate newdate = wybieraczDat.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 		    		
-		    		if( (lastselecteddate == null) || ( !newdate.isEqual( lastselecteddate) ) ) {
-		    			Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
-						setCursor(hourglassCursor);
-						
-						clearTheGuiBeforDisplayNewInfoSection1 ();
-						clearTheGuiBeforDisplayNewInfoSection2 ();
-						clearTheGuiBeforDisplayNewInfoSection3 ();
-						
-						String firstshowvendordata = bkfxsettingprop.getProperty ("firstshowvendordata");
-			    		if(firstshowvendordata == null || firstshowvendordata.equalsIgnoreCase("TDX")) {
-			    			gettBanKuaiZhanBiRangedByGrowthRateOfPeriod (newdate, NodeGivenPeriodDataItem.WEEK);
-			    			unifiedTabbedPanSelectionActions ( (BanKuai)CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode("999999", BkChanYeLianTreeNode.TDXBK)
-			    				,newdate );
-			    		}
-			    		else	if(firstshowvendordata.equalsIgnoreCase("DZH")) {
-			    			gettDZHBanKuaiZhanBiRangedByGrowthRateOfPeriod (newdate, NodeGivenPeriodDataItem.WEEK);
-			    			unifiedTabbedPanSelectionActions ( (BanKuai)CreateExchangeTree.CreateTreeOfDZHBanKuaiAndStocks().getSpecificNodeByHypyOrCode("999999", BkChanYeLianTreeNode.DZHBK)
-				    				,newdate );
-			    		}
-			    			
-			    		if(lastselecteddate != null)  		lbllastselect.setText(lastselecteddate.toString());
-			    		lastselecteddate = newdate;
-			    		
-			    		playAnaylsisFinishNoticeSound();
-			    		
-			    		hourglassCursor = null;
-			    		Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
-						setCursor(hourglassCursor2);
-		    		}
+		    		displayAnalysisResutByDateChooser (newdate);
 		    	}
 		    }
 		});
@@ -1259,20 +1317,49 @@ public class BanKuaiFengXi extends JDialog
 			@Override
 			public void mouseClicked(MouseEvent arg0) 
 			{
-				int action = JOptionPane.showConfirmDialog(null, "需要重新计算分析结果，是否继续？","警告", JOptionPane.YES_NO_OPTION);
-				if(0 == action) {
-					clearTheGuiBeforDisplayNewInfoSection1 ();
-					clearTheGuiBeforDisplayNewInfoSection2 ();
-					clearTheGuiBeforDisplayNewInfoSection3 ();
+				if(chxbxwholeweek.isSelected())	{
+					chxbxwholeweek.setText("当前选择任何一天均计算完整周");
+					chxbxwholeweek.setForeground(Color.BLACK);
+					DayOfWeek dayofweek = dateChooser.getLocalDate().getDayOfWeek();
+					Boolean alreadycalwholewk = false;
+					if(dayofweek.equals(DayOfWeek.SUNDAY) || dayofweek.equals(DayOfWeek.SATURDAY) || dayofweek.equals(DayOfWeek.FRIDAY)) {
+						alreadycalwholewk = true;
+					}
+					if(globecalwholeweek != null && globecalwholeweek == false && !alreadycalwholewk) { //原来不是计算完整周，要重新计算
+						int action = JOptionPane.showConfirmDialog(null, "从计算非完整周到计算完整周转换，需要重新计算分析结果，是否继续？","警告", JOptionPane.YES_NO_OPTION);
+						if(0 == action) 
+							displayAnalysisResutByDateChooser (dateChooser.getLocalDate());
+						else 
+							yuanzhiOperationForGlobecalwholeweekOfFalse ();
+					}
+				} else
+				if(!chxbxwholeweek.isSelected())	{
+					yuanzhiOperationForGlobecalwholeweekOfFalse ();
 					
-					if(chxbxwholeweek.isSelected())	{	globecalwholeweek = true; chxbxwholeweek.setForeground(Color.BLACK);}
-					else	{ globecalwholeweek = false; chxbxwholeweek.setForeground(Color.RED);}
-					
-					gettBanKuaiZhanBiRangedByGrowthRateOfPeriod (dateChooser.getLocalDate(),globeperiod);
-					playAnaylsisFinishNoticeSound();
-				} else 
-					chxbxwholeweek.setSelected(!chxbxwholeweek.isSelected() );
+					DayOfWeek dayofweek = dateChooser.getLocalDate().getDayOfWeek();
+					if(dayofweek.equals(DayOfWeek.SUNDAY) || dayofweek.equals(DayOfWeek.SATURDAY) || dayofweek.equals(DayOfWeek.FRIDAY)) {
+						
+					} else { //把日期调到周五，
+						dateChooser.setLocalDate( dateChooser.getLocalDate().with(DayOfWeek.FRIDAY) );
+					}
+				}
 			}
+			
+			private void yuanzhiOperationForGlobecalwholeweekOfFalse ()
+			{
+				chxbxwholeweek.setText("当前仅选择周五周末计算完整周");
+				chxbxwholeweek.setForeground(Color.RED);
+				globecalwholeweek = false;
+				chxbxwholeweek.setSelected(false);
+			}
+		});
+		
+		menuItemSaveCurWkDataToData.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent evt) {
+				saveBanKuaiDailyDataToDatabase ();
+			}
+
 		});
 		
 		menuItemTempGeGuFromFile.addActionListener(new ActionListener() {
@@ -2449,6 +2536,7 @@ public class BanKuaiFengXi extends JDialog
 			}
 		});
 	}
+	
 	/*
 	 * 计算个股所有板块的数据
 	 */
@@ -2490,7 +2578,7 @@ public class BanKuaiFengXi extends JDialog
 		}
 		svsbk = null;
 		
-		((BanKuaiInfoTableModel)tblmergegegubkinfo.getModel()).refresh(curselectdate, 0, this.globeperiod); 
+		((BanKuaiInfoTableModel)tblmergegegubkinfo.getModel()).refresh(curselectdate, this.globeperiod); 
 		((GeGuToBanKuaiTableModel)tblmergegeguinfoinallbk.getModel()).refresh(stock, curselectdate, this.globeperiod);
 		((BanKuaiGeGuMergeTableModel)tblmergeggtobks.getModel()).refresh();
 	}
@@ -3220,6 +3308,8 @@ public class BanKuaiFengXi extends JDialog
 
 	private JMenuItem menuItemcompareToOtherBkDZH;
 
+	private JMenuItem menuItemSaveCurWkDataToData;
+
 	private void initializeGuiOf2560Resolution ()
 	{
 		setTitle("\u677F\u5757\u5206\u6790");
@@ -3593,7 +3683,7 @@ public class BanKuaiFengXi extends JDialog
 		btnresetdate = new JButton(bkfxCancelAction);
 		btnresetdate.setText("\u4ECA\u5929");
 		
-		chxbxwholeweek = new JCheckBox("\u8BA1\u7B97\u5B8C\u6574\u5468");
+		chxbxwholeweek = new JCheckBox("\u9009\u62E9\u4EFB\u4F55\u4E00\u5929\u90FD\u8BA1\u7B97\u5B8C\u6574\u5468");
 		chxbxwholeweek.setToolTipText("\u5982\u4E0D\u52FE\u9009\uFF0C\u5219\u8BA1\u7B97\u5230\u88AB\u9009\u62E9\u7684\u90A3\u4E00\u5929");
 		chxbxwholeweek.setSelected(true);
 		
@@ -3613,7 +3703,7 @@ public class BanKuaiFengXi extends JDialog
 							.addComponent(chxbxwholeweek)
 							.addGap(18)
 							.addComponent(btnresetdate)
-							.addGap(39)
+							.addGap(18)
 							.addComponent(lbllastselect))
 						.addComponent(pnlZhiShu, GroupLayout.PREFERRED_SIZE, 473, Short.MAX_VALUE))
 					.addContainerGap())
@@ -3682,10 +3772,12 @@ public class BanKuaiFengXi extends JDialog
 							holdbackgrounddownload.setToolTipText("后台下载数据,点击暂停下载。");
 							holdbackgrounddownload.setIcon(icon);
 						} else {
-							ImageIcon icon = stockmanager.setGetNodeDataFromDbWhenSystemIdleThreadStatus(true);
-//							holdbackgrounddownload.setText("后台下载数据暂停");
-							holdbackgrounddownload.setToolTipText("后台下载数据暂停,点击重启下载。");
-							holdbackgrounddownload.setIcon(icon);
+							if(globecalwholeweek) { //非完整周不缓存数据，否则可能出错
+								ImageIcon icon = stockmanager.setGetNodeDataFromDbWhenSystemIdleThreadStatus(true);
+//								holdbackgrounddownload.setText("后台下载数据暂停");
+								holdbackgrounddownload.setToolTipText("后台下载数据暂停,点击重启下载。");
+								holdbackgrounddownload.setIcon(icon);
+							} else	JOptionPane.showMessageDialog(null,"系统处于计算非完整周状态， 为避免错误，无法缓存数据!","Warning",JOptionPane.WARNING_MESSAGE);
 						}
 						
 					} else 
@@ -3715,6 +3807,8 @@ public class BanKuaiFengXi extends JDialog
 	     jPopupMenuoftabbedpanebk.add(menuItemcancelBanKaiReviewedtoday);
 	     menuItemcancelAllNodesReviewedtoday = new JMenuItem("取消所有板块个股阅读状态"); //系统默认按成交额排名
 	     jPopupMenuoftabbedpanebk.add(menuItemcancelAllNodesReviewedtoday);
+	     menuItemSaveCurWkDataToData = new JMenuItem("保存本表数据到数据库");
+	     jPopupMenuoftabbedpanebk.add(menuItemSaveCurWkDataToData);
 	     
 		   JMenu biaojiMenu = new JMenu("标记板块");
 	       menuItemAddRmvBkToRedSign = new JMenuItem("设置/取消红标");
@@ -4046,6 +4140,9 @@ public class BanKuaiFengXi extends JDialog
 //					tmptable.setRowSelectionInterval(modelRow, modelRow);
 //					tmptable.scrollRectToVisible(new Rectangle(tmptable.getCellRect(modelRow, 0, true)));
 //				} catch (java.lang.IllegalArgumentException ex) {}
+			
+			tmptable.revalidate();
+			tmptable.repaint();
 		}
 
 		return found;

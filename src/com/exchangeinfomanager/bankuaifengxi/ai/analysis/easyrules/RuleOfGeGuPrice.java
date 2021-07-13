@@ -25,7 +25,7 @@ public class RuleOfGeGuPrice
 		
 	@Condition
 	public boolean evaluate(@Fact("evanode") TDXNodes evanode, 
-			@Fact("evadate") LocalDate evadate, @Fact("evadatedifference") Integer evadatedifference, 
+			@Fact("evadate") LocalDate evadate,  
 			@Fact("evaperiod") String evaperiod,
     		@Fact("evacond") BanKuaiAndGeGuMatchingConditions evacond ) 
 	{
@@ -45,7 +45,7 @@ public class RuleOfGeGuPrice
     	try { nodexdata = (StockXPeriodDataForJFC)evanode.getNodeXPeroidData(evaperiod);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
     	} catch (java.lang.ClassCastException e) {return false;}
     	
-		OHLCItem ohlcdata = ((TDXNodesXPeriodDataForJFC)nodexdata).getSpecificDateOHLCData (evadate,0);
+		OHLCItem ohlcdata = ((TDXNodesXPeriodDataForJFC)nodexdata).getSpecificDateOHLCData (evadate);
 	    Double close = ohlcdata.getCloseValue();
 	    if(pricemin != null || pricemax != null ) {
 			if(close >= pricemin && close <= pricemax) return true;
@@ -57,7 +57,7 @@ public class RuleOfGeGuPrice
 	
 	@Action
     public void execute(@Fact("evanode") TDXNodes evanode,
-    		@Fact("evadate") LocalDate evadate,@Fact("evadatedifference") Integer evadatedifference,  
+    		@Fact("evadate") LocalDate evadate,  
     		@Fact("evaperiod") String evaperiod,
     		@Fact("evacond") BanKuaiAndGeGuMatchingConditions evacond )
     {

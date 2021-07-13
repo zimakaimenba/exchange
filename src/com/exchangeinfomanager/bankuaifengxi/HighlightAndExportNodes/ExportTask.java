@@ -64,7 +64,7 @@ public class ExportTask extends SwingWorker<Integer, String>
 		}	
 		
 		//对导出的板块和个股按照周成交额进行排序，这样导入到通达信后能自动按照成交额排序
-		Collections.sort(outputnodeslist, new NodeChenJiaoErComparator(selectiondate,0,period) );
+		Collections.sort(outputnodeslist, new NodeChenJiaoErComparator(selectiondate,period) );
 		
 		try {
 			Files.append("<导出日期:" + selectiondate.toString() + ">"+ System.getProperty("line.separator") ,outputfile, charset);

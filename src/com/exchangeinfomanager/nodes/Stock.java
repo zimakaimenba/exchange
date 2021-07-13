@@ -181,11 +181,11 @@ public class Stock extends TDXNodes {
 	/*
 	 * 
 	 */
-	protected Boolean isTingPai (LocalDate requireddate,int difference, String period )
+	protected Boolean isTingPai (LocalDate requireddate, String period )
 	{
 		NodeXPeriodData nodexdate = super.getNodeXPeroidData(period);
-		if( nodexdate.getIndexOfSpecificDateOHLCData(requireddate, difference) != null) {
-			boolean dapanxiushi = ((DaPan)getRoot()).isDaPanXiuShi(requireddate,difference,period );
+		if( nodexdate.getIndexOfSpecificDateOHLCData(requireddate) != null) {
+			boolean dapanxiushi = ((DaPan)getRoot()).isDaPanXiuShi(requireddate,period );
 			if(dapanxiushi)
 				return false;
 			else

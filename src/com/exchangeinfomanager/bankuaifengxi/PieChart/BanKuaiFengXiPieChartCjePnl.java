@@ -61,7 +61,7 @@ public class BanKuaiFengXiPieChartCjePnl extends BanKuaiFengXiPieChartPnl
     		
     		//找到对应周的数据
     		NodeXPeriodData stockxdataforbk = ((StockOfBanKuai)tmpstock).getStock().getNodeXPeroidData(period);
-    		Double cje = stockxdataforbk.getChengJiaoEr(weeknumber,0);
+    		Double cje = stockxdataforbk.getChengJiaoEr(weeknumber);
     		if(cje != null) {
        	    	if(stockname != null)
         	    		piechartdataset.setValue(ggcode+stockname,cje);

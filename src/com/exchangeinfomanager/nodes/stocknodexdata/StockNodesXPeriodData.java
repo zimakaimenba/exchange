@@ -33,14 +33,17 @@ public interface StockNodesXPeriodData
 							"换手率",
 							"自由流通换手率",
 							"流通市值",
-							"总市值",
+							"总市值"
 							};
 	public static  Object [] ouputcontrol = {
 			1,1,
 			new DecimalFormat("#0.000"),
-			new DecimalFormat("#0.000"),
+			new DecimalFormat("#0.000")
 			};
 	public static  String [] ouputcolor = {
 			"#17202A","#17202A","#17202A","#17202A"
+	};
+	public static  Integer [] ouputToHtmlToolTipControl = {
+			1,1,1,1
 	};
 }

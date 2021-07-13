@@ -141,6 +141,19 @@ public class NodeGivenPeriodDataItemForJFC extends OHLCItem implements NodeGiven
 	{
 		return this.regulartimeperiod;
 	}
+	Double dpcjezbgr;Double dpcjlzbgr;
+	public Double getDaPanChenJiaoErZhanBiGrowingRate() {
+		return  dpcjezbgr;
+	}
+	public Double getDaPanChenJiaoLiangZhanBiGrowingRate() {
+		return dpcjlzbgr;
+	}
+	public void setDaPanChenJiaoErZhanBiGrowingRate(Double dpcjezbgr1) {
+		this.dpcjezbgr =  dpcjezbgr1;
+	}
+	public void setDaPanChenJiaoLiangZhanBiGrowingRate(Double dpcjlzbgr1) {
+		this.dpcjlzbgr =  dpcjlzbgr1;
+	}
 
 	private String myowncode;
 	private RegularTimePeriod regulartimeperiod;
