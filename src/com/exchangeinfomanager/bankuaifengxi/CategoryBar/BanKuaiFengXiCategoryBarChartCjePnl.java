@@ -177,7 +177,6 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 		
 		NodeXPeriodData nodexdata = node.getNodeXPeroidData(period);
 		
-		 
 		if(shouldDisplayBarOfSuperBanKuaiCjeInsteadOfSelfCje == null) { //显示node自己的成交额，个股成交额和平均成交额差别不会太大，可以用同一个坐标系显示
 			Double leftrangeaxix = displayBarDataToGui (nodexdata,startdate,enddate,period);
 //			Double avecje = displayAverageDailyCjeOfWeekLineDataToGuiUsingLeftAxis(nodexdata,startdate,enddate,period); //显示node的周线平均成交额的线形数据
@@ -214,11 +213,6 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 	public Double displayAverageBarDataToGui(NodeXPeriodData nodexdata,LocalDate startdate,LocalDate enddate,String period)
 	{
 		DaPan dapan = (DaPan)CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getModel().getRoot(); //alwayse use tdx tree fro dapan;
-//		if(super.getCurDisplayedNode().getType() == BkChanYeLianTreeNode.BKGEGU) {
-//			BanKuai bk = ((StockOfBanKuai)super.getCurDisplayedNode() ).getBanKuai();
-//			dapan = (DaPan)bk.getRoot();
-//		} else
-//			dapan = (DaPan)(this.getCurDisplayedNode().getRoot());
 		
 		LocalDate requireend = enddate.with(DayOfWeek.SATURDAY);
 		LocalDate requirestart = startdate.with(DayOfWeek.SATURDAY);

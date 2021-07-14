@@ -51,6 +51,7 @@ public interface NodeXPeriodData
 	
 	public Double getChenJiaoErZhanBi (LocalDate requireddate );
 	public Double getChenJiaoErZhanBiGrowthRateForDaPan (LocalDate requireddate );
+	public void addDaPanChenJiaoErZhanBiGrowingRate (LocalDate requireddate, Double cjezbgr);
 	public Integer getChenJiaoErZhanBiMaxWeekForDaPan (LocalDate requireddate );
 	public Integer getChenJiaoErZhanBiMinWeekForDaPan (LocalDate requireddate );
 	public Integer getChenJiaoErZhanBiMinestWeekForDaPanInSpecificPeriod (LocalDate requireddate , int checkrange);
@@ -58,6 +59,7 @@ public interface NodeXPeriodData
 	
 	public Double getChenJiaoLiangZhanBi(LocalDate requireddate );
 	public Double getChenJiaoLiangZhanBiGrowthRateForDaPan(LocalDate requireddate );
+	public void addDaPanChenJiaoLiangZhanBiGrowingRate (LocalDate requireddate, Double cjezbgr);
 	public Integer getChenJiaoLiangZhanBiMaxWeekForDaPan(LocalDate requireddate );
 	public Integer getChenJiaoLiangZhanBiMinWeekForDaPan(LocalDate requireddate );
 	
@@ -74,7 +76,7 @@ public interface NodeXPeriodData
 	public TimeSeries getAMOData ();
 	public LocalDate getAmoRecordsStartDate ();
 	public LocalDate getAmoRecordsEndDate ();
-	
+
 	public Double getChengJiaoEr (LocalDate requireddate );
 	public Double getChengJiaoErDifferenceWithLastPeriod(LocalDate requireddate );
 	public Integer getChenJiaoErMaxWeek (LocalDate requireddate );
@@ -94,6 +96,7 @@ public interface NodeXPeriodData
 	public Double getAverageDailyChengJiaoLiangOfWeek(LocalDate requireddate );
 	public Double getChengJiaoLiangDailyAverageDifferenceWithLastPeriod (LocalDate requireddate );
 	public Integer getAverageDailyChenJiaoLiangMaxWeek (LocalDate requireddate );
+	public Double getAverageDailyChenJiaoLiangGrowingRate (LocalDate requireddate );
 //	public Integer getAverageDailyCjlLianXuFangLiangPeriodNumber(LocalDate requireddate );
 //	public Integer getCjlDpMaxLianXuFangLiangPeriodNumber(LocalDate requireddate ,int settindpgmaxwk);
 	
@@ -116,73 +119,63 @@ public interface NodeXPeriodData
 
 	public void removeNodeDataFromSpecificDate (LocalDate requireddate );
 	
-	public static String[] NODEXDATACSVDATAHEADLINE = { 		 
-			"成交额占比",
-		    "成交额占比MaxWk",
-			"成交额占比MinWk",
-			"成交额占比增长率",
+	public static String[] NODEXDATACSVKeyWords = {
+			"ChengJiaoErZhanBi",	 "CjeZbDpMaxWk", "CjeZbDpMinWk", "CjeZbGrowRate",
 			
-			"成交量占比",
-		    "成交量占比MaxWk",
-			"成交量占比MinWk",
-			"成交量占比增长率",
+			"ChengJiaoLiangZhanBi",	"CjlZbDpMaxWk",	"CjlZbDpMinWk",	"CjlZbGrowRate",
+			
+			"OpenUpQueKou",	"HuiBuDownQueKou",	"OpenDownQueKou",	"HuiBuUpQueKou",
+			
+			"ZhangTing", "DieTing",
+			
+			"ChenJiaoEr",	"AverageChenJiaoEr",	"ChengJiaoErDailyAverageGrowingRate",	"ChengJiaoErDailyAverageDifferenceWithLastPeriod",	"AverageChenJiaoErMaxWeek", 
+			
+			"ChenJiaoLiang",	"AverageChenJiaoLiang",	"ChengJiaoLiangDailyAverageGrowingRate",	"ChengJiaoLiangDailyAverageDifferenceWithLastPeriod", "AverageChenJiaoLiangMaxWeek" 
+	};
+	
+	public static String[] NODEXDATACSVDATAHEADLINE = { 		 
+			"成交额占比", "成交额占比MaxWk",	"成交额占比MinWk",	"成交额占比增长率",
+			
+			"成交量占比",	"成交量占比MaxWk",	"成交量占比MinWk",	"成交量占比增长率",
 
-			"OpenUpQueKou",
-			 "HuiBuDownQueKou",
-			 "OpenDownQueKou",
-			 "HuiBuUpQueKou",
+			"OpenUpQueKou",	"HuiBuDownQueKou",	"OpenDownQueKou",	"HuiBuUpQueKou",
 			 
-			 "涨停",
-			 "跌停",
+			 "涨停","跌停",
 			 
-			 "成交额",
-			 "周平均成交额",
-			 "周日平均成交额增长率",
-			 "周日平均成交额增长",
-			 "周平均成交额MaxWK",
-			 "成交额大盘贡献率",
+			 "成交额",	"周平均成交额",	"周日平均成交额增长率",	"周日平均成交额增长",	"周平均成交额MaxWK",
 			 
-			 "成交量",
-			 "周平均成交量",
-			 "周日平均成交量增长率",
-			 "周日平均成交量增长",
-			 "周平均成交量MaxWK",
-			 "成交量大盘贡献率",
+			 "成交量",	"周平均成交量",	"周日平均成交量增长率",	"周日平均成交量增长",	"周平均成交量MaxWK",
 			 
-			 "涨跌幅",
-			 "开盘价",
-			 "最高价",
-			 "最低价",
-			 "收盘价",
+			 "涨跌幅","开盘价","最高价","最低价","收盘价",
 		};
 	
-	public static  Object [] ouputcontrol = {
+	public static  Object [] OuputFormatControl = {
 			new DecimalFormat("%#0.0000"),1,1,new DecimalFormat("%#0.000"),
 			new DecimalFormat("%#0.0000"),1,1,new DecimalFormat("%#0.000"),
 			1,1,1,1,
 			1,1,
-			new DecimalFormat("#0.000"),new DecimalFormat("#0.000"),new DecimalFormat("%#0.000"),new DecimalFormat("#0.000"),1,new DecimalFormat("#0.000"),
-			new DecimalFormat("#0.000"),new DecimalFormat("#0.000"),new DecimalFormat("%#0.000"),new DecimalFormat("#0.000"),1,new DecimalFormat("#0.000"),
-			null,null,null,null,null
+			1,1,new DecimalFormat("%#0.000"),1,1,
+			1,1,new DecimalFormat("%#0.000"),1,1,
+			1,1,1,1,1
 	};
 
-	public static  String [] ouputcolor = {
+	public static  String [] OuputColorControl = {
 			"#17202A","#17202A","#17202A","#17202A",
 			"#512E5F","#512E5F","#512E5F","#512E5F",
 			"#F39C12","#F39C12","#F39C12","#F39C12",
 			"#1B2631","#1B2631",
-			"#AF7AC5","#AF7AC5","#AF7AC5","#AF7AC5","#AF7AC5","#AF7AC5",
-			"#641E16","#641E16","#641E16","#641E16","#641E16","#641E16",
+			"#AF7AC5","#AF7AC5","#AF7AC5","#AF7AC5","#AF7AC5",
+			"#641E16","#641E16","#641E16","#641E16","#641E16",
 			"#1B2631","#1B2631","#1B2631","#1B2631","#1B2631",
 	};
-	public static  Integer [] ouputToHtmlToolTipControl = {
+	public static  Integer [] OuputToHtmlToolTipControl = {
 			1,1,1,1,
 			1,1,1,1,
 			0,0,0,0,
 			0,0,
-			1,1,1,1,1,1,
-			1,1,1,1,1,1,
-			0,0,0,0
+			1,1,1,1,1,
+			1,1,1,1,1,
+			1,0,0,1
 	};
 
 	public void setNotCalWholeWeekMode(LocalDate date);

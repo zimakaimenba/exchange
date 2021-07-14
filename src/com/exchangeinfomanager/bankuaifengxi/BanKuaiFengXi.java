@@ -88,6 +88,7 @@ import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiAndG
 import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BkfxHightLightForGeGuPropertyFilePnl;
 
 import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.SetExportNodeConditionPnl;
+import com.exchangeinfomanager.bankuaifengxi.LineChart.BanKuaiFengXiLineChartPnl;
 import com.exchangeinfomanager.bankuaifengxi.PieChart.BanKuaiFengXiPieChartCjePnl;
 
 import com.exchangeinfomanager.bankuaifengxi.PieChart.BanKuaiFengXiPieChartPnl;
@@ -281,17 +282,20 @@ public class BanKuaiFengXi extends JDialog
 		//每周日一是新的一周开始，因为还没有导入数据，会显示为没有数据，所以把时间调整到上一周六
 				DayOfWeek dayofweek = LocalDate.now().getDayOfWeek();
 				if(dayofweek.equals(DayOfWeek.SUNDAY) ) {
-					 LocalDate saturday = dateneedtobeadjusted.minus(2,ChronoUnit.DAYS);
-					 this.dateChooser.setLocalDate(saturday);
+					 LocalDate friday = dateneedtobeadjusted.minus(2,ChronoUnit.DAYS);
+					 this.dateChooser.setLocalDate(friday);
 					 
 				} else if(dayofweek.equals(DayOfWeek.MONDAY) && Calendar.getInstance().get(Calendar.HOUR_OF_DAY) <19 ) {
-					LocalDate saturday = dateneedtobeadjusted.minus(2,ChronoUnit.DAYS);
-					this.dateChooser.setLocalDate(saturday);
+					LocalDate friday = dateneedtobeadjusted.minus(3,ChronoUnit.DAYS);
+					this.dateChooser.setLocalDate(friday);
 					 
-				} else
-					this.dateChooser.setDate(new Date ());
+				} else if( !dayofweek.equals(DayOfWeek.SUNDAY) && !dayofweek.equals(DayOfWeek.SATURDAY) &&
+						Calendar.getInstance().get(Calendar.HOUR_OF_DAY) <19 ) //当天的数据要晚上才导入，白天看到的是昨天的数据
+					this.dateChooser.setLocalDate(LocalDate.now().minus(1,ChronoUnit.DAYS)); 
+				else
+					this.dateChooser.setLocalDate(LocalDate.now());
+				
 				btnresetdate.setEnabled(false);
-//				bkhlpnl.setCurrentDisplayDate(this.dateChooser.getLocalDate() ); //导出个股时候要用到当前的日期。
 	}
 	/*
 	 * 
@@ -445,6 +449,29 @@ public class BanKuaiFengXi extends JDialog
 			TDXNodes tmpbk = ((BanKuaiGeGuBasicTableModel)this.tableTempGeGu.getModel()).getCurDispalyBandKuai ();
 			((BanKuaiGeGuBasicTableModel)this.tableTempGeGu.getModel()).refresh((BanKuai)tmpbk, curselectdate, globeperiod);
 		}
+		
+		//把当前计算结果一些数据先存下来
+		Boolean onweekend = false;
+		DayOfWeek dayofweek = this.dateChooser.getLocalDate().getDayOfWeek();
+		if(dayofweek.equals(DayOfWeek.SUNDAY) || dayofweek.equals(DayOfWeek.SATURDAY) || dayofweek.equals(DayOfWeek.FRIDAY) )
+			onweekend = true;
+
+		if(!this.globecalwholeweek || onweekend ) { //
+			curselectdate = complexSolutionForDateChooserWithCalWholeWeek ();
+			
+			int rowcount = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getRowCount();
+			int columnIndexCjeZbGr = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getKeyWrodColumnIndex ("CjeZbGrowRate");
+			int columnIndexCjlZbGr = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getKeyWrodColumnIndex ("CjlZbGrowRate");
+			for(int i=0;i<rowcount;i++) {
+				BanKuai bk = (BanKuai) ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getNode(i);
+				Double cjezhgr = (Double) ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getValueAt(i, columnIndexCjeZbGr);
+				Double cjlzhgr = (Double) ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getValueAt(i, columnIndexCjlZbGr);
+				
+				NodeXPeriodData bkxdataday = bk.getNodeXPeroidData(NodeGivenPeriodDataItem.DAY);
+				bkxdataday.addDaPanChenJiaoErZhanBiGrowingRate (curselectdate,cjezhgr);
+				bkxdataday.addDaPanChenJiaoLiangZhanBiGrowingRate (curselectdate,cjlzhgr);
+			}
+		}
 	}
 	/*
 	 * 
@@ -453,7 +480,6 @@ public class BanKuaiFengXi extends JDialog
 	{
 		this.globeperiod = period;
 		
-//		LocalDate curselectdate = dateChooser.getLocalDate(); 
     	LocalDate requirestart = CommonUtility.getSettingRangeDate(curselectdate,"middle").with(DayOfWeek.MONDAY);
     	//这里必须先同步一下TDXDAN, 因为refresh里面的superbk用的tdx dapan，必须要有数据
     	DaPan tdxdapan = (DaPan) CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode("000000", BkChanYeLianTreeNode.DAPAN);
@@ -615,10 +641,13 @@ public class BanKuaiFengXi extends JDialog
 		zhishubk.getServicesForNode(true).getNodeData(zhishubk, CommonUtility.getSettingRangeDate(curselectdate, "large"),curselectdate, 
 						 NodeGivenPeriodDataItem.WEEK,this.globecalwholeweek);
 		zhishubk.getServicesForNode(true).getNodeKXian(zhishubk, CommonUtility.getSettingRangeDate(curselectdate, "large"),curselectdate, 
-				 		NodeGivenPeriodDataItem.WEEK,this.globecalwholeweek);
+				 		NodeGivenPeriodDataItem.DAY,this.globecalwholeweek);
 		zhishubk.getServicesForNode(false);
 		pnlBanKuaiCandle.updatedDate(zhishubk,selectedbk,CommonUtility.getSettingRangeDate(curselectdate, "basic"),curselectdate,NodeGivenPeriodDataItem.DAY);
-//		tabpnlKxian.setSelectedIndex(0); 
+		
+		String[] cjecjlzbgrkw = {"CjeZbGrowRate", "CjlZbGrowRate"};
+		pnlbkcjecjezbgr.updatedDate(selectedbk, curselectdate.minus(1,ChronoUnit.WEEKS).with(DayOfWeek.FRIDAY), curselectdate.with(DayOfWeek.FRIDAY),
+				NodeGivenPeriodDataItem.DAY, cjecjlzbgrkw);
 		 
 		//板块所属个股
 		if(selectedbk.getBanKuaiLeiXing().equals(BanKuai.HASGGWITHSELFCJL)) { //有个股才需要更新，有些板块是没有个股的
@@ -828,12 +857,35 @@ public class BanKuaiFengXi extends JDialog
 	 */
 	protected void saveBanKuaiDailyDataToDatabase() 
 	{
-		for( BanKuaiandGeGuTableBasic tmptbl : tableallbktablesset ) {
+		Set<BanKuaiandGeGuTableBasic> tablecurbk = new HashSet<>();
+		tablecurbk.add(tableBkZhanBi);
+		tablecurbk.add(tblDzhBkCurWkZhanBi);
+		
+		LocalDate curselectdate = complexSolutionForDateChooserWithCalWholeWeek ();
+//		if(curselectdate.isEqual(LocalDate.now()) &&  Calendar.getInstance().get(Calendar.HOUR_OF_DAY) <19 )    //当天白天看到的实际是昨天的数据，因为当天数据要到晚上才导入
+//			curselectdate = curselectdate.minus(1,ChronoUnit.DAYS);
+		
+		SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai ();
+		for( BanKuaiandGeGuTableBasic tmptbl : tablecurbk ) {
 			if(((BanKuaiInfoTableModel)tmptbl.getModel()).getRowCount() <=0)
 				continue;
 			
-			((BanKuaiInfoTableModel)tmptbl.getModel()).getAllNodes();
+			int rowcount = ((BanKuaiInfoTableModel)tmptbl.getModel()).getRowCount();
+			int columnIndexCjeZbGr = ((BanKuaiInfoTableModel)tmptbl.getModel()).getKeyWrodColumnIndex ("CjeZbGrowRate");
+			int columnIndexCjlZbGr = ((BanKuaiInfoTableModel)tmptbl.getModel()).getKeyWrodColumnIndex ("CjlZbGrowRate");
+			for(int i=0;i<rowcount;i++) {
+				BanKuai bk = (BanKuai) ((BanKuaiInfoTableModel)tmptbl.getModel()).getNode(i);
+				Double cjezhgr = (Double) ((BanKuaiInfoTableModel)tmptbl.getModel()).getValueAt(i, columnIndexCjeZbGr);
+//				Double cjlzhgr = (Double) ((BanKuaiInfoTableModel)tmptbl.getModel()).getValueAt(i, columnIndexCjlZbGr);
+				
+				if(cjezhgr == 100.0) 
+					continue; //新板块，数据无意义
+				
+				String[] kwlists =  {"CjeZbGrowRate","CjlZbGrowRate" }; 
+				svsbk.saveBanKuaiExtraDataToDatabase(bk, curselectdate,kwlists);
+			}
 		}
+		svsbk = null;
 	}
 	/*
 	 * 
@@ -1214,20 +1266,8 @@ public class BanKuaiFengXi extends JDialog
 	/*
 	 * 
 	 */
-	private  void displayAnalysisResutByDateChooser (LocalDate userselecteddate)
+	private  void displayAnalysisResultByDateChooser (LocalDate userselecteddate)
 	{
-		if(chxbxwholeweek.isSelected() ) { //任何日子都是计算完整周
-			if(globecalwholeweek && lastselecteddate != null && CommonUtility.isInSameWeek(lastselecteddate, userselecteddate) )
-				return;
-			globecalwholeweek = true;
-		} else { //只有周末计算完整周
-			DayOfWeek dayofweek = userselecteddate.getDayOfWeek();
-			if(dayofweek.equals(DayOfWeek.SUNDAY) || dayofweek.equals(DayOfWeek.SATURDAY) || dayofweek.equals(DayOfWeek.FRIDAY)) {
-				globecalwholeweek = true;	
-			} else
-				globecalwholeweek = false;
-		}
-		
 		Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
 		setCursor(hourglassCursor);
 		
@@ -1272,6 +1312,108 @@ public class BanKuaiFengXi extends JDialog
 		Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
 		setCursor(hourglassCursor2);
 	}
+	
+	private Boolean isCurrentWeekOrPreviousWeek (LocalDate date)
+	{
+		return CommonUtility.isInSameWeek(LocalDate.now(), date);
+	}
+	/*
+	 * 
+	 */
+	private void complexSolutionForCalWholeWeekStatusTransfer  (boolean globcalwkbefore, boolean globcalwkafter)
+	{
+		LocalDate userselecteddate = this.dateChooser.getLocalDate() ;
+		DayOfWeek dayofweek = this.dateChooser.getLocalDate().getDayOfWeek();
+		
+		boolean iswkendbutnotfriday = false;
+		if(dayofweek.equals(DayOfWeek.SUNDAY) || dayofweek.equals(DayOfWeek.SATURDAY)  )
+			iswkendbutnotfriday = true;
+		
+		if(iswkendbutnotfriday) //不用重新计算 
+			return;
+		
+		JOptionPane.showMessageDialog(null,"将重新计算数据，点击开始计算！","Warning",JOptionPane.WARNING_MESSAGE);
+		displayAnalysisResultByDateChooser (userselecteddate);
+
+		this.globecalwholeweek = globcalwkafter;
+		if(globecalwholeweek)	 yuanzhiOperationForGlobecalwholeweekOfTrue ();
+		else	yuanzhiOperationForGlobecalwholeweekOfFalse ();
+	}
+	/*
+	 * 
+	 */
+	private LocalDate complexSolutionForDateChooserWithCalWholeWeek ()
+	{
+		LocalDate finialdate = null;
+		LocalDate userselecteddate = this.dateChooser.getLocalDate() ;
+		
+		BanKuai shdapan = (BanKuai)CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode("999999", BkChanYeLianTreeNode.TDXBK);
+		LocalDate sjjlmaxdate = shdapan.getShuJuJiLuInfo().getJyjlmaxdate();
+		Boolean hasselecteddatedata = false;
+		if(userselecteddate.isAfter(sjjlmaxdate)) hasselecteddatedata = false;
+		else hasselecteddatedata = true;
+		Boolean iscurwk = isCurrentWeekOrPreviousWeek (userselecteddate);
+		Boolean iswkend = false; Boolean isworkingday = true;
+		DayOfWeek dayofweek = this.dateChooser.getLocalDate().getDayOfWeek();
+		if(dayofweek.equals(DayOfWeek.SUNDAY) || dayofweek.equals(DayOfWeek.SATURDAY) || dayofweek.equals(DayOfWeek.SATURDAY) )
+			iswkend = true;
+		if(dayofweek.equals(DayOfWeek.SUNDAY) || dayofweek.equals(DayOfWeek.SATURDAY)  )
+			isworkingday = false;
+		
+		if( !this.globecalwholeweek) {
+			if( isworkingday && !hasselecteddatedata)	finialdate = sjjlmaxdate;
+			else if( isworkingday && hasselecteddatedata) finialdate = userselecteddate;
+			
+			if( !isworkingday  && !hasselecteddatedata)	finialdate = sjjlmaxdate;
+			else	if( !isworkingday  && hasselecteddatedata)	finialdate = userselecteddate.with(DayOfWeek.FRIDAY);;
+		}
+//		if(!iscurwk && !this.globecalwholeweek) {
+//			if( isworkingday && !hasselecteddatedata)	finialdate = sjjlmaxdate;
+//			else if( isworkingday && hasselecteddatedata) finialdate = userselecteddate;
+//			
+//			if( !isworkingday  && !hasselecteddatedata)	finialdate = sjjlmaxdate;
+//			else	if( !isworkingday  && hasselecteddatedata)	finialdate = userselecteddate;
+//		}
+		
+		if( this.globecalwholeweek ) {
+			if( isworkingday && !hasselecteddatedata)	finialdate = sjjlmaxdate;
+			else if( isworkingday && hasselecteddatedata) finialdate = userselecteddate.with(DayOfWeek.FRIDAY);;
+			
+			if( !isworkingday  && !hasselecteddatedata)	finialdate = sjjlmaxdate;
+			else	if( !isworkingday  && hasselecteddatedata)	finialdate = userselecteddate.with(DayOfWeek.FRIDAY);
+		}
+//		if(!iscurwk && this.globecalwholeweek) {
+//			if( isworkingday && !hasselecteddatedata)	finialdate = sjjlmaxdate;
+//			else if( isworkingday && hasselecteddatedata) finialdate = userselecteddate;
+//			
+//			if( !isworkingday  && !hasselecteddatedata)	finialdate = sjjlmaxdate;
+//			else	if( !isworkingday  && hasselecteddatedata)	finialdate = userselecteddate.with(DayOfWeek.FRIDAY);
+//		}
+
+		return finialdate;
+	}
+	/*
+	 * 
+	 */
+	private void yuanzhiOperationForGlobecalwholeweekOfTrue ()
+	{
+		globecalwholeweek = true;
+		
+		chxbxwholeweek.setText("当前选择任何一天均计算完整周");
+		chxbxwholeweek.setForeground(Color.BLACK);
+		menuItemSaveCurWkDataToData.setEnabled(false);
+		chxbxwholeweek.setSelected(true);
+		
+	}
+	private void yuanzhiOperationForGlobecalwholeweekOfFalse ()
+	{
+		globecalwholeweek = false;
+		
+		chxbxwholeweek.setText("当前仅选择周末计算完整周");
+		chxbxwholeweek.setForeground(Color.RED);
+		chxbxwholeweek.setSelected(false);
+		menuItemSaveCurWkDataToData.setEnabled(true);
+	}
 	/*
 	 * 
 	 */
@@ -1304,11 +1446,17 @@ public class BanKuaiFengXi extends JDialog
 		    @Override
 		    public void propertyChange(PropertyChangeEvent e) {
 		    	if("date".equals(e.getPropertyName() ) ) {
-		    		
 		    		JDateChooser wybieraczDat = (JDateChooser) e.getSource();
 		    		LocalDate newdate = wybieraczDat.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 		    		
-		    		displayAnalysisResutByDateChooser (newdate);
+		    		Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
+					setCursor(hourglassCursor);
+
+					displayAnalysisResultByDateChooser (newdate);
+					
+					hourglassCursor = null;
+					Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
+					setCursor(hourglassCursor2);
 		    	}
 		    }
 		});
@@ -1317,47 +1465,28 @@ public class BanKuaiFengXi extends JDialog
 			@Override
 			public void mouseClicked(MouseEvent arg0) 
 			{
-				if(chxbxwholeweek.isSelected())	{
-					chxbxwholeweek.setText("当前选择任何一天均计算完整周");
-					chxbxwholeweek.setForeground(Color.BLACK);
-					DayOfWeek dayofweek = dateChooser.getLocalDate().getDayOfWeek();
-					Boolean alreadycalwholewk = false;
-					if(dayofweek.equals(DayOfWeek.SUNDAY) || dayofweek.equals(DayOfWeek.SATURDAY) || dayofweek.equals(DayOfWeek.FRIDAY)) {
-						alreadycalwholewk = true;
-					}
-					if(globecalwholeweek != null && globecalwholeweek == false && !alreadycalwholewk) { //原来不是计算完整周，要重新计算
-						int action = JOptionPane.showConfirmDialog(null, "从计算非完整周到计算完整周转换，需要重新计算分析结果，是否继续？","警告", JOptionPane.YES_NO_OPTION);
-						if(0 == action) 
-							displayAnalysisResutByDateChooser (dateChooser.getLocalDate());
-						else 
-							yuanzhiOperationForGlobecalwholeweekOfFalse ();
-					}
-				} else
-				if(!chxbxwholeweek.isSelected())	{
-					yuanzhiOperationForGlobecalwholeweekOfFalse ();
-					
-					DayOfWeek dayofweek = dateChooser.getLocalDate().getDayOfWeek();
-					if(dayofweek.equals(DayOfWeek.SUNDAY) || dayofweek.equals(DayOfWeek.SATURDAY) || dayofweek.equals(DayOfWeek.FRIDAY)) {
-						
-					} else { //把日期调到周五，
-						dateChooser.setLocalDate( dateChooser.getLocalDate().with(DayOfWeek.FRIDAY) );
-					}
+				if(chxbxwholeweek.isSelected() ) {
+					complexSolutionForCalWholeWeekStatusTransfer (false, true);
+				} else {
+					complexSolutionForCalWholeWeekStatusTransfer (true, false);
 				}
-			}
-			
-			private void yuanzhiOperationForGlobecalwholeweekOfFalse ()
-			{
-				chxbxwholeweek.setText("当前仅选择周五周末计算完整周");
-				chxbxwholeweek.setForeground(Color.RED);
-				globecalwholeweek = false;
-				chxbxwholeweek.setSelected(false);
+				
 			}
 		});
 		
 		menuItemSaveCurWkDataToData.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent evt) {
-				saveBanKuaiDailyDataToDatabase ();
+				if(menuItemSaveCurWkDataToData.isEnabled()) {
+					Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
+					setCursor(hourglassCursor);
+					
+					saveBanKuaiDailyDataToDatabase ();
+					
+					hourglassCursor = null;
+					Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
+					setCursor(hourglassCursor2);
+				}
 			}
 
 		});
@@ -1977,7 +2106,7 @@ public class BanKuaiFengXi extends JDialog
                 	switch(selecttitle) {
                 	case "当前周":	
                 		if(((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getRowCount() <=0) {
-                			gettBanKuaiZhanBiRangedByGrowthRateOfPeriod (dateChooser.getLocalDate(),globeperiod);
+	                			gettBanKuaiZhanBiRangedByGrowthRateOfPeriod (dateChooser.getLocalDate(),globeperiod);
                 			playAnaylsisFinishNoticeSound();
                 		}
                 	break;
@@ -3309,6 +3438,7 @@ public class BanKuaiFengXi extends JDialog
 	private JMenuItem menuItemcompareToOtherBkDZH;
 
 	private JMenuItem menuItemSaveCurWkDataToData;
+	private BanKuaiFengXiLineChartPnl pnlbkcjecjezbgr;
 
 	private void initializeGuiOf2560Resolution ()
 	{
@@ -3433,6 +3563,9 @@ public class BanKuaiFengXi extends JDialog
 		panelLastWkGeGucjeZhanBi = new BanKuaiFengXiPieChartCjePnl(-1);
 		tabbedPane.addTab("-1\u5468/\u9009\u5B9A\u5468", null, panelLastWkGeGucjeZhanBi, null);
 		panelLastWkGeGucjeZhanBi.setBorder(new TitledBorder(null, "\u677F\u5757\u4E0A\u4E00\u5468\u4E2A\u80A1\u5360\u6BD4", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		
+		pnlbkcjecjezbgr = new BanKuaiFengXiLineChartPnl();
+		tabbedPane.addTab("板块CJEZBGR/CJLZBGR", null, pnlbkcjecjezbgr, null);
 		
 		tabbedPanegeguzhanbi = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPanegeguzhanbi.setFont(new Font("宋体", Font.PLAIN, 10));
@@ -3808,6 +3941,7 @@ public class BanKuaiFengXi extends JDialog
 	     menuItemcancelAllNodesReviewedtoday = new JMenuItem("取消所有板块个股阅读状态"); //系统默认按成交额排名
 	     jPopupMenuoftabbedpanebk.add(menuItemcancelAllNodesReviewedtoday);
 	     menuItemSaveCurWkDataToData = new JMenuItem("保存本表数据到数据库");
+	     menuItemSaveCurWkDataToData.setEnabled(false);
 	     jPopupMenuoftabbedpanebk.add(menuItemSaveCurWkDataToData);
 	     
 		   JMenu biaojiMenu = new JMenu("标记板块");

@@ -35,12 +35,11 @@ public interface StockNodesXPeriodData
 							"流通市值",
 							"总市值"
 							};
-	public static  Object [] ouputcontrol = {
+	public static  Object [] OuputFormatControl = {
 			1,1,
-			new DecimalFormat("#0.000"),
-			new DecimalFormat("#0.000")
+			1,1
 			};
-	public static  String [] ouputcolor = {
+	public static  String [] OuputColorControl = {
 			"#17202A","#17202A","#17202A","#17202A"
 	};
 	public static  Integer [] ouputToHtmlToolTipControl = {

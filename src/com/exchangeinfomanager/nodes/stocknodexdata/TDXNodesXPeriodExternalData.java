@@ -100,38 +100,37 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 	
 	public void addNewXPeriodData (NodeGivenPeriodDataItem kdata)
 	{
-		if(kdata.getNodeToDpChenJiaoErZhanbi() == null) 
-			return ;
-		
-		try {
-			nodeamozhanbi.setNotify(false);
-			nodeamozhanbi.add(kdata.getJFreeChartPeriod(this.nodeperiodtype),kdata.getNodeToDpChenJiaoErZhanbi(),false);
+		if(kdata.getNodeToDpChenJiaoErZhanbi() != null ) {
+			try {
+				nodeamozhanbi.setNotify(false);
+				nodeamozhanbi.add(kdata.getJFreeChartPeriod(this.nodeperiodtype),kdata.getNodeToDpChenJiaoErZhanbi(),false);
+				
+				nodevolzhanbi.setNotify(false);
+				nodevolzhanbi.add(kdata.getJFreeChartPeriod(this.nodeperiodtype),kdata.getNodeToDpChenJiaoLiangZhanbi(),false);
+			} catch (org.jfree.data.general.SeriesException e) {
+			}
 			
-			nodevolzhanbi.setNotify(false);
-			nodevolzhanbi.add(kdata.getJFreeChartPeriod(this.nodeperiodtype),kdata.getNodeToDpChenJiaoLiangZhanbi(),false);
-		} catch (org.jfree.data.general.SeriesException e) {
+			try{
+				nodeexchangedaysnumber.setNotify(false);
+				if(kdata.getExchangeDaysNumber() != null && kdata.getExchangeDaysNumber() != 5) //
+					nodeexchangedaysnumber.add(kdata.getJFreeChartPeriod(this.nodeperiodtype),kdata.getExchangeDaysNumber(),false);
+			} catch (org.jfree.data.general.SeriesException e) {
+			}
+			
+			try {
+				if(nodezhangtingnum == null)
+					nodezhangtingnum = new TimeSeries(this.nodeperiodtype);
+				if(nodedietingnum == null)
+					nodedietingnum = new TimeSeries(this.nodeperiodtype);
+				
+				if(kdata.getZhangTingNumber() != null && kdata.getZhangTingNumber() !=0 )
+					nodezhangtingnum.add(kdata.getJFreeChartPeriod(this.nodeperiodtype), kdata.getZhangTingNumber() );
+				
+				if(kdata.getDieTingNumber() != null && kdata.getDieTingNumber() !=0 )
+					nodedietingnum.add(kdata.getJFreeChartPeriod(this.nodeperiodtype), kdata.getDieTingNumber() );
+				
+			} catch (org.jfree.data.general.SeriesException e) {}
 		}
-		
-		try{
-			nodeexchangedaysnumber.setNotify(false);
-			if(kdata.getExchangeDaysNumber() != null && kdata.getExchangeDaysNumber() != 5) //
-				nodeexchangedaysnumber.add(kdata.getJFreeChartPeriod(this.nodeperiodtype),kdata.getExchangeDaysNumber(),false);
-		} catch (org.jfree.data.general.SeriesException e) {
-		}
-		
-		try {
-			if(nodezhangtingnum == null)
-				nodezhangtingnum = new TimeSeries(this.nodeperiodtype);
-			if(nodedietingnum == null)
-				nodedietingnum = new TimeSeries(this.nodeperiodtype);
-			
-			if(kdata.getZhangTingNumber() != null && kdata.getZhangTingNumber() !=0 )
-				nodezhangtingnum.add(kdata.getJFreeChartPeriod(this.nodeperiodtype), kdata.getZhangTingNumber() );
-			
-			if(kdata.getDieTingNumber() != null && kdata.getDieTingNumber() !=0 )
-				nodedietingnum.add(kdata.getJFreeChartPeriod(this.nodeperiodtype), kdata.getDieTingNumber() );
-			
-		} catch (org.jfree.data.general.SeriesException e) {}
 		
 		try {	
 			nodedpcjezbgr.setNotify(false);
@@ -520,20 +519,6 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 	/*
 	 * 
 	 */
-	public Double getDaPanChenJiaoErZhanBiGrowingRate (LocalDate requireddate)
-	{
-		if(nodedpcjezbgr == null) return null;
-		
-		RegularTimePeriod curperiod = getJFreeChartFormateTimePeriod (requireddate);
-		if(curperiod == null)	return null;
-		
-		TimeSeriesDataItem cjezbgrdata = nodedpcjezbgr.getDataItem(curperiod);
-		Double value = cjezbgrdata.getValue().doubleValue();
-		return value;
-	}
-	/*
-	 * 
-	 */
 	public void addDaPanChenJiaoErZhanBiGrowingRate (LocalDate requireddate, Double cjezbgr)
 	{
 		try {	
@@ -552,13 +537,13 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 				} catch (ParseException e) {e.printStackTrace();}
 			}
 			
-			Double curzhangfu = this.getDaPanChenJiaoErZhanBiGrowingRate(requireddate);
-			if(curzhangfu == null  ) {
+			Double curcjezbgr = this.getChenJiaoErZhanBiGrowthRateForDaPan(requireddate);
+			if(curcjezbgr == null  ) {
 				try{	nodedpcjezbgr.add(recorddate, cjezbgr, false );
 				} catch(Exception e) {e.printStackTrace();	return; }
 				return;
 			}
-			if( CommonUtility.round(curzhangfu,6) != CommonUtility.round(cjezbgr,6)) {
+			if( CommonUtility.round(curcjezbgr,6) != CommonUtility.round(cjezbgr,6)) {
 				try{	this.nodedpcjezbgr.delete(recorddate);
 						nodedpcjezbgr.add(recorddate, cjezbgr, false );
 				} catch(Exception e) {e.printStackTrace();	return;	}
@@ -598,13 +583,13 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 					} catch (ParseException e) {e.printStackTrace();}
 				}
 				
-				Double curzhangfu = this.getDaPanChenJiaoErZhanBiGrowingRate(requireddate);
-				if(curzhangfu == null  ) {
+				Double curcjlzbgr = this.getChenJiaoLiangZhanBiGrowthRateForDaPan(requireddate);
+				if(curcjlzbgr == null  ) {
 					try{	nodedpcjlzbgr.add(recorddate, cjezbgr, false );
 					} catch(Exception e) {e.printStackTrace();	return; }
 					return;
 				}
-				if( CommonUtility.round(curzhangfu,6) != CommonUtility.round(cjezbgr,6)) {
+				if( CommonUtility.round(curcjlzbgr,6) != CommonUtility.round(cjezbgr,6)) {
 					try{	this.nodedpcjlzbgr.delete(recorddate);
 							nodedpcjlzbgr.add(recorddate, cjezbgr, false );
 					} catch(Exception e) {e.printStackTrace();	return;	}
@@ -654,7 +639,7 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 		 return max;
 	 }
 	/*
-	 * 
+	 * 周线的AMOZBGR是计算出来的，日线的是在周线计算后存进来的，获取方法不一样
 	 */
 	public Double getChenJiaoErZhanBiGrowthRateForDaPan(LocalDate requireddate) 
 	{
@@ -662,7 +647,13 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 		if(expectedperiod == null)	return null;
 		
 		TimeSeriesDataItem curcjlrecord = this.nodeamozhanbi.getDataItem(expectedperiod );
-		if( curcjlrecord == null) return null;
+		if( curcjlrecord == null) { //可能是日线，要去 nodedpcjezbgr 取值
+			TimeSeriesDataItem curcjezbgrrecord = this.nodedpcjezbgr.getDataItem(expectedperiod );
+			if(curcjezbgrrecord != null) {
+				Double cjezbgr = curcjezbgrrecord.getValue().doubleValue();
+				return cjezbgr;
+			}
+		}
 		
 		try {
 			int index = this.nodeamozhanbi.getIndex(expectedperiod);
@@ -780,15 +771,21 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 		 else	return curdaynumberrecord.getValue().intValue();
 	 }
 	 /*
-		 * 
+		 * 周线日线不一样，周线是计算的，日线是获取的
 		 */
 		public Double getChenJiaoLiangZhanBiGrowthRateForDaPan(LocalDate requireddate) 
 		{
 			RegularTimePeriod curperiod = getJFreeChartFormateTimePeriod(requireddate);
-			if(curperiod == null )	return null;
+			if(curperiod == null )	return null;		
 			
 			TimeSeriesDataItem curcjlrecord = this.nodevolzhanbi.getDataItem( curperiod);
-			if( curcjlrecord == null)	return null;
+			if( curcjlrecord == null) { //可能是日线，要去 nodedpcjezbgr 取值
+				TimeSeriesDataItem curcjlzbgrrecord = this.nodedpcjlzbgr.getDataItem(curperiod );
+				if(curcjlzbgrrecord != null) {
+					Double cjezbgr = curcjlzbgrrecord.getValue().doubleValue();
+					return cjezbgr;
+				} 
+			}
 			
 			int index = this.nodevolzhanbi.getIndex(curperiod);
 			try {
@@ -939,76 +936,76 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 		 /*
 		  * 
 		  */
-		 public String[] getNodeXDataCsvData (TDXNodes superbk, LocalDate requireddate )
-		 {
-					Double curcjezhanbidata = this.getChenJiaoErZhanBi(requireddate);  //占比
-					Integer cjezbmaxweek = this.getChenJiaoErZhanBiMaxWeekForDaPan(requireddate);//nodefx.getGgbkzhanbimaxweek();
-					Integer cjezbminweek = this.getChenJiaoErZhanBiMinWeekForDaPan(requireddate);
-					Double cjezbgrowthrate = this.getChenJiaoErZhanBiGrowthRateForDaPan(requireddate);
-					
-					Double cjlzhanbidata = this.getChenJiaoLiangZhanBi(requireddate);
-					Integer cjlzbmaxwk = this.getChenJiaoLiangZhanBiMaxWeekForDaPan(requireddate);
-					Integer cjlzbminwk = this.getChenJiaoLiangZhanBiMinWeekForDaPan(requireddate);
-					Double cjlzbgrowthrate = this.getChenJiaoLiangZhanBiGrowthRateForDaPan(requireddate);
-		 
-					Integer opneupquekou = this.getQueKouTongJiOpenUp(requireddate);
-					Integer opendownquekou = this.getQueKouTongJiOpenDown(requireddate);
-					Integer huibuupquekou = this.getQueKouTongJiHuiBuUp(requireddate);
-					Integer huibudowquekou = this.getQueKouTongJiHuiBuDown(requireddate);
-					 
-					Integer zhangtingnum = this.getZhangTingTongJi(requireddate);
-					Integer dietingnum = this.getDieTingTongJi(requireddate);
-					
-					String strcurcjezhanbidata = null;
-					try {	strcurcjezhanbidata = curcjezhanbidata.toString();	} catch (java.lang.NullPointerException e) {	strcurcjezhanbidata = String.valueOf("0"); }
-					String strcjemaxweek = null;
-					try {	strcjemaxweek = cjezbmaxweek.toString();	} catch (java.lang.NullPointerException e) {	strcjemaxweek = String.valueOf("0");	}
-					String strcjeminweek = null;
-					try {	strcjeminweek = cjezbminweek.toString();	} catch (java.lang.NullPointerException e) {	strcjeminweek = String.valueOf("0");	}
-					String strcjezbgrowthrate = null;
-					try {	strcjezbgrowthrate = cjezbgrowthrate.toString() ;} catch (java.lang.NullPointerException e) {	strcjezbgrowthrate = String.valueOf("0");	}
-					String strcjlzhanbidata = null;
-					try {	strcjlzhanbidata = cjlzhanbidata.toString();	} catch (java.lang.NullPointerException e) {	strcjlzhanbidata = String.valueOf("0");	}
-					String strcjlzbmaxwk = null;
-					try {	strcjlzbmaxwk = cjlzbmaxwk.toString();	} catch (java.lang.NullPointerException e) {	strcjlzbmaxwk = String.valueOf("0");	}
-					String strcjlzbminwk = null;
-					try {	strcjlzbminwk = cjlzbminwk.toString();	} catch (java.lang.NullPointerException e) {	strcjlzbminwk = String.valueOf("0");	}
-					String strcjlzbgrowthrate = null;
-					try {	strcjlzbgrowthrate = cjlzbgrowthrate.toString();	} catch (java.lang.NullPointerException e) {	strcjlzbgrowthrate = String.valueOf("0");	}
-					String stropneupquekou = null;
-					try {	stropneupquekou = opneupquekou.toString();	} catch (java.lang.NullPointerException e) {	stropneupquekou = String.valueOf("0");	}
-					String stropendownquekou = null;
-					try {	stropendownquekou = opendownquekou.toString();	} catch (java.lang.NullPointerException e) {	stropendownquekou = String.valueOf("0");	}
-					String strhuibuupquekou = null;
-					try {	strhuibuupquekou = huibuupquekou.toString();	} catch (java.lang.NullPointerException e) {	strhuibuupquekou = String.valueOf("0");	}
-					String strhuibudowquekou = null;
-					try {	strhuibudowquekou = huibudowquekou.toString();	} catch (java.lang.NullPointerException e) {	strhuibudowquekou = String.valueOf("0");	} 
-					String strzhangtingnum = null;
-					try {	strzhangtingnum = zhangtingnum.toString();	} catch (java.lang.NullPointerException e) {	strzhangtingnum = String.valueOf("0");	}
-					String strdietingnum = null;
-					try {	strdietingnum = dietingnum.toString();	} catch (java.lang.NullPointerException e) {	strdietingnum = String.valueOf("0");	}
-
-					String[] csvline =  {strcurcjezhanbidata ,
-							strcjemaxweek ,
-							strcjeminweek ,
-							strcjezbgrowthrate ,
-					
-							strcjlzhanbidata ,
-							strcjlzbmaxwk ,
-							strcjlzbminwk ,
-							strcjlzbgrowthrate ,
-		 
-							stropneupquekou ,
-							stropendownquekou ,
-							strhuibuupquekou ,
-							strhuibudowquekou ,
-					 
-							strzhangtingnum ,
-							strdietingnum 
-					};
-						 
-					return csvline;
-		 }
+//		 public String[] getNodeXDataCsvData (TDXNodes superbk, LocalDate requireddate )
+//		 {
+//					Double curcjezhanbidata = this.getChenJiaoErZhanBi(requireddate);  //占比
+//					Integer cjezbmaxweek = this.getChenJiaoErZhanBiMaxWeekForDaPan(requireddate);//nodefx.getGgbkzhanbimaxweek();
+//					Integer cjezbminweek = this.getChenJiaoErZhanBiMinWeekForDaPan(requireddate);
+//					Double cjezbgrowthrate = this.getChenJiaoErZhanBiGrowthRateForDaPan(requireddate);
+//					
+//					Double cjlzhanbidata = this.getChenJiaoLiangZhanBi(requireddate);
+//					Integer cjlzbmaxwk = this.getChenJiaoLiangZhanBiMaxWeekForDaPan(requireddate);
+//					Integer cjlzbminwk = this.getChenJiaoLiangZhanBiMinWeekForDaPan(requireddate);
+//					Double cjlzbgrowthrate = this.getChenJiaoLiangZhanBiGrowthRateForDaPan(requireddate);
+//		 
+//					Integer opneupquekou = this.getQueKouTongJiOpenUp(requireddate);
+//					Integer opendownquekou = this.getQueKouTongJiOpenDown(requireddate);
+//					Integer huibuupquekou = this.getQueKouTongJiHuiBuUp(requireddate);
+//					Integer huibudowquekou = this.getQueKouTongJiHuiBuDown(requireddate);
+//					 
+//					Integer zhangtingnum = this.getZhangTingTongJi(requireddate);
+//					Integer dietingnum = this.getDieTingTongJi(requireddate);
+//					
+//					String strcurcjezhanbidata = null;
+//					try {	strcurcjezhanbidata = curcjezhanbidata.toString();	} catch (java.lang.NullPointerException e) {	strcurcjezhanbidata = String.valueOf("0"); }
+//					String strcjemaxweek = null;
+//					try {	strcjemaxweek = cjezbmaxweek.toString();	} catch (java.lang.NullPointerException e) {	strcjemaxweek = String.valueOf("0");	}
+//					String strcjeminweek = null;
+//					try {	strcjeminweek = cjezbminweek.toString();	} catch (java.lang.NullPointerException e) {	strcjeminweek = String.valueOf("0");	}
+//					String strcjezbgrowthrate = null;
+//					try {	strcjezbgrowthrate = cjezbgrowthrate.toString() ;} catch (java.lang.NullPointerException e) {	strcjezbgrowthrate = String.valueOf("0");	}
+//					String strcjlzhanbidata = null;
+//					try {	strcjlzhanbidata = cjlzhanbidata.toString();	} catch (java.lang.NullPointerException e) {	strcjlzhanbidata = String.valueOf("0");	}
+//					String strcjlzbmaxwk = null;
+//					try {	strcjlzbmaxwk = cjlzbmaxwk.toString();	} catch (java.lang.NullPointerException e) {	strcjlzbmaxwk = String.valueOf("0");	}
+//					String strcjlzbminwk = null;
+//					try {	strcjlzbminwk = cjlzbminwk.toString();	} catch (java.lang.NullPointerException e) {	strcjlzbminwk = String.valueOf("0");	}
+//					String strcjlzbgrowthrate = null;
+//					try {	strcjlzbgrowthrate = cjlzbgrowthrate.toString();	} catch (java.lang.NullPointerException e) {	strcjlzbgrowthrate = String.valueOf("0");	}
+//					String stropneupquekou = null;
+//					try {	stropneupquekou = opneupquekou.toString();	} catch (java.lang.NullPointerException e) {	stropneupquekou = String.valueOf("0");	}
+//					String stropendownquekou = null;
+//					try {	stropendownquekou = opendownquekou.toString();	} catch (java.lang.NullPointerException e) {	stropendownquekou = String.valueOf("0");	}
+//					String strhuibuupquekou = null;
+//					try {	strhuibuupquekou = huibuupquekou.toString();	} catch (java.lang.NullPointerException e) {	strhuibuupquekou = String.valueOf("0");	}
+//					String strhuibudowquekou = null;
+//					try {	strhuibudowquekou = huibudowquekou.toString();	} catch (java.lang.NullPointerException e) {	strhuibudowquekou = String.valueOf("0");	} 
+//					String strzhangtingnum = null;
+//					try {	strzhangtingnum = zhangtingnum.toString();	} catch (java.lang.NullPointerException e) {	strzhangtingnum = String.valueOf("0");	}
+//					String strdietingnum = null;
+//					try {	strdietingnum = dietingnum.toString();	} catch (java.lang.NullPointerException e) {	strdietingnum = String.valueOf("0");	}
+//
+//					String[] csvline =  {strcurcjezhanbidata ,
+//							strcjemaxweek ,
+//							strcjeminweek ,
+//							strcjezbgrowthrate ,
+//					
+//							strcjlzhanbidata ,
+//							strcjlzbmaxwk ,
+//							strcjlzbminwk ,
+//							strcjlzbgrowthrate ,
+//		 
+//							stropneupquekou ,
+//							stropendownquekou ,
+//							strhuibuupquekou ,
+//							strhuibudowquekou ,
+//					 
+//							strzhangtingnum ,
+//							strdietingnum 
+//					};
+//						 
+//					return csvline;
+//		 }
 		 /*
 		  * 
 		  */

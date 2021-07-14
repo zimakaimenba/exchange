@@ -3952,6 +3952,8 @@ public class BanKuaiDbOperation
 				 double close = rsfx.getDouble("收盘价");
 				 double cje = rsfx.getDouble("成交额");
 				 double cjl = rsfx.getDouble("成交量");
+				 double cjezbgr = rsfx.getDouble("DPCJEZB增长率");
+				 double cjlzbgr = rsfx.getDouble("DPCJLZB增长率");
 				 java.sql.Date actiondate = rsfx.getDate("交易日期");
 				 ZonedDateTime zdtime = actiondate.toLocalDate().atStartOfDay(ZoneOffset.UTC);
 				 org.jfree.data.time.Day recordday = new org.jfree.data.time.Day (actiondate);
@@ -3959,6 +3961,8 @@ public class BanKuaiDbOperation
 				 NodeGivenPeriodDataItem bkperiodrecord = new NodeGivenPeriodDataItemForJFC( bk.getMyOwnCode(), NodeGivenPeriodDataItem.DAY,
 						 recordday, open, high,  low,  close, 
 							cjl, cje );
+				 bkperiodrecord.setDaPanChenJiaoErZhanBiGrowingRate(cjezbgr);
+				 bkperiodrecord.setDaPanChenJiaoLiangZhanBiGrowingRate(cjlzbgr);
 				 
 //				 NodeGivenPeriodDataItem bkperiodrecord = new NodeGivenPeriodDataItemForTA4J( bk.getMyOwnCode(), NodeGivenPeriodDataItem.DAY,
 //							zdtime, PrecisionNum.valueOf(open), PrecisionNum.valueOf(high),  PrecisionNum.valueOf(low),  PrecisionNum.valueOf(close), 
@@ -7894,29 +7898,46 @@ public class BanKuaiDbOperation
 		 */
 		public void saveBanKuaiExtraDataToDatabase(BanKuai bk, LocalDate date, String extradatakeywords[] ) 
 		{
-			NodeXPeriodData nodexdatawk = null;NodeXPeriodData nodexdataday = null;
-			try {
-				  nodexdatawk =  bk.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
-				  nodexdataday =  bk.getNodeXPeroidData(NodeGivenPeriodDataItem.DAY);
-			} catch( java.lang.NullPointerException e) {	e.printStackTrace();	}
+			NodeXPeriodData nodexdatawk = bk.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
+			NodeXPeriodData nodexdataday = bk.getNodeXPeroidData(NodeGivenPeriodDataItem.DAY);
 			
 			String setString = "";
 			for(String keyword : extradatakeywords ) {
-				Object value = nodexdatawk.getNodeDataByKeyWord(keyword,date,"");
+				Object value = nodexdataday.getNodeDataByKeyWord(keyword,date,"");
+				if(value == null) break;
+				
 				switch(keyword) {
-				case "CjeZbGrowRate":	setString = setString + "DPCJEZB增加率 = " + ((Double)value).toString() + ",";
+				case "CjeZbGrowRate":	setString = setString + " DPCJEZB增长率  = " + ((Double)value).toString() + ",";
 				break;
-				case "CjlZbGrowRate":	setString = setString + "DPCJLZB增加率 = " + ((Double)value).toString() + ",";
+				case "CjlZbGrowRate":	setString = setString + " DPCJLZB增长率  = " + ((Double)value).toString() + ",";
 				break;
 				}
 			}
+			setString = setString.trim().substring(0, setString.length() - 2);
+			setString = " SET " + setString ;
 			
-			String sqlupdatestat = "UPDATE 股票通达信行业板块对应表 "
-//						+ "  SET 移除时间 = " + "'" +  LocalDate.now().toString()  + "'"
-//						+ "  WHERE  股票通达信行业板块对应表.`股票代码` = " + "'" + stockcode.trim() + "'"
-//						+ "  AND isnull(移除时间)"
-//						+ "  AND 股票通达信行业板块对应表.`对应TDXSWID` = " + "'" + stockbkanameindb + "'"
+			String bkcys = bk.getNodeJiBenMian().getSuoShuJiaoYiSuo();
+			if(bkcys == null)	return ;
 			
+			String bkcjltable = null;
+			if(bkcys.equalsIgnoreCase("sh"))
+				bkcjltable = "通达信板块每日交易信息";
+			else if(bkcys.equalsIgnoreCase("sz"))
+				bkcjltable = "通达信交易所指数每日交易信息";
+			else if(bkcys.equalsIgnoreCase("BK"))	
+				bkcjltable = "大智慧板块每日交易信息";
+			
+			String sqlupdatestat = "UPDATE " + bkcjltable  +"\r\n"
+					+ setString + "\r\n"  
+					+ "  WHERE " + bkcjltable + ".`代码` = " + "'" + bk.getMyOwnCode() + "' \r\n"
+					+ "  AND " + bkcjltable + ".交易日期 = '" +  date.toString()  + "'"
+					;
+			try {
+				connectdb.sqlUpdateStatExecute(sqlupdatestat);
+			} catch(java.lang.NullPointerException e) {
+		    } catch(Exception e){e.printStackTrace(); System.out.print(sqlupdatestat + "\r\n");
+		    } finally {  }
+			return;
 		}
 
 }

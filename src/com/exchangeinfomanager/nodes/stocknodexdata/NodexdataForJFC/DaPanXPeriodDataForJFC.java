@@ -796,5 +796,11 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public Double getAverageDailyChenJiaoLiangGrowingRate(LocalDate requireddate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
 

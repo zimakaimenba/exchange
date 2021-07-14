@@ -423,7 +423,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 			
 		tmpohlcSeries.setNotify(false);
 		tmpcandlestickDataset.setNotify(false);
-		
+		int tmpdel=0;
 		TDXNodesXPeriodDataForJFC nodexdata = (TDXNodesXPeriodDataForJFC) node.getNodeXPeroidData(period);
 		LocalDate nodestart = nodexdata.getOHLCRecordsStartDate();
 		LocalDate nodeend = nodexdata.getOHLCRecordsEndDate();
@@ -515,8 +515,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		OHLCSeries dapanohlcSeries = new OHLCSeries ("AMO");
 		
 		OHLCSeries ohlcSeries = null;
-        try {
-        	ohlcSeries = candlestickDataset.getSeries(0);
+        try {	ohlcSeries = candlestickDataset.getSeries(0);
         } catch (java.lang.IllegalArgumentException e) {
         	logger.info( curdisplayednode.getMyOwnName() + "没有K线数据，无法显示个股K线！请检查！");
         	return;
@@ -542,11 +541,8 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		
 		tmpdapanDataset.addSeries(dapanohlcSeries);
 	
-		try {
-			candlestickChart.getXYPlot().getRangeAxis(1).setRange(0, highestHigh*1.02);
-		} catch (java.lang.IllegalArgumentException e ) {
-//			e.printStackTrace();
-		}
+		try {	candlestickChart.getXYPlot().getRangeAxis(1).setRange(0, highestHigh*1.02);
+		} catch (java.lang.IllegalArgumentException e ) { e.printStackTrace();	}
 		
 		try {
 			tmpdapanDataset.setNotify(true);
