@@ -209,7 +209,6 @@ import com.udojava.evalex.Expression;
 	protected TimeSeries nodeamo; 
 	protected TimeSeries nodevol; 
 
-
 	//均线
 	protected TimeSeries nodeohlcma5;
 	protected TimeSeries nodeohlcma10;
@@ -236,34 +235,43 @@ import com.udojava.evalex.Expression;
 			nodeohlc.setNotify(false);
 			nodeohlc.add( (NodeGivenPeriodDataItemForJFC)kdata);
 		} catch (org.jfree.data.general.SeriesException e) {
-			logger.debug(kdata.getMyOwnCode() + kdata.getJFreeChartPeriod( super.getNodeperiodtype() )  + kdata.getJFreeChartPeriod( super.getNodeperiodtype() ).getStart() + "," + kdata.getJFreeChartPeriod( super.getNodeperiodtype() ).getEnd() + ")");
+			System.out.println(super.getNodeCode() + super.getNodeperiodtype() 
+				+ kdata.getJFreeChartPeriod(super.getNodeperiodtype()).toString() 
+				+ kdata.getJFreeChartPeriod(super.getNodeperiodtype()).getStart().toString() 
+				+ "nodeohlc 数据已经存在，重复添加！"  );
 		} catch (java.lang.IllegalArgumentException e) {
-			e.printStackTrace();
+//			e.printStackTrace();
 		}
-		
 		try {
 			nodeamo.setNotify(false);
 			nodevol.setNotify(false);
 			nodeamo.add(kdata.getJFreeChartPeriod( super.getNodeperiodtype()  ),kdata.getMyOwnChengJiaoEr(),false);
 			nodevol.add(kdata.getJFreeChartPeriod( super.getNodeperiodtype() ), kdata.getMyOwnChengJiaoLiang(),false);
-
 		} catch (org.jfree.data.general.SeriesException e) {
-			logger.debug(kdata.getMyOwnCode() + kdata.getJFreeChartPeriod( super.getNodeperiodtype() )  + kdata.getJFreeChartPeriod( super.getNodeperiodtype() ).getStart() + "," + kdata.getJFreeChartPeriod( super.getNodeperiodtype() ).getEnd() + ")");
+			System.out.println(super.getNodeCode() + super.getNodeperiodtype() 
+			+ kdata.getJFreeChartPeriod(super.getNodeperiodtype()).toString() 
+			+ kdata.getJFreeChartPeriod(super.getNodeperiodtype()).getStart().toString() 
+			+ "nodeamo 数据已经存在，重复添加！"  );
 		}
-		
 		try {	
 			periodhighestzhangdiefu.setNotify(false);
 			if( kdata.getPeriodHighestZhangDieFu() != null && kdata.getPeriodHighestZhangDieFu() != 0)
 				periodhighestzhangdiefu.add(kdata.getJFreeChartPeriod(super.getNodeperiodtype()),kdata.getPeriodHighestZhangDieFu(),false);
 		} catch (org.jfree.data.general.SeriesException e) {
-			logger.debug(kdata.getMyOwnCode() + kdata.getJFreeChartPeriod( super.getNodeperiodtype() )  + kdata.getJFreeChartPeriod( super.getNodeperiodtype() ).getStart() + "," + kdata.getJFreeChartPeriod( super.getNodeperiodtype() ).getEnd() + ")");
+			System.out.println(super.getNodeCode() + super.getNodeperiodtype() 
+			+ kdata.getJFreeChartPeriod(super.getNodeperiodtype()).toString() 
+			+ kdata.getJFreeChartPeriod(super.getNodeperiodtype()).getStart().toString() 
+			+ "periodhighestzhangdiefu 数据已经存在，重复添加！"  );
 		}
 		try {	
 			periodlowestzhangdiefu.setNotify(false);
 			if( kdata.getPeriodLowestZhangDieFu() != null && kdata.getPeriodLowestZhangDieFu() != 0)
 				periodlowestzhangdiefu.add(kdata.getJFreeChartPeriod(super.getNodeperiodtype()), kdata.getPeriodLowestZhangDieFu(),false);
 		} catch (org.jfree.data.general.SeriesException e) {
-			logger.debug(kdata.getMyOwnCode() + kdata.getJFreeChartPeriod( super.getNodeperiodtype() )  + kdata.getJFreeChartPeriod( super.getNodeperiodtype() ).getStart() + "," + kdata.getJFreeChartPeriod( super.getNodeperiodtype() ).getEnd() + ")");
+			System.out.println(super.getNodeCode() + super.getNodeperiodtype() 
+			+ kdata.getJFreeChartPeriod(super.getNodeperiodtype()).toString() 
+			+ kdata.getJFreeChartPeriod(super.getNodeperiodtype()).getStart().toString() 
+			+ "periodlowestzhangdiefu 数据已经存在，重复添加！"  );
 		}
 		
 		super.addNewXPeriodData(kdata);
@@ -274,12 +282,14 @@ import com.udojava.evalex.Expression;
 		if(super.nodeamozhanbi.getItemCount() == 0)	return null;
 		
 		TimeSeriesDataItem dataitem = super.nodeamozhanbi.getDataItem(0);
+		RegularTimePeriod dataitemperiod = dataitem.getPeriod();
 		Date start = dataitem.getPeriod().getStart();
 		LocalDate startdate = start.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 		LocalDate enddate = dataitem.getPeriod().getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 	
 		if(super.getNodeperiodtype() == NodeGivenPeriodDataItem.WEEK) {
-			LocalDate mondayday = startdate.with(DayOfWeek.MONDAY);
+			TemporalField fieldUS = WeekFields.of(Locale.US).dayOfWeek();
+			LocalDate mondayday = startdate.with(fieldUS, 2);
 			return mondayday;
 		} else if(super.getNodeperiodtype() == NodeGivenPeriodDataItem.DAY) 
 			return startdate;
@@ -292,12 +302,14 @@ import com.udojava.evalex.Expression;
 		
 		int itemcount = super.nodeamozhanbi.getItemCount();
 		TimeSeriesDataItem dataitem = super.nodeamozhanbi.getDataItem(itemcount - 1);
+		RegularTimePeriod dataitemperiod = dataitem.getPeriod();
 		Date start = dataitem.getPeriod().getStart();
 		LocalDate startdate = start.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 		LocalDate enddate = dataitem.getPeriod().getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();;
 	
 		if(super.getNodeperiodtype() == NodeGivenPeriodDataItem.WEEK) {
-			LocalDate fridayday = enddate.with(DayOfWeek.FRIDAY);
+			TemporalField fieldUS = WeekFields.of(Locale.US).dayOfWeek();
+			LocalDate fridayday = startdate.with(fieldUS, 6);
 			return fridayday;
 		} else if(super.getNodeperiodtype() == NodeGivenPeriodDataItem.DAY) {
 			return enddate;
@@ -2314,14 +2326,18 @@ import com.udojava.evalex.Expression;
 			}
 			if(dapcurindx == 0 ) return false ;//大盘都到第一周了，肯定没停牌
 			LocalDate dplstwkdata = null;
-			for(int i= 1;i<=4;i++) { //大盘连续停牌4周的可能性大概为0
-				TimeSeriesDataItem dplstrecords = dpamo.getDataItem(dapcurindx -i);
-				if(dplstrecords != null) { //大盘上周的数据找到
-					dplstwkdata = dplstrecords.getPeriod().getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-					break;
-				} else {} //说明是假期
+			try {
+				for(int i= 1;i<=4;i++) { //大盘连续停牌4周的可能性大概为0
+					TimeSeriesDataItem dplstrecords = dpamo.getDataItem(dapcurindx -i);
+					if(dplstrecords != null) { //大盘上周的数据找到
+						dplstwkdata = dplstrecords.getPeriod().getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+						break;
+					} else {} //说明是假期
+				}
+			} catch (java.lang.IndexOutOfBoundsException e) {
+				e.printStackTrace();
 			}
-			
+
 			WeekFields weekFields = WeekFields.of(Locale.getDefault());
 			int year2 = lastld.getYear();
 			int weeknumber2 = lastld.get(weekFields.weekOfWeekBasedYear());

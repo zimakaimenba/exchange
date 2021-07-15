@@ -67,16 +67,15 @@ import com.google.common.primitives.UnsignedBytes;
 import com.mysql.jdbc.MysqlDataTruncation;
 import com.sun.rowset.CachedRowSetImpl;
 
-public class BanKuaiDZHDbOperation 
+public class BanKuaiDZHDbOperation extends BanKuaiDbOperation
 {
-	private ConnectDZHDataBase dzhconnectdb;
+//	private ConnectDZHDataBase dzhconnectdb;
 	private ConnectDataBase tdxconnectdb;
 	private SetupSystemConfiguration sysconfig;
 
 	public BanKuaiDZHDbOperation() 
 	{
 		tdxconnectdb = ConnectDataBase.getInstance();
-//		dzhconnectdb = ConnectDZHDataBase.getInstance();
 		sysconfig = new SetupSystemConfiguration();
 	}
 	/*
@@ -170,45 +169,41 @@ public class BanKuaiDZHDbOperation
 	/*
 	 * 
 	 */
-	public Set<String> getDZHGaiNianBanKuaiGeGuSetFromSQLite(String dzhbk) 
-	{
-		CachedRowSetImpl rsagu = null;
-		try {
-			 String sqlquerystat = "SELECT * FROM blocks WHERE  blockid = '" + dzhbk.trim() + "'"
-		 			;
-			rsagu = dzhconnectdb.dbcon.sqlQueryStatExecute(sqlquerystat);
-			while(rsagu.next()) {
-//				  Blob input = rsagu.getBlob("constituents");
-				Object input = rsagu.getBinaryStream(2);
-				      Object input2 = rsagu.getBinaryStream("constituents");
-//				 BufferedInputStream dis = new BufferedInputStream(input);
-//				 int fileheadbytenumber = 384;
-//		         byte[] itemBuf = new byte[fileheadbytenumber];
-//		         try {
-//					dis.read(itemBuf, 0, fileheadbytenumber);
-//					String fileHead = new String(itemBuf,0,fileheadbytenumber);
-//					
-//					int sigbk = 2813;
-//		            byte[] itemBuf2 = new byte[sigbk];
-//		            while (dis.read(itemBuf2, 0, sigbk) != -1) {
-//		         	   //板块名称
-//		         	   String gupiaoheader = (new String(itemBuf2,0,9)).trim();
-//		            }
-//				} catch (IOException e) {e.printStackTrace();} 
-				 int i =0;
-			
-			}
-		} catch (Exception e) { e.printStackTrace();
-		} finally {
-			try {	rsagu.close();	} catch (SQLException e) {	e.printStackTrace();}
-			rsagu = null;
-		}
-		
-		
-         
-        return null; 
-         
-	}
+//	public Set<String> getDZHGaiNianBanKuaiGeGuSetFromSQLite(String dzhbk) 
+//	{
+//		CachedRowSetImpl rsagu = null;
+//		try {
+//			 String sqlquerystat = "SELECT * FROM blocks WHERE  blockid = '" + dzhbk.trim() + "'"
+//		 			;
+//			rsagu = tdxconnectdb.sqlQueryStatExecute(sqlquerystat);
+//			while(rsagu.next()) {
+////				  Blob input = rsagu.getBlob("constituents");
+//				Object input = rsagu.getBinaryStream(2);
+//				      Object input2 = rsagu.getBinaryStream("constituents");
+////				 BufferedInputStream dis = new BufferedInputStream(input);
+////				 int fileheadbytenumber = 384;
+////		         byte[] itemBuf = new byte[fileheadbytenumber];
+////		         try {
+////					dis.read(itemBuf, 0, fileheadbytenumber);
+////					String fileHead = new String(itemBuf,0,fileheadbytenumber);
+////					
+////					int sigbk = 2813;
+////		            byte[] itemBuf2 = new byte[sigbk];
+////		            while (dis.read(itemBuf2, 0, sigbk) != -1) {
+////		         	   //板块名称
+////		         	   String gupiaoheader = (new String(itemBuf2,0,9)).trim();
+////		            }
+////				} catch (IOException e) {e.printStackTrace();} 
+//				 int i =0;
+//			
+//			}
+//		} catch (Exception e) { e.printStackTrace();
+//		} finally {
+//			try {	rsagu.close();	} catch (SQLException e) {	e.printStackTrace();}
+//			rsagu = null;
+//		}
+//	    return null; 
+//	}
 	/*
 	 * 
 	 */
@@ -1050,7 +1045,9 @@ public class BanKuaiDZHDbOperation
 		 			;
 			rs = tdxconnectdb.sqlQueryStatExecute(sqlquerystat);
 			while(rs.next()) {
-				String dzhbkcode = rs.getString("板块ID"); 
+				String dzhbkcode = rs.getString("板块ID");
+				if(dzhbkcode.trim().equals("399001")) //涉及大盘的2个指数，999999，399001都要TDX的数据
+					continue;
 				String dzhbkname = rs.getString("板块名称");
 				
 				BanKuai dzhbk = new BanKuai(dzhbkcode,dzhbkname, "DZH");
@@ -1087,32 +1084,75 @@ public class BanKuaiDZHDbOperation
 		}
 		//大智慧的大盘node依然用通达信的代码
 		try {
-			 String sqlquerystat = "select *  FROM 通达信板块列表 WHERE 板块ID IN (999999)  "
-		 			;
-			rs = tdxconnectdb.sqlQueryStatExecute(sqlquerystat);
-			while(rs.next()) {
-				String dzhbkcode = rs.getString("板块ID"); 
-				String dzhbkname = rs.getString("板块名称");
-				
-				BanKuai dzhbk = new BanKuai(dzhbkcode,dzhbkname, "DZH");
-				dzhbk.getNodeJiBenMian().setSuoShuJiaoYiSuo(rs.getString("指数所属交易所"));
-//				dzhbk.setBanKuaiLeiXing( rs.getString("板块类型描述") );
-				dzhbk.getBanKuaiOperationSetting().setExporttogehpi(rs.getBoolean("导出Gephi"));
-				dzhbk.getBanKuaiOperationSetting().setImportdailytradingdata(rs.getBoolean("导入交易数据"));
-				dzhbk.getBanKuaiOperationSetting().setShowinbkfxgui(rs.getBoolean("板块分析"));
-				dzhbk.getBanKuaiOperationSetting().setShowincyltree(rs.getBoolean("产业链树"));
-				dzhbk.getBanKuaiOperationSetting().setExportTowWlyFile(rs.getBoolean("周分析文件"));
-				dzhbk.getBanKuaiOperationSetting().setImportBKGeGu(rs.getBoolean("导入板块个股"));
-				dzhbk.getBanKuaiOperationSetting().setBanKuaiLabelColor(rs.getString("DefaultCOLOUR"));
-
-				dzhbkset.add(dzhbk);
-			}
-		} catch (Exception e) { e.printStackTrace();
-		} finally {
-			try {	rs.close();	} catch (SQLException e) {	e.printStackTrace();}
-			rs = null;
-		}
-
+			 String sqlquerystat = 
+						"SELECT * FROM\r\n" + 
+						"(\r\n" + 
+						"SELECT *   FROM 通达信板块列表  WHERE 板块ID IN (999999,399001)  ) AS node\r\n" + 
+						"LEFT   JOIN \r\n" + 
+						"(SELECT * FROM 板块股票占比阈值 )\r\n" + 
+						"AS nodezbextremelevel\r\n" + 
+						"ON node.板块ID = nodezbextremelevel.代码\r\n" + 
+						"\r\n" + 
+						"LEFT   JOIN \r\n" + 
+						"(SELECT 代码, MIN(交易日期)  SHminjytime , MAX(交易日期)  SHmaxjytime fROM   通达信板块每日交易信息\r\n" + 
+						"GROUP BY 代码) shjyt \r\n" + 
+						"\r\n" + 
+						"ON shjyt.代码 = node.板块ID AND node.指数所属交易所 = 'SH'\r\n" + 
+						"\r\n" + 
+						"LEFT   JOIN \r\n" + 
+						"(SELECT 代码, MIN(交易日期)  SZminjytime , MAX(交易日期)  SZmaxjytime fROM   通达信交易所指数每日交易信息\r\n" + 
+						"GROUP BY 代码) szjyt \r\n" + 
+						"\r\n" + 
+						"ON szjyt.代码 = node.板块ID AND node.指数所属交易所='SZ'\r\n"  
+						;
+			    	rs = tdxconnectdb.sqlQueryStatExecute(sqlquerystat);
+			        while(rs.next()) {
+			        	BanKuai tmpbk = new BanKuai (rs.getString("板块ID"),rs.getString("板块名称"),"DZH" );
+			        	String zhishujys = rs.getString("指数所属交易所");
+			        	tmpbk.getNodeJiBenMian().setSuoShuJiaoYiSuo(zhishujys);
+			        	tmpbk.setBanKuaiLeiXing( rs.getString("板块类型描述") );
+			        	tmpbk.getBanKuaiOperationSetting().setImportBKGeGu(rs.getBoolean("导入板块个股"));
+			        	tmpbk.getBanKuaiOperationSetting().setExporttogehpi(rs.getBoolean("导出Gephi"));
+			        	tmpbk.getBanKuaiOperationSetting().setImportdailytradingdata(rs.getBoolean("导入交易数据"));
+			        	tmpbk.getBanKuaiOperationSetting().setShowinbkfxgui(rs.getBoolean("板块分析"));
+			        	tmpbk.getBanKuaiOperationSetting().setShowincyltree(rs.getBoolean("产业链树"));
+			        	tmpbk.getBanKuaiOperationSetting().setExportTowWlyFile(rs.getBoolean("周分析文件"));
+			        	tmpbk.getBanKuaiOperationSetting().setBanKuaiLabelColor(rs.getString("DefaultCOLOUR"));
+			        	tmpbk.getNodeJiBenMian().setNodeCjlZhanbiLevel (rs.getDouble("成交量占比下限"), rs.getDouble("成交量占比上限"));
+			        	tmpbk.getNodeJiBenMian().setNodeCjeZhanbiLevel (rs.getDouble("成交额占比下限"), rs.getDouble("成交额占比上限"));
+			        	tmpbk.getNodeJiBenMian().setIsCoreZhiShu (rs.getBoolean("核心指数"));
+			        	
+			        	if(zhishujys.equalsIgnoreCase("SH")) {
+			        		try {	LocalDate shmaxdate = rs.getDate("SHmaxjytime").toLocalDate();
+			        				tmpbk.getShuJuJiLuInfo().setJyjlmaxdate(shmaxdate);
+			        		} catch(java.lang.NullPointerException e) {
+			        			tmpbk.getShuJuJiLuInfo().setJyjlmaxdate(null);
+			        		}
+			        		try {	LocalDate shmindate = rs.getDate("SHminjytime").toLocalDate();
+			        				tmpbk.getShuJuJiLuInfo().setJyjlmindate(shmindate);
+			        		} catch(java.lang.NullPointerException e) {
+			        			tmpbk.getShuJuJiLuInfo().setJyjlmaxdate(null);
+			        		}
+			        	} else if(zhishujys.equalsIgnoreCase("SZ")) {
+			        		try {	LocalDate szmaxdate = rs.getDate("SZmaxjytime").toLocalDate();
+			        				tmpbk.getShuJuJiLuInfo().setJyjlmaxdate(szmaxdate);
+				    		} catch(java.lang.NullPointerException e) {
+				    				tmpbk.getShuJuJiLuInfo().setJyjlmaxdate(null);
+				    		}
+				    		try {	LocalDate szmindate = rs.getDate("SZminjytime").toLocalDate();
+			        				tmpbk.getShuJuJiLuInfo().setJyjlmindate(szmindate);
+				    		} catch(java.lang.NullPointerException e) {
+				    				tmpbk.getShuJuJiLuInfo().setJyjlmaxdate(null);
+				    		}
+			        	}
+			        	
+			        	dzhbkset.add(tmpbk);
+			        }
+			    } catch(java.lang.NullPointerException e){ e.printStackTrace();
+			    } catch (SQLException e) {e.printStackTrace();
+			    } catch(Exception e){e.printStackTrace();
+			    } finally {	if(rs != null)	try {rs.close();rs = null;} catch (SQLException e) {e.printStackTrace();}
+			    }
 		
 		return dzhbkset;
 	}
@@ -1255,72 +1295,6 @@ public class BanKuaiDZHDbOperation
 	    }
 		
 		return bankuai;
-	}
-	/*
-	 * 
-	 */
-	private void setTDXBanKuaiGeGuDuiYingBiao (String sqlquerystat1)
-	{
-//		CachedRowSetImpl rsdm = connectdb.sqlQueryStatExecute(sqlquerystat1);
-//		try {
-//			while(rsdm.next()) {
-//	    		 String bkcode = rsdm.getString("板块代码"); //mOST_RECENT_TIME
-//	    		 BanKuai bk = (BanKuai) CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode(bkcode, BkChanYeLianTreeNode.TDXBK);
-//	    		 if(bk == null) 
-//	    			 continue;
-//	    		 try { String dyb = rsdm.getString("DYB");
-//	    		 		bk.getShuJuJiLuInfo().setGuPiaoBanKuaiDuiYingBiao(dyb);
-//	    		 } catch (java.lang.NullPointerException ex) {}
-//	    	}
-//		} catch(java.lang.NullPointerException e) {	e.printStackTrace();
-//	    } catch (SQLException e) {	e.printStackTrace();
-//	    } catch(Exception e){	e.printStackTrace();
-//	    } finally {
-//	    	if(rsdm != null)
-//			try {rsdm.close();rsdm = null;
-//			} catch (SQLException e) {	e.printStackTrace();}
-//	    }
-//		
-//		return;
-	}
-	/*
-	 * 
-	 */
-	public void getDZHBanKuaiGeGuDuiYingBiaoByJiaoYiSuo (String jiaoyisuo)
-	{
-//		Collection<BkChanYeLianTreeNode> bkjys = CreateExchangeTree.CreateTreeOfDZHBanKuaiAndStocks().getRequiredSubSetOfTheNodesByJiaoYiSuo(BkChanYeLianTreeNode.DZHBK, jiaoyisuo);
-//		String bkcodes = "";
-//		for(BkChanYeLianTreeNode tmpbk : bkjys)
-//			bkcodes = bkcodes + tmpbk.getMyOwnCode() + ",";
-//		bkcodes = bkcodes.substring(0, bkcodes.length()-2);
-//		
-//		String sqlquerystat1 =  
-//				" SELECT 板块代码, COUNT(*) AS RESULT , '股票通达信概念板块对应表'  AS DYB FROM 股票通达信概念板块对应表\r\n" + 
-//				" WHERE  板块代码 IN (" +  bkcodes + ")\r\n" + 
-//				" GROUP BY 板块代码  \r\n"  
-////				" + UNION \r\n" 
-//				; 
-//		String sqlquerystat2 =		" SELECT 板块代码, COUNT(*) AS RESULT ,'股票通达信风格板块对应表' AS DYB FROM 股票通达信风格板块对应表\r\n" + 
-//				" WHERE  板块代码 IN (" +  bkcodes + ")\r\n" + 
-//				" GROUP BY 板块代码  \r\n"  
-////				"+  UNION \r\n" 
-//				; 
-//				
-//		String sqlquerystat3 =			" SELECT 板块代码, COUNT(*) AS RESULT , '股票通达信行业板块对应表'   AS DYB FROM  股票通达信行业板块对应表\r\n" + 
-//				" WHERE  板块代码 IN (" +  bkcodes + ")\r\n" + 
-//				" GROUP BY 板块代码  \r\n"  
-////				" + UNION \r\n" 
-//				; 
-//		String sqlquerystat4 =			"  SELECT 板块代码, COUNT(*) AS RESULT , '股票通达信交易所指数对应表'  AS DYB FROM 股票通达信交易所指数对应表\r\n" + 
-//				" WHERE  板块代码 IN (" +  bkcodes + ") \r\n" +  
-//				" GROUP BY 板块代码"
-//				;
-//		String sqlquerystat = sqlquerystat1 + sqlquerystat2 + sqlquerystat3 + sqlquerystat4;
-//		setTDXBanKuaiGeGuDuiYingBiao (sqlquerystat1);
-//		setTDXBanKuaiGeGuDuiYingBiao (sqlquerystat2);
-//		setTDXBanKuaiGeGuDuiYingBiao (sqlquerystat3);
-//		setTDXBanKuaiGeGuDuiYingBiao (sqlquerystat4);
-		
 	}
 	/*
 	 * 
@@ -1498,14 +1472,11 @@ public class BanKuaiDZHDbOperation
 		 } catch (Exception e) { e.printStackTrace();	 return null;
 		 } finally {
 			 try { in.close();	} catch (IOException e) {e.printStackTrace();}
-            try { dis.close(); } catch (IOException e) {e.printStackTrace();}     
+			 try { dis.close(); } catch (IOException e) {e.printStackTrace();}     
 		 }
 
 		 return tmprecordfile;
 	}
-	
-	private List<String> setVolAmoRecordsFromFileToDatabaseBulkImport (BkChanYeLianTreeNode tmpnode, File tmpbkfile, LocalDate lastestdbrecordsdate,  List<String> nodeinsertdata, File tmprecordfile)
-	{return null;}
 	/*
 	 * 
 	 */
@@ -1729,9 +1700,9 @@ public class BanKuaiDZHDbOperation
 	/*
 	 * 
 	 */
-	public void getTDXBanKuaiGeGuDuiYingBiaoByJiaoYiSuo (String jiaoyisuo)
+	public String getDZHBanKuaiGeGuDuiYingBiaoByJiaoYiSuo (String jiaoyisuo)
 	{
-//		bk.getShuJuJiLuInfo().setGuPiaoBanKuaiDuiYingBiao(dyb);
+		return  "大智慧股票概念板块对应表";
 	}
 	
 

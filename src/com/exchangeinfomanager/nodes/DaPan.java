@@ -6,7 +6,6 @@ import java.time.LocalDate;
 import com.exchangeinfomanager.NodesServices.ServicesForNode;
 import com.exchangeinfomanager.NodesServices.SvsForNodeOfBanKuai;
 import com.exchangeinfomanager.NodesServices.SvsForNodeOfDZHBanKuai;
-import com.exchangeinfomanager.NodesServices.SvsForNodeOfDZHDaPan;
 import com.exchangeinfomanager.NodesServices.SvsForNodeOfDaPan;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodexdataForJFC.DaPanXPeriodDataForJFC;
@@ -56,12 +55,6 @@ public class DaPan extends TDXNodes
 		else
 			return true;
 	}
-	
-//	public void getNodeData (LocalDate requiredstartday, LocalDate requiredendday, String period, Boolean calwholeweek)
-//	{
-//		
-//		svsdp.getNodeData("000000",requiredstartday, requiredendday,period,calwholeweek);
-//	}
 
 	public ServicesForNode getServicesForNode (Boolean getorreset)
 	{
@@ -73,10 +66,11 @@ public class DaPan extends TDXNodes
 		if(svsdp != null)
 			return this.svsdp;
 		
-		if(this.shanghai.getType() == BkChanYeLianTreeNode.TDXBK)
-			svsdp = new SvsForNodeOfDaPan ();
-		else if(this.shanghai.getType() == BkChanYeLianTreeNode.DZHBK)
-			svsdp = new SvsForNodeOfDZHDaPan ();
+		svsdp = new SvsForNodeOfDaPan ();
+//		if(this.shanghai.getType() == BkChanYeLianTreeNode.TDXBK)
+//			svsdp = new SvsForNodeOfDaPan ();
+//		else if(this.shanghai.getType() == BkChanYeLianTreeNode.DZHBK)
+//			svsdp = new SvsForNodeOfDaPan ();
 		
 		return svsdp;
 	}

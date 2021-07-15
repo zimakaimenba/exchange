@@ -118,7 +118,6 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 			
 		});
 	}
-	
 	/*
 	 * 
 	 */
@@ -223,12 +222,6 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 			String period) 
 	{
 		DaPan dapan = (DaPan)CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getModel().getRoot(); //alwayse use tdx tree fro dapan;
-//		if(this.getCurDisplayedNode().getType() == BkChanYeLianTreeNode.BKGEGU) {
-//			BanKuai bk = ((StockOfBanKuai)this.getCurDisplayedNode()).getBanKuai();
-//			dapan = (DaPan)bk.getRoot();
-//		}
-//		else
-//			dapan = (DaPan)super.getCurDisplayedNode().getRoot();
 		
 		LocalDate requireend = enddate.with(DayOfWeek.SATURDAY);
 		LocalDate requirestart = startdate.with(DayOfWeek.MONDAY);

@@ -310,12 +310,6 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 				
 				if(cje > highestHigh)
 					highestHigh = cje;
-				
-				//标记周日平均成交额
-//				if(!super.shouldDrawAverageDailyCjeOfWeekLine() ) { //如果已经要划线了，这里就不划了
-//					Double avecje = 2 * nodexdata.getAverageDailyChengJiaoErOfWeek(wkfriday, 0);
-//					this.averagelinechartdataset.setValue(avecje,"AverageDailyCje", wkfriday);
-//				}l
 
 				Double zhangdiefu = nodexdata.getSpecificOHLCZhangDieFu(tmpdate);
 				if(zhangdiefu != null && zhangdiefu >0) {
@@ -335,27 +329,6 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 					cpa.setTextAnchor(TextAnchor.CENTER);
 					super.plot.addAnnotation(cpa);
 				}
-				//标记大盘成交量该周是涨还是跌;;
-//				NodeXPeriodData dpnodexdata = dapan.getNodeXPeroidData(period);
-//				Double dpdiff = dpnodexdata.getChengJiaoErDifferenceWithLastPeriod(tmpdate, 0);
-//				if(dpdiff != null && dpdiff >0) {
-//					CategoryTextAnnotation cpa  = new CategoryTextAnnotation ("\u2B08", wkfriday , 0.0);
-//					//cpa.setBaseRadius(0.0);
-//					// cpa.setTipRadius(25.0);
-//					cpa.setFont(new Font("SansSerif", Font.BOLD, 10));
-//					cpa.setPaint(Color.RED);
-//					cpa.setTextAnchor(TextAnchor.CENTER);
-//					super.plot.addAnnotation(cpa);
-//				} else {
-//					CategoryTextAnnotation cpa  = new CategoryTextAnnotation ("\u21B1", wkfriday , 0.0);
-//					//cpa.setBaseRadius(0.0);
-//					//cpa.setTipRadius(25.0);
-//					cpa.setFont(new Font("SansSerif", Font.BOLD, 10));
-//					cpa.setPaint(Color.GREEN);
-//					cpa.setTextAnchor(TextAnchor.CENTER);
-//					super.plot.addAnnotation(cpa);
-//				}
-				
 			} else {
 				if( !dapan.isDaPanXiuShi(tmpdate,period) ) {
 					barchartdataset.setValue(0.0,super.getRowKey(),wkfriday);

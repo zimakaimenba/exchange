@@ -66,13 +66,13 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 		this.nodecode = nodecode;
 		this.nodeperiodtype = nodeperiodtype1;
 		
-		nodeamozhanbi = new TimeSeries(nodeperiodtype1);
-		nodevolzhanbi = new TimeSeries(nodeperiodtype1);
+		nodeamozhanbi = new TimeSeries(nodeperiodtype);
+		nodevolzhanbi = new TimeSeries(nodeperiodtype);
 		
 		nodedpcjezbgr = new TimeSeries(nodeperiodtype);
 		nodedpcjlzbgr = new TimeSeries(nodeperiodtype);
 		
-		nodeexchangedaysnumber = new TimeSeries(nodeperiodtype1);
+		nodeexchangedaysnumber = new TimeSeries(nodeperiodtype);
 	}
 	
 	private String nodecode;
@@ -108,15 +108,21 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 				nodevolzhanbi.setNotify(false);
 				nodevolzhanbi.add(kdata.getJFreeChartPeriod(this.nodeperiodtype),kdata.getNodeToDpChenJiaoLiangZhanbi(),false);
 			} catch (org.jfree.data.general.SeriesException e) {
+				System.out.println(getNodeCode() + getNodeperiodtype() 
+				+ kdata.getJFreeChartPeriod(getNodeperiodtype()).toString() 
+				+ kdata.getJFreeChartPeriod(getNodeperiodtype()).getStart().toString() 
+				+ "nodeamozhanbi 数据已经存在，重复添加！"  );
 			}
-			
 			try{
 				nodeexchangedaysnumber.setNotify(false);
 				if(kdata.getExchangeDaysNumber() != null && kdata.getExchangeDaysNumber() != 5) //
 					nodeexchangedaysnumber.add(kdata.getJFreeChartPeriod(this.nodeperiodtype),kdata.getExchangeDaysNumber(),false);
 			} catch (org.jfree.data.general.SeriesException e) {
+				System.out.println(getNodeCode() + getNodeperiodtype() 
+				+ kdata.getJFreeChartPeriod(getNodeperiodtype()).toString() 
+				+ kdata.getJFreeChartPeriod(getNodeperiodtype()).getStart().toString()
+				+ "nodeexchangedaysnumber 数据已经存在，重复添加！"  );
 			}
-			
 			try {
 				if(nodezhangtingnum == null)
 					nodezhangtingnum = new TimeSeries(this.nodeperiodtype);
@@ -129,7 +135,12 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 				if(kdata.getDieTingNumber() != null && kdata.getDieTingNumber() !=0 )
 					nodedietingnum.add(kdata.getJFreeChartPeriod(this.nodeperiodtype), kdata.getDieTingNumber() );
 				
-			} catch (org.jfree.data.general.SeriesException e) {}
+			} catch (org.jfree.data.general.SeriesException e) {
+				System.out.println(getNodeCode() + getNodeperiodtype() 
+				+ kdata.getJFreeChartPeriod(getNodeperiodtype()).toString() 
+				+ kdata.getJFreeChartPeriod(getNodeperiodtype()).getStart().toString()
+				+ " nodezhangtingnum 数据已经存在，重复添加！"  ); 
+			}
 		}
 		
 		try {	
@@ -137,14 +148,20 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 			if( kdata.getDaPanChenJiaoErZhanBiGrowingRate() != null && kdata.getDaPanChenJiaoErZhanBiGrowingRate() != 0)
 				nodedpcjezbgr.add(kdata.getJFreeChartPeriod(this.getNodeperiodtype()), kdata.getDaPanChenJiaoErZhanBiGrowingRate(),false);
 		} catch (org.jfree.data.general.SeriesException e) {
-//			logger.debug(kdata.getMyOwnCode() + kdata.getJFreeChartPeriod( super.getNodeperiodtype() )  + kdata.getJFreeChartPeriod( super.getNodeperiodtype() ).getStart() + "," + kdata.getJFreeChartPeriod( super.getNodeperiodtype() ).getEnd() + ")");
+			System.out.println(getNodeCode() + getNodeperiodtype() 
+			+ kdata.getJFreeChartPeriod(getNodeperiodtype()).toString() 
+			+ kdata.getJFreeChartPeriod(getNodeperiodtype()).getStart().toString()
+			+ "nodedpcjezbgr 数据已经存在，重复添加！"  ); 
 		}
 		try {	
 			nodedpcjlzbgr.setNotify(false);
 			if( kdata.getDaPanChenJiaoLiangZhanBiGrowingRate() != null && kdata.getDaPanChenJiaoLiangZhanBiGrowingRate() != 0.0)
 				nodedpcjlzbgr.add(kdata.getJFreeChartPeriod(this.getNodeperiodtype()), kdata.getDaPanChenJiaoLiangZhanBiGrowingRate(),false);
 		} catch (org.jfree.data.general.SeriesException e) {
-//			logger.debug(kdata.getMyOwnCode() + kdata.getJFreeChartPeriod( super.getNodeperiodtype() )  + kdata.getJFreeChartPeriod( super.getNodeperiodtype() ).getStart() + "," + kdata.getJFreeChartPeriod( super.getNodeperiodtype() ).getEnd() + ")");
+			System.out.println(getNodeCode() + getNodeperiodtype() 
+			+ kdata.getJFreeChartPeriod(getNodeperiodtype()).toString() 
+			+ kdata.getJFreeChartPeriod(getNodeperiodtype()).getStart().toString()
+			+ "nodedpcjlzbgr 数据已经存在，重复添加！"  );
 		}
 	}
 	/*
@@ -538,12 +555,14 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 			}
 			
 			Double curcjezbgr = this.getChenJiaoErZhanBiGrowthRateForDaPan(requireddate);
-			if(curcjezbgr == null  ) {
+			if( (curcjezbgr == null ||  curcjezbgr == 100.0) && cjezbgr != 100.0) {
 				try{	nodedpcjezbgr.add(recorddate, cjezbgr, false );
 				} catch(Exception e) {e.printStackTrace();	return; }
 				return;
 			}
-			if( CommonUtility.round(curcjezbgr,6) != CommonUtility.round(cjezbgr,6)) {
+			Double curcjezbgrround = CommonUtility.round(curcjezbgr,6);
+			Double setcjezbgrround =  CommonUtility.round(cjezbgr,6);
+			if(  curcjezbgrround.compareTo(setcjezbgrround ) !=0 ) {
 				try{	this.nodedpcjezbgr.delete(recorddate);
 						nodedpcjezbgr.add(recorddate, cjezbgr, false );
 				} catch(Exception e) {e.printStackTrace();	return;	}
@@ -584,12 +603,14 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 				}
 				
 				Double curcjlzbgr = this.getChenJiaoLiangZhanBiGrowthRateForDaPan(requireddate);
-				if(curcjlzbgr == null  ) {
+				if( (curcjlzbgr == null || curcjlzbgr ==100.0) && cjezbgr != 100.0  ) {
 					try{	nodedpcjlzbgr.add(recorddate, cjezbgr, false );
 					} catch(Exception e) {e.printStackTrace();	return; }
 					return;
 				}
-				if( CommonUtility.round(curcjlzbgr,6) != CommonUtility.round(cjezbgr,6)) {
+				Double curcjlzbgrround = CommonUtility.round(curcjlzbgr,6);
+				Double settingcjezbgrround = CommonUtility.round(cjezbgr,6);
+				if(  curcjlzbgrround.compareTo(settingcjezbgrround) !=0 ) {
 					try{	this.nodedpcjlzbgr.delete(recorddate);
 							nodedpcjlzbgr.add(recorddate, cjezbgr, false );
 					} catch(Exception e) {e.printStackTrace();	return;	}

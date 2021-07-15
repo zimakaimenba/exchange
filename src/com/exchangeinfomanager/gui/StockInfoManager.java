@@ -1605,6 +1605,8 @@ public class StockInfoManager
 				if(Strings.isNullOrEmpty(tagsreportresult) ) 
 					reportsummary = reportsummary + "个股板块关键词报表生成失败";
 				
+				SystemAudioPlayed.playSound();
+				
 				int exchangeresult = JOptionPane.showConfirmDialog(null, reportsummary + "其他报表生成成功，是否打开报表目录？","报表完毕", JOptionPane.OK_CANCEL_OPTION);
 				if(exchangeresult == JOptionPane.CANCEL_OPTION)
 						return;

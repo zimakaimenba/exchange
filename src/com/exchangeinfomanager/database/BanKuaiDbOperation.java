@@ -73,7 +73,7 @@ import org.jfree.data.time.ohlc.OHLCItem;
 import org.jfree.data.time.ohlc.OHLCSeries;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
-
+import org.python.icu.util.TimeZone;
 
 import com.exchangeinfomanager.Trees.AllCurrentTdxBKAndStoksTree;
 import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
@@ -2239,33 +2239,33 @@ public class BanKuaiDbOperation
 /*
  * 
  */
-	public Date getTDXRelatedTableLastModfiedTime() 
-	{
-		Date lastesttdxtablesmdftime = null;
-		String sqlquerystat = " SELECT MAX(创建时间) FROM 通达信板块列表" ;
-
-		CachedRowSetImpl rs = null; 
-		try {  
-		    	 rs = connectdb.sqlQueryStatExecute(sqlquerystat);
-		    	 
-		    	 java.sql.Timestamp tmplastmdftime = null;
-		    	 while(rs.next())
-		    		  tmplastmdftime = rs.getTimestamp("MAX(创建时间)");
-		    	 logger.debug(tmplastmdftime);
-		    	 lastesttdxtablesmdftime = tmplastmdftime;
-
-		    } catch(java.lang.NullPointerException e){ lastesttdxtablesmdftime = null;e.printStackTrace();
-		    } catch (SQLException e) { lastesttdxtablesmdftime = null; e.printStackTrace();
-		    } catch(Exception e) { lastesttdxtablesmdftime = null; e.printStackTrace();
-		    }  finally {
-		       if(rs != null)
-					try {
-						rs.close(); rs = null;
-					} catch (SQLException e) {e.printStackTrace();}
-		    }
-			
-		return lastesttdxtablesmdftime;
-	}
+//	public Date getTDXRelatedTableLastModfiedTime() 
+//	{
+//		Date lastesttdxtablesmdftime = null;
+//		String sqlquerystat = " SELECT MAX(创建时间) FROM 通达信板块列表" ;
+//
+//		CachedRowSetImpl rs = null; 
+//		try {  
+//		    	 rs = connectdb.sqlQueryStatExecute(sqlquerystat);
+//		    	 
+//		    	 java.sql.Timestamp tmplastmdftime = null;
+//		    	 while(rs.next())
+//		    		  tmplastmdftime = rs.getTimestamp("MAX(创建时间)");
+//		    	 logger.debug(tmplastmdftime);
+//		    	 lastesttdxtablesmdftime = tmplastmdftime;
+//
+//		    } catch(java.lang.NullPointerException e){ lastesttdxtablesmdftime = null;e.printStackTrace();
+//		    } catch (SQLException e) { lastesttdxtablesmdftime = null; e.printStackTrace();
+//		    } catch(Exception e) { lastesttdxtablesmdftime = null; e.printStackTrace();
+//		    }  finally {
+//		       if(rs != null)
+//					try {
+//						rs.close(); rs = null;
+//					} catch (SQLException e) {e.printStackTrace();}
+//		    }
+//			
+//		return lastesttdxtablesmdftime;
+//	}
 	/*
 	 * 判断板块是什么类型的板块，概念/风格/指数/行业/地域
 	 */
@@ -2423,8 +2423,10 @@ public class BanKuaiDbOperation
 			bkcjltable = "";
 		else if(bankuai.getNodeJiBenMian().getSuoShuJiaoYiSuo().toLowerCase().equals("sh"))
 			bkcjltable = "通达信板块每日交易信息";
-		else 
+		else if(bankuai.getNodeJiBenMian().getSuoShuJiaoYiSuo().toLowerCase().equals("sz"))
 			bkcjltable = "通达信交易所指数每日交易信息";
+		else if(bankuai.getNodeJiBenMian().getSuoShuJiaoYiSuo().toLowerCase().equals("bk"))
+			bkcjltable = "大智慧板块每日交易信息";
 
 		return bkcjltable;
 	}
@@ -2596,14 +2598,14 @@ public class BanKuaiDbOperation
 		return stockcodesetbyshizhirang;
 	}
 	/*
-	 * 板块设定时间跨度内和大盘相比的按周期占比。
+	 * 板块设定时间跨度内和大盘相比的按周期占比。按实际时间，周数据的时间吻合正确由调用函数负责
 	 */
 	public  BanKuai getBanKuaiZhanBi (BanKuai bankuai,LocalDate selecteddatestart,LocalDate selecteddateend,String period)
 	{
 		if(bankuai == null  )
 			return null;
 		
-		selecteddatestart = selecteddatestart.with(DayOfWeek.MONDAY);
+//		selecteddatestart = selecteddatestart.with(DayOfWeek.MONDAY);
 //		if(!bankuai.isNodeDataAtNotCalWholeWeekMode() )
 //			selecteddateend = selecteddateend.with(DayOfWeek.FRIDAY);
 		
@@ -2694,9 +2696,12 @@ public class BanKuaiDbOperation
 			rs = connectdb.sqlQueryStatExecute(sqlquerystat);
 			
 			while(rs.next()) {
-				java.sql.Date lastdayofweek = rs.getDate("EndOfWeekDate");
-				ZonedDateTime zdtime = lastdayofweek.toLocalDate().with(DayOfWeek.FRIDAY).atStartOfDay(ZoneOffset.UTC);
+				java.util.Date lastdayofweek = rs.getDate("EndOfWeekDate");
+//				ZonedDateTime zdtime = lastdayofweek.toLocalDate().with(DayOfWeek.FRIDAY).atStartOfDay(ZoneOffset.UTC);
+				java.util.TimeZone china =  java.util.TimeZone.getDefault();
+//				org.jfree.data.time.Week wknum = new org.jfree.data.time.Week(lastdayofweek, china, Locale.CHINA);
 				org.jfree.data.time.Week wknum = new org.jfree.data.time.Week(lastdayofweek);
+				Date startdate = wknum.getStart(); Date endstart = wknum.getEnd();
 				
 				Double bankuaicje = rs.getDouble("板块周交易额");
 				Double dapancje = rs.getDouble("大盘周交易额");
@@ -4093,6 +4098,9 @@ public class BanKuaiDbOperation
 		
 		return bk;
 	}
+	/*
+	 * 创业板
+	 */
 	public BanKuai getChuangYeBanZhangDieTingInfo(BanKuai bk, LocalDate requiredstartday, LocalDate requiredendday, String period) 
 	{
 		 String sql = "SELECT A.`EndOfWeekDate`, A.DIETING, B.ZHANGTING FROM\r\n" + 
@@ -4207,7 +4215,7 @@ public class BanKuaiDbOperation
 	public Interval getNodeDataBaseStoredDataTimeRange (TDXNodes node)
 	{
 		String cjltable;
-		if(node.getType() == BkChanYeLianTreeNode.TDXBK) 
+		if(BkChanYeLianTreeNode.isBanKuai(node)) 
 			cjltable = this.getBanKuaiJiaoYiLiangBiaoName( (BanKuai)node);
 		else 
 			cjltable = this.getStockJiaoYiLiangBiaoName( (Stock)node);
@@ -4921,6 +4929,7 @@ public class BanKuaiDbOperation
 		if(bktypetable == null) {
 			this.getTDXBanKuaiGeGuDuiYingBiaoByJiaoYiSuo ("SH");
 		    this.getTDXBanKuaiGeGuDuiYingBiaoByJiaoYiSuo ("SZ");
+//		    this.getTDXBanKuaiGeGuDuiYingBiaoByJiaoYiSuo ("BK");
 		}
 		String sqlupdatestat = "UPDATE " + bktypetable  + " SET 板块龙头 = " +  longtouornot  + 
 				" WHERE 板块代码 = '" + bkcode + 
@@ -7871,11 +7880,11 @@ public class BanKuaiDbOperation
 		public void forcedeleteBanKuaiImportedDailyExchangeData(BanKuai bk) 
 		{
 			String searchtable = null;
-			if(bk.getType() == BkChanYeLianTreeNode.TDXBK) 
+			if(BkChanYeLianTreeNode.isBanKuai(bk)) 
 				searchtable = this.getBanKuaiJiaoYiLiangBiaoName(bk);
 			try {
-				String sqlquerystat = "DLETE FROM " + searchtable + "WHERE 代码 = '" + bk.getMyOwnCode() + "'";
-				connectdb.sqlQueryStatExecute(sqlquerystat);
+				String sqlquerystat = "DELETE FROM " + searchtable + " WHERE 代码 = '" + bk.getMyOwnCode() + "'";
+				connectdb.sqlDeleteStatExecute(sqlquerystat);
 			} catch(java.lang.NullPointerException e) {
 		    } catch(Exception e){e.printStackTrace();
 		    } finally {  }
@@ -7887,7 +7896,8 @@ public class BanKuaiDbOperation
 		{
 			try {
 				String searchtable = bk.getShuJuJiLuInfo().getGuPiaoBanKuaiDuiYingBiao();
-				String sqlquerystat = "DLETE FROM " + searchtable + "WHERE 板块代码 = '" + bk.getMyOwnCode() + "'";
+				if(searchtable == null) return;
+				String sqlquerystat = "DELETE FROM " + searchtable + " WHERE 板块代码 = '" + bk.getMyOwnCode() + "'";
 				connectdb.sqlQueryStatExecute(sqlquerystat);
 			} catch(java.lang.NullPointerException e) {
 		    } catch(Exception e){e.printStackTrace();
@@ -7905,6 +7915,8 @@ public class BanKuaiDbOperation
 			for(String keyword : extradatakeywords ) {
 				Object value = nodexdataday.getNodeDataByKeyWord(keyword,date,"");
 				if(value == null) break;
+				if( (Double)value == 100.0) 
+					continue;
 				
 				switch(keyword) {
 				case "CjeZbGrowRate":	setString = setString + " DPCJEZB增长率  = " + ((Double)value).toString() + ",";
@@ -7913,8 +7925,12 @@ public class BanKuaiDbOperation
 				break;
 				}
 			}
-			setString = setString.trim().substring(0, setString.length() - 2);
-			setString = " SET " + setString ;
+			try {
+				setString = setString.trim().substring(0, setString.length() - 2);
+				setString = " SET " + setString ;
+			} catch ( java.lang.StringIndexOutOfBoundsException e) {
+				e.printStackTrace(); return;
+			}
 			
 			String bkcys = bk.getNodeJiBenMian().getSuoShuJiaoYiSuo();
 			if(bkcys == null)	return ;

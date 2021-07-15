@@ -64,6 +64,7 @@ import java.io.StringWriter;
 import java.text.Collator;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 
 import javax.swing.JComboBox;
@@ -434,54 +435,22 @@ public class ImportTDXData extends JDialog {
 			System.out.println("......导入大智慧板块信息结束" + LocalTime.now()  + ".....导入耗费时间： "+(end-start)+"ms \r\n");
 		}
 		if(chckbximportDZHbkdailyamodata.isSelected()) {
-			System.out.println("------导入大智慧板块信息开始" + LocalTime.now() );
+			System.out.println("------导入大智慧板块交易量开始" + LocalTime.now() );
 			long start=System.currentTimeMillis(); //获取开始时间
 			dzhdbopt.refreshDZHBanKuaiVolAmoToDbBulkImport ("BK",tflddzhdatafilename.getText(), 15 );
+			
+			BkChanYeLianTreeNode checknode = CreateExchangeTree.CreateTreeOfDZHBanKuaiAndStocks().getSpecificNodeByHypyOrCode("991002", BkChanYeLianTreeNode.DZHBK);
+			Interval importedinterval = bkdbopt.getNodeDataBaseStoredDataTimeRange ((TDXNodes) checknode);
+			System.out.println("大智慧数据最新数据时间段为:" +  importedinterval.toString() + "，请自行检查数据是否完整!");
+			
 			long end=System.currentTimeMillis(); //获取结束时间
-			System.out.println("......导入大智慧板块信息结束" + LocalTime.now()  + ".....导入耗费时间： "+(end-start)+"ms \r\n");
+			System.out.println("......导入大智慧板块交易量结束" + LocalTime.now()  + ".....导入耗费时间： "+(end-start)+"ms \r\n");
+			
+			
 		}
+		
 		dzhdbopt = null;
-//		if(chkbximportgudong.isSelected()) { //导入TUSHARE的股东数据
-//			String pythoninterpreter = sysconfig.getPythonInterpreter();
-//			String pythonscripts = sysconfig.getPythonScriptsPath ();
-//			String cmd = pythoninterpreter + "/python.exe" + "   " + pythonscripts + "exportdailydata.py\"" ;
-//			System.out.println(cmd);
-//			try {
-//				Process p = Runtime.getRuntime().exec(cmd);
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
-//		}
 	}
-	/*
-	 * 
-	 */
-//	public void executePythonScriptForExtraData(String scriptkeywords)  
-//	{
-////		try {
-////			Process p = Runtime.getRuntime().exec("C:/Users/Administrator.WIN7U-20140921O/Anaconda3/python E:/stock/stockmanager/thirdparty/python/execsrc/importdailyextradatafromtushare.py");
-////		} catch (IOException e1) {
-////			// TODO Auto-generated catch block
-////			e1.printStackTrace();
-////		}
-//		String pyscriptname = null;
-//		scriptkeywords = scriptkeywords.toUpperCase();
-//		switch (scriptkeywords) {
-//		case "EXTRADATAFROMTUSHARE":
-//			pyscriptname = this.sysconfig.getPythonScriptsPath () + "importdailyextradatafromtushare.py";//"E:/stock/stockmanager/thirdparty/python/execscripts/importdailyextradatafromtushare.py"; //
-//			break;
-//		case "SHAREHOLDER" :
-//			pyscriptname = this.sysconfig.getPythonScriptsPath () + "importshareholder.py";// "E:/stock/stockmanager/thirdparty/python/execscripts/importshareholder.py";
-//			break;
-//		}
-//		String pythoninterpreter = this.sysconfig.getPythonInterpreter();
-//		ProcessBuilder processBuilder = new ProcessBuilder(pythoninterpreter,pyscriptname );
-//	    processBuilder.redirectErrorStream(true);
-//
-//	    try {
-//			Process process = processBuilder.start();
-//		} catch (IOException e1) {e1.printStackTrace();	}
-//	}
 	/*
 	 * 
 	 */

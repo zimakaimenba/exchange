@@ -423,7 +423,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 			
 		tmpohlcSeries.setNotify(false);
 		tmpcandlestickDataset.setNotify(false);
-		int tmpdel=0;
+
 		TDXNodesXPeriodDataForJFC nodexdata = (TDXNodesXPeriodDataForJFC) node.getNodeXPeroidData(period);
 		LocalDate nodestart = nodexdata.getOHLCRecordsStartDate();
 		LocalDate nodeend = nodexdata.getOHLCRecordsEndDate();
@@ -431,10 +431,8 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		
 		Interval result = getTimeIntervalOfNodeTimeIntervalWithRequiredTimeInterval (nodestart,nodeend, requirestart, requireend);
 		if(result == null )		return;
-		
 		DateTime overlapstartdt = result.getStart();
 		DateTime overlapenddt = result.getEnd();
-		
 		LocalDate overlapldstartday = LocalDate.of(overlapstartdt.getYear(), overlapstartdt.getMonthOfYear(), overlapstartdt.getDayOfMonth());
 		LocalDate overlapldendday = LocalDate.of(overlapenddt.getYear(), overlapenddt.getMonthOfYear(), overlapenddt.getDayOfMonth());
 		

@@ -78,6 +78,28 @@ public class BanKuaiShuXingSheZhi extends JPanel
 		createEvetns ();
 	}
 	
+	public void disableAllSettingComponents ()
+	{
+		cbxnotimport.setSelected(false);
+		cbxnotbkfx.setSelected(false);
+		cbxnotgephi.setSelected(false);
+		cbxnotshowincyltree.setSelected(false);
+		buttonapplybksetting.setEnabled(false);
+		chkbxnotexportwklyfile.setEnabled(false);
+		cbxcorezhishu.setEnabled(false);
+		chbxnotimportgegu.setEnabled(false);
+	}
+	public void enableAllSettingComponents ()
+	{
+		cbxnotimport.setSelected(true);
+		cbxnotbkfx.setSelected(true);
+		cbxnotgephi.setSelected(true);
+		cbxnotshowincyltree.setSelected(true);
+		buttonapplybksetting.setEnabled(true);
+		chkbxnotexportwklyfile.setEnabled(true);
+		cbxcorezhishu.setEnabled(true);
+		chbxnotimportgegu.setEnabled(true);
+	}
 	private void initializeGuiValue()
 	{
 		cbxnotimport.setSelected( ! ((BanKuai)settingnode).getBanKuaiOperationSetting().isImportdailytradingdata() );
@@ -108,26 +130,15 @@ public class BanKuaiShuXingSheZhi extends JPanel
 		
 		if(BkChanYeLianTreeNode.isBanKuai(node)) {
 			
-			cbxnotimport.setEnabled(true);
-			cbxnotbkfx.setEnabled(true);
-			cbxnotgephi.setEnabled(true);
-			cbxnotshowincyltree.setEnabled(true);
-			buttonapplybksetting.setEnabled(true);
-			chkbxnotexportwklyfile.setEnabled(true);
+			enableAllSettingComponents ();
 			
 			initializeGuiValue ();
 
 		} else { //个股，不能设置
-			cbxnotimport.setSelected(false);
-			cbxnotbkfx.setSelected(false);
-			cbxnotgephi.setSelected(false);
-			cbxnotshowincyltree.setSelected(false);
-			buttonapplybksetting.setEnabled(false);
-			chkbxnotexportwklyfile.setEnabled(false);
+			disableAllSettingComponents ();
 		}
-		
-
 	}
+	
 	private void createEvetns() 
 	{
 		cbxcorezhishu.addItemListener(new ItemListener() {
@@ -179,7 +190,6 @@ public class BanKuaiShuXingSheZhi extends JPanel
 
 	protected void applaySetttingToDb() 
 	{
-		
 		ServicesForNodeBanKuai svsbk = ((BanKuai)settingnode).getBanKuaiService (true);
 		svsbk.updateBanKuaiBasicOperationsSettings(settingnode,!cbxnotimport.isSelected(),
 					!cbxnotgephi.isSelected(),!cbxnotbkfx.isSelected(),

@@ -56,10 +56,7 @@ public class SetupSystemConfiguration
 //		    this.systeminstalledpath = toUNIXpath(directory.getCanonicalPath()+ "\\");
 		    Properties properties = System.getProperties();
 		    this.systeminstalledpath = toUNIXpath(properties.getProperty("user.dir")+ "\\"); //用户运行程序的当前目录
-		    logger.debug(this.systeminstalledpath );
-		} catch(Exception e) {
-			System.exit(0);
-		}
+		} catch(Exception e) {	System.exit(0);	}
 		
 //		FileInputStream inputStream = null;
 		String propxmlFileName = null ;

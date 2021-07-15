@@ -4,12 +4,17 @@ import java.awt.Color;
 import java.sql.SQLException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
-
+import org.apache.log4j.Logger;
+import org.jfree.data.time.RegularTimePeriod;
+import org.jfree.data.time.TimeSeries;
+import org.jfree.data.time.TimeSeriesDataItem;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 
@@ -36,9 +41,8 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 	public SvsForNodeOfBanKuai ()
 	{
 		this.bkdbopt = new BanKuaiDbOperation ();
-//		gddbopt = new JiGouGuDongDbOperation ();
 	}
-
+	private static Logger logger = Logger.getLogger(BanKuaiDbOperation.class);
 	@Override
 	public BkChanYeLianTreeNode getNodeJiBenMian(BkChanYeLianTreeNode node) 
 	{
@@ -143,16 +147,20 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 		NodeXPeriodData nodedayperioddata = ((BanKuai)bankuai).getNodeXPeroidData(period);
 		if(nodedayperioddata.getAmoRecordsStartDate() == null) {
 			bankuai = bkdbopt.getBanKuaiZhanBi ((BanKuai)bankuai,requiredstartday,requiredendday,period);
+
+//			checkBanKuaiDataCompletion ((BanKuai) bankuai);
 			return bankuai;
 		}
 		
+		LocalDate amostart = nodedayperioddata.getAmoRecordsStartDate();
+		LocalDate amoend = nodedayperioddata.getAmoRecordsEndDate();
 		List<Interval> timeintervallist;
-		if(calwholeweek)
+//		if(calwholeweek)
+//			timeintervallist = getTimeIntervalOfNodeTimeIntervalWithRequiredTimeInterval
+//				(requiredstartday,requiredendday,nodedayperioddata.getAmoRecordsStartDate(),nodedayperioddata.getAmoRecordsEndDate());
+//		else 
 			timeintervallist = getTimeIntervalOfNodeTimeIntervalWithRequiredTimeInterval
-				(requiredstartday,requiredendday,nodedayperioddata.getAmoRecordsStartDate(),nodedayperioddata.getAmoRecordsEndDate());
-		else 
-			timeintervallist = getTimeIntervalOfNodeTimeIntervalWithRequiredTimeInterval
-			(requiredstartday,requiredendday,nodedayperioddata.getAmoRecordsStartDate(),requiredendday.minus(1,ChronoUnit.WEEKS).with(DayOfWeek.FRIDAY)	);  //必须要减少一周，这样才能计算出新数据
+			(requiredstartday,requiredendday,nodedayperioddata.getAmoRecordsStartDate(),nodedayperioddata.getAmoRecordsEndDate()	); 
 		
 		if(timeintervallist == null) 
 			return bankuai;
@@ -166,9 +174,29 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 				
 				bankuai = bkdbopt.getBanKuaiZhanBi ((BanKuai) bankuai,tmprequiredstartday,tmprequiredendday,period);
 		}
+		
+//		checkBanKuaiDataCompletion ((BanKuai) bankuai);
 		return bankuai;
 	}
-	
+	private void checkBanKuaiDataCompletion (BanKuai bk)
+	{
+		NodeXPeriodData nodexdatawk = bk.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
+		LocalDate amostart = nodexdatawk.getAmoRecordsStartDate();
+		LocalDate amoend = nodexdatawk.getAmoRecordsEndDate();
+		LocalDate tmpdate = amostart.plus(0,ChronoUnit.WEEKS).with(DayOfWeek.FRIDAY);
+		TimeSeries bkamo = nodexdatawk.getAMOData();
+		int bkamoitemcount = bkamo.getItemCount();
+		for(int i=0;i<bkamoitemcount;i++) {
+			TimeSeriesDataItem iamoitem = bkamo.getDataItem(i);
+			RegularTimePeriod iamoitemperiod = iamoitem.getPeriod();
+			Date iamoitemperiodend = iamoitemperiod.getEnd();
+			Date iamoitemperiodstart = iamoitemperiod.getStart();
+			LocalDate iamoitemperiodld = iamoitemperiod.getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().with(DayOfWeek.FRIDAY);
+			Number itemvalue = iamoitem.getValue();
+			if(itemvalue.doubleValue() == 0.0 )
+				System.out.println("!!!Data abnormal!" + tmpdate + ":CompareTo:" + iamoitemperiodld + ", \r\n" + i + "");
+		}
+	}
 
 	@Override
 	public BkChanYeLianTreeNode getNodeData(String bkcode, LocalDate requiredstartday, LocalDate requiredendday,
@@ -429,7 +457,7 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 		this.getNodeGzMrMcYkInfo(bk,  bkamostartday, bkamoendday, NodeGivenPeriodDataItem.DAY);
 	}
 	
-	private List<Interval> getTimeIntervalOfNodeTimeIntervalWithRequiredTimeInterval
+	protected List<Interval> getTimeIntervalOfNodeTimeIntervalWithRequiredTimeInterval
 	(LocalDate requiredstartday,LocalDate requiredendday,LocalDate nodestart,LocalDate nodeend)
 	{
 		if(nodestart == null)	return null;
@@ -456,12 +484,12 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 			
 			Interval resultintervalpart1 = null ;
 			if(requiredstartday.isBefore(nodestart)) {
-				resultintervalpart1 = new Interval(requiredstartdt,overlapstart);
+				resultintervalpart1 = new Interval(requiredstartdt,overlapstart.minusDays(1));
 			} 
 			
 			Interval resultintervalpart2 = null;
 			if (requiredendday.isAfter(nodeend)) {
-				resultintervalpart2 = new Interval(overlapend,requiredenddt);
+				resultintervalpart2 = new Interval(overlapend.plusDays(1),requiredenddt);
 			}
 			if(resultintervalpart1 != null)
 				result.add(resultintervalpart1);
@@ -718,7 +746,6 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 	@Override
 	public void forcedeleteBanKuaiImportedDailyExchangeData(BanKuai bk) {
 		bkdbopt.forcedeleteBanKuaiImportedDailyExchangeData (bk);
-		
 	}
 
 	@Override

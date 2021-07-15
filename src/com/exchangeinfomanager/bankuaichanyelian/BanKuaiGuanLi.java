@@ -1149,6 +1149,8 @@ private Set<JTreeTable> tableallbktableset;
 				}
 			}
 
+			panelsetting.disableAllSettingComponents();
+			
 			return true;
 	}
 	

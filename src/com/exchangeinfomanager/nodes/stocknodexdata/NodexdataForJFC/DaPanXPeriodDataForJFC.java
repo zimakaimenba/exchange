@@ -802,5 +802,17 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public void addDaPanChenJiaoErZhanBiGrowingRate(LocalDate requireddate, Double cjezbgr) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void addDaPanChenJiaoLiangZhanBiGrowingRate(LocalDate requireddate, Double cjezbgr) {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
