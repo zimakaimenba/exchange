@@ -288,7 +288,6 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 			String period) 
 	{
 		if(nodebkbelogned != null) {
-//			this.nodebkcjezblargepnl.setDrawAverageDailyCjeOfWeekLine(true);
 			//实践后决定永远显示大盘的成交量。
 			BanKuaiAndStockTree treeofbkstk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks();
 			DaPan dapan = (DaPan) treeofbkstk.getModel().getRoot();
@@ -298,12 +297,12 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 		
 		this.nodecombinedpnl.updatedDate(node, displayedstartdate1,displayedenddate1, period);
 		this.nodekpnl.updatedDate(node, displayedstartdate1,displayedenddate1,  NodeGivenPeriodDataItem.DAY);
-		
-		ServicesForNewsLabel svslabel = new NewsLabelServices ();
-    	ServicesForNews svsnews = new NewsServices ();
-    	NewsCache newcache = new NewsCache (node.getMyOwnCode(),svsnews,svslabel,displayedstartdate1,displayedenddate1);
-    	svsnews.setCache(newcache);
-    	nodekpnl.displayNodeNewsToGui (newcache.produceNews() );
+		//显示新闻，几乎不用，就算了，不显示了
+//		ServicesForNewsLabel svslabel = new NewsLabelServices ();
+//    	ServicesForNews svsnews = new NewsServices ();
+//    	NewsCache newcache = new NewsCache (node.getMyOwnCode(),svsnews,svslabel,displayedstartdate1,displayedenddate1);
+//    	svsnews.setCache(newcache);
+//    	nodekpnl.displayNodeNewsToGui (newcache.produceNews() );
 	}
 	
 	@Override

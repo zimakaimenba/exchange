@@ -33,22 +33,6 @@ public class SvsForNodeOfDaPan implements ServicesForNode
 		servicsofbk = new SvsForNodeOfBanKuai  ();
 	}
 
-//	@Override
-//	public Collection<BkChanYeLianTreeNode> getNodes(Collection<String> nodenames) {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
-//
-//	@Override
-//	public BkChanYeLianTreeNode getNode(String nodenames) {
-//		return allbkstk.getSpecificNodeByHypyOrCode(nodenames, BkChanYeLianTreeNode.DAPAN);
-//	}
-//
-//	@Override
-//	public Collection<BkChanYeLianTreeNode> getAllNodes() {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
 
 	@Override
 	public BkChanYeLianTreeNode getNodeJiBenMian(BkChanYeLianTreeNode node) {
@@ -56,11 +40,7 @@ public class SvsForNodeOfDaPan implements ServicesForNode
 		return null;
 	}
 
-//	@Override
-//	public Collection<BkChanYeLianTreeNode> getRequiredSubSetOfTheNodes(Set<String> subtypesset) {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
+
 
 	@Override
 	public BkChanYeLianTreeNode getNodeData(BkChanYeLianTreeNode bankuai, LocalDate requiredstartday,
@@ -99,8 +79,6 @@ public class SvsForNodeOfDaPan implements ServicesForNode
 	public BkChanYeLianTreeNode getNodeKXian(BkChanYeLianTreeNode bk, LocalDate requiredstartday,
 			LocalDate requiredendday, String period,Boolean calwholeweek) 
 	{
-//		this.getNodeData(bk, requiredstartday, requiredendday, period, calwholeweek);
-		
 		BanKuai shdpbankuai = (BanKuai) allbkstk.getSpecificNodeByHypyOrCode("999999",BkChanYeLianTreeNode.TDXBK);
 		BanKuai szdpbankuai = (BanKuai) allbkstk.getSpecificNodeByHypyOrCode("399001",BkChanYeLianTreeNode.TDXBK);
 		BanKuai cybdpbankuai = (BanKuai) allbkstk.getSpecificNodeByHypyOrCode("399006",BkChanYeLianTreeNode.TDXBK);
@@ -108,8 +86,7 @@ public class SvsForNodeOfDaPan implements ServicesForNode
 		shdpbankuai = (BanKuai) shdpbankuai.getServicesForNode(true).getNodeKXian(shdpbankuai, requiredstartday, requiredendday,period,true);
 		szdpbankuai = (BanKuai) shdpbankuai.getServicesForNode(true).getNodeKXian(szdpbankuai, requiredstartday, requiredendday,period,true);
 		cybdpbankuai = (BanKuai) shdpbankuai.getServicesForNode(true).getNodeKXian(cybdpbankuai, requiredstartday, requiredendday, period,true);
-		
-		
+	
 		return null;
 	}
 

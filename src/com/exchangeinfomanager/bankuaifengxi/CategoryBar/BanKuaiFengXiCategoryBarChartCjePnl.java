@@ -295,8 +295,8 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 		} else
 			dapan = (DaPan)(this.getCurDisplayedNode().getRoot());
 		
-		LocalDate requireend = enddate.with(DayOfWeek.SATURDAY);
-		LocalDate requirestart = startdate.with(DayOfWeek.SATURDAY);
+		LocalDate requireend = enddate;//.with(DayOfWeek.SATURDAY);
+		LocalDate requirestart = startdate;//.with(DayOfWeek.SATURDAY);
 		
 		double highestHigh =0.0; //…Ë÷√œ‘ æ∑∂Œß
 		

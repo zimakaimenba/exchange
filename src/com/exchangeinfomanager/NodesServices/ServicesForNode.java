@@ -1,11 +1,17 @@
 package com.exchangeinfomanager.NodesServices;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import com.exchangeinfomanager.nodes.BanKuai;
 import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.nodes.TDXNodes;
+import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
+import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 
 public interface ServicesForNode 
 {
@@ -33,4 +39,83 @@ public interface ServicesForNode
 	Collection<BkChanYeLianTreeNode> getNodesWithKeyWords(String keywords);
 	
 	public BkChanYeLianTreeNode getNodeGzMrMcYkInfo (BkChanYeLianTreeNode node,LocalDate selecteddatestart,LocalDate selecteddateend,String period);
+	
+	public static LocalDate getNodeCaculateEndDateAndRelatedActions(BkChanYeLianTreeNode node, String period, LocalDate requiredendday, Boolean calwholeweek)
+	{
+		LocalDate result = null;
+		
+		DayOfWeek dayofweek = requiredendday.getDayOfWeek();
+		if(dayofweek.equals(DayOfWeek.SUNDAY) )	requiredendday = requiredendday.minus(2,ChronoUnit.DAYS);
+		else if(dayofweek.equals(DayOfWeek.SATURDAY) )	requiredendday = requiredendday.minus(1,ChronoUnit.DAYS);
+		
+		NodeXPeriodData nodeperioddata = ((TDXNodes)node).getNodeXPeroidData(period);
+		NodeXPeriodData nodexdataday = ((TDXNodes)node).getNodeXPeroidData(NodeGivenPeriodDataItem.DAY);
+		
+		Boolean origmode = true; //原来数据是否处于NCW / CW状态, true表示是计算whole wk
+		LocalDate isInNotCalWholeWeekModeData = nodeperioddata.isInNotCalWholeWeekMode ();
+		if(nodeperioddata.isInNotCalWholeWeekMode () != null ) 
+			origmode = false;
+		
+		if(calwholeweek && origmode) { //CW TO CW
+			nodeperioddata.setNotCalWholeWeekMode (null);
+			nodexdataday.setNotCalWholeWeekMode (null);
+			
+			result  = requiredendday.with(DayOfWeek.FRIDAY);
+			return result;
+		}
+		if(calwholeweek && !origmode) { //NCW TO CW，那就把最后一周的数据删除
+			LocalDate amorecordsenddate = nodeperioddata.getAmoRecordsEndDate();
+			if(amorecordsenddate != null) {
+				nodeperioddata.removeNodeDataFromSpecificDate(amorecordsenddate);
+				
+				nodexdataday.removeNodeDataFromSpecificDate(amorecordsenddate.with(DayOfWeek.MONDAY)); //那一周的数据都不要了
+				nodeperioddata.setNotCalWholeWeekMode (null);
+				nodexdataday.setNotCalWholeWeekMode (null);
+			}
+			
+			result  = requiredendday.with(DayOfWeek.FRIDAY);
+			return result; 
+		}
+		
+		if(!calwholeweek && !origmode) {  //NCW TO NCW
+			if(isInNotCalWholeWeekModeData == requiredendday) { //说明已经在相同日期计算过了
+				result  = requiredendday;
+				return result;
+			}
+				
+			LocalDate amorecordsenddate = nodeperioddata.getAmoRecordsEndDate();
+			if(amorecordsenddate != null && amorecordsenddate.isBefore(requiredendday))
+				nodeperioddata.removeNodeDataFromSpecificDate(amorecordsenddate);
+			else if(amorecordsenddate != null && amorecordsenddate.isAfter(requiredendday))
+				nodeperioddata.removeNodeDataFromSpecificDate(requiredendday);
+			
+			LocalDate ohlcrecordsenddate = nodexdataday.getOHLCRecordsEndDate();
+			if(ohlcrecordsenddate != null && ohlcrecordsenddate.isBefore(requiredendday))
+				nodexdataday.removeNodeDataFromSpecificDate(ohlcrecordsenddate);
+			else if(ohlcrecordsenddate != null && ohlcrecordsenddate.isAfter(requiredendday))
+				nodexdataday.removeNodeDataFromSpecificDate(requiredendday);
+			
+			nodeperioddata.setNotCalWholeWeekMode (requiredendday);
+			nodexdataday.setNotCalWholeWeekMode (requiredendday);
+			result  = requiredendday;
+			return result;
+		}
+		
+		if(!calwholeweek && origmode) {  //CW TO NCW
+			LocalDate amorecordsenddate = nodeperioddata.getAmoRecordsEndDate();
+			if(amorecordsenddate != null && amorecordsenddate.isAfter(requiredendday))
+				nodeperioddata.removeNodeDataFromSpecificDate(requiredendday);
+			
+			LocalDate ohlcrecordsenddate = nodexdataday.getOHLCRecordsEndDate();
+			if(ohlcrecordsenddate != null && ohlcrecordsenddate.isAfter(requiredendday))
+				nodexdataday.removeNodeDataFromSpecificDate(requiredendday);
+			
+			nodeperioddata.setNotCalWholeWeekMode (requiredendday);
+			nodexdataday.setNotCalWholeWeekMode (requiredendday);
+			result  = requiredendday;
+			return result;
+		}
+		
+		return null;
+	}
 }

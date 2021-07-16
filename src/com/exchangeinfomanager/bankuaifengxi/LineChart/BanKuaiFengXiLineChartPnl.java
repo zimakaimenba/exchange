@@ -56,7 +56,7 @@ public class BanKuaiFengXiLineChartPnl extends JPanel
 		
 		this.preparingdisplayDataToGui (node,startdate,enddate,period, displayedinfokeywords);
 	}
-	private void resetData ()
+	public void resetData ()
 	{
 		if(dataset != null)	dataset.clear();
 		for(Marker marker : this.categorymarkerlist) 

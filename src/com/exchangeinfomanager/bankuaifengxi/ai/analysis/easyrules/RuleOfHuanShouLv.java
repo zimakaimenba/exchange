@@ -36,7 +36,7 @@ public class RuleOfHuanShouLv
 		if(shouldhsl == null) return false;
 
 		StockXPeriodDataForJFC nodexdata = (StockXPeriodDataForJFC) evanode.getNodeXPeroidData(evaperiod);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
-	    Double hsl = nodexdata.getSpecificTimeHuanShouLv(evadate, 0);
+	    Double hsl = nodexdata.getSpecificTimeHuanShouLv(evadate);
     	if(hsl != null && hsl >= shouldhsl) return true;
     	
     	return false;

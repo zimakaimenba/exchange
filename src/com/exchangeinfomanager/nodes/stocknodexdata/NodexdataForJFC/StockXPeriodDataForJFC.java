@@ -72,7 +72,7 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 	 * (non-Javadoc)
 	 * @see com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic#hasFxjgInPeriod(java.time.LocalDate, int)
 	 */
-	public Integer hasMaiRuJiLuInPeriod (LocalDate requireddate,int difference)
+	public Integer hasMaiRuJiLuInPeriod (LocalDate requireddate)
 	{
 		if(this.stockmairujl == null)
 			return null;
@@ -102,7 +102,7 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 	 * (non-Javadoc)
 	 * @see com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic#hasFxjgInPeriod(java.time.LocalDate, int)
 	 */
-	public Integer hasMaiChuJiLuInPeriod (LocalDate requireddate,int difference)
+	public Integer hasMaiChuJiLuInPeriod (LocalDate requireddate)
 	{
 		if(this.stockmaichuujl == null)
 			return null;
@@ -120,9 +120,9 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 	/*
 	 * 
 	 */
-	public Double getAverageDailyHuanShouLvOfWeek (LocalDate requireddate,int difference)
+	public Double getAverageDailyHuanShouLvOfWeek (LocalDate requireddate)
 	{
-		Double hsl = this.getSpecificTimeHuanShouLv(requireddate, 0);
+		Double hsl = this.getSpecificTimeHuanShouLv(requireddate);
 		if(hsl != null) {
 			Integer daynum = super.getExchangeDaysNumberForthePeriod(requireddate);
 			if(daynum != null)
@@ -136,7 +136,7 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 	 * (non-Javadoc)
 	 * @see com.exchangeinfomanager.asinglestockinfo.BanKuaiAndStockBasic.NodeXPeriodDataBasic#hasFxjgInPeriod(java.time.LocalDate, int)
 	 */
-	public Integer hasGzjlInPeriod (LocalDate requireddate,int difference)
+	public Integer hasGzjlInPeriod (LocalDate requireddate)
 	{
 		if(this.stockgzjl == null)
 			return null;
@@ -313,7 +313,7 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 	 * (non-Javadoc)
 	 * @see com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData#getChenJiaoErMaxWeekOfSuperBanKuai(java.time.LocalDate, int)
 	 */
-	public Double getSpecificTimeHuanShouLv (LocalDate requireddate,int difference)
+	public Double getSpecificTimeHuanShouLv (LocalDate requireddate)
 	{
 		try{
 			RegularTimePeriod period = super.getJFreeChartFormateTimePeriod(requireddate);
@@ -326,7 +326,7 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 		} catch (java.lang.NullPointerException e) {return null;}
 		
 	}
-	public Double getSpecificTimeHuanShouLvFree (LocalDate requireddate,int difference)
+	public Double getSpecificTimeHuanShouLvFree (LocalDate requireddate)
 	{
 		try{
 			RegularTimePeriod period = super.getJFreeChartFormateTimePeriod(requireddate);
@@ -343,7 +343,7 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 	 * (non-Javadoc)
 	 * @see com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData#getChenJiaoErMaxWeekOfSuperBanKuai(java.time.LocalDate, int)
 	 */
-	public Double getSpecificTimeZongShiZhi (LocalDate requireddate,int difference)
+	public Double getSpecificTimeZongShiZhi (LocalDate requireddate)
 	{
 		RegularTimePeriod period = super.getJFreeChartFormateTimePeriod(requireddate);
 		if(period == null)
@@ -358,7 +358,7 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 //	/*
 //	 * 得到某个时期的涨跌幅  DailyZhangDieFuRangeInWeek
 //	 */
-//	public Double getSpecificTimeHighestZhangDieFu (LocalDate requireddate,int difference)
+//	public Double getSpecificTimeHighestZhangDieFu (LocalDate requireddate)
 //	{
 //		RegularTimePeriod period = super.getJFreeChartFormateTimePeriod(requireddate);
 //		if(period == null)
@@ -374,7 +374,7 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 //	/*
 //	 * 
 //	 */
-//	public Double getSpecificTimeLowestZhangDieFu (LocalDate requireddate,int difference)
+//	public Double getSpecificTimeLowestZhangDieFu (LocalDate requireddate)
 //	{
 //		RegularTimePeriod period = super.getJFreeChartFormateTimePeriod(requireddate);
 //		if(period == null)
@@ -390,7 +390,7 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 	 * (non-Javadoc)
 	 * @see com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData#getChenJiaoErMaxWeekOfSuperBanKuai(java.time.LocalDate, int)
 	 */
-	public Double getSpecificTimeLiuTongShiZhi (LocalDate requireddate,int difference)
+	public Double getSpecificTimeLiuTongShiZhi (LocalDate requireddate)
 	{
 		RegularTimePeriod curperiod = super.getJFreeChartFormateTimePeriod(requireddate);
 		if(curperiod == null)
@@ -414,19 +414,19 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 		 
 		 switch(keyword) {
 		 case "HuanShouLv" :
-		      	 Double hsl  = this.getSpecificTimeHuanShouLv(date, 0) ;
+		      	 Double hsl  = this.getSpecificTimeHuanShouLv(date) ;
 		   	     value = hsl;
 		   	     break;
 		 case "HuanShouLvFree" :
-			 Double hslf = this.getSpecificTimeHuanShouLvFree (date, 0);
+			 Double hslf = this.getSpecificTimeHuanShouLvFree (date);
 	   	     value = hslf;
 	   	     break;
 		 case "LiuTongShiZhi" :
-			 Double ltsz = this.getSpecificTimeLiuTongShiZhi(date,0);//显示成交额是多少周最大,成交额多少周最小没有意义，因为如果不是完整周成交量就是会很小
+			 Double ltsz = this.getSpecificTimeLiuTongShiZhi(date);//显示成交额是多少周最大,成交额多少周最小没有意义，因为如果不是完整周成交量就是会很小
 	   	     value = ltsz;
 	   	     break;
 		 case "ZongShiZhi" :
-			 Double zsz = this.getSpecificTimeZongShiZhi(date, 0);
+			 Double zsz = this.getSpecificTimeZongShiZhi(date);
 	   	     value = zsz;
 	   	     break;
 		 }
@@ -442,10 +442,10 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 		 if(supcsv == null)
 			 return null;
 		 
-		 Double hsl = this.getSpecificTimeHuanShouLv(requireddate, 0);
-		 Double hslf = this.getSpecificTimeHuanShouLvFree(requireddate, 0);
-		 Double liutongshizhi = this.getSpecificTimeLiuTongShiZhi(requireddate, 0);
-		 Double zongshizhi = this.getSpecificTimeZongShiZhi(requireddate, 0);
+		 Double hsl = this.getSpecificTimeHuanShouLv(requireddate);
+		 Double hslf = this.getSpecificTimeHuanShouLvFree(requireddate);
+		 Double liutongshizhi = this.getSpecificTimeLiuTongShiZhi(requireddate);
+		 Double zongshizhi = this.getSpecificTimeZongShiZhi(requireddate);
 		 
 		 String strhsl = null; String strhslf = null; String strliutongshizhi = null;String strzongshizhi = null;
 		 try { strhsl = hsl.toString();	 } catch (java.lang.NullPointerException e) { strhsl = String.valueOf("0"); }
@@ -523,20 +523,18 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 			
 			return doc.toString();
 		}
-
-	 
 		@Override
-	public Boolean hasFxjgInPeriod(LocalDate requireddate) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-		@Override
-		public Double getSpecificTimeHighestZhangDieFu(LocalDate requireddate, int difference) {
+		public Boolean hasFxjgInPeriod(LocalDate requireddate) {
 			// TODO Auto-generated method stub
 			return null;
 		}
 		@Override
-		public Double getSpecificTimeLowestZhangDieFu(LocalDate requireddate, int difference) {
+		public Double getSpecificTimeHighestZhangDieFu(LocalDate requireddate) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		@Override
+		public Double getSpecificTimeLowestZhangDieFu(LocalDate requireddate) {
 			// TODO Auto-generated method stub
 			return null;
 		}

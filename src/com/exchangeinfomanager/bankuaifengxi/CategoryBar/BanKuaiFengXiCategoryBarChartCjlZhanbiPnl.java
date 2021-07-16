@@ -217,8 +217,8 @@ public class BanKuaiFengXiCategoryBarChartCjlZhanbiPnl extends BanKuaiFengXiCate
 	{
 		DaPan dapan = (DaPan)CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getModel().getRoot(); //alwayse use tdx tree fro dapan;
 		
-		LocalDate requireend = enddate.with(DayOfWeek.SATURDAY);
-		LocalDate requirestart = startdate.with(DayOfWeek.MONDAY);
+		LocalDate requireend = enddate;//.with(DayOfWeek.SATURDAY);
+		LocalDate requirestart = startdate;//.with(DayOfWeek.MONDAY);
 
 		double highestHigh =0.0; //设置显示范围
 		double lowestLow = 100000.0;
@@ -265,7 +265,7 @@ public class BanKuaiFengXiCategoryBarChartCjlZhanbiPnl extends BanKuaiFengXiCate
 			
 			//对个股有关注记录的时候
 			if(super.getCurDisplayedNode().getType() == BkChanYeLianTreeNode.TDXGG) { //对个股有关注记录的时候
-					Integer gzjl = ((StockNodesXPeriodData)nodexdata).hasGzjlInPeriod(wkfriday, 0);
+					Integer gzjl = ((StockNodesXPeriodData)nodexdata).hasGzjlInPeriod(wkfriday);
 					if(gzjl != null) {
 						double angle; Color paintcolor;String label;
 						if(gzjl == 1) {
@@ -288,7 +288,7 @@ public class BanKuaiFengXiCategoryBarChartCjlZhanbiPnl extends BanKuaiFengXiCate
 			}
 			//对个股有买入卖出记录的时候
 			if(super.getCurDisplayedNode().getType() == BkChanYeLianTreeNode.TDXGG) { 
-				Integer mrjl = ((StockNodesXPeriodData)nodexdata).hasMaiRuJiLuInPeriod(wkfriday, 0);
+				Integer mrjl = ((StockNodesXPeriodData)nodexdata).hasMaiRuJiLuInPeriod(wkfriday);
 				if(mrjl != null) {
 					double angle; Color paintcolor;String label;
 					angle = 30 * Math.PI/4;
@@ -302,7 +302,7 @@ public class BanKuaiFengXiCategoryBarChartCjlZhanbiPnl extends BanKuaiFengXiCate
 			        cpa.setTextAnchor(TextAnchor.CENTER);
 					super.plot.addAnnotation(cpa);
 				}
-				Integer mcjl = ((StockNodesXPeriodData)nodexdata).hasMaiChuJiLuInPeriod(wkfriday, 0);
+				Integer mcjl = ((StockNodesXPeriodData)nodexdata).hasMaiChuJiLuInPeriod(wkfriday);
 				if(mcjl != null) {
 					double angle; Color paintcolor;String label;
 					angle = 30 * Math.PI/4;

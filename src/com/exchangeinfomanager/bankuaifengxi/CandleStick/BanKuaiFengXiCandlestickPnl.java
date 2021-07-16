@@ -250,7 +250,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 	public void updatedDate(TDXNodes node, LocalDate startdate, LocalDate enddate,String period) 
 	{
 		candlestickChart.setNotify(false);
-		this.resetDate();
+		this.resetData();
 		
 		this.displaydatestarted = startdate; 
 		this.displaydateended = enddate;
@@ -288,7 +288,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		this.globeperiod = period;
 		
 		candlestickChart.setNotify(false);
-		this.resetDate();
+		this.resetData();
 		
 		if(node.getType() != BkChanYeLianTreeNode.DAPAN)
 			setNodeCandleStickDate2 ( node,  requirestart,  requireend, period , 0);
@@ -1478,7 +1478,7 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 	}
 
 
-	public void resetDate()
+	public void resetData()
 	{
 		
 		candlestickDataset.removeAllSeries();

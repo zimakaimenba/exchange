@@ -10,25 +10,25 @@ import org.jfree.data.time.TimeSeriesDataItem;
 public interface StockNodesXPeriodData 
 {
 	public Object getNodeDataByKeyWord( String keyword, LocalDate date, String... maformula);
-	public Double getSpecificTimeHuanShouLv (LocalDate requireddate,int difference);
-	public Double getSpecificTimeHuanShouLvFree (LocalDate requireddate,int difference);
-	public Double getSpecificTimeZongShiZhi (LocalDate requireddate,int difference);
+	public Double getSpecificTimeHuanShouLv (LocalDate requireddate);
+	public Double getSpecificTimeHuanShouLvFree (LocalDate requireddate);
+	public Double getSpecificTimeZongShiZhi (LocalDate requireddate);
 	public void addPeriodHighestZhangDieFu (LocalDate requireddate,Double zhangfu);
-	public Double getSpecificTimeHighestZhangDieFu (LocalDate requireddate,int difference);
+	public Double getSpecificTimeHighestZhangDieFu (LocalDate requireddate);
 	public void addPeriodLowestZhangDieFu (LocalDate requireddate,Double zhangfu);
-	public Double getSpecificTimeLowestZhangDieFu (LocalDate requireddate,int difference);
-	public Double getSpecificTimeLiuTongShiZhi (LocalDate requireddate,int difference);
+	public Double getSpecificTimeLowestZhangDieFu (LocalDate requireddate);
+	public Double getSpecificTimeLiuTongShiZhi (LocalDate requireddate);
 
 	public void addGzjlToPeriod (RegularTimePeriod period,Integer fxjg);
-	public Integer hasGzjlInPeriod (LocalDate requireddate,int difference);
+	public Integer hasGzjlInPeriod (LocalDate requireddate);
 
 	public void addMaiRuJiLu (RegularTimePeriod period,Integer fxjg); 
-	public Integer hasMaiRuJiLuInPeriod (LocalDate requireddate,int difference);
+	public Integer hasMaiRuJiLuInPeriod (LocalDate requireddate);
 	
 	public void addMaiChuJiLu (RegularTimePeriod period,Integer fxjg) ;
-	public Integer hasMaiChuJiLuInPeriod (LocalDate requireddate,int difference);
+	public Integer hasMaiChuJiLuInPeriod (LocalDate requireddate);
 	
-	public Double getAverageDailyHuanShouLvOfWeek (LocalDate requireddate,int difference);
+	public Double getAverageDailyHuanShouLvOfWeek (LocalDate requireddate);
 	public static String[] NODEXDATACSVDATAHEADLINE = {
 							"换手率",
 							"自由流通换手率",

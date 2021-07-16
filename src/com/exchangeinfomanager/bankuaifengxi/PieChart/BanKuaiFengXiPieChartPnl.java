@@ -235,7 +235,7 @@ public abstract class BanKuaiFengXiPieChartPnl extends JPanel implements PieChar
 	    	this.setToolTipText(nodecode+ nodename );
 		}
 		
-		public void resetDate ()
+		public void resetData ()
 		{
 //			piechartdataset = null;
 //			piechartdataset = new DefaultPieDataset();

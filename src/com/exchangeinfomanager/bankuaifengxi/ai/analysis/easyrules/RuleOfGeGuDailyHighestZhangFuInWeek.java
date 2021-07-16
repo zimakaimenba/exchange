@@ -49,7 +49,7 @@ public class RuleOfGeGuDailyHighestZhangFuInWeek
     	if(wkzhangdiefu != null)
     		analysisresultforvoice = analysisresultforvoice + "本周涨幅百分之" +  Math.floor(wkzhangdiefu * 100);
     	
-		Double wkhighdiefu = nodexdata.getSpecificTimeLowestZhangDieFu(evadate, 0);
+		Double wkhighdiefu = nodexdata.getSpecificTimeLowestZhangDieFu(evadate);
 		if(wkhighdiefu != null && wkhighdiefu < -0.09)
 			analysisresultforvoice = analysisresultforvoice + "本周有大跌百分之" +  Math.floor(wkhighdiefu * 100);
 		

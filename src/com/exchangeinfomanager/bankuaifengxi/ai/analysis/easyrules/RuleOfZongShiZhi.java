@@ -2,6 +2,7 @@ package com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules;
 
 import java.awt.Color;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 import org.jeasy.rules.annotation.Action;
 import org.jeasy.rules.annotation.Condition;
@@ -47,13 +48,14 @@ public class RuleOfZongShiZhi
 	    NodeXPeriodData nodexdata = evanode.getNodeXPeroidData(period);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
 	    Double curltsz = null;
 	    try {
-	    	curltsz = ((StockNodesXPeriodData)nodexdata).getSpecificTimeZongShiZhi(requireddate, 0);
+	    	curltsz = ((StockNodesXPeriodData)nodexdata).getSpecificTimeZongShiZhi(requireddate);
 	    } catch (java.lang.ClassCastException e) {
 //    		e.printStackTrace();
     		return false;
     	}
 	    if(curltsz == null) //有时候周一网易的数据还没有导入，导致没有流通市值数据，先用上一周的数据顶一下，毕竟不会相差太大
-	    	curltsz = ((StockNodesXPeriodData)nodexdata).getSpecificTimeZongShiZhi(requireddate, -1);
+	    	requireddate = requireddate.minus(1,ChronoUnit.WEEKS);
+	    	curltsz = ((StockNodesXPeriodData)nodexdata).getSpecificTimeZongShiZhi(requireddate);
 	    try {
 		    if( curltsz >= ltszmin && curltsz <= ltszmax ) {
 		    	if(curltsz >= 1500000000.0 && curltsz <= 3900000000.0) { //对于这个范围内的个股要特别重视，特别显示

@@ -170,7 +170,7 @@ import java.text.DecimalFormat;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-
+import java.time.LocalTime;
 import java.time.ZoneId;
 
 import java.time.temporal.ChronoUnit;
@@ -598,6 +598,9 @@ public class BanKuaiFengXi extends JDialog
 		
 		return bkwithcje;
 	}
+	/*
+	 * 大盘数据在更改时间或更改计算完整周模式时候一次性同步
+	 */
 	private void unifiedOperationForDaPanSyncData (LocalDate curselectdate, String period)
 	{
 		LocalDate requirestart = CommonUtility.getSettingRangeDate(curselectdate,"large").with(DayOfWeek.MONDAY);
@@ -643,6 +646,9 @@ public class BanKuaiFengXi extends JDialog
 		
 		setFirstSelectedTab ();
 		findInputedNodeInTable(selectedbk.getMyOwnCode());
+		
+		tableBkZhanBi.revalidate();
+    	tableBkZhanBi.repaint();
 	}
 	/*
 	 * 
@@ -2407,8 +2413,8 @@ public class BanKuaiFengXi extends JDialog
 					}
 
 					if(findInputedNodeInTable (nodecode)) { 
-						panelGgDpCjeZhanBi.resetDate();
-						pnlStockCandle.resetDate();
+						panelGgDpCjeZhanBi.resetData();
+						pnlStockCandle.resetData();
 					}
 			}
 				
@@ -2445,6 +2451,28 @@ public class BanKuaiFengXi extends JDialog
 //					unifiedOperationsAfterUserSelectABanKuai ( (BanKuai)node);
 				}
 					
+			}
+		});
+		tableBkSocialbkCurwkData.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				int row = tableBkSocialbkCurwkData.getSelectedRow();
+				if(row <0) { return;}
+				int modelRow = tableBkSocialbkCurwkData.convertRowIndexToModel(row);
+				BkChanYeLianTreeNode selectedbk = ((BanKuaiInfoTableModel)tableBkSocialbkCurwkData.getModel()).getNode (modelRow);
+				
+				if (arg0.getClickCount() == 1) { //用户点击一下
+					Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
+					setCursor(hourglassCursor);
+
+					Integer alreadyin = ((JStockComboBoxModel)combxsearchbk.getModel()).hasTheNode( selectedbk.getMyOwnCode());
+					if(alreadyin == -1)	combxsearchbk.updateUserSelectedNode( (BanKuai)selectedbk);
+					
+					hourglassCursor = null;
+					Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
+					setCursor(hourglassCursor2);
+				}
+				if (arg0.getClickCount() == 2) {}
 			}
 		});
 		/*
@@ -3248,12 +3276,14 @@ public class BanKuaiFengXi extends JDialog
 		LocalDate requirestartd = curselectdate.minus(m,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
 		LocalDate bufferdatastartday  = requirestartd.minus(2 * 36,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY); 
 		
+		long start=System.currentTimeMillis(); //获取结束时间
+//		System.out.println("......显示large PNL 数据准备开始" + LocalTime.now() + " \r\n");
 		//同步数据
 		ServicesForNode svsnode = node.getServicesForNode(true);
 		node = (TDXNodes) svsnode.getNodeData(node, bufferdatastartday, requireend, globeperiod, globecalwholeweek);
 		svsnode.syncNodeData(node);
 		node.getServicesForNode(false);
-		
+//		System.out.println("......显示large PNL 数据准备开始 NODE 数据准备结束" + LocalTime.now() + " \r\n");
 		if(node.getType() == BkChanYeLianTreeNode.TDXGG) { 
 			BanKuai bkcur = null;
 			//如果是个股的话，还要显示其当前所属的板块占比信息，所以要把板块的数据也找出来。
@@ -3264,15 +3294,19 @@ public class BanKuaiFengXi extends JDialog
 				bkcur = (BanKuai) bkcur.getServicesForNode(true).getNodeData(bkcur, bufferdatastartday, requireend, globeperiod, globecalwholeweek);
 				bkcur.getServicesForNode(true).syncNodeData(bkcur);
 				bkcur.getServicesForNode(false);
+//				System.out.println("......显示large PNL 数据准备开始 板块数据准备结束" + LocalTime.now() + " \r\n");
 			}
 		}
 				
 		if(node.getType() != BkChanYeLianTreeNode.DAPAN) {
 			DaPan dapan = (DaPan) CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode("000000", BkChanYeLianTreeNode.DAPAN);
 			dapan.getServicesForNode(true).getNodeData(dapan, bufferdatastartday, requireend, this.globeperiod, this.globecalwholeweek);
-			dapan.getServicesForNode(true).syncNodeData (dapan);
+			dapan.getServicesForNode(true).getNodeKXian(dapan, bufferdatastartday, requireend,NodeGivenPeriodDataItem.DAY,this.globecalwholeweek);
 			dapan.getServicesForNode(false);
+//			System.out.println("......显示large PNL 数据准备 DAPAN数据准备结束" + LocalTime.now() + " \r\n");
 		}
+		long end=System.currentTimeMillis(); //获取结束时间
+//		System.out.println("......显示large PNL 数据准备结束" + LocalTime.now() + "。.....导入耗费时间： "+(end-start)+"ms \r\n");
 
 				BanKuaiFengXiLargePnl largeinfo = null;
 				String guitype = "CJE";
@@ -3295,9 +3329,14 @@ public class BanKuaiFengXi extends JDialog
 				
 				if(datekey != null)	largeinfo.highLightSpecificBarColumn(datekey);
 				else	largeinfo.highLightSpecificBarColumn(curselectdate);
+				end=System.currentTimeMillis(); //获取结束时间
+//				System.out.println(".......显示large GUI GUI准备结束" + LocalTime.now() + "。.....导入耗费时间： "+(end-start)+"ms \r\n");
 				
+				playAnaylsisFinishNoticeSound ();
 				largeinfo.nodecombinedpnl.setProperties(this.bkfxsettingprop);
+//				System.out.println(".......显示large ready to display GUI " + LocalTime.now() + "。.....导入耗费时间： "+(end-start)+"ms \r\n");
 				JOptionPane.showMessageDialog(null, largeinfo, node.getMyOwnCode()+node.getMyOwnName()+ "大周期分析结果", JOptionPane.OK_CANCEL_OPTION);
+//				System.out.println(".......显示large GUI显示结束" + LocalTime.now() + "。.....导入耗费时间： "+(end-start)+"ms \r\n");
 
 				largeinfo = null;
 				System.gc();
@@ -3598,7 +3637,7 @@ public class BanKuaiFengXi extends JDialog
 		
 		pnlCjeZbGrXuandingZhou = new BanKuaiFengXiLineChartPnl();
 		tabbedPanePie.addTab("CjeZbGr\u9009\u5B9A\u5468", null, pnlCjeZbGrXuandingZhou, null);
-		pnlCjeZbGrXuandingZhou.setBorder(new TitledBorder(null, "\u677F\u5757\u4E0A\u4E00\u5468\u4E2A\u80A1\u5360\u6BD4", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+//		pnlCjeZbGrXuandingZhou.setBorder(new TitledBorder(null, "\u677F\u5757\u4E0A\u4E00\u5468\u4E2A\u80A1\u5360\u6BD4", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		
 		tabbedPanegeguzhanbi = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPanegeguzhanbi.setFont(new Font("宋体", Font.PLAIN, 10));
@@ -4104,8 +4143,8 @@ public class BanKuaiFengXi extends JDialog
 		((BanKuaiInfoTableModel)tblDzhBkCurWkZhanBi.getModel()).deleteAllRows();
 		((BanKuaiInfoTableModel)tblDzhBkCurSelectedWkZhanBi.getModel()).deleteAllRows();
 		btnresetdate.setEnabled(true);
-		pnlStockCandle.resetDate();
-		pnlBanKuaiCandle.resetDate();
+		pnlStockCandle.resetData();
+		pnlBanKuaiCandle.resetData();
 	}
 	private void clearTheGuiBeforDisplayNewInfoSection2 ()
 	{
@@ -4114,9 +4153,10 @@ public class BanKuaiFengXi extends JDialog
 		
 		tabbedPanegegu.setSelectedIndex(0);
 		
-		panelbkwkcjezhanbi.resetDate();
-		pnlbkwkcjlzhanbi.resetDate();
-		pnlcurwkggcjezhanbi.resetDate();
+		panelbkwkcjezhanbi.resetData();
+		pnlbkwkcjlzhanbi.resetData();
+		pnlcurwkggcjezhanbi.resetData();
+		pnlCjeZbGrXuandingZhou.resetData();
 		
 		tabbedPanegegu.setTitleAt(0, this.getTabbedPanegeguTabTiles(0) );
 		tabbedPanegegu.setTitleAt(1, this.getTabbedPanegeguTabTiles(1) );
@@ -4151,8 +4191,8 @@ public class BanKuaiFengXi extends JDialog
 	private void clearTheGuiBeforDisplayNewInfoSection3 ()
 	{
 		tabbedPanegeguzhanbi.setSelectedIndex(0);
-		panelGgDpCjeZhanBi.resetDate();
-		panelggdpcjlwkzhanbi.resetDate();
+		panelGgDpCjeZhanBi.resetData();
+		panelggdpcjlwkzhanbi.resetData();
 		
 		((BanKuaiGeGuMergeTableModel)tblmergeggtobks.getModel()).deleteAllRows();
 		
@@ -4166,36 +4206,41 @@ public class BanKuaiFengXi extends JDialog
 	{
 		LocalDate curdate = this.dateChooser.getLocalDate();
 		if(node.getType() == BkChanYeLianTreeNode.TDXBK ) {
-			if(analysisdate.isEqual(curdate) ) {
+			if( CommonUtility.isInSameWeek( analysisdate, curdate) ) {
 				tabbedPanebk.setSelectedIndex(0);
 				tabbedPanebk.setTitleAt(0,"当前周");
 				
 				tabbedPanegegu.setSelectedIndex(0);
 				tabbedPanegegu.setTitleAt(0,"当前周" );
+				tabbedPanePie.setSelectedIndex(1);
 			}
 			else {	tabbedPanebk.setSelectedIndex(1);
 					tabbedPanebk.setTitleAt(1, "选定周" + analysisdate );
 					
 					tabbedPanegegu.setSelectedIndex(2);
 					tabbedPanegegu.setTitleAt(2,"选定周" + analysisdate );
+					
+					tabbedPanePie.setSelectedIndex(2);
 			}
 			
 			tabbedPanebkzb.setSelectedIndex(0);
 			tabpnlKxian.setSelectedIndex(0);
 		} else	
 		if(node.getType() == BkChanYeLianTreeNode.DZHBK ) {
-			if(analysisdate.isEqual(curdate) )	{
+			if( CommonUtility.isInSameWeek( analysisdate, curdate) )	{
 				tabbedPanebk.setSelectedIndex(6);
 				tabbedPanebk.setTitleAt(6,"大智慧当前周");
 				
 				tabbedPanegegu.setSelectedIndex(0);
 				tabbedPanegegu.setTitleAt(0,"大智慧当前周" );
+				tabbedPanePie.setSelectedIndex(1);
 			}
 			else {	tabbedPanebk.setSelectedIndex(7);
 					tabbedPanebk.setTitleAt(7, "大智慧选定周" + analysisdate );
 					
 					tabbedPanegegu.setSelectedIndex(2);
 					tabbedPanegegu.setTitleAt(2,"大智慧选定周" + analysisdate );
+					tabbedPanePie.setSelectedIndex(2);
 			}
 			
 			tabbedPanebkzb.setSelectedIndex(0);
@@ -4222,8 +4267,6 @@ public class BanKuaiFengXi extends JDialog
 			LocalDate selectdate3 = analysisdate.plus(1,ChronoUnit.WEEKS).with(DayOfWeek.FRIDAY);
 			tabbedPanegegu.setTitleAt(4,  selectdate3 + "(+1)");
 		}
-		
-		tabbedPanePie.setSelectedIndex(2);
 	}
 	/*
 	 * 
@@ -4421,8 +4464,8 @@ public class BanKuaiFengXi extends JDialog
 			        			return;
 			        		
 			        		if(zhishu_code.trim().equals("000000")) {
-			        			pnlBanKuaiCandle.resetDate();
-			        			pnlStockCandle.resetDate();
+			        			pnlBanKuaiCandle.resetData();
+			        			pnlStockCandle.resetData();
 			        			clearTheGuiBeforDisplayNewInfoSection2 ();
 			        			clearTheGuiBeforDisplayNewInfoSection3 ();
 			        			tabbedPanebk.setSelectedIndex(0);

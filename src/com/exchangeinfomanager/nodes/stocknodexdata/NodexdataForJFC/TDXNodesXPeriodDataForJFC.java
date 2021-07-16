@@ -268,13 +268,19 @@ import com.udojava.evalex.Expression;
 			if( kdata.getPeriodLowestZhangDieFu() != null && kdata.getPeriodLowestZhangDieFu() != 0)
 				periodlowestzhangdiefu.add(kdata.getJFreeChartPeriod(super.getNodeperiodtype()), kdata.getPeriodLowestZhangDieFu(),false);
 		} catch (org.jfree.data.general.SeriesException e) {
-			System.out.println(super.getNodeCode() + super.getNodeperiodtype() 
+			System.out.println(super.getNodeCode() + super.getNodeperiodtype() +  "  "
 			+ kdata.getJFreeChartPeriod(super.getNodeperiodtype()).toString() 
 			+ kdata.getJFreeChartPeriod(super.getNodeperiodtype()).getStart().toString() 
 			+ "periodlowestzhangdiefu 数据已经存在，重复添加！"  );
 		}
 		
 		super.addNewXPeriodData(kdata);
+		
+//		nodeamo.setNotify(true);
+//		nodevol.setNotify(true);
+//		periodhighestzhangdiefu.setNotify(true);
+//		periodlowestzhangdiefu.setNotify(true);
+//		nodeohlc.setNotify(true);
 	}
 	
 	public LocalDate getAmoRecordsStartDate ()
@@ -400,7 +406,8 @@ import com.udojava.evalex.Expression;
 		RegularTimePeriod curperiod = getJFreeChartFormateTimePeriod (requireddate);
 		if(curperiod == null)	return null;
 		
-		for(int i=0;i<itemcount;i++) {
+		for(int i= itemcount-1;i>=0;i--) {
+//		for(int i=0;i<itemcount;i++) {
 			RegularTimePeriod dataitemp = this.nodeohlc.getPeriod(i);
 			if(dataitemp.equals(curperiod) )
 				 return i ;
@@ -1896,77 +1903,6 @@ import com.udojava.evalex.Expression;
 				result[i] = String.valueOf("0");
 			 }
 		 }
-//		String[] supcsv = super.getNodeXDataCsvData(superbk, requireddate); 
-//		
-//		Double curcje = this.getChengJiaoEr(requireddate);
-//		Double avecje = this.getAverageDailyChengJiaoErOfWeek (requireddate);
-//		Integer cjemaxwk =  this.getAverageDailyChenJiaoErMaxWeek (requireddate);//显示成交额是多少周最大,成交额多少周最小没有意义，因为如果不是完整周成交量就是会很小
-//		Double cjechangerate = this.getChenJiaoErChangeGrowthRateOfSuperBanKuaiOnDailyAverage(superbk,requireddate);//成交额大盘变化贡献率
-//		
-//		Double curcjl = this.getChengJiaoLiang (requireddate);
-//		Double avecjl = this.getAverageDailyChengJiaoLiangOfWeek (requireddate);
-//		Integer cjlmaxwk = this.getAverageDailyChenJiaoLiangMaxWeek (requireddate );//显示cjl是多少周最大
-//		
-//		Double zhangfu = this.getSpecificOHLCZhangDieFu (requireddate);
-//		Double avecjegrowingrate = this.getAverageDailyChenJiaoErGrowingRate (requireddate);
-//		Integer indexofcur = this.getIndexOfSpecificDateOHLCData(requireddate);
-//		if(indexofcur == null)
-//			return null;
-//		
-//		OHLCItem curohlc = (OHLCItem) this.getOHLCData().getDataItem(indexofcur.intValue());
-//		Double curclose = curohlc.getCloseValue();
-//		Double curopen = curohlc.getOpenValue();
-//		Double curhigh = curohlc.getHighValue();
-//		Double curlow = curohlc.getLowValue();
-//		
-//		String strcurcje = null;
-//		String stravecje = null;
-//		String strcjemaxwk =  null;
-//		String strcjechangerate = null;
-//		
-//		String strcurcjl = null;
-//		String stravecjl = null;
-//		String strcjlmaxwk = null;
-////		String strcjlchangerate = null;
-//		String strzhangfu = null;
-//		String stravecjegrowingrate = null;
-//		String close = null;String open = null;String high = null;String low = null;
-//		
-//		try { stravecjegrowingrate = avecjegrowingrate.toString();} catch (java.lang.NullPointerException e) {stravecjegrowingrate = String.valueOf("0");}
-//		try {strcurcje = curcje.toString();} catch (java.lang.NullPointerException e) {strcurcje = String.valueOf("0");}
-//		try {stravecje = avecje.toString();} catch (java.lang.NullPointerException e) {stravecje = String.valueOf("0");}
-//		try {strcjemaxwk = cjemaxwk.toString();} catch (java.lang.NullPointerException e) {strcjemaxwk = String.valueOf("0");}
-//		try {strcjechangerate = cjechangerate.toString();} catch (java.lang.NullPointerException e) {strcjechangerate = String.valueOf("0");}
-//		try {strcurcjl = curcjl.toString();} catch (java.lang.NullPointerException e) {strcurcjl = String.valueOf("0");}
-//		try {stravecjl = avecjl.toString();} catch (java.lang.NullPointerException e) {stravecjl = String.valueOf("0");}
-//		try {strcjlmaxwk =  cjlmaxwk.toString();} catch (java.lang.NullPointerException e) {strcjlmaxwk = String.valueOf("0");}
-//		try {strzhangfu =  zhangfu.toString();} catch (java.lang.NullPointerException e) {strzhangfu = String.valueOf("0");}
-//		try {close = curclose.toString();} catch (java.lang.NullPointerException e) {close = String.valueOf("0");}
-//		try {open = curclose.toString();} catch (java.lang.NullPointerException e) {open = String.valueOf("0");}
-//		try {high = curclose.toString();} catch (java.lang.NullPointerException e) {high = String.valueOf("0");}
-//		try {low = curclose.toString();} catch (java.lang.NullPointerException e) {low = String.valueOf("0");}
-//		
-//		String[] curcsvline = {  strcurcje ,
-//		 stravecje ,
-//		 strcjemaxwk ,
-//		 strcjechangerate ,
-//		
-//		 strcurcjl ,
-//		 stravecjl ,
-//		 strcjlmaxwk ,
-////		 strcjlchangerate,
-//		 
-//		 strzhangfu ,
-//		 open,
-//		 high,
-//		 low,
-//		 close,
-//		 
-//		 stravecjegrowingrate
-//		}; 
-//
-//		String [] joined = ObjectArrays.concat(supcsv, curcsvline, String.class);
-//		return joined;
 		 
 		return result; 
 	 }
@@ -1999,297 +1935,6 @@ import com.udojava.evalex.Expression;
 					 } 
 				 }
 			}
-			
-//			DecimalFormat decimalformate = new DecimalFormat("#0.000"); //",###";
-//	    	NumberFormat percentFormat = NumberFormat.getPercentInstance(Locale.CHINA);
-//	    	percentFormat.setMinimumFractionDigits(4);
-//	    	DecimalFormat decimalformate2 = new DecimalFormat("%#0.00000");
-//				
-//			String htmlstring = "";
-//			org.jsoup.nodes.Document doc = Jsoup.parse(htmlstring);
-//			Elements body = doc.getElementsByTag("body");
-//			for(Element elbody : body) {
-//				org.jsoup.nodes.Element dl = elbody.appendElement("dl");
-//				 
-//				 org.jsoup.nodes.Element lidate = dl.appendElement("li");
-//				 org.jsoup.nodes.Element fontdate = lidate.appendElement("font");
-//				 fontdate.appendText(requireddate.toString());
-//				 fontdate.attr("color", "#17202A");
-//				 
-//				 Double zhangfu = this.getSpecificOHLCZhangDieFu (requireddate);
-//				 if(zhangfu != null) {
-//					 org.jsoup.nodes.Element li12 = dl.appendElement("li");
-//					 org.jsoup.nodes.Element font12 = li12.appendElement("font");
-//					 font12.appendText("涨跌幅" + percentFormat.format (zhangfu)  );
-//					 font12.attr("color", "#1B2631");
-//				 }
-//				 try {
-//					 Double curcje = this.getChengJiaoEr(requireddate);
-//					 String cjedanwei = FormatDoubleToShort.getNumberChineseDanWei(curcje);
-//						curcje = FormatDoubleToShort.formateDoubleToShort (curcje);
-//						
-//						org.jsoup.nodes.Element licje = dl.appendElement("li");
-//						org.jsoup.nodes.Element fontcje = licje.appendElement("font");
-//						fontcje.appendText("成交额" + decimalformate.format(curcje) + cjedanwei);
-//						fontcje.attr("color", "#AF7AC5");
-//				 } catch (java.lang.NullPointerException e) {
-//						logger.debug(super.getNodeCode() + "在" + requireddate.toString() + "没有数据，可能停牌。");
-//						return "";
-//				 }
-//				 
-//				 try{
-//					 Double avecje = this.getAverageDailyChengJiaoErOfWeek (requireddate);
-//					 String cjedanwei = FormatDoubleToShort.getNumberChineseDanWei(avecje);
-//						avecje = FormatDoubleToShort.formateDoubleToShort (avecje);
-//						
-//						 org.jsoup.nodes.Element liavecje = dl.appendElement("li");
-//						 org.jsoup.nodes.Element fontavecje = liavecje.appendElement("font");
-//						 fontavecje.appendText("周日平均成交额" + decimalformate.format(avecje) + cjedanwei);
-//						 fontavecje.attr("color", "#AF7AC5");
-//				 } catch (java.lang.NullPointerException e) {
-//						logger.debug(super.getNodeCode() + "在" + requireddate.toString() + "没有数据，可能停牌。");
-//						return "";
-//				 }
-//				 try {
-//					 Double avecjediff = this.getChengJiaoErDailyAverageDifferenceWithLastPeriod (requireddate);
-//					 String cjedanwei = FormatDoubleToShort.getNumberChineseDanWei(avecjediff);
-//						avecjediff = FormatDoubleToShort.formateDoubleToShort (avecjediff);
-//						
-//						org.jsoup.nodes.Element liavecjediff = dl.appendElement("li");
-//						org.jsoup.nodes.Element fontavecjediff = liavecjediff.appendElement("font");
-//						fontavecjediff.appendText("周日平均成交额增长" + decimalformate.format(avecjediff) + cjedanwei);
-//						fontavecjediff.attr("color", "#AF7AC5");
-//				 } catch (java.lang.NullPointerException e) {
-//						logger.debug(super.getNodeCode() + "在" + requireddate.toString() + "没有数据，可能停牌。");
-//						return "";
-//				 }
-//
-//				 try {
-//					 Double avecjegrowingrate = null;
-//					 avecjegrowingrate = this.getAverageDailyChenJiaoErGrowingRate(requireddate);
-//					 if(avecjegrowingrate != null) {
-//						 htmlstring = "周日均成交额增长率" + percentFormat.format (avecjegrowingrate) ;
-//						 org.jsoup.nodes.Element liavecjechangerate = dl.appendElement("li");
-//						 org.jsoup.nodes.Element fontavecjechangerate = liavecjechangerate.appendElement("font");
-//						 fontavecjechangerate.appendText(htmlstring);
-//						 fontavecjechangerate.attr("color", "#AF7AC5 ");
-//					 }
-//				 } catch (java.lang.NullPointerException e) {}
-//				 
-//			     try {
-//			    	 Integer cjemaxwk = null;
-//			    		cjemaxwk = this.getAverageDailyChenJiaoErMaxWeek(requireddate);//显示成交额是多少周最大,成交额多少周最小没有意义，因为如果不是完整周成交量就是会很小
-//			    		if(cjemaxwk>0) {
-//							 org.jsoup.nodes.Element licjemaxwk = dl.appendElement("li");
-//							 org.jsoup.nodes.Element fontcjemaxwk = licjemaxwk.appendElement("font");
-//							 fontcjemaxwk.appendText("周日平均成交额MaxWk=" + cjemaxwk);
-//							 fontcjemaxwk.attr("color", "#AF7AC5 ");
-//						 }
-//			     } catch (java.lang.NullPointerException e) {}
-//				 try {
-//					 Integer avcjelxwk = null;
-//					 avcjelxwk = this.getAverageDailyChenJiaoErLianXuFangLiangPeriodNumber(requireddate);
-//					 if(avcjelxwk != null && avcjelxwk >0) {
-//						 org.jsoup.nodes.Element liavcjelxwk = dl.appendElement("li");
-//						 org.jsoup.nodes.Element fontavcjelxwk = liavcjelxwk.appendElement("font");
-//						 fontavcjelxwk.appendText("周日平均成交额连续涨=" + avcjelxwk);
-//						 fontavcjelxwk.attr("color", "#AF7AC5 ");
-//					 }
-//				 } catch (java.lang.NullPointerException e) {}
-//				 try {
-//					 Double cjechangerate = this.getChenJiaoErChangeGrowthRateOfSuperBanKuaiOnDailyAverage(superbk,requireddate);//成交额大盘变化贡献率
-//					 if( cjechangerate != -100.0) {
-//						 htmlstring = "CJE板块贡献率(周日均)" + percentFormat.format (cjechangerate) ;
-//						 org.jsoup.nodes.Element licjechangerate = dl.appendElement("li");
-//						 org.jsoup.nodes.Element fontcjechangerate = licjechangerate.appendElement("font");
-//						 fontcjechangerate.appendText(htmlstring);
-//						 fontcjechangerate.attr("color", "#AF7AC5 ");
-//					 }
-//				 } catch (java.lang.IllegalArgumentException e) {
-//				 } catch (java.lang.NullPointerException e) {
-//					 logger.debug(e.getMessage());
-////			    	e.printStackTrace();	
-//			     }
-//
-//				try {
-//					Double curcjezhanbidata = super.getChenJiaoErZhanBi(requireddate);  //占比
-//					
-//					org.jsoup.nodes.Element licjezb = dl.appendElement("li");
-//					org.jsoup.nodes.Element fontcjezb = licjezb.appendElement("font");
-//					fontcjezb.appendText( "成交额占比" + decimalformate2.format(curcjezhanbidata)  );
-//					fontcjezb.attr("color", "#17202A");
-//				} catch (java.lang.IllegalArgumentException e ) {
-//					logger.debug(e.getMessage());
-////					htmltext = "占比占比NULL" ;
-//				}
-//				
-//				Integer cjemaxweek = super.getChenJiaoErZhanBiMaxWeekForDaPan(requireddate);//nodefx.getGgbkzhanbimaxweek();
-//				Integer cjeminweek = super.getChenJiaoErZhanBiMinWeekForDaPan(requireddate);
-//				if(cjemaxweek > 0) {
-//					try {
-//						 org.jsoup.nodes.Element licjemaxwk = dl.appendElement("li");
-//						 org.jsoup.nodes.Element fontcjemaxwk = licjemaxwk.appendElement("font");
-//						 fontcjemaxwk.appendText( "成交额占比MaxWk=" + cjemaxweek.toString()  );
-//						 fontcjemaxwk.attr("color", "#17202A");
-//					} catch (java.lang.IllegalArgumentException e ) {
-////						htmltext = "占比MaxWk=NULL"  ;
-//					}
-//				} else {
-//					try {
-//						 org.jsoup.nodes.Element licjeminwk = dl.appendElement("li");
-//						 org.jsoup.nodes.Element fontcjeminwk = licjeminwk.appendElement("font");
-//						 fontcjeminwk.appendText( "成交额占比MinWk=" + cjeminweek.toString()  );
-//						 fontcjeminwk.attr("color", "#17202A");  
-//					} catch (java.lang.IllegalArgumentException e ) {
-////						htmltext = "占比MaxWk=NULL"  ;
-//					}
-//				}
-//				
-//				Double cjezbgrowthrate = super.getChenJiaoErZhanBiGrowthRateForDaPan (requireddate);
-//				org.jsoup.nodes.Element licjezbgr = dl.appendElement("li");
-//				org.jsoup.nodes.Element fontcjezbgr = licjezbgr.appendElement("font");
-//				fontcjezbgr.appendText( "成交额占比增长率=" + decimalformate2.format(cjezbgrowthrate)  );
-//				fontcjezbgr.attr("color", "#17202A");
-//				
-//				 //
-//				 Double curcjl = this.getChengJiaoLiang(requireddate);
-//		    	 String cjldanwei = FormatDoubleToShort.getNumberChineseDanWei(curcjl);
-//		    	 curcjl = FormatDoubleToShort.formateDoubleToShort (curcjl);
-//				 org.jsoup.nodes.Element licjl = dl.appendElement("li");
-//				 org.jsoup.nodes.Element fontcjl = licjl.appendElement("font");
-//				 fontcjl.appendText("成交量" + decimalformate.format(curcjl) + cjldanwei);
-//				 fontcjl.attr("color", "#641E16");
-//				 
-//				 Double avecurcjl = this.getAverageDailyChengJiaoLiangOfWeek(requireddate);
-//		    	 String avecjldanwei = FormatDoubleToShort.getNumberChineseDanWei(avecurcjl);
-//		    	 curcjl = FormatDoubleToShort.formateDoubleToShort (avecurcjl);
-//				 org.jsoup.nodes.Element liavecjl = dl.appendElement("li");
-//				 org.jsoup.nodes.Element fontavecjl = liavecjl.appendElement("font");
-//				 fontavecjl.appendText("周平均成交量" + decimalformate.format(avecurcjl) + avecjldanwei);
-//				 fontavecjl.attr("color", "#641E16");
-//				 
-//				 Double avecjldiff = this.getChengJiaoLiangDailyAverageDifferenceWithLastPeriod (requireddate);
-//				 try{
-//						cjldanwei = FormatDoubleToShort.getNumberChineseDanWei(avecjldiff);
-//						avecjldiff = FormatDoubleToShort.formateDoubleToShort (avecjldiff);
-//						org.jsoup.nodes.Element liavecjldiff = dl.appendElement("li");
-//						 org.jsoup.nodes.Element fontavecjldiff = liavecjldiff.appendElement("font");
-//						 fontavecjldiff.appendText("周日平均成交量增长" + decimalformate.format(avecjldiff) + cjldanwei);
-//						 fontavecjldiff.attr("color", "#AF7AC5");
-//				 } catch (java.lang.NullPointerException e) {
-////						e.printStackTrace();
-//						logger.debug(super.getNodeCode() + "在" + requireddate.toString() + "没有数据，可能停牌。");
-//						return "";
-//				 }
-//				 //
-//				 Integer cjlmaxwk = null;
-//			     try{
-//			    		cjlmaxwk = this.getChenJiaoLiangMaxWeek(requireddate);//显示cjl是多少周最大
-//			     } catch (java.lang.NullPointerException e) {
-//			     }
-//				 if(cjlmaxwk>0) {
-//					 org.jsoup.nodes.Element licjlmaxwk = dl.appendElement("li");
-//					 org.jsoup.nodes.Element fontcjlmaxwk = licjlmaxwk.appendElement("font");
-//					 fontcjlmaxwk.appendText("成交量MaxWk=" + cjlmaxwk);
-//					 fontcjlmaxwk.attr("color", "#641E16");
-//				 } 
-//				 //
-////				 try{
-////					 Double cjlchangerate = this.getChenJiaoLiangChangeGrowthRateOfSuperBanKuai(superbk,requireddate,0);//cjl大盘变化贡献率
-////					 if( cjlchangerate != -100.0) {
-////						 org.jsoup.nodes.Element licjlchangerate = dl.appendElement("li");
-////						 org.jsoup.nodes.Element fontcjlchangerate = licjlchangerate.appendElement("font");
-////						 fontcjlchangerate.appendText( "成交量板块变化贡献率" + percentFormat.format (cjlchangerate)  );
-////						 fontcjlchangerate.attr("color", "#641E16");
-////					 }
-////				 } catch (java.lang.IllegalArgumentException e) {
-//////					 li4.appendText("成交额大盘变化贡献率NULL" );
-////				 }
-//
-//				try {
-//					Double cjlzhanbidata = this.getChenJiaoLiangZhanBi(requireddate);
-//					
-//					org.jsoup.nodes.Element licjlzb = dl.appendElement("li");
-//					org.jsoup.nodes.Element fontzjlzb = licjlzb.appendElement("font");
-//					fontzjlzb.appendText( "成交量占比" + decimalformate2.format(cjlzhanbidata)  );
-//					fontzjlzb.attr("color", "#512E5F");
-//				} catch (java.lang.IllegalArgumentException e ) {
-////					htmltext = "占比占比NULL" ;
-//				}
-//				
-//				Integer cjlzbmaxwk = this.getChenJiaoLiangZhanBiMaxWeekForDaPan(requireddate);
-//				Integer cjlzbminwk = this.getChenJiaoLiangZhanBiMinWeekForDaPan(requireddate);
-//				if(cjlzbmaxwk > 0) {
-//					try {
-//						 org.jsoup.nodes.Element licjlmaxwk = dl.appendElement("li");
-//						 org.jsoup.nodes.Element fontcjlmaxwk = licjlmaxwk.appendElement("font");
-//						 fontcjlmaxwk.appendText( "成交量占比MaxWk=" + cjlzbmaxwk.toString()  );
-//						 fontcjlmaxwk.attr("color", "#512E5F");
-//					} catch (java.lang.IllegalArgumentException e ) {
-////						htmltext = "占比MaxWk=NULL"  ;
-//					}
-//				} else {
-//					try {
-//						 org.jsoup.nodes.Element licjlminwk = dl.appendElement("li");
-//						 org.jsoup.nodes.Element fontcjlminwk = licjlminwk.appendElement("font");
-//						 fontcjlminwk.appendText( "成交量占比MinWk=" + cjlzbminwk.toString()  );
-//						 fontcjlminwk.attr("color", "#512E5F");
-//					} catch (java.lang.IllegalArgumentException e ) {
-////						htmltext = "占比MaxWk=NULL"  ;
-//					}
-//				}
-//				
-//				Double cjlzbgrowthrate = this.getChenJiaoLiangZhanBiGrowthRateForDaPan(requireddate);
-//				org.jsoup.nodes.Element licjlzbgr = dl.appendElement("li");
-//				org.jsoup.nodes.Element fontcjlzbgr = licjlzbgr.appendElement("font");
-//				fontcjlzbgr.appendText( "成交量占比增长率=" + decimalformate2.format(cjlzbgrowthrate)  );
-//				fontcjlzbgr.attr("color", "#512E5F");
-//				
-//					 Integer opneupquekou = this.getQueKouTongJiOpenUp(requireddate);
-//					 if( opneupquekou != null) {
-//						 org.jsoup.nodes.Element li6 = dl.appendElement("li");
-//						 org.jsoup.nodes.Element font6 = li6.appendElement("font");
-//						 font6.appendText("缺口OpenUp =" + opneupquekou);
-//						 font6.attr("color", "#F39C12");
-//					 }
-//					 Integer opendownquekou = this.getQueKouTongJiOpenDown(requireddate);
-//					 if( opendownquekou != null) {
-//						 org.jsoup.nodes.Element li7 = dl.appendElement("li");
-//						 org.jsoup.nodes.Element font7 = li7.appendElement("font");
-//						 font7.appendText("缺口OpenDown =" + opendownquekou);
-//						 font7.attr("color", "#F39C12");
-//					 }
-//					 Integer huibuupquekou = this.getQueKouTongJiHuiBuUp(requireddate);
-//					 if( huibuupquekou != null) {
-//						 org.jsoup.nodes.Element li8 = dl.appendElement("li");
-//						 org.jsoup.nodes.Element font8 = li8.appendElement("font");
-//						 font8.appendText("缺口HuiBuUp =" + huibuupquekou );
-//						 font8.attr("color", "#F39C12");
-//					 }
-//					 Integer huibudowquekou = this.getQueKouTongJiHuiBuDown(requireddate);
-//					 if( huibudowquekou != null) {
-//						 org.jsoup.nodes.Element li9 = dl.appendElement("li");
-//						 org.jsoup.nodes.Element font9= li9.appendElement("font");
-//						 font9.appendText("缺口HuiBuDown =" + huibudowquekou );
-//						 font9.attr("color", "#F39C12");
-//					 }
-//					 
-//					 Integer zhangtingnum = this.getZhangTingTongJi(requireddate);
-//					 if(zhangtingnum != null) {
-//						 org.jsoup.nodes.Element li10 = dl.appendElement("li");
-//						 org.jsoup.nodes.Element font10 = li10.appendElement("font");
-//						 font10.appendText("涨停 =" + zhangtingnum );
-//						 font10.attr("color", "#1B2631");
-//					 }
-//					 
-//					 Integer dietingnum = this.getDieTingTongJi(requireddate);
-//					 if(dietingnum != null) {
-//						 org.jsoup.nodes.Element li11 = dl.appendElement("li");
-//						 org.jsoup.nodes.Element font11 = li11.appendElement("font");
-//						 font11.appendText("跌停 =" + dietingnum );
-//						 font11.attr("color", "#1B2631");
-//					 }
-//			}
 			
 			return doc.toString();
 		}

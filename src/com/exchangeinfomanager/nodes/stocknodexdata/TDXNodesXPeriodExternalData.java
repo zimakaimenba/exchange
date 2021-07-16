@@ -96,16 +96,16 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 	private TimeSeries nodedpcjezbgr;
 	private TimeSeries nodedpcjlzbgr;
 	
-	private LocalDate lastdayofbxfx; //为不完整周分析准备的。如果为空说明是完整周
+//	private LocalDate lastdayofbxfx; //为不完整周分析准备的。如果为空说明是完整周
 	
 	public void addNewXPeriodData (NodeGivenPeriodDataItem kdata)
 	{
 		if(kdata.getNodeToDpChenJiaoErZhanbi() != null ) {
 			try {
 				nodeamozhanbi.setNotify(false);
-				nodeamozhanbi.add(kdata.getJFreeChartPeriod(this.nodeperiodtype),kdata.getNodeToDpChenJiaoErZhanbi(),false);
-				
 				nodevolzhanbi.setNotify(false);
+
+				nodeamozhanbi.add(kdata.getJFreeChartPeriod(this.nodeperiodtype),kdata.getNodeToDpChenJiaoErZhanbi(),false);
 				nodevolzhanbi.add(kdata.getJFreeChartPeriod(this.nodeperiodtype),kdata.getNodeToDpChenJiaoLiangZhanbi(),false);
 			} catch (org.jfree.data.general.SeriesException e) {
 				System.out.println(getNodeCode() + getNodeperiodtype() 
@@ -129,9 +129,10 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 				if(nodedietingnum == null)
 					nodedietingnum = new TimeSeries(this.nodeperiodtype);
 				
+				nodezhangtingnum.setNotify(false);
+				nodedietingnum.setNotify(false);
 				if(kdata.getZhangTingNumber() != null && kdata.getZhangTingNumber() !=0 )
 					nodezhangtingnum.add(kdata.getJFreeChartPeriod(this.nodeperiodtype), kdata.getZhangTingNumber() );
-				
 				if(kdata.getDieTingNumber() != null && kdata.getDieTingNumber() !=0 )
 					nodedietingnum.add(kdata.getJFreeChartPeriod(this.nodeperiodtype), kdata.getDieTingNumber() );
 				
@@ -141,8 +142,13 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 				+ kdata.getJFreeChartPeriod(getNodeperiodtype()).getStart().toString()
 				+ " nodezhangtingnum 数据已经存在，重复添加！"  ); 
 			}
+			
+//			nodeamozhanbi.setNotify(true);
+//			nodevolzhanbi.setNotify(true);
+//			nodeexchangedaysnumber.setNotify(true);
+//			nodezhangtingnum.setNotify(true);
+//			nodedietingnum.setNotify(true);
 		}
-		
 		try {	
 			nodedpcjezbgr.setNotify(false);
 			if( kdata.getDaPanChenJiaoErZhanBiGrowingRate() != null && kdata.getDaPanChenJiaoErZhanBiGrowingRate() != 0)
@@ -163,6 +169,9 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 			+ kdata.getJFreeChartPeriod(getNodeperiodtype()).getStart().toString()
 			+ "nodedpcjlzbgr 数据已经存在，重复添加！"  );
 		}
+		
+//		nodedpcjezbgr.setNotify(true);
+//		nodedpcjlzbgr.setNotify(true);
 	}
 	/*
 	 * 

@@ -3775,10 +3775,10 @@ public class BanKuaiDbOperation
 		OHLCItem weeklyohlcdatalast;
 		try {
 			weeklyohlcdatalast = (OHLCItem) nodexdata.getOHLCData().getDataItem(spcohlcdataindex-1);
-		} catch (java.lang.IndexOutOfBoundsException e) {
-//			e.printStackTrace();
-			return;
-		}
+		} catch (java.lang.IndexOutOfBoundsException e) {return;
+		} catch (java.lang.NullPointerException e) {
+			logger.info(stock.getMyOwnCode() + "获取 WeekyHighestAndLowestZhangFu 出错");return;}
+		
 		Double lastwkclose = weeklyohlcdatalast.getCloseValue();
 		Double curwkclose = ((OHLCItem) nodenewohlc.getDataItem(0)  ).getCloseValue();
 		Double weeklyhighzhangfu = (  curwkclose  - lastwkclose) / lastwkclose;
@@ -3909,6 +3909,7 @@ public class BanKuaiDbOperation
 		try {
 			org.jfree.data.time.Week recordwk = new org.jfree.data.time.Week (sqldate);
 			nodexdata.getOHLCData().add(new OHLCItem(recordwk,weeklyopen,weeklyhigh,weeklylow,weeklyclose) );
+//			System.out.print("加入" + tdxnode.getMyOwnCode() + "周线OHLC数据：" + recordwk.toString() + " OHLC: " + weeklyopen + "/" + weeklyhigh + "/" + weeklylow + "/" + weeklyclose + "\r\n"); 
 		} catch(Exception e) {e.printStackTrace();}
 
 		return tdxnode;
@@ -5254,12 +5255,12 @@ public class BanKuaiDbOperation
 //			selecteddatestart = selecteddatestart.with(DayOfWeek.MONDAY);
 //			selecteddateend = selecteddateend.with(DayOfWeek.FRIDAY);
 			
-			if(period.equals(NodeGivenPeriodDataItem.DAY)) //调用日线查询函数
-				; 
-			else if(period.equals(NodeGivenPeriodDataItem.MONTH)) //调用月线查询函数
-				;
-			
-			NodeXPeriodData nodewkperioddata = node.getNodeXPeroidData(period);
+//			if(period.equals(NodeGivenPeriodDataItem.DAY)) //调用日线查询函数
+//				; 
+//			else if(period.equals(NodeGivenPeriodDataItem.MONTH)) //调用月线查询函数
+//				;
+			NodeXPeriodData nodedayperioddata = node.getNodeXPeroidData(NodeGivenPeriodDataItem.DAY);
+			NodeXPeriodData nodewkperioddata = node.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
 			String sqlquerystat;
 			if(node.getType() == BkChanYeLianTreeNode.TDXGG || node.getType() == BkChanYeLianTreeNode.BKGEGU) 
 				sqlquerystat = getZdgzMrmcYingKuiSQLForStock (node);
@@ -5279,25 +5280,24 @@ public class BanKuaiDbOperation
 			            row[3] = rs.getString(4);
 			            row[4] = rs.getString(5);
 			            row[5] = rs.getString(6);
+			            
+			            java.sql.Date actiondate = (java.sql.Date)row[0];
+			            org.jfree.data.time.RegularTimePeriod actionperiodday = null ;
+			            org.jfree.data.time.RegularTimePeriod actionperiodweek = null ;
+			            actionperiodday = new org.jfree.data.time.Day( (java.sql.Date)row[0]); 
+			            actionperiodweek = new org.jfree.data.time.Week( (java.sql.Date)row[0]);
 			            String action = (String) row[1];
-						if(action.equals("买入")) {
-							org.jfree.data.time.Week wknum = new org.jfree.data.time.Week( (java.sql.Date)row[0]);
-							((StockNodesXPeriodData)nodewkperioddata).addMaiRuJiLu(wknum, 1);
-						} else
-						if(action.equals("卖出")) {
-							org.jfree.data.time.Week wknum = new org.jfree.data.time.Week( (java.sql.Date)row[0]);
-							((StockNodesXPeriodData)nodewkperioddata).addMaiChuJiLu(wknum, 0);
-						} else
-						if(action.equals("加入关注")) {
-							org.jfree.data.time.Week wknum = new org.jfree.data.time.Week( (java.sql.Date)row[0]);
-							((StockNodesXPeriodData)nodewkperioddata).addGzjlToPeriod(wknum, 1);
-						} else 
-						if(action.equals("移除关注")) {
-							org.jfree.data.time.Week wknum = new org.jfree.data.time.Week( (java.sql.Date)row[0]);
-							((StockNodesXPeriodData)nodewkperioddata).addGzjlToPeriod(wknum, 0);
+						if(action.equals("买入"))	 {	((StockNodesXPeriodData)nodedayperioddata).addMaiRuJiLu(actionperiodday, 1);
+													((StockNodesXPeriodData)nodewkperioddata).addMaiRuJiLu(actionperiodweek, 1); 
+			     		} else if(action.equals("卖出")) {		((StockNodesXPeriodData)nodedayperioddata).addMaiChuJiLu(actionperiodday, 0); 
+															((StockNodesXPeriodData)nodewkperioddata).addMaiChuJiLu(actionperiodweek, 0);
+						} else if(action.equals("加入关注"))	{	((StockNodesXPeriodData)nodedayperioddata).addGzjlToPeriod(actionperiodday, 1);
+															((StockNodesXPeriodData)nodewkperioddata).addGzjlToPeriod(actionperiodweek, 1);
+						} else if(action.equals("移除关注")) {		((StockNodesXPeriodData)nodedayperioddata).addGzjlToPeriod(actionperiodday, 0);
+																((StockNodesXPeriodData)nodewkperioddata).addGzjlToPeriod(actionperiodweek, 0);
 						}
-						
-			            data.add(row);
+			            
+						data.add(row);
 			        }   
 			        if(!data.isEmpty())  	node.getNodeJiBenMian().setZdgzmrmcykRecords( data );
 				} catch (SQLException e) {e.printStackTrace();

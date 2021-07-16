@@ -9,6 +9,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+
 import com.exchangeinfomanager.NodesServices.SvsForNodeOfBanKuai;
 import com.exchangeinfomanager.NodesServices.SvsForNodeOfStock;
 import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
@@ -33,6 +36,17 @@ public class GetNodeDataFromDbWhenSystemIdle implements Runnable
 	public GetNodeDataFromDbWhenSystemIdle (LocalDate exportdate1, String period1) {
 		this.exportdate = exportdate1.with(DayOfWeek.FRIDAY);
 		this.period = period1;
+	}
+	
+	public Icon statusIconFactory (Boolean st)
+	{
+		ImageIcon finishicon = new ImageIcon(BanKuaiFengXi.class.getResource("/images/finish.png"));
+		ImageIcon stopicon = new ImageIcon(BanKuaiFengXi.class.getResource("/images/trafficsignal.png"));
+		ImageIcon resumeicon = new ImageIcon(BanKuaiFengXi.class.getResource("/images/trafficlight-in-green.png"));
+		
+		if(st == null) return finishicon;
+		else if(st) return resumeicon;
+		else return stopicon;
 	}
 	
 	 @Override
