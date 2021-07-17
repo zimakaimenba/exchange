@@ -51,6 +51,40 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 		return node;
 	}
 	@Override
+	public void syncNodeData(BkChanYeLianTreeNode bankuai)
+	{
+		BanKuai bk = (BanKuai)bankuai;
+		
+		LocalDate bkohlcstartday = bk.getNodeXPeroidData(NodeGivenPeriodDataItem.DAY).getOHLCRecordsStartDate();
+		LocalDate bkohlcendday = bk.getNodeXPeroidData(NodeGivenPeriodDataItem.DAY).getOHLCRecordsEndDate();
+		
+		NodeXPeriodData nodexdatawk = bk.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
+		LocalDate bkamostartday =	nodexdatawk.getAmoRecordsStartDate();
+		LocalDate bkamoendday = nodexdatawk.getAmoRecordsEndDate();
+		
+		Boolean calwholeweek = true;
+		LocalDate notcalwholewkmodedate = nodexdatawk.isInNotCalWholeWeekMode() ;
+		if(notcalwholewkmodedate != null) 	
+			calwholeweek = false;
+				
+		if(bkohlcstartday == null && bkamostartday == null) return ;
+		LocalDate requiredstartday; LocalDate requiredendday = null;
+		if(bkohlcstartday == null) {
+			requiredstartday = bkamostartday;
+			requiredendday = bkamoendday;
+		} else {
+			if(bkohlcstartday.isBefore(bkamostartday)) requiredstartday = bkohlcstartday;
+			else	requiredstartday = bkamostartday;
+			
+			if(bkohlcendday.isAfter(bkamoendday)) requiredendday = bkohlcendday;
+			else	requiredendday = bkamoendday;
+		}
+		
+		bankuai = this.getNodeKXian(bankuai, requiredstartday,requiredendday, NodeGivenPeriodDataItem.DAY,calwholeweek);
+		extraActionsForBanKuai ((BanKuai) bankuai);
+		return;
+	}
+	@Override
 	public BkChanYeLianTreeNode getNodeData(BkChanYeLianTreeNode bankuai, LocalDate requiredstartday,
 			LocalDate requiredendday, String period, Boolean calwholeweek) 
 	{
@@ -67,19 +101,16 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 		if(requiredstartday.isBefore(jlmindate) )
 			requiredstartday = jlmindate;
 
-		NodeXPeriodData nodedayperioddata = ((BanKuai)bankuai).getNodeXPeroidData(period);
-		if(nodedayperioddata.getAmoRecordsStartDate() == null) {
+		NodeXPeriodData nodexdatawk = ((BanKuai)bankuai).getNodeXPeroidData(period);
+		if(nodexdatawk.getAmoRecordsStartDate() == null) {
 			bankuai = bkdbopt.getBanKuaiZhanBi ((BanKuai)bankuai,requiredstartday,requiredendday,period);
-
-//			checkBanKuaiDataCompletion ((BanKuai) bankuai);
 			return bankuai;
 		}
 		
-		LocalDate amostart = nodedayperioddata.getAmoRecordsStartDate();
-		LocalDate amoend = nodedayperioddata.getAmoRecordsEndDate();
-		List<Interval> timeintervallist;
-			timeintervallist = TimeIntervalUnion.getTimeIntervalOfNodeTimeIntervalWithRequiredTimeInterval
-			(requiredstartday,requiredendday,nodedayperioddata.getAmoRecordsStartDate(),nodedayperioddata.getAmoRecordsEndDate()	); 
+		LocalDate amostart = nodexdatawk.getAmoRecordsStartDate();
+		LocalDate amoend = nodexdatawk.getAmoRecordsEndDate();
+		List<Interval> timeintervallist = TimeIntervalUnion.getTimeIntervalOfNodeTimeIntervalWithRequiredTimeInterval
+			(requiredstartday,requiredendday,nodexdatawk.getAmoRecordsStartDate(),nodexdatawk.getAmoRecordsEndDate()	); 
 		
 		if(timeintervallist == null) 
 			return bankuai;
@@ -88,10 +119,18 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 				DateTime newstartdt = tmpinterval.getStart();
 				DateTime newenddt = tmpinterval.getEnd();
 				
-				LocalDate tmprequiredstartday = LocalDate.of(newstartdt.getYear(), newstartdt.getMonthOfYear(), newstartdt.getDayOfMonth());
-				LocalDate tmprequiredendday = LocalDate.of(newenddt.getYear(), newenddt.getMonthOfYear(), newenddt.getDayOfMonth());
+				requiredstartday = LocalDate.of(newstartdt.getYear(), newstartdt.getMonthOfYear(), newstartdt.getDayOfMonth()).with(DayOfWeek.MONDAY);
+				requiredendday = LocalDate.of(newenddt.getYear(), newenddt.getMonthOfYear(), newenddt.getDayOfMonth());
+				//这里比较复杂，如果是非完整周，那就计算到设置日期，如果不是非完整周，是过去时间，过去那还是要计算完整一周的数据
+				LocalDate isnotcalwholewkdate = nodexdatawk.isInNotCalWholeWeekMode();
+				if( isnotcalwholewkdate == null ) //完整周，到周末
+					requiredendday = LocalDate.of(newenddt.getYear(), newenddt.getMonthOfYear(), newenddt.getDayOfMonth()).with(DayOfWeek.FRIDAY);
+				else if( CommonUtility.isInSameWeek(isnotcalwholewkdate, requiredendday) ) //非完整周模式，在指定计算非完整周，那到指定日期 
+					requiredendday = LocalDate.of(newenddt.getYear(), newenddt.getMonthOfYear(), newenddt.getDayOfMonth());
+				else if( isnotcalwholewkdate != null && !CommonUtility.isInSameWeek(isnotcalwholewkdate, requiredendday) )	//非完整周模式，在过去日期，还是要计算完整的周数据
+					requiredendday = LocalDate.of(newenddt.getYear(), newenddt.getMonthOfYear(), newenddt.getDayOfMonth()).with(DayOfWeek.FRIDAY);
 				
-				bankuai = bkdbopt.getBanKuaiZhanBi ((BanKuai) bankuai,tmprequiredstartday,tmprequiredendday,period);
+				bankuai = bkdbopt.getBanKuaiZhanBi ((BanKuai) bankuai,requiredstartday,requiredendday,period);
 		}
 		
 //		checkBanKuaiDataCompletion ((BanKuai) bankuai);
@@ -138,17 +177,17 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 	{
 		requiredstartday = requiredstartday.with(DayOfWeek.MONDAY);
 		
-		NodeXPeriodData nodedayperioddata = ((BanKuai) bankuai).getNodeXPeroidData(period);
-		if(nodedayperioddata.isInNotCalWholeWeekMode() == null || calwholeweek) 
+		NodeXPeriodData nodexdatawk = ((BanKuai) bankuai).getNodeXPeroidData(period);
+		if(nodexdatawk.isInNotCalWholeWeekMode() == null || calwholeweek) 
 			requiredendday   = requiredendday.with(DayOfWeek.FRIDAY);
 
-		if(nodedayperioddata.getOHLCRecordsStartDate() == null) {
+		if(nodexdatawk.getOHLCRecordsStartDate() == null) {
 			bankuai = bkdbopt.getBanKuaiKXianZouShi (((BanKuai) bankuai),requiredstartday,requiredendday,period);
 			return bankuai;
 		}
 		
 		List<Interval> timeintervallist = TimeIntervalUnion.getTimeIntervalOfNodeTimeIntervalWithRequiredTimeInterval
-				(requiredstartday,requiredendday,nodedayperioddata.getOHLCRecordsStartDate(),nodedayperioddata.getOHLCRecordsEndDate() );
+				(requiredstartday,requiredendday,nodexdatawk.getOHLCRecordsStartDate(),nodexdatawk.getOHLCRecordsEndDate() );
 		if(timeintervallist == null)
 			return bankuai;
 		
@@ -157,7 +196,16 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 				DateTime newenddt = tmpinterval.getEnd();
 				
 				requiredstartday = LocalDate.of(newstartdt.getYear(), newstartdt.getMonthOfYear(), newstartdt.getDayOfMonth()).with(DayOfWeek.MONDAY);
-				requiredendday = LocalDate.of(newenddt.getYear(), newenddt.getMonthOfYear(), newenddt.getDayOfMonth());//.with(DayOfWeek.FRIDAY);
+				requiredendday = LocalDate.of(newenddt.getYear(), newenddt.getMonthOfYear(), newenddt.getDayOfMonth());
+				//这里比较复杂，如果是非完整周，那就计算到设置日期，如果不是非完整周，是过去时间，过去那还是要计算完整一周的数据
+				LocalDate isnotcalwholewkdate = nodexdatawk.isInNotCalWholeWeekMode();
+				if( isnotcalwholewkdate == null ) //完整周，到周末
+					requiredendday = LocalDate.of(newenddt.getYear(), newenddt.getMonthOfYear(), newenddt.getDayOfMonth()).with(DayOfWeek.FRIDAY);
+				else if( CommonUtility.isInSameWeek(isnotcalwholewkdate, requiredendday) ) //非完整周模式，在指定计算非完整周，那到指定日期 
+					requiredendday = LocalDate.of(newenddt.getYear(), newenddt.getMonthOfYear(), newenddt.getDayOfMonth());
+				else if( isnotcalwholewkdate != null && !CommonUtility.isInSameWeek(isnotcalwholewkdate, requiredendday) )	//非完整周模式，在过去日期，还是要计算完整的周数据
+					requiredendday = LocalDate.of(newenddt.getYear(), newenddt.getMonthOfYear(), newenddt.getDayOfMonth()).with(DayOfWeek.FRIDAY);
+				
 				bankuai = bkdbopt.getBanKuaiKXianZouShi (((BanKuai) bankuai),requiredstartday,requiredendday,period);
 		}
 		
@@ -317,53 +365,6 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 		return bk;
 	
 	}
-
-	@Override
-	public void syncNodeData(BkChanYeLianTreeNode bankuai)
-	{
-		BanKuai bk = (BanKuai)bankuai;
-		
-		LocalDate bkohlcstartday = bk.getNodeXPeroidData(NodeGivenPeriodDataItem.DAY).getOHLCRecordsStartDate();
-		LocalDate bkohlcendday = bk.getNodeXPeroidData(NodeGivenPeriodDataItem.DAY).getOHLCRecordsEndDate();
-		
-		NodeXPeriodData nodexdatawk = bk.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
-		LocalDate bkamostartday =	nodexdatawk.getAmoRecordsStartDate();
-		LocalDate notcalwholewkmodedate = nodexdatawk.isInNotCalWholeWeekMode() ;
-		LocalDate bkamoendday;	Boolean calwholeweek;
-		if(notcalwholewkmodedate == null) {
-			bkamoendday = bk.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK).getAmoRecordsEndDate();
-			calwholeweek = true;
-		}
-		else { bkamoendday = notcalwholewkmodedate;  calwholeweek = false; }
-		
-		if(bkohlcstartday == null && bkamostartday == null) //都为空，
-			return ;
-		
-		if(bkohlcstartday == null) {
-			bkohlcstartday = bkamostartday;
-			bkohlcendday = bkamoendday;
-			bankuai = this.getNodeKXian(bankuai, bkohlcstartday,bkohlcendday, NodeGivenPeriodDataItem.DAY,calwholeweek);
-			extraActionsForBanKuai ((BanKuai) bankuai);
-			return;
-		}
-		
-		List<Interval> timeintervallist = TimeIntervalUnion.getTimeIntervalOfNodeTimeIntervalWithRequiredTimeInterval
-				(bkamostartday,bkamoendday,bkohlcstartday,bkohlcendday );
-		
-		if(timeintervallist == null)
-			return ;
-		
-		for(Interval tmpinterval : timeintervallist) {
-				DateTime newstartdt = tmpinterval.getStart();
-				DateTime newenddt = tmpinterval.getEnd();
-				
-				LocalDate requiredstartday = LocalDate.of(newstartdt.getYear(), newstartdt.getMonthOfYear(), newstartdt.getDayOfMonth()).with(DayOfWeek.MONDAY);
-				LocalDate requiredendday = LocalDate.of(newenddt.getYear(), newenddt.getMonthOfYear(), newenddt.getDayOfMonth());//.with(DayOfWeek.FRIDAY);
-				
-				bankuai = this.getNodeKXian(bankuai, requiredstartday,requiredendday, NodeGivenPeriodDataItem.DAY,calwholeweek);
-		}
-		extraActionsForBanKuai ((BanKuai) bankuai);
-	}
 	
 	private void extraActionsForBanKuai (BanKuai bk)
 	{
@@ -418,7 +419,16 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 				DateTime newenddt = tmpinterval.getEnd();
 				
 				LocalDate requiredstartday = LocalDate.of(newstartdt.getYear(), newstartdt.getMonthOfYear(), newstartdt.getDayOfMonth()).with(DayOfWeek.MONDAY);
-				LocalDate requiredendday = LocalDate.of(newenddt.getYear(), newenddt.getMonthOfYear(), newenddt.getDayOfMonth()).with(DayOfWeek.FRIDAY);
+				LocalDate requiredendday = LocalDate.of(newenddt.getYear(), newenddt.getMonthOfYear(), newenddt.getDayOfMonth());
+				//这里比较复杂，如果是非完整周，那就计算到设置日期，如果不是非完整周，是过去时间，过去那还是要计算完整一周的数据
+				LocalDate isnotcalwholewkdate = bankuai.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK).isInNotCalWholeWeekMode();
+				if( isnotcalwholewkdate == null ) //完整周，到周末
+					requiredendday = LocalDate.of(newenddt.getYear(), newenddt.getMonthOfYear(), newenddt.getDayOfMonth()).with(DayOfWeek.FRIDAY);
+				else if( CommonUtility.isInSameWeek(isnotcalwholewkdate, requiredendday) ) //非完整周模式，在指定计算非完整周，那到指定日期 
+					requiredendday = LocalDate.of(newenddt.getYear(), newenddt.getMonthOfYear(), newenddt.getDayOfMonth());
+				else if( isnotcalwholewkdate != null && !CommonUtility.isInSameWeek(isnotcalwholewkdate, requiredendday) )	//非完整周模式，在过去日期，还是要计算完整的周数据
+					requiredendday = LocalDate.of(newenddt.getYear(), newenddt.getMonthOfYear(), newenddt.getDayOfMonth()).with(DayOfWeek.FRIDAY);
+				
 				
 				bankuai = bkdbopt.getTDXBanKuaiGeGuOfHyGnFg (bankuai,requiredstartday,requiredendday);
 		}

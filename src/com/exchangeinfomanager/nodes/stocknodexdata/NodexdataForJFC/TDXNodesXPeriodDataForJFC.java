@@ -2023,14 +2023,19 @@ import com.udojava.evalex.Expression;
 					return;
 				}
 				
-				if( CommonUtility.round(curzhangfu,6).compareTo( CommonUtility.round(zhangfu,6) ) !=0) {
-					try{	this.periodhighestzhangdiefu.delete(recordwk);
-							periodhighestzhangdiefu.add(recordwk, zhangfu, false );
-					} catch(Exception e) {System.out.print(super.getNodeCode() + ":periodhighestzhangdiefu" + recordwk + "/" + recordwk.getEnd() + "已经存在数据！\r\n");
+				try {
+					if( CommonUtility.round(curzhangfu,6).compareTo( CommonUtility.round(zhangfu,6) ) !=0) {
+						try{	this.periodhighestzhangdiefu.delete(recordwk);
+								periodhighestzhangdiefu.add(recordwk, zhangfu, false );
+						} catch(Exception e) {System.out.print(super.getNodeCode() + ":periodhighestzhangdiefu" + recordwk + "/" + recordwk.getEnd() + "已经存在数据！\r\n");
+							return;
+						}
 						return;
 					}
-					return;
+				} catch (java.lang.NullPointerException e) { 
+					e.printStackTrace();
 				}
+				
 			} catch (org.jfree.data.general.SeriesException e) {}
 		}
 		/*

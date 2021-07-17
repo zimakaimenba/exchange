@@ -3575,7 +3575,6 @@ public class BanKuaiDbOperation
 
 		try {
 			LocalDate lastdaydate = requiredstartday.with(fieldCH, 6); //
-//			org.ta4j.core.TimeSeries nodenewohlc = new BaseTimeSeries.SeriesBuilder().withName(stock.getMyOwnCode()).build();
 			OHLCSeries nodenewohlc = new OHLCSeries (stock.getMyOwnCode());
 			int linenumber =0;
 			
@@ -3650,9 +3649,9 @@ public class BanKuaiDbOperation
 			 //目前算法最后一周要跳出循环后才能计算
 			this.getTDXNodesWeeklyKXianZouShiForJFC(stock, lastdaydate.with(DayOfWeek.FRIDAY), nodenewohlc);
 			
-			//Former ZhangFu can be get from Netease, but for the lastest, sometimes Neteast data is still not imported,
+			//Former ZhangFu can be get from Netease, but for the lastest week, sometimes Neteast data is still not imported,
 			//so must cal the zhangfu by CSV data.
-			this.calTDXNodesWeekyHighestAndLowestZhangFuForJFC (stock, lastdaydate.with(DayOfWeek.FRIDAY), nodenewohlc);;
+			this.calTDXNodesWeekyHighestAndLowestZhangFuForJFC (stock, lastdaydate.with(DayOfWeek.FRIDAY), nodenewohlc);
 			
 			nodenewohlc = null;
 			records = null;
@@ -3779,6 +3778,7 @@ public class BanKuaiDbOperation
 		} catch (java.lang.NullPointerException e) {
 			logger.info(stock.getMyOwnCode() + "获取 WeekyHighestAndLowestZhangFu 出错");return;}
 		
+		RegularTimePeriod lastwkperiod = weeklyohlcdatalast.getPeriod();
 		Double lastwkclose = weeklyohlcdatalast.getCloseValue();
 		Double curwkclose = ((OHLCItem) nodenewohlc.getDataItem(0)  ).getCloseValue();
 		Double weeklyhighzhangfu = (  curwkclose  - lastwkclose) / lastwkclose;
