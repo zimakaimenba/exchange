@@ -41,6 +41,7 @@ import com.exchangeinfomanager.nodes.Stock;
 import com.exchangeinfomanager.nodes.StockOfBanKuai;
 import com.exchangeinfomanager.nodes.TDXNodes;
 import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
+import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.exchangeinfomanager.nodes.treerelated.NodesTreeRelated;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Range;
@@ -492,7 +493,6 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         facts.put("evacond", matchcond);
         
         Rules rules = new Rules();
-     // fire rules on known facts
         RulesEngine rulesEngine = new DefaultRulesEngine();
         
         NodeXPeriodData nodexdata = node.getNodeXPeroidData(period);
@@ -605,9 +605,20 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
 		    else background = cjezbdpmaxwkRule.getBackGround();
         	break;
         case "CLOSEVSMA" :
+        	Facts marulefacts = new Facts();
+    		if(node instanceof StockOfBanKuai)
+    			marulefacts.put("evanode", ((StockOfBanKuai)node).getStock() );
+    	    else
+    	    	marulefacts.put("evanode", node);
+    		marulefacts.put("evadate", requireddate);
+    		marulefacts.put("evaperiod", NodeGivenPeriodDataItem.DAY);
+    		marulefacts.put("evacond", matchcond);
+            
         	RuleOfMA maRule = new RuleOfMA ();
-            rules.register(maRule);
-            rulesEngine.fire(rules, facts);
+        	Rules marules = new Rules();
+            marules.register(maRule);
+            RulesEngine marulesEngine = new DefaultRulesEngine();
+            marulesEngine.fire(marules, marulefacts);
             
         	if(predefinedcolor != null && !predefinedcolor.toUpperCase().equals("SYSTEM") && maRule.getAnalysisResult() )
 		    	background = Color.decode( predefinedcolor );

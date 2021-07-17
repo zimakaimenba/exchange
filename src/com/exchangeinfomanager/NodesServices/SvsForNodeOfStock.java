@@ -111,8 +111,7 @@ public class SvsForNodeOfStock implements ServicesForNode, ServicesOfNodeStock
 
 	@Override
 	public BkChanYeLianTreeNode getNodeKXian(String stockcode, LocalDate requiredstartday, LocalDate requiredendday,
-			String period,Boolean calwholeweek) 
-	{
+			String period,Boolean calwholeweek) {
 		return null;
 	}
 

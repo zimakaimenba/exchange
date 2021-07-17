@@ -436,7 +436,8 @@ import com.udojava.evalex.Expression;
 		RegularTimePeriod curperiod = super.getJFreeChartFormateTimePeriod (requireddate );
 		if(curperiod == null)	return null;
 		
-		for(int i=0;i<itemcount;i++) {
+//		for(int i=0;i<itemcount;i++) {
+		for(int i=itemcount-1;i>=0;i--) {
 			RegularTimePeriod dataitemp = this.nodeohlc.getPeriod(i);
 			if(dataitemp.equals(curperiod) )
 				 return (OHLCItem)this.nodeohlc.getDataItem(i);
@@ -1607,8 +1608,6 @@ import com.udojava.evalex.Expression;
 			 double macdfirst = macd.getValue(i+2).doubleValue();
 			 double macdthird = macd.getValue(i).doubleValue();
 			 
-			 
-			 
 			 if(macdthird >= macdsecond && macdfirst > macdsecond) {
 				 macdreversedatelist.add(seconddate);
 				 macdreverseIndexlist.add(Integer.valueOf(i+1));
@@ -1669,7 +1668,7 @@ import com.udojava.evalex.Expression;
 						expectdate = requireddate.plus(0-i,ChronoUnit.DAYS);
 						OHLCItem ohlcdataexpectdate =  this.getSpecificDateOHLCData (expectdate);
 						if(ohlcdataexpectdate != null) {
-							expectdate = super.adjustDate(expectdate);
+//							expectdate = super.adjustDate(expectdate);
 							requireddate = expectdate;
 				    		break;
 						}
@@ -2010,34 +2009,24 @@ import com.udojava.evalex.Expression;
 		 * 
 		 */
 		public void addPeriodHighestZhangDieFu (LocalDate requireddate,Double zhangfu)
-		{
+		{int i=0;
 			try {	
 				periodhighestzhangdiefu.setNotify(false);
 				
-				org.jfree.data.time.Week recordwk = null;
-				try {
-					DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
-					java.sql.Date sqldate = new java.sql.Date(format.parse(requireddate.toString()).getTime());
-					recordwk = new org.jfree.data.time.Week (sqldate);
-				} catch (ParseException e) {	e.printStackTrace();
-					return ;
-				}
-				
+				RegularTimePeriod recordwk = super.getJFreeChartFormateTimePeriod(requireddate);
 				Double curzhangfu = this.getSpecificTimeHighestZhangDieFu(requireddate);
 				if(curzhangfu == null  ){
-					try{
-						periodhighestzhangdiefu.add(recordwk, zhangfu, false );
-					} catch(Exception e) {e.printStackTrace();
+					try{	periodhighestzhangdiefu.add(recordwk, zhangfu, false );
+					} catch(Exception e) { System.out.print(super.getNodeCode() + ":periodhighestzhangdiefu" + recordwk + "/" + recordwk.getEnd() + "已经存在数据！\r\n");
 						return;
 					}
 					return;
 				}
 				
-				if( CommonUtility.round(curzhangfu,6) != CommonUtility.round(zhangfu,6)) {
-					try{
-						this.periodhighestzhangdiefu.delete(recordwk);
-						periodhighestzhangdiefu.add(recordwk, zhangfu, false );
-					} catch(Exception e) {e.printStackTrace();
+				if( CommonUtility.round(curzhangfu,6).compareTo( CommonUtility.round(zhangfu,6) ) !=0) {
+					try{	this.periodhighestzhangdiefu.delete(recordwk);
+							periodhighestzhangdiefu.add(recordwk, zhangfu, false );
+					} catch(Exception e) {System.out.print(super.getNodeCode() + ":periodhighestzhangdiefu" + recordwk + "/" + recordwk.getEnd() + "已经存在数据！\r\n");
 						return;
 					}
 					return;
@@ -2052,28 +2041,22 @@ import com.udojava.evalex.Expression;
 			try {	
 				periodlowestzhangdiefu.setNotify(false);
 				
-				org.jfree.data.time.Week recordwk = null;
-				try {
-					DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
-					java.sql.Date sqldate = new java.sql.Date(format.parse(requireddate.toString()).getTime());
-					recordwk = new org.jfree.data.time.Week (sqldate);
-				} catch (ParseException e) {e.printStackTrace();}
+				RegularTimePeriod recordwk = super.getJFreeChartFormateTimePeriod(requireddate);
 				
 				Double curzhangfu = this.getSpecificTimeLowestZhangDieFu(requireddate);
-				if(curzhangfu == null  ){
-					try{
-						periodlowestzhangdiefu.add(recordwk, diefu, false );
-					} catch(Exception e) {e.printStackTrace();
+				if(curzhangfu == null  ) {
+					try{	periodlowestzhangdiefu.add(recordwk, diefu, false );
+					} catch(Exception e) { System.out.print(super.getNodeCode() + ":periodlowestzhangdiefu" + recordwk + "/" + recordwk.getEnd() + "已经存在数据！\r\n");
 						return;
 					}
 					return;
 				}
 				
-				if( CommonUtility.round(curzhangfu,6) != CommonUtility.round(diefu,6)) {
+				if( CommonUtility.round(curzhangfu,6).compareTo( CommonUtility.round(diefu,6) ) !=0) {
 					try{
 						this.periodlowestzhangdiefu.delete(recordwk);
 						periodlowestzhangdiefu.add(recordwk, diefu, false );
-					} catch(Exception e) {e.printStackTrace();
+					} catch(Exception e) {System.out.print(super.getNodeCode() + ":periodlowestzhangdiefu" + recordwk + "/" + recordwk.getEnd() + "已经存在数据！\r\n");
 						return;
 					}
 					return;

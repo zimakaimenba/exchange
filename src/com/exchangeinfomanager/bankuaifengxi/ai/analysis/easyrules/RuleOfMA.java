@@ -33,7 +33,7 @@ public class RuleOfMA
 			@Fact("evaperiod") String evaperiod,
     		@Fact("evacond") BanKuaiAndGeGuMatchingConditions evacond ) 
 	{
-		if(evanode.getType() != BkChanYeLianTreeNode.TDXBK && evanode.getType() != BkChanYeLianTreeNode.TDXGG && evanode.getType() != BkChanYeLianTreeNode.DZHBK)
+		if( !BkChanYeLianTreeNode.isBanKuai(evanode) && evanode.getType() != BkChanYeLianTreeNode.TDXGG )
 			return false;
 		
 		String displayma = evacond.getSettingMaFormula();
@@ -51,7 +51,7 @@ public class RuleOfMA
 					expectdate = evadate.plus(0-i,ChronoUnit.DAYS);
 					OHLCItem ohlcdataexpectdate =  ((TDXNodesXPeriodDataForJFC)nodexdataday).getSpecificDateOHLCData (expectdate);
 					if(ohlcdataexpectdate != null) {
-						expectdate = adjustDate(expectdate);
+//						expectdate = adjustDate(expectdate);
 						evadate = expectdate;
 			    		break;
 					}

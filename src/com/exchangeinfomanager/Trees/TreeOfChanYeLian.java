@@ -59,7 +59,31 @@ public class TreeOfChanYeLian  extends BanKuaiAndStockTree implements CylTreeUpd
 	{
 		((InvisibleTreeModel)this.getModel()).addTreeModelListener(new CylTreeModelListener () );
 	}
-	
+	/*
+	 * 
+	 */
+//	public BkChanYeLianTreeNode getSpecificTreeOfChanYeLianNode (CylTreeNestedSetNode node) //有时候板块和个股代码相同,所以要加上type
+//	{
+//		String nodecode = node.getMyOwnCode();
+//		int requirenodetype = node.getType();
+//		int nestedid = node.getNestedId();
+//		
+//		TreePath bkpath = null ;
+//    	BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.getModel().getRoot();
+//	    @SuppressWarnings("unchecked")
+//		Enumeration<TreeNode> e = treeroot.depthFirstEnumeration();
+//	    while (e.hasMoreElements() ) {
+//	    	CylTreeNestedSetNode tmpnode = (CylTreeNestedSetNode) e.nextElement();
+//	    	Boolean found = tmpnode.checktHanYuPingYin(nodecode);
+//	        if (found && tmpnode.getType() == requirenodetype && tmpnode.getNestedId() == nestedid ) {
+//	             bkpath = new TreePath(node.getPath());
+//	             break;
+//	        }
+//	    }
+//	    
+//		if(bkpath != null)	return (BkChanYeLianTreeNode) bkpath.getLastPathComponent();
+//		else	return null;
+//	}
 	class CylTreeModelListener implements TreeModelListener 
 	{//https://stackoverflow.com/questions/12607688/jtree-node-title-edited-listener
 		public void treeNodesChanged(TreeModelEvent e) {

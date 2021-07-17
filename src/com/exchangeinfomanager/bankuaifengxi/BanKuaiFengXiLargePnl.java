@@ -134,6 +134,7 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 		
 		 SvsForNodeOfDaPan svsdp = new SvsForNodeOfDaPan ();
 		 svsdp.getNodeData ("", requirestart,requireend,NodeGivenPeriodDataItem.DAY,true);
+		 svsdp = null;
 		 
 		 nodekpnl.updatedDate(superbankuai,tmpnode,requirestart,requireend,NodeGivenPeriodDataItem.DAY);
 	}

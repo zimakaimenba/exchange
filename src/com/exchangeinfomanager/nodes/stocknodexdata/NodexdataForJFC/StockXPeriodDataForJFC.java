@@ -152,89 +152,6 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 		Integer value = (Integer)gzjlitem.getValue();
 		return value;
 	}
-//	public TimeSeries getPeriodHighestZhangDieFuData ()
-//	{
-//		return this.periodhighestzhangdiefu;
-//	}
-//	public TimeSeries getPeriodLowestZhangDieFuData ()
-//	{
-//		return this.periodlowestzhangdiefu;
-//	} 
-//	public void addPeriodHighestZhangDieFu (LocalDate requireddate,Double zhangfu)
-//	{
-//		try {	
-//			periodhighestzhangdiefu.setNotify(false);
-//			
-//			org.jfree.data.time.Week recordwk = null;
-//			try {
-//				DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
-//				java.sql.Date sqldate = new java.sql.Date(format.parse(requireddate.toString()).getTime());
-//				recordwk = new org.jfree.data.time.Week (sqldate);
-//			} catch (ParseException e) {
-//				e.printStackTrace();
-//				return ;
-//			}
-//			
-//			Double curzhangfu = this.getSpecificTimeHighestZhangDieFu(requireddate, 0);
-//			if(curzhangfu == null  ){
-//				try{
-//					periodhighestzhangdiefu.add(recordwk, zhangfu, false );
-//				} catch(Exception e) {
-//					e.printStackTrace();
-//					return;
-//				}
-//				return;
-//			}
-//			
-//			if( CommonUtility.round(curzhangfu,6) != CommonUtility.round(zhangfu,6)) {
-//				try{
-//					this.periodhighestzhangdiefu.delete(recordwk);
-//					periodhighestzhangdiefu.add(recordwk, zhangfu, false );
-//				} catch(Exception e) {
-//					e.printStackTrace();
-//					return;
-//				}
-//				return;
-//			}
-//		} catch (org.jfree.data.general.SeriesException e) {}
-//	}
-//	public void addPeriodLowestZhangDieFu (LocalDate requireddate,Double diefu)
-//	{
-//		try {	
-//			periodlowestzhangdiefu.setNotify(false);
-//			
-//			org.jfree.data.time.Week recordwk = null;
-//			try {
-//				DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
-//				java.sql.Date sqldate = new java.sql.Date(format.parse(requireddate.toString()).getTime());
-//				recordwk = new org.jfree.data.time.Week (sqldate);
-//			} catch (ParseException e) {
-//				e.printStackTrace();
-//			}
-//			
-//			Double curzhangfu = this.getSpecificTimeLowestZhangDieFu(requireddate, 0);
-//			if(curzhangfu == null  ){
-//				try{
-//					periodlowestzhangdiefu.add(recordwk, diefu, false );
-//				} catch(Exception e) {
-//					e.printStackTrace();
-//					return;
-//				}
-//				return;
-//			}
-//			
-//			if( CommonUtility.round(curzhangfu,6) != CommonUtility.round(diefu,6)) {
-//				try{
-//					this.periodlowestzhangdiefu.delete(recordwk);
-//					periodlowestzhangdiefu.add(recordwk, diefu, false );
-//				} catch(Exception e) {
-//					e.printStackTrace();
-//					return;
-//				}
-//				return;
-//			}
-//		} catch (org.jfree.data.general.SeriesException e) {}
-//	}
 	/*
 	 * 
 	 */
@@ -355,37 +272,7 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 		
 		return curzsz;
 	}
-//	/*
-//	 * 得到某个时期的涨跌幅  DailyZhangDieFuRangeInWeek
-//	 */
-//	public Double getSpecificTimeHighestZhangDieFu (LocalDate requireddate)
-//	{
-//		RegularTimePeriod period = super.getJFreeChartFormateTimePeriod(requireddate);
-//		if(period == null)
-//			return null;
-//		
-//		TimeSeriesDataItem curhighzdfrecord = periodhighestzhangdiefu.getDataItem(period);
-//		Double curhzdf = null ;
-//		try {curhzdf = curhighzdfrecord.getValue().doubleValue();
-//		} catch (Exception e) {return null;}
-//		
-//		return curhzdf;
-//	}
-//	/*
-//	 * 
-//	 */
-//	public Double getSpecificTimeLowestZhangDieFu (LocalDate requireddate)
-//	{
-//		RegularTimePeriod period = super.getJFreeChartFormateTimePeriod(requireddate);
-//		if(period == null)
-//			return null;
-//		TimeSeriesDataItem curlowzdfrecord = periodlowestzhangdiefu.getDataItem(period);
-//		Double curlzdf = null ;
-//		try { curlzdf = curlowzdfrecord.getValue().doubleValue();
-//		} catch (Exception e) {return null;}
-//		
-//		return curlzdf;
-//	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData#getChenJiaoErMaxWeekOfSuperBanKuai(java.time.LocalDate, int)
@@ -481,46 +368,6 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 						 font.attr("color", StockNodesXPeriodData.OuputColorControl[i]);
 					 } 
 				 }
-			
-//			Double liutongshizhi = null; String liutongshizhidanwei = null;
-//			liutongshizhi = this.getSpecificTimeLiuTongShiZhi(requireddate, 0);
-//			if(liutongshizhi != null) {
-//					liutongshizhidanwei = FormatDoubleToShort.getNumberChineseDanWei(liutongshizhi);
-//					liutongshizhi = FormatDoubleToShort.formateDoubleToShort( liutongshizhi);
-//					
-//					try {
-//			    		DecimalFormat decimalformate = new DecimalFormat("#0.000"); //",###";
-//			        	NumberFormat percentFormat = NumberFormat.getPercentInstance(Locale.CHINA);
-//			        	percentFormat.setMinimumFractionDigits(4);
-//						org.jsoup.nodes.Element li5 =  dl.get(0).appendElement("li");
-//						li5.appendText( "流通周平均市值" + decimalformate.format(liutongshizhi) + liutongshizhidanwei );
-//					} catch (java.lang.IllegalArgumentException e)  {
-//					} catch (java.lang.IndexOutOfBoundsException e) { e.printStackTrace();}
-//			}
-//	    	
-//				 
-//			Double hsl = null ;
-//			hsl = this.getSpecificTimeHuanShouLv(requireddate, 0);	 
-//			try {
-//					DecimalFormat decimalformate2 = new DecimalFormat("%.3f");
-//					if(hsl != null) {
-//						org.jsoup.nodes.Element li4 = dl.get(0).appendElement("li");
-//						li4.appendText( "换手率" + String.format("%.3f", hsl) );
-//					}
-//				} catch (java.lang.IllegalArgumentException e ) {
-//				} catch (java.lang.NullPointerException ex) {}
-//			
-//			Double hslf = null ;
-//			hslf = this.getSpecificTimeHuanShouLvFree(requireddate, 0);	 
-//			try {
-//					DecimalFormat decimalformate2 = new DecimalFormat("%.3f");
-//					if(hsl != null) {
-//						org.jsoup.nodes.Element li4 = dl.get(0).appendElement("li");
-//						li4.appendText( "自由流通换手率" + String.format("%.3f", hslf) );
-//					}
-//				} catch (java.lang.IllegalArgumentException e ) {
-//				} catch (java.lang.NullPointerException ex) {}
-			
 			return doc.toString();
 		}
 		@Override
@@ -528,15 +375,5 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 			// TODO Auto-generated method stub
 			return null;
 		}
-		@Override
-		public Double getSpecificTimeHighestZhangDieFu(LocalDate requireddate) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-		@Override
-		public Double getSpecificTimeLowestZhangDieFu(LocalDate requireddate) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-	
+
 }

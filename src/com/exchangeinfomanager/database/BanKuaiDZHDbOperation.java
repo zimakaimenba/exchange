@@ -69,7 +69,6 @@ import com.sun.rowset.CachedRowSetImpl;
 
 public class BanKuaiDZHDbOperation extends BanKuaiDbOperation
 {
-//	private ConnectDZHDataBase dzhconnectdb;
 	private ConnectDataBase tdxconnectdb;
 	private SetupSystemConfiguration sysconfig;
 

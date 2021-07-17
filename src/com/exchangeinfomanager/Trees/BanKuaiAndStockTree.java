@@ -389,9 +389,6 @@ public class BanKuaiAndStockTree extends JTree
 		TreePath bkpath = null ;
 		
     	BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.getModel().getRoot();
-//    	if(nodecode.equals("000000"))
-//    		return treeroot;
-    	
 	    @SuppressWarnings("unchecked")
 		Enumeration<TreeNode> e = treeroot.depthFirstEnumeration();
 	    while (e.hasMoreElements() ) {
@@ -408,6 +405,25 @@ public class BanKuaiAndStockTree extends JTree
 			
 		} else
 			return null;
+	}
+	public List<BkChanYeLianTreeNode> getSpecificNodeByHypyOrCodeList (String nodecode,int requirenodetype) //有时候板块和个股代码相同,所以要加上type
+	{
+		List<BkChanYeLianTreeNode> nodelist = new ArrayList<> ();
+		
+		TreePath bkpath = null ;
+    	BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)this.getModel().getRoot();
+	    @SuppressWarnings("unchecked")
+		Enumeration<TreeNode> e = treeroot.depthFirstEnumeration();
+	    while (e.hasMoreElements() ) {
+	    	BkChanYeLianTreeNode node = (BkChanYeLianTreeNode) e.nextElement();
+	    	Boolean found = node.checktHanYuPingYin(nodecode);
+	        if (found && node.getType() == requirenodetype ) {
+	             bkpath = new TreePath(node.getPath());
+	             nodelist.add((BkChanYeLianTreeNode) bkpath.getLastPathComponent());
+	        }
+	    }
+	    
+		return nodelist;
 	}
 	public  Boolean searchAndLocateNodeInTree(BkChanYeLianTreeNode node) 
 	{
