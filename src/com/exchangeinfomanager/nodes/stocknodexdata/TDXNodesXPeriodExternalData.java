@@ -59,8 +59,6 @@ import net.sf.javaml.tools.InstanceTools;
  */
 public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData 
 {
-	private Logger logger = Logger.getLogger(TDXNodesXPeriodExternalData.class);
-	
 	public TDXNodesXPeriodExternalData (String nodecode,String nodeperiodtype1)
 	{
 		this.nodecode = nodecode;
@@ -74,6 +72,8 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 		
 		nodeexchangedaysnumber = new TimeSeries(nodeperiodtype);
 	}
+	
+	private Logger logger = Logger.getLogger(TDXNodesXPeriodExternalData.class);
 	
 	private String nodecode;
 	private String nodeperiodtype;
@@ -96,8 +96,6 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 	private TimeSeries nodedpcjezbgr;
 	private TimeSeries nodedpcjlzbgr;
 	
-//	private LocalDate lastdayofbxfx; //为不完整周分析准备的。如果为空说明是完整周
-	
 	public void addNewXPeriodData (NodeGivenPeriodDataItem kdata)
 	{
 		if(kdata.getNodeToDpChenJiaoErZhanbi() != null ) {
@@ -108,7 +106,7 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 				nodeamozhanbi.add(kdata.getJFreeChartPeriod(this.nodeperiodtype),kdata.getNodeToDpChenJiaoErZhanbi(),false);
 				nodevolzhanbi.add(kdata.getJFreeChartPeriod(this.nodeperiodtype),kdata.getNodeToDpChenJiaoLiangZhanbi(),false);
 			} catch (org.jfree.data.general.SeriesException e) {
-				System.out.println(getNodeCode() + getNodeperiodtype() 
+				logger.info(getNodeCode() + getNodeperiodtype() 
 				+ kdata.getJFreeChartPeriod(getNodeperiodtype()).toString() 
 				+ kdata.getJFreeChartPeriod(getNodeperiodtype()).getStart().toString() 
 				+ "nodeamozhanbi 数据已经存在，重复添加！"  );
@@ -118,7 +116,7 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 				if(kdata.getExchangeDaysNumber() != null && kdata.getExchangeDaysNumber() != 5) //
 					nodeexchangedaysnumber.add(kdata.getJFreeChartPeriod(this.nodeperiodtype),kdata.getExchangeDaysNumber(),false);
 			} catch (org.jfree.data.general.SeriesException e) {
-				System.out.println(getNodeCode() + getNodeperiodtype() 
+				logger.info(getNodeCode() + getNodeperiodtype() 
 				+ kdata.getJFreeChartPeriod(getNodeperiodtype()).toString() 
 				+ kdata.getJFreeChartPeriod(getNodeperiodtype()).getStart().toString()
 				+ "nodeexchangedaysnumber 数据已经存在，重复添加！"  );
@@ -137,7 +135,7 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 					nodedietingnum.add(kdata.getJFreeChartPeriod(this.nodeperiodtype), kdata.getDieTingNumber() );
 				
 			} catch (org.jfree.data.general.SeriesException e) {
-				System.out.println(getNodeCode() + getNodeperiodtype() 
+				logger.info(getNodeCode() + getNodeperiodtype() 
 				+ kdata.getJFreeChartPeriod(getNodeperiodtype()).toString() 
 				+ kdata.getJFreeChartPeriod(getNodeperiodtype()).getStart().toString()
 				+ " nodezhangtingnum 数据已经存在，重复添加！"  ); 
@@ -154,7 +152,7 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 			if( kdata.getDaPanChenJiaoErZhanBiGrowingRate() != null && kdata.getDaPanChenJiaoErZhanBiGrowingRate() != 0)
 				nodedpcjezbgr.add(kdata.getJFreeChartPeriod(this.getNodeperiodtype()), kdata.getDaPanChenJiaoErZhanBiGrowingRate(),false);
 		} catch (org.jfree.data.general.SeriesException e) {
-			System.out.println(getNodeCode() + getNodeperiodtype() 
+			logger.info(getNodeCode() + getNodeperiodtype() 
 			+ kdata.getJFreeChartPeriod(getNodeperiodtype()).toString() 
 			+ kdata.getJFreeChartPeriod(getNodeperiodtype()).getStart().toString()
 			+ "nodedpcjezbgr 数据已经存在，重复添加！"  ); 
@@ -164,7 +162,7 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 			if( kdata.getDaPanChenJiaoLiangZhanBiGrowingRate() != null && kdata.getDaPanChenJiaoLiangZhanBiGrowingRate() != 0.0)
 				nodedpcjlzbgr.add(kdata.getJFreeChartPeriod(this.getNodeperiodtype()), kdata.getDaPanChenJiaoLiangZhanBiGrowingRate(),false);
 		} catch (org.jfree.data.general.SeriesException e) {
-			System.out.println(getNodeCode() + getNodeperiodtype() 
+			logger.info(getNodeCode() + getNodeperiodtype() 
 			+ kdata.getJFreeChartPeriod(getNodeperiodtype()).toString() 
 			+ kdata.getJFreeChartPeriod(getNodeperiodtype()).getStart().toString()
 			+ "nodedpcjlzbgr 数据已经存在，重复添加！"  );
@@ -173,6 +171,32 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 //		nodedpcjezbgr.setNotify(true);
 //		nodedpcjlzbgr.setNotify(true);
 	}
+	 /*
+	  * 
+	  */
+	 public void removeNodeDataFromSpecificDate (LocalDate requireddate )
+	 {
+		 int itemcount = this.nodeamozhanbi.getItemCount();
+		 RegularTimePeriod period = this.getJFreeChartFormateTimePeriod(requireddate);
+		 if(period == null) return;
+		 
+		 Integer curindex = this.nodeamozhanbi.getIndex(period);
+		 try {
+				if(curindex >= 0 ) {
+					nodeamozhanbi.delete(curindex, itemcount-1);
+					nodevolzhanbi.delete(curindex, itemcount-1);
+				}
+		} catch (java.lang.IndexOutOfBoundsException e) {	e.printStackTrace();	}
+		 
+		 itemcount = this.nodeexchangedaysnumber.getItemCount(); 
+		 curindex =  this.nodeexchangedaysnumber.getIndex(period);
+		 try {
+				if(curindex >= 0 ) {
+					nodeexchangedaysnumber.delete(curindex, itemcount-1);
+				}
+		} catch (java.lang.IndexOutOfBoundsException e) {	e.printStackTrace();	}
+		  
+	 }
 	/*
 	 * 
 	 */
@@ -219,6 +243,9 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 		
 		return null;
 	}
+	/*
+	 * 
+	 */
 	public void setShangShiRiQi (LocalDate requireddate)
 	{
 		this.firstdayinhistory = requireddate;
@@ -940,33 +967,6 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 		
 			return value;
 		}
-		 /*
-		  * 
-		  */
-		 public void removeNodeDataFromSpecificDate (LocalDate requireddate )
-		 {
-			 int itemcount = this.nodeamozhanbi.getItemCount();
-			 RegularTimePeriod period = this.getJFreeChartFormateTimePeriod(requireddate);
-			 if(period == null) return;
-			 
-			 Integer curindex = this.nodeamozhanbi.getIndex(period);
-			 try {
-					if(curindex >= 0 ) {
-						nodeamozhanbi.delete(curindex, itemcount-1);
-						nodevolzhanbi.delete(curindex, itemcount-1);
-					}
-			} catch (java.lang.IndexOutOfBoundsException e) {	e.printStackTrace();	}
-			 
-			 itemcount = this.nodeexchangedaysnumber.getItemCount(); 
-			 curindex =  this.nodeexchangedaysnumber.getIndex(period);
-			 try {
-					if(curindex >= 0 ) {
-						nodeexchangedaysnumber.delete(curindex, itemcount-1);
-					}
-			} catch (java.lang.IndexOutOfBoundsException e) {	e.printStackTrace();	}
-			  
-		 }
-		 
 		 /*
 			 * 
 			 */

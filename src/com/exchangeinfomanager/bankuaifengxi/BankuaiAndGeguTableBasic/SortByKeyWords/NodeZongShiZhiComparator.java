@@ -11,19 +11,18 @@ import com.exchangeinfomanager.nodes.stocknodexdata.StockNodesXPeriodData;
 public class NodeZongShiZhiComparator implements Comparator<BkChanYeLianTreeNode> {
 	private String period;
 	private LocalDate compareDate;
-	private int difference;
-	public NodeZongShiZhiComparator (LocalDate compareDate, int difference, String period )
+	
+	public NodeZongShiZhiComparator (LocalDate compareDate, String period )
 	{
 		this.period = period;
 		this.compareDate = compareDate;
-		this.difference = difference;
 	}
     public int compare(BkChanYeLianTreeNode node1, BkChanYeLianTreeNode node2) {
     	Stock stock1 = ( (StockOfBanKuai)node1).getStock();
     	Stock stock2 = ( (StockOfBanKuai)node2).getStock();
     	
-        Double cje1 = ((StockNodesXPeriodData)stock1.getNodeXPeroidData( period)).getSpecificTimeZongShiZhi(compareDate, difference) ;
-        Double cje2 = ((StockNodesXPeriodData)stock2.getNodeXPeroidData( period)).getSpecificTimeZongShiZhi(compareDate, difference);
+        Double cje1 = ((StockNodesXPeriodData)stock1.getNodeXPeroidData( period)).getSpecificTimeZongShiZhi(compareDate) ;
+        Double cje2 = ((StockNodesXPeriodData)stock2.getNodeXPeroidData( period)).getSpecificTimeZongShiZhi(compareDate);
         
         return cje2.compareTo(cje1);
     }

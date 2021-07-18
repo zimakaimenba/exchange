@@ -135,13 +135,13 @@ public abstract class BanKuaiGeGuBasicTableModel extends BandKuaiAndGeGuTableBas
 	 */
 	public void sortTableByLiuTongShiZhi ()
 	{
-		try{ 	Collections.sort(entryList, new NodeLiuTongShiZhiComparator(showwknum,0,super.curperiod) );
+		try{ 	Collections.sort(entryList, new NodeLiuTongShiZhiComparator(showwknum,super.curperiod) );
 				this.fireTableDataChanged();
 		} catch (java.lang.NullPointerException e) {e.printStackTrace();}
 	}
 	public void sortTableByZongShiZhi ()  
 	{
-		try{ 	Collections.sort(entryList, new NodeZongShiZhiComparator(showwknum,0,super.curperiod) );
+		try{ 	Collections.sort(entryList, new NodeZongShiZhiComparator(showwknum,super.curperiod) );
 				this.fireTableDataChanged();
 		} catch (java.lang.NullPointerException e) {e.printStackTrace();}
 	}

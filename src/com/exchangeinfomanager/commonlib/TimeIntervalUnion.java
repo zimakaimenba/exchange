@@ -1,10 +1,13 @@
 package com.exchangeinfomanager.commonlib;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTime.Property;
 import org.joda.time.Interval;
 
 public class TimeIntervalUnion {
@@ -50,12 +53,24 @@ public class TimeIntervalUnion {
 			
 			Interval resultintervalpart1 = null ;
 			if(requiredstartday.isBefore(nodestart)) {
-				resultintervalpart1 = new Interval(requiredstartdt,overlapstart.minusDays(1));
+				DateTime overlapdate = overlapstart.minusDays(1); //如果是周末，保证到周五
+				Property dayofwk = overlapdate.dayOfWeek();
+				int dayofwknumber = dayofwk.get();
+				if(dayofwknumber ==6 ) overlapdate = overlapdate.minusDays(1);
+				else if(dayofwknumber ==7) overlapdate = overlapdate.minusDays(2);
+					 
+				resultintervalpart1 = new Interval(requiredstartdt,overlapdate);
 			} 
 			
 			Interval resultintervalpart2 = null;
 			if (requiredendday.isAfter(nodeend)) {
-				resultintervalpart2 = new Interval(overlapend.plusDays(1),requiredenddt);
+				DateTime overlapdate = overlapend.plusDays(1); //如果是周末，保证到周五
+				Property dayofwk = overlapdate.dayOfWeek();
+				int dayofwknumber = dayofwk.get();
+				if(dayofwknumber ==6 )	overlapdate = overlapdate.plusDays(2);
+				else if(dayofwknumber ==7)	overlapdate = overlapdate.plusDays(1);
+				
+				resultintervalpart2 = new Interval(overlapdate ,requiredenddt  );
 			}
 			if(resultintervalpart1 != null)
 				result.add(resultintervalpart1);

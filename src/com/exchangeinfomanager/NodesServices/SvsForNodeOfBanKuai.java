@@ -136,25 +136,6 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 //		checkBanKuaiDataCompletion ((BanKuai) bankuai);
 		return bankuai;
 	}
-	private void checkBanKuaiDataCompletion (BanKuai bk)
-	{
-		NodeXPeriodData nodexdatawk = bk.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
-		LocalDate amostart = nodexdatawk.getAmoRecordsStartDate();
-		LocalDate amoend = nodexdatawk.getAmoRecordsEndDate();
-		LocalDate tmpdate = amostart.plus(0,ChronoUnit.WEEKS).with(DayOfWeek.FRIDAY);
-		TimeSeries bkamo = nodexdatawk.getAMOData();
-		int bkamoitemcount = bkamo.getItemCount();
-		for(int i=0;i<bkamoitemcount;i++) {
-			TimeSeriesDataItem iamoitem = bkamo.getDataItem(i);
-			RegularTimePeriod iamoitemperiod = iamoitem.getPeriod();
-			Date iamoitemperiodend = iamoitemperiod.getEnd();
-			Date iamoitemperiodstart = iamoitemperiod.getStart();
-			LocalDate iamoitemperiodld = iamoitemperiod.getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().with(DayOfWeek.FRIDAY);
-			Number itemvalue = iamoitem.getValue();
-			if(itemvalue.doubleValue() == 0.0 )
-				System.out.println("!!!Data abnormal!" + tmpdate + ":CompareTo:" + iamoitemperiodld + ", \r\n" + i + "");
-		}
-	}
 
 	@Override
 	public BkChanYeLianTreeNode getNodeData(String bkcode, LocalDate requiredstartday, LocalDate requiredendday,

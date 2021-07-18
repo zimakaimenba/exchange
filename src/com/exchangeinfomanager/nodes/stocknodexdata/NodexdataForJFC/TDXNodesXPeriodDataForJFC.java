@@ -83,6 +83,32 @@ import com.udojava.evalex.Expression;
 		this.periodhighestzhangdiefu = new TimeSeries(nodeperiodtype);
 		this.periodlowestzhangdiefu = new TimeSeries(nodeperiodtype);
 	}
+	
+	private Logger logger = Logger.getLogger(TDXNodesXPeriodDataForJFC.class);
+
+	protected OHLCSeries nodeohlc; 
+	protected TimeSeries nodeamo; 
+	protected TimeSeries nodevol; 
+
+	//均线
+	protected TimeSeries nodeohlcma5;
+	protected TimeSeries nodeohlcma10;
+	protected TimeSeries nodeohlcma20;
+	protected TimeSeries nodeohlcma30;
+	protected TimeSeries nodeohlcma60;
+	protected TimeSeries nodeohlcma120;
+	protected TimeSeries nodeohlcma250;
+	
+	protected TimeSeries nodeamoma5;
+	protected TimeSeries nodeamoma10;
+	protected TimeSeries nodeamoma20;
+	protected TimeSeries nodeamoma30;
+	protected TimeSeries nodeamoma60;
+	protected TimeSeries nodeamoma120;
+	protected TimeSeries nodeamoma250;
+	
+	private  TimeSeries periodhighestzhangdiefu; //最高涨幅
+	private  TimeSeries periodlowestzhangdiefu; //最高涨幅
 	/*
 	 * 
 	 */
@@ -202,40 +228,16 @@ import com.udojava.evalex.Expression;
 				}
 		} catch (java.lang.IndexOutOfBoundsException e) {	e.printStackTrace();	}
 	 }
-	
-	private Logger logger = Logger.getLogger(TDXNodesXPeriodDataForJFC.class);
-
-	protected OHLCSeries nodeohlc; 
-	protected TimeSeries nodeamo; 
-	protected TimeSeries nodevol; 
-
-	//均线
-	protected TimeSeries nodeohlcma5;
-	protected TimeSeries nodeohlcma10;
-	protected TimeSeries nodeohlcma20;
-	protected TimeSeries nodeohlcma30;
-	protected TimeSeries nodeohlcma60;
-	protected TimeSeries nodeohlcma120;
-	protected TimeSeries nodeohlcma250;
-	
-	protected TimeSeries nodeamoma5;
-	protected TimeSeries nodeamoma10;
-	protected TimeSeries nodeamoma20;
-	protected TimeSeries nodeamoma30;
-	protected TimeSeries nodeamoma60;
-	protected TimeSeries nodeamoma120;
-	protected TimeSeries nodeamoma250;
-	
-	private  TimeSeries periodhighestzhangdiefu; //最高涨幅
-	private  TimeSeries periodlowestzhangdiefu; //最高涨幅
-	
+	/*
+	 * 
+	 */
 	public void addNewXPeriodData (NodeGivenPeriodDataItem kdata)
 	{
 		try {
 			nodeohlc.setNotify(false);
 			nodeohlc.add( (NodeGivenPeriodDataItemForJFC)kdata);
 		} catch (org.jfree.data.general.SeriesException e) {
-			System.out.println(super.getNodeCode() + super.getNodeperiodtype() 
+			logger.info(super.getNodeCode() + super.getNodeperiodtype() 
 				+ kdata.getJFreeChartPeriod(super.getNodeperiodtype()).toString() 
 				+ kdata.getJFreeChartPeriod(super.getNodeperiodtype()).getStart().toString() 
 				+ "nodeohlc 数据已经存在，重复添加！"  );
@@ -248,7 +250,7 @@ import com.udojava.evalex.Expression;
 			nodeamo.add(kdata.getJFreeChartPeriod( super.getNodeperiodtype()  ),kdata.getMyOwnChengJiaoEr(),false);
 			nodevol.add(kdata.getJFreeChartPeriod( super.getNodeperiodtype() ), kdata.getMyOwnChengJiaoLiang(),false);
 		} catch (org.jfree.data.general.SeriesException e) {
-			System.out.println(super.getNodeCode() + super.getNodeperiodtype() 
+			logger.info(super.getNodeCode() + super.getNodeperiodtype() 
 			+ kdata.getJFreeChartPeriod(super.getNodeperiodtype()).toString() 
 			+ kdata.getJFreeChartPeriod(super.getNodeperiodtype()).getStart().toString() 
 			+ "nodeamo 数据已经存在，重复添加！"  );
@@ -258,7 +260,7 @@ import com.udojava.evalex.Expression;
 			if( kdata.getPeriodHighestZhangDieFu() != null && kdata.getPeriodHighestZhangDieFu() != 0)
 				periodhighestzhangdiefu.add(kdata.getJFreeChartPeriod(super.getNodeperiodtype()),kdata.getPeriodHighestZhangDieFu(),false);
 		} catch (org.jfree.data.general.SeriesException e) {
-			System.out.println(super.getNodeCode() + super.getNodeperiodtype() 
+			logger.info(super.getNodeCode() + super.getNodeperiodtype() 
 			+ kdata.getJFreeChartPeriod(super.getNodeperiodtype()).toString() 
 			+ kdata.getJFreeChartPeriod(super.getNodeperiodtype()).getStart().toString() 
 			+ "periodhighestzhangdiefu 数据已经存在，重复添加！"  );
@@ -268,7 +270,7 @@ import com.udojava.evalex.Expression;
 			if( kdata.getPeriodLowestZhangDieFu() != null && kdata.getPeriodLowestZhangDieFu() != 0)
 				periodlowestzhangdiefu.add(kdata.getJFreeChartPeriod(super.getNodeperiodtype()), kdata.getPeriodLowestZhangDieFu(),false);
 		} catch (org.jfree.data.general.SeriesException e) {
-			System.out.println(super.getNodeCode() + super.getNodeperiodtype() +  "  "
+			logger.info(super.getNodeCode() + super.getNodeperiodtype() +  "  "
 			+ kdata.getJFreeChartPeriod(super.getNodeperiodtype()).toString() 
 			+ kdata.getJFreeChartPeriod(super.getNodeperiodtype()).getStart().toString() 
 			+ "periodlowestzhangdiefu 数据已经存在，重复添加！"  );
@@ -282,7 +284,9 @@ import com.udojava.evalex.Expression;
 //		periodlowestzhangdiefu.setNotify(true);
 //		nodeohlc.setNotify(true);
 	}
-	
+	/*
+	 * 
+	 */
 	public LocalDate getAmoRecordsStartDate ()
 	{
 		if(super.nodeamozhanbi.getItemCount() == 0)	return null;
@@ -302,6 +306,9 @@ import com.udojava.evalex.Expression;
 
 		return null;
 	}
+	/*
+	 * 
+	 */
 	public LocalDate getAmoRecordsEndDate ()
 	{
 		if(super.nodeamozhanbi.getItemCount() == 0)	return null;
@@ -323,6 +330,9 @@ import com.udojava.evalex.Expression;
 		
 		return null;
 	}
+	/*
+	 * 
+	 */
 	public void resetAllData ()
 	{
 		super.resetAllData();
@@ -2017,7 +2027,7 @@ import com.udojava.evalex.Expression;
 				Double curzhangfu = this.getSpecificTimeHighestZhangDieFu(requireddate);
 				if(curzhangfu == null  ){
 					try{	periodhighestzhangdiefu.add(recordwk, zhangfu, false );
-					} catch(Exception e) { System.out.print(super.getNodeCode() + ":periodhighestzhangdiefu" + recordwk + "/" + recordwk.getEnd() + "已经存在数据！\r\n");
+					} catch(Exception e) { logger.info(super.getNodeCode() + ":periodhighestzhangdiefu" + recordwk + "/" + recordwk.getEnd() + "已经存在数据！\r\n");
 						return;
 					}
 					return;
@@ -2027,14 +2037,12 @@ import com.udojava.evalex.Expression;
 					if( CommonUtility.round(curzhangfu,6).compareTo( CommonUtility.round(zhangfu,6) ) !=0) {
 						try{	this.periodhighestzhangdiefu.delete(recordwk);
 								periodhighestzhangdiefu.add(recordwk, zhangfu, false );
-						} catch(Exception e) {System.out.print(super.getNodeCode() + ":periodhighestzhangdiefu" + recordwk + "/" + recordwk.getEnd() + "已经存在数据！\r\n");
+						} catch(Exception e) {logger.info(super.getNodeCode() + ":periodhighestzhangdiefu" + recordwk + "/" + recordwk.getEnd() + "已经存在数据！\r\n");
 							return;
 						}
 						return;
 					}
-				} catch (java.lang.NullPointerException e) { 
-					e.printStackTrace();
-				}
+				} catch (java.lang.NullPointerException e) { e.printStackTrace(); }
 				
 			} catch (org.jfree.data.general.SeriesException e) {}
 		}
@@ -2051,7 +2059,7 @@ import com.udojava.evalex.Expression;
 				Double curzhangfu = this.getSpecificTimeLowestZhangDieFu(requireddate);
 				if(curzhangfu == null  ) {
 					try{	periodlowestzhangdiefu.add(recordwk, diefu, false );
-					} catch(Exception e) { System.out.print(super.getNodeCode() + ":periodlowestzhangdiefu" + recordwk + "/" + recordwk.getEnd() + "已经存在数据！\r\n");
+					} catch(Exception e) { logger.info(super.getNodeCode() + ":periodlowestzhangdiefu" + recordwk + "/" + recordwk.getEnd() + "已经存在数据！\r\n");
 						return;
 					}
 					return;
@@ -2061,7 +2069,7 @@ import com.udojava.evalex.Expression;
 					try{
 						this.periodlowestzhangdiefu.delete(recordwk);
 						periodlowestzhangdiefu.add(recordwk, diefu, false );
-					} catch(Exception e) {System.out.print(super.getNodeCode() + ":periodlowestzhangdiefu" + recordwk + "/" + recordwk.getEnd() + "已经存在数据！\r\n");
+					} catch(Exception e) { logger.info(super.getNodeCode() + ":periodlowestzhangdiefu" + recordwk + "/" + recordwk.getEnd() + "已经存在数据！\r\n");
 						return;
 					}
 					return;

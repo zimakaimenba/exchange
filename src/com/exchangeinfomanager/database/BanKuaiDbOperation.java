@@ -7898,7 +7898,7 @@ public class BanKuaiDbOperation
 				String searchtable = bk.getShuJuJiLuInfo().getGuPiaoBanKuaiDuiYingBiao();
 				if(searchtable == null) return;
 				String sqlquerystat = "DELETE FROM " + searchtable + " WHERE °å¿é´úÂë = '" + bk.getMyOwnCode() + "'";
-				connectdb.sqlQueryStatExecute(sqlquerystat);
+				connectdb.sqlDeleteStatExecute(sqlquerystat);
 			} catch(java.lang.NullPointerException e) {
 		    } catch(Exception e){e.printStackTrace();
 		    } finally {  }

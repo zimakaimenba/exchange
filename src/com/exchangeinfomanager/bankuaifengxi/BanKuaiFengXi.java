@@ -224,7 +224,6 @@ import javax.swing.JTable;
 public class BanKuaiFengXi extends JDialog 
 {
 	private static final long serialVersionUID = 1L;
-
 	/**
 	 * Create the dialog.
 	 * @param bkcyl2 
@@ -259,9 +258,7 @@ public class BanKuaiFengXi extends JDialog
 	private Boolean globecalwholeweek; //计算整周
 	private BanKuaiFengXiRemindXmlHandler bkfxremind;
 	private LocalDate lastselecteddate;
-
 	private StockInfoManager stockmanager;
-	
 	private BanKuaiAndGeGuMatchingConditions bkggmatchcondition;
 	private VoiceEngine readengine;
 	private NodeInfoToCsv nodeinfotocsv;
@@ -274,7 +271,6 @@ public class BanKuaiFengXi extends JDialog
 	private Set<BanKuaiGeGuBasicTable> tablebkggtableset;
 	private Set<BanKuaiandGeGuTableBasic> tablealltableset;
 	private Set<BanKuaiandGeGuTableBasic> tableallbktablesset;
-
 	/*
 	 * 
 	 */
@@ -1386,7 +1382,7 @@ public class BanKuaiFengXi extends JDialog
 		}	else  { 
 			lbllastselect.setText(lastselecteddate.toString());
 			unifiedOperationForDaPanSyncData (userselecteddate, globeperiod);
-    		if(tdxtblhasdata) 
+    		if(tdxtblhasdata || (!tdxtblhasdata &&  !dzhtblhasdata) ) 
     			gettBanKuaiZhanBiRangedByGrowthRateOfPeriod (dateChooser.getLocalDate(),globeperiod);
 			if(dzhtblhasdata) 
     			gettDZHBanKuaiZhanBiRangedByGrowthRateOfPeriod (dateChooser.getLocalDate(),globeperiod);
@@ -3304,9 +3300,16 @@ public class BanKuaiFengXi extends JDialog
 	 */
 	protected void displayNodeLargerPeriodData(TDXNodes node, LocalDate datekey, String guisource) 
 	{
-		if(!this.globecalwholeweek) { JOptionPane.showMessageDialog(null,"不是整周分析模式，不支持更大范围显示分析结果数据!","Warning",JOptionPane.WARNING_MESSAGE);
-			return;
+//		if(!this.globecalwholeweek) { JOptionPane.showMessageDialog(null,"不是整周分析模式，不支持更大范围显示分析结果数据!","Warning",JOptionPane.WARNING_MESSAGE);
+//			return;
+//		}
+		LocalDate isInNotCalWholeWeekModeData = null;
+		if(!this.globecalwholeweek) {
+			NodeXPeriodData nodexdatawk = ((TDXNodes)node).getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
+			NodeXPeriodData nodexdataday = ((TDXNodes)node).getNodeXPeroidData(NodeGivenPeriodDataItem.DAY);
+			isInNotCalWholeWeekModeData = nodexdatawk.isInNotCalWholeWeekMode ();
 		}
+		
 		//保证显示时间范围为当前日期前后有数据的36个月(3年)
 		LocalDate curselectdate = dateChooser.getLocalDate().with(DayOfWeek.FRIDAY);
 		long numberOfMonthBetweenCurrentSelectionWithNow = ChronoUnit.MONTHS.between(curselectdate, LocalDate.now() ) + 1;
@@ -3316,11 +3319,11 @@ public class BanKuaiFengXi extends JDialog
 		LocalDate requirestartd = curselectdate.minus(m,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY);
 		LocalDate bufferdatastartday  = requirestartd.minus(2 * 36,ChronoUnit.MONTHS).with(DayOfWeek.MONDAY); 
 		
-		long start=System.currentTimeMillis(); //获取结束时间
+//		long start=System.currentTimeMillis(); //获取结束时间
 //		System.out.println("......显示large PNL 数据准备开始" + LocalTime.now() + " \r\n");
 		//同步数据
 		ServicesForNode svsnode = node.getServicesForNode(true);
-		node = (TDXNodes) svsnode.getNodeData(node, bufferdatastartday, requireend, globeperiod, globecalwholeweek);
+		node = (TDXNodes) svsnode.getNodeData(node, bufferdatastartday, requireend, globeperiod, true);
 		svsnode.syncNodeData(node);
 		node.getServicesForNode(false);
 //		System.out.println("......显示large PNL 数据准备开始 NODE 数据准备结束" + LocalTime.now() + " \r\n");
@@ -3331,7 +3334,7 @@ public class BanKuaiFengXi extends JDialog
 			if(row != -1) {
 				int modelRow = tableBkZhanBi.convertRowIndexToModel(row);
 				bkcur = (BanKuai) ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getNode(modelRow);
-				bkcur = (BanKuai) bkcur.getServicesForNode(true).getNodeData(bkcur, bufferdatastartday, requireend, globeperiod, globecalwholeweek);
+				bkcur = (BanKuai) bkcur.getServicesForNode(true).getNodeData(bkcur, bufferdatastartday, requireend, globeperiod, true);
 				bkcur.getServicesForNode(true).syncNodeData(bkcur);
 				bkcur.getServicesForNode(false);
 //				System.out.println("......显示large PNL 数据准备开始 板块数据准备结束" + LocalTime.now() + " \r\n");
@@ -3340,8 +3343,8 @@ public class BanKuaiFengXi extends JDialog
 				
 		if(node.getType() != BkChanYeLianTreeNode.DAPAN) {
 			DaPan dapan = (DaPan) CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode("000000", BkChanYeLianTreeNode.DAPAN);
-			dapan.getServicesForNode(true).getNodeData(dapan, bufferdatastartday, requireend, this.globeperiod, this.globecalwholeweek);
-			dapan.getServicesForNode(true).getNodeKXian(dapan, bufferdatastartday, requireend,NodeGivenPeriodDataItem.DAY,this.globecalwholeweek);
+			dapan.getServicesForNode(true).getNodeData(dapan, bufferdatastartday, requireend, this.globeperiod, true);
+			dapan.getServicesForNode(true).getNodeKXian(dapan, bufferdatastartday, requireend,NodeGivenPeriodDataItem.DAY,true);
 			dapan.getServicesForNode(false);
 //			System.out.println("......显示large PNL 数据准备 DAPAN数据准备结束" + LocalTime.now() + " \r\n");
 		}
@@ -3377,9 +3380,15 @@ public class BanKuaiFengXi extends JDialog
 //				System.out.println(".......显示large ready to display GUI " + LocalTime.now() + "。.....导入耗费时间： "+(end-start)+"ms \r\n");
 				JOptionPane.showMessageDialog(null, largeinfo, node.getMyOwnCode()+node.getMyOwnName()+ "大周期分析结果", JOptionPane.OK_CANCEL_OPTION);
 //				System.out.println(".......显示large GUI显示结束" + LocalTime.now() + "。.....导入耗费时间： "+(end-start)+"ms \r\n");
-
 				largeinfo = null;
 				System.gc();
+				
+				if(!this.globecalwholeweek) { //如果是非计算完整周模式，显示完要恢复到原来的状态，因为现在NODE的状态是保存的都是完整周的数据。
+					node = (TDXNodes) node.getServicesForNode(true).getNodeData(node, CommonUtility.getSettingRangeDate(curselectdate, "basic")
+							, isInNotCalWholeWeekModeData, NodeGivenPeriodDataItem.WEEK, false);
+					svsnode.syncNodeData(node);
+					node.getServicesForNode(false);
+				}
 	}
 	/*
 	 * 跑马灯
@@ -3551,6 +3560,8 @@ public class BanKuaiFengXi extends JDialog
 	private JMenuItem menuItemSaveCurWkDataToData;
 	private BanKuaiFengXiLineChartPnl pnlbkcjecjezbgr;
 	private JTabbedPane tabbedPanePie;
+
+	private JLabel holdbackgrounddownload;
 
 	private void initializeGuiOf2560Resolution ()
 	{
@@ -4002,7 +4013,7 @@ public class BanKuaiFengXi extends JDialog
 			pnlsetexportcond.setStockInfoManager(this.stockmanager );
 			buttonPane.add(pnlsetexportcond);
 			//
-			JLabel holdbackgrounddownload = JLabelFactory.createButton("",25, 25);
+			holdbackgrounddownload = JLabelFactory.createButton("",25, 25);
 			holdbackgrounddownload.setHorizontalAlignment(SwingConstants.LEFT);
 			holdbackgrounddownload.setToolTipText("后台下载数据暂停,点击重启下载。");
 			holdbackgrounddownload.setIcon(new ImageIcon(BanKuaiFengXi.class.getResource("/images/trafficlight-in-green.png")));
@@ -4013,13 +4024,11 @@ public class BanKuaiFengXi extends JDialog
 					if(SwingUtilities.isLeftMouseButton(arg0) ) {
 						if(holdbackgrounddownload.getToolTipText().contains("重启")) {
 							ImageIcon icon = stockmanager.setGetNodeDataFromDbWhenSystemIdleThreadStatus(false);
-//							holdbackgrounddownload.setText("后台下载数据恢复");
 							holdbackgrounddownload.setToolTipText("后台下载数据,点击暂停下载。");
 							holdbackgrounddownload.setIcon(icon);
 						} else {
 							if(globecalwholeweek) { //非完整周不缓存数据，否则可能出错
 								ImageIcon icon = stockmanager.setGetNodeDataFromDbWhenSystemIdleThreadStatus(true);
-//								holdbackgrounddownload.setText("后台下载数据暂停");
 								holdbackgrounddownload.setToolTipText("后台下载数据暂停,点击重启下载。");
 								holdbackgrounddownload.setIcon(icon);
 							} else	JOptionPane.showMessageDialog(null,"系统处于计算非完整周状态， 为避免错误，无法缓存数据!","Warning",JOptionPane.WARNING_MESSAGE);
