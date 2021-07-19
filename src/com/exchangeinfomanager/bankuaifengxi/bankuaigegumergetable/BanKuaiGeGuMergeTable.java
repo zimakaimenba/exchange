@@ -5,20 +5,30 @@ import java.awt.event.MouseEvent;
 import javax.swing.JTable;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 
 import com.exchangeinfomanager.bankuaifengxi.BankuaiAndGeguTableBasic.BanKuaiandGeGuTableBasic;
 import com.exchangeinfomanager.bankuaifengxi.BankuaiAndGeguTableBasic.BandKuaiAndGeGuTableBasicModel;
 
-public class BanKuaiGeGuMergeTable extends JTable
+import net.coderazzi.filters.gui.AutoChoices;
+import net.coderazzi.filters.gui.IFilterEditor;
+import net.coderazzi.filters.gui.IFilterHeaderObserver;
+import net.coderazzi.filters.gui.TableFilterHeader;
+
+public class BanKuaiGeGuMergeTable extends JTable implements   IFilterHeaderObserver
 {
 	private BanKuaiandGeGuTableBasic tblbk;
 	private BanKuaiandGeGuTableBasic tblgegu;
 	private BanKuaiGeGuMergeTableRenderer renderer;
+	private TableFilterHeader filterHeader;
 
 	public BanKuaiGeGuMergeTable (BanKuaiandGeGuTableBasic tblbk, String bkmergekeywds, BanKuaiandGeGuTableBasic tblgg, String ggmergekeywds)
 	{
 		this.tblbk = tblbk;
 		this.tblgegu = tblgg;
+		
+		filterHeader = new TableFilterHeader(this, AutoChoices.ENABLED); //https://coderazzi.net/tablefilter/index.html#    //https://stackoverflow.com/questions/16277700/i-want-to-obtain-auto-filtering-in-jtable-as-in-ms-excel
+		filterHeader.addHeaderObserver(this);
 		
 		BanKuaiGeGuMergeTableModel mergemodel = new BanKuaiGeGuMergeTableModel ( (BandKuaiAndGeGuTableBasicModel)this.tblbk.getModel(), bkmergekeywds ,
 															(BandKuaiAndGeGuTableBasicModel)this.tblgegu.getModel(), ggmergekeywds
@@ -96,6 +106,21 @@ public class BanKuaiGeGuMergeTable extends JTable
 //				this.getColumnModel().getColumn(i).setWidth(columnwidth);
 			} 
 		}
+	}
+	@Override
+	public void tableFilterEditorCreated(TableFilterHeader arg0, IFilterEditor arg1, TableColumn arg2) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void tableFilterEditorExcluded(TableFilterHeader arg0, IFilterEditor arg1, TableColumn arg2) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void tableFilterUpdated(TableFilterHeader arg0, IFilterEditor arg1, TableColumn arg2) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 //	 protected JTableHeader createDefaultTableHeader() 

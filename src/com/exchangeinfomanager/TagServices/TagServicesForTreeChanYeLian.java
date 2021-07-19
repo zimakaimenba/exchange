@@ -7,14 +7,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import com.exchangeinfomanager.Core.Nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.Core.Trees.CreateExchangeTree;
+import com.exchangeinfomanager.Core.Trees.TreeOfChanYeLian;
 import com.exchangeinfomanager.Tag.InsertedTag;
 import com.exchangeinfomanager.Tag.NodeInsertedTag;
 import com.exchangeinfomanager.Tag.Tag;
 import com.exchangeinfomanager.Tag.TagService;
-import com.exchangeinfomanager.Trees.CreateExchangeTree;
-import com.exchangeinfomanager.Trees.TreeOfChanYeLian;
 import com.exchangeinfomanager.database.CylTreeDbOperation;
-import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
 public class TagServicesForTreeChanYeLian implements TagService
 {

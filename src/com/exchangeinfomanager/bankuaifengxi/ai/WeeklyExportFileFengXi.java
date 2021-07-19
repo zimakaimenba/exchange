@@ -62,7 +62,7 @@ import org.jfree.data.time.TimeSeries;
 import org.jfree.ui.RectangleEdge;
 import org.jsoup.Jsoup;
 
-
+import com.exchangeinfomanager.A.MainGui.StockInfoManager;
 import com.exchangeinfomanager.StockCalendar.JStockCalendarDateChooser;
 import com.exchangeinfomanager.StockCalendar.StockCalendar;
 
@@ -88,7 +88,6 @@ import com.exchangeinfomanager.bankuaifengxi.bankuaiinfotable.BanKuaiInfoTableMo
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.commonlib.JLocalDataChooser.JLocalDateChooser;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
-import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.gui.subgui.PaoMaDeng2;
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.exchangeinfomanager.tongdaxinreport.TDXFormatedOpt;

@@ -12,7 +12,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import com.exchangeinfomanager.NodesServices.SvsForNodeOfFileNodes;
+import com.exchangeinfomanager.Core.Nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.Core.NodesDataServices.SvsForNodeOfFileNodes;
 import com.exchangeinfomanager.Tag.Tag;
 import com.exchangeinfomanager.Tag.TagService;
 import com.exchangeinfomanager.TagManagment.TagSearchMatrixPanelForAddNewsToNode.AddController;
@@ -20,7 +21,6 @@ import com.exchangeinfomanager.TagServices.TagCache;
 import com.exchangeinfomanager.TagServices.TagsServiceForNodes;
 import com.exchangeinfomanager.guifactory.JLabelFactory;
 import com.exchangeinfomanager.guifactory.JPanelFactory;
-import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
 public class TagSearchMatrixPanelForTagsBundleAdd extends TagSearchMatrixPanel 
 {

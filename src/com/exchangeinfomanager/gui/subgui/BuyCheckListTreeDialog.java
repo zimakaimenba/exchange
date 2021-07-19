@@ -22,10 +22,9 @@ import javax.swing.border.EmptyBorder;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.DocumentException;
 
+import com.exchangeinfomanager.A.MainGui.StockInfoManager;
 import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.database.ConnectDataBase;
-import com.exchangeinfomanager.gui.StockInfoManager;
-
 import com.exchangeinfomanager.systemconfigration.SystemConfigration;
 import com.google.common.base.Splitter;
 

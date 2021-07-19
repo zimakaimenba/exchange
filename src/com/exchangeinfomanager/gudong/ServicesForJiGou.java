@@ -3,7 +3,7 @@ package com.exchangeinfomanager.gudong;
 import java.time.LocalDate;
 import java.util.Collection;
 
-import com.exchangeinfomanager.nodes.Stock;
+import com.exchangeinfomanager.Core.Nodes.Stock;
 
 public interface ServicesForJiGou 
 {

@@ -19,10 +19,10 @@ import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.ui.TextAnchor;
 
+import com.exchangeinfomanager.Core.Nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.Core.Nodes.TDXNodes;
+import com.exchangeinfomanager.Core.Nodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.commonlib.CommonUtility;
-import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.nodes.TDXNodes;
-import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 
 public class  BanKuaiFengXiCategoryBarRenderer extends BarRenderer
 {

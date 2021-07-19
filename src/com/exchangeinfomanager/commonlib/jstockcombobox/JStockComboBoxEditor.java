@@ -6,7 +6,7 @@ import java.awt.event.ActionListener;
 import javax.swing.ComboBoxEditor;
 import javax.swing.JTextField;
 
-import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.Core.Nodes.BkChanYeLianTreeNode;
 
 public class JStockComboBoxEditor implements ComboBoxEditor 
 {

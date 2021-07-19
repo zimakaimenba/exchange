@@ -13,12 +13,11 @@ import javax.swing.JTextField;
 
 import org.apache.log4j.Logger;
 
-import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
-import com.exchangeinfomanager.Trees.CreateExchangeTree;
+import com.exchangeinfomanager.A.MainGui.StockInfoManager;
+import com.exchangeinfomanager.Core.Nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.Core.Trees.BanKuaiAndStockTree;
+import com.exchangeinfomanager.Core.Trees.CreateExchangeTree;
 import com.exchangeinfomanager.bankuaifengxi.ai.DaPanWeeklyFengXi;
-import com.exchangeinfomanager.gui.StockInfoManager;
-import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
-
 import com.github.cjwizard.APageFactory;
 import com.github.cjwizard.StackWizardSettings;
 import com.github.cjwizard.WizardContainer;

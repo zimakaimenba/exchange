@@ -2,9 +2,9 @@ package com.exchangeinfomanager.bankuaifengxi.bankuaigegumergetable;
 
 import javax.swing.table.DefaultTableModel;
 
+import com.exchangeinfomanager.Core.Nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.Core.Nodes.StockOfBanKuai;
 import com.exchangeinfomanager.bankuaifengxi.BankuaiAndGeguTableBasic.BandKuaiAndGeGuTableBasicModel;
-import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.nodes.StockOfBanKuai;
 
 public class BanKuaiGeGuMergeTableModel extends DefaultTableModel 
 {

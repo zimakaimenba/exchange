@@ -3,8 +3,8 @@ package com.exchangeinfomanager.News.ExternalNewsType;
 import java.time.LocalDate;
 import java.util.Collection;
 
-import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.nodes.TDXNodes;
+import com.exchangeinfomanager.Core.Nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.Core.Nodes.TDXNodes;
 import com.google.common.collect.Range;
 
 public class RuoShi extends ExternalNewsType 

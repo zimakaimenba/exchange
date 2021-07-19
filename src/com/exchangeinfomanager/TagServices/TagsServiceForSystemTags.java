@@ -5,7 +5,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+
+import com.exchangeinfomanager.Core.Nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.News.News;
 import com.exchangeinfomanager.Tag.InsertedTag;
 import com.exchangeinfomanager.Tag.Tag;

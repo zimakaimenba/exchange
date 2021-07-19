@@ -10,13 +10,12 @@ import javax.swing.Box;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-
+import com.exchangeinfomanager.Core.Nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.Core.NodesDataServices.SvsForNodeOfBanKuai;
+import com.exchangeinfomanager.Core.NodesDataServices.SvsForNodeOfStock;
 import com.exchangeinfomanager.News.News;
-import com.exchangeinfomanager.NodesServices.SvsForNodeOfBanKuai;
-import com.exchangeinfomanager.NodesServices.SvsForNodeOfStock;
 import com.exchangeinfomanager.guifactory.JLabelFactory;
 import com.exchangeinfomanager.guifactory.JPanelFactory;
-import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
 public class TagSearchMatrixPanelForWholeSearchTags extends TagSearchMatrixPanel 
 {

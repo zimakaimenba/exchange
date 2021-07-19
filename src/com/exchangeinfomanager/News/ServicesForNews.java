@@ -4,7 +4,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Collection;
 
-import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.Core.Nodes.BkChanYeLianTreeNode;
 
 public interface ServicesForNews 
 {

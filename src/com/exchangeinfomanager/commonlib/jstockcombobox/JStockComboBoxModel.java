@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 import javax.swing.DefaultComboBoxModel;
 
-import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.Core.Nodes.BkChanYeLianTreeNode;
 
 public class JStockComboBoxModel<BkChanYeLianTreeNode> extends DefaultComboBoxModel 
 {
@@ -36,7 +36,7 @@ public class JStockComboBoxModel<BkChanYeLianTreeNode> extends DefaultComboBoxMo
 	  }
 	  public void addElement (Object node)
 	  {
-		  int nodetype = ((com.exchangeinfomanager.nodes.BkChanYeLianTreeNode) node).getType();
+		  int nodetype = ((com.exchangeinfomanager.Core.Nodes.BkChanYeLianTreeNode) node).getType();
 		  if( this.onlyselectnodetype != -1 && nodetype != this.onlyselectnodetype   )
 			  return ;
 					  
@@ -50,7 +50,7 @@ public class JStockComboBoxModel<BkChanYeLianTreeNode> extends DefaultComboBoxMo
 //	      
 //		  return nodecode + nodename;
 		  
-		  com.exchangeinfomanager.nodes.BkChanYeLianTreeNode selected =  (com.exchangeinfomanager.nodes.BkChanYeLianTreeNode) (nodelist.get(index));
+		  com.exchangeinfomanager.Core.Nodes.BkChanYeLianTreeNode selected =  (com.exchangeinfomanager.Core.Nodes.BkChanYeLianTreeNode) (nodelist.get(index));
 		  return selected;
 	  }
 
@@ -65,10 +65,10 @@ public class JStockComboBoxModel<BkChanYeLianTreeNode> extends DefaultComboBoxMo
 	  public void setSelectedItem(Object anItem) 
 	  {
 		  for(BkChanYeLianTreeNode tmpnode : nodelist) {
-			  String tmpnodecode = ((com.exchangeinfomanager.nodes.BkChanYeLianTreeNode) tmpnode).getMyOwnCode()
+			  String tmpnodecode = ((com.exchangeinfomanager.Core.Nodes.BkChanYeLianTreeNode) tmpnode).getMyOwnCode()
 					  				;
 			  try {
-				  String itemcode = ((com.exchangeinfomanager.nodes.BkChanYeLianTreeNode) anItem).getMyOwnCode();
+				  String itemcode = ((com.exchangeinfomanager.Core.Nodes.BkChanYeLianTreeNode) anItem).getMyOwnCode();
 				  if(tmpnodecode.equals(itemcode)) {
 					  selection = tmpnode;
 					  break;
@@ -96,7 +96,7 @@ public class JStockComboBoxModel<BkChanYeLianTreeNode> extends DefaultComboBoxMo
 	{
 		int i=0;
 		for(BkChanYeLianTreeNode tmpnode : nodelist) {
-			  String nodefull = ((com.exchangeinfomanager.nodes.BkChanYeLianTreeNode) tmpnode).getMyOwnCode() ;
+			  String nodefull = ((com.exchangeinfomanager.Core.Nodes.BkChanYeLianTreeNode) tmpnode).getMyOwnCode() ;
 			  if(nodefull.equals( nodecode   )  ) {
 				  selection = tmpnode;
 				  this.setSelectedItem(selection);

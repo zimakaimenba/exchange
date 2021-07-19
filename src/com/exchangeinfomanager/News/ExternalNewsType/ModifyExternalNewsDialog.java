@@ -9,14 +9,14 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import com.exchangeinfomanager.Core.Nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.Core.NodesDataServices.SvsForNodeOfBanKuai;
+import com.exchangeinfomanager.Core.NodesDataServices.SvsForNodeOfDaPan;
+import com.exchangeinfomanager.Core.NodesDataServices.SvsForNodeOfStock;
+import com.exchangeinfomanager.Core.Trees.CreateExchangeTree;
 import com.exchangeinfomanager.News.ServicesForNews;
-import com.exchangeinfomanager.NodesServices.SvsForNodeOfBanKuai;
-import com.exchangeinfomanager.NodesServices.SvsForNodeOfDaPan;
-import com.exchangeinfomanager.NodesServices.SvsForNodeOfStock;
-import com.exchangeinfomanager.Trees.CreateExchangeTree;
 import com.exchangeinfomanager.guifactory.JLabelFactory;
 import com.exchangeinfomanager.guifactory.JPanelFactory;
-import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
 public class ModifyExternalNewsDialog extends ExternalNewsDialog<ExternalNewsType> 
 {

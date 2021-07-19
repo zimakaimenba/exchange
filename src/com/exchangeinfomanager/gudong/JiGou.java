@@ -2,7 +2,7 @@ package com.exchangeinfomanager.gudong;
 
 import java.util.List;
 
-import com.exchangeinfomanager.nodes.Stock;
+import com.exchangeinfomanager.Core.Nodes.Stock;
 
 public class JiGou 
 {

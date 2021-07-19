@@ -12,9 +12,9 @@ import javax.swing.plaf.basic.BasicComboBoxRenderer;
 
 import org.joda.time.Interval;
 
-import com.exchangeinfomanager.nodes.TDXNodes;
+import com.exchangeinfomanager.Core.Nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.Core.Nodes.TDXNodes;
 import com.google.common.collect.Range;
-import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
 public class JStockComboBoxNodeRenderer extends BasicComboBoxRenderer 
 {
@@ -29,7 +29,7 @@ public class JStockComboBoxNodeRenderer extends BasicComboBoxRenderer
 	{
 		 Component comp =  super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 		 
-		 if (value != null && (value instanceof com.exchangeinfomanager.nodes.BkChanYeLianTreeNode  ))   {
+		 if (value != null && (value instanceof com.exchangeinfomanager.Core.Nodes.BkChanYeLianTreeNode  ))   {
 			 comp.setBackground(Color.WHITE);
 			 
 			 JStockComboBoxModel model = (JStockComboBoxModel)list.getModel();

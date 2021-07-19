@@ -17,18 +17,13 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
 
-
-
+import com.exchangeinfomanager.Core.Nodes.BanKuai;
+import com.exchangeinfomanager.Core.Nodes.Stock;
+import com.exchangeinfomanager.Core.Nodes.StockOfBanKuai;
 import com.exchangeinfomanager.Tag.Tag;
 
 import com.exchangeinfomanager.bankuaifengxi.BankuaiAndGeguTableBasic.BanKuaiAndGeguTableBasicRenderer;
 import com.exchangeinfomanager.bankuaifengxi.BankuaiAndGeguTableBasic.BandKuaiAndGeGuTableBasicModel;
-
-import com.exchangeinfomanager.nodes.BanKuai;
-
-import com.exchangeinfomanager.nodes.Stock;
-import com.exchangeinfomanager.nodes.StockOfBanKuai;
-
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;

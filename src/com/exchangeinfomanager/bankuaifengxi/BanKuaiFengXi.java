@@ -42,6 +42,26 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.exchangeinfomanager.A.MainGui.StockInfoManager;
+import com.exchangeinfomanager.Core.Nodes.BanKuai;
+import com.exchangeinfomanager.Core.Nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.Core.Nodes.CylTreeNestedSetNode;
+import com.exchangeinfomanager.Core.Nodes.DaPan;
+import com.exchangeinfomanager.Core.Nodes.Stock;
+import com.exchangeinfomanager.Core.Nodes.StockOfBanKuai;
+import com.exchangeinfomanager.Core.Nodes.TDXNodes;
+import com.exchangeinfomanager.Core.NodesDataServices.ServicesForNode;
+import com.exchangeinfomanager.Core.NodesDataServices.ServicesForNodeBanKuai;
+import com.exchangeinfomanager.Core.NodesDataServices.SvsForNodeOfBanKuai;
+import com.exchangeinfomanager.Core.NodesDataServices.SvsForNodeOfDZHBanKuai;
+import com.exchangeinfomanager.Core.NodesDataServices.SvsForNodeOfStock;
+import com.exchangeinfomanager.Core.Nodexdata.NodeXPeriodData;
+import com.exchangeinfomanager.Core.Nodexdata.ohlcvaprimarydata.NodeGivenPeriodDataItem;
+import com.exchangeinfomanager.Core.Trees.BanKuaiAndStockTree;
+import com.exchangeinfomanager.Core.Trees.CreateExchangeTree;
+import com.exchangeinfomanager.Core.Trees.CylTreeUpdatedListener;
+import com.exchangeinfomanager.Core.Trees.TreeOfChanYeLian;
+import com.exchangeinfomanager.Core.exportimportrelated.NodesTreeRelated;
 import com.exchangeinfomanager.News.News;
 import com.exchangeinfomanager.News.NewsCache;
 import com.exchangeinfomanager.News.NewsLabelServices;
@@ -54,11 +74,6 @@ import com.exchangeinfomanager.News.ExternalNewsType.DuanQiGuanZhuServices;
 import com.exchangeinfomanager.News.ExternalNewsType.QiangShi;
 import com.exchangeinfomanager.News.ExternalNewsType.QiangShiServices;
 import com.exchangeinfomanager.News.ExternalNewsType.RuoShiServices;
-import com.exchangeinfomanager.NodesServices.ServicesForNode;
-import com.exchangeinfomanager.NodesServices.ServicesForNodeBanKuai;
-import com.exchangeinfomanager.NodesServices.SvsForNodeOfBanKuai;
-import com.exchangeinfomanager.NodesServices.SvsForNodeOfDZHBanKuai;
-import com.exchangeinfomanager.NodesServices.SvsForNodeOfStock;
 import com.exchangeinfomanager.ServicesOfDisplayNodeInfo.DisPlayNodeSuoShuBanKuaiListPanel;
 import com.exchangeinfomanager.ServicesOfDisplayNodeInfo.DisPlayNodeSuoShuBanKuaiListServices;
 import com.exchangeinfomanager.ServicesOfDisplayNodeInfo.DisplayNodeExchangeDataServices;
@@ -76,10 +91,6 @@ import com.exchangeinfomanager.TagLabel.LabelTag;
 import com.exchangeinfomanager.TagLabel.TagsPanel;
 import com.exchangeinfomanager.TagServices.CacheForInsertedTag;
 import com.exchangeinfomanager.TagServices.TagsServiceForNodes;
-import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
-import com.exchangeinfomanager.Trees.CreateExchangeTree;
-import com.exchangeinfomanager.Trees.CylTreeUpdatedListener;
-import com.exchangeinfomanager.Trees.TreeOfChanYeLian;
 import com.exchangeinfomanager.bankuaifengxi.CandleStick.BanKuaiFengXiCandlestickPnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartCjePnl;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartPnl;
@@ -110,23 +121,10 @@ import com.exchangeinfomanager.commonlib.ScrollUtil;
 import com.exchangeinfomanager.commonlib.JScrollBarNodesMark.JScrollBarNodesMark;
 import com.exchangeinfomanager.commonlib.jstockcombobox.JStockComboBox;
 import com.exchangeinfomanager.commonlib.jstockcombobox.JStockComboBoxModel;
-
-
-import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.gui.subgui.DateRangeSelectPnl;
 import com.exchangeinfomanager.gui.subgui.PaoMaDeng2;
 import com.exchangeinfomanager.guifactory.JLabelFactory;
 import com.exchangeinfomanager.guifactory.JPanelFactory;
-import com.exchangeinfomanager.nodes.BanKuai;
-import com.exchangeinfomanager.nodes.TDXNodes;
-import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.nodes.CylTreeNestedSetNode;
-import com.exchangeinfomanager.nodes.DaPan;
-import com.exchangeinfomanager.nodes.Stock;
-import com.exchangeinfomanager.nodes.StockOfBanKuai;
-import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
-import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
-import com.exchangeinfomanager.nodes.treerelated.NodesTreeRelated;
 import com.exchangeinfomanager.systemconfigration.SetupSystemConfiguration;
 import com.exchangeinfomanager.zhidingyibankuai.PnlZhiDingYiBanKuai;
 import com.exchangeinfomanager.zhidingyibankuai.TDXZhiDingYiBanKuaiServices;
@@ -308,7 +306,6 @@ public class BanKuaiFengXi extends JDialog
 				bkfxsettingprop.load(inputStream);
 			 
 			inputStream.close();
-			
 		} catch (Exception e) {	e.printStackTrace();} finally {}
 	}
 	/*
@@ -643,7 +640,7 @@ public class BanKuaiFengXi extends JDialog
 		bkggmatchcondition.setSettingBanKuai(selectedbk.getMyOwnCode()); //为可能导出做准备
 		
 		setFirstSelectedTab ();
-		findInputedNodeInTable(selectedbk.getMyOwnCode());
+		findInputedNodeInBanKuaiTables(selectedbk.getMyOwnCode());
 		
 		tableBkZhanBi.revalidate();
     	tableBkZhanBi.repaint();
@@ -744,7 +741,7 @@ public class BanKuaiFengXi extends JDialog
 				unifiedTabbedPanSelectionActions (bkcur,selectdate);
 			}
 			
-			findInputedNodeInTable (bkcur.getMyOwnCode());
+			findInputedNodeInBanKuaiTables (bkcur.getMyOwnCode());
 			
 			//显示板块个股
 			if( ((BanKuai)bkcur).getBanKuaiLeiXing().equals(BanKuai.HASGGWITHSELFCJL) ) {//应该是有个股的板块点击才显示她的个股，
@@ -1259,7 +1256,6 @@ public class BanKuaiFengXi extends JDialog
         					
         					//找到用户选择的板块
         					BkChanYeLianTreeNode selectedbk = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getNode(rowindex);
-//        					unifiedOperationsAfterUserSelectABanKuai ( (BanKuai)selectedbk );
         					Integer alreadyin = ((JStockComboBoxModel)combxsearchbk.getModel()).hasTheNode(selectedbk.getMyOwnCode());
         					if(alreadyin == -1)	combxsearchbk.updateUserSelectedNode(selectedbk);
         					findbk = true;
@@ -1267,8 +1263,8 @@ public class BanKuaiFengXi extends JDialog
         					//找不到该股票
         					String stockcode = combxstockcode.getSelectedItem().toString().substring(0, 6);
         					clearGeGuTablesFilter ();
-        					if(!findInputedNodeInTable (stockcode) )
-        						JOptionPane.showMessageDialog(null,"在某个个股表内没有发现该股，可能在这个时间段内该股停牌","Warning",JOptionPane.WARNING_MESSAGE);
+        					if(!findInputedNodeInStcokTables (stockcode) )
+        						JOptionPane.showMessageDialog(null,"在某个股表内没有发现该股，可能在这个时间段内该股停牌","Warning",JOptionPane.WARNING_MESSAGE);
         				}
     				}	catch (java.lang.NullPointerException  e) { logger.info("板块列表中没有找到 " + selbkcode + "，请转到板块设置中修改该板块设置。");}
 					if(!findbk) {
@@ -1295,8 +1291,8 @@ public class BanKuaiFengXi extends JDialog
 	        					//找不到该股票
 	        					String stockcode = combxstockcode.getSelectedItem().toString().substring(0, 6);
 	        					clearGeGuTablesFilter ();
-	        					if(!findInputedNodeInTable (stockcode) )
-	        						JOptionPane.showMessageDialog(null,"在某个个股表内没有发现该股，可能在这个时间段内该股停牌","Warning",JOptionPane.WARNING_MESSAGE);
+	        					if(!findInputedNodeInStcokTables (stockcode) )
+	        						JOptionPane.showMessageDialog(null,"在某个股表内没有发现该股，可能在这个时间段内该股停牌","Warning",JOptionPane.WARNING_MESSAGE);
 	    					} 
 	    				}	catch (java.lang.NullPointerException  e) { logger.info("板块列表中没有找到 " + selbkcode + "，请转到板块设置中修改该板块设置。");			;}
 					}
@@ -1423,6 +1419,30 @@ public class BanKuaiFengXi extends JDialog
 	/*
 	 * 
 	 */
+	private void yuanzhiOperationForGlobecalwholeweekOfTrue ()
+	{
+		globecalwholeweek = true;
+		
+		chxbxwholeweek.setText("当前选择任何一天均计算完整周");
+		chxbxwholeweek.setForeground(Color.BLACK);
+		menuItemSaveCurWkDataToData.setEnabled(false);
+		chxbxwholeweek.setSelected(true);
+		
+	}
+	private void yuanzhiOperationForGlobecalwholeweekOfFalse ()
+	{
+		globecalwholeweek = false;
+		
+		chxbxwholeweek.setText("当前仅选择周末计算完整周");
+		chxbxwholeweek.setForeground(Color.RED);
+		chxbxwholeweek.setSelected(false);
+		menuItemSaveCurWkDataToData.setEnabled(true);
+		
+		startRestartBackGroundDownload ();
+	}
+	/*
+	 * 
+	 */
 	private LocalDate complexSolutionForDateChooserWithCalWholeWeek ()
 	{
 		LocalDate finialdate = null;
@@ -1473,28 +1493,7 @@ public class BanKuaiFengXi extends JDialog
 
 		return finialdate;
 	}
-	/*
-	 * 
-	 */
-	private void yuanzhiOperationForGlobecalwholeweekOfTrue ()
-	{
-		globecalwholeweek = true;
-		
-		chxbxwholeweek.setText("当前选择任何一天均计算完整周");
-		chxbxwholeweek.setForeground(Color.BLACK);
-		menuItemSaveCurWkDataToData.setEnabled(false);
-		chxbxwholeweek.setSelected(true);
-		
-	}
-	private void yuanzhiOperationForGlobecalwholeweekOfFalse ()
-	{
-		globecalwholeweek = false;
-		
-		chxbxwholeweek.setText("当前仅选择周末计算完整周");
-		chxbxwholeweek.setForeground(Color.RED);
-		chxbxwholeweek.setSelected(false);
-		menuItemSaveCurWkDataToData.setEnabled(true);
-	}
+
 	/*
 	 * 
 	 */
@@ -2386,7 +2385,7 @@ public class BanKuaiFengXi extends JDialog
 	                if (evt.getPropertyName().equals(BanKuaiFengXiPieChartPnl.SELECTED_PROPERTY)) {
 	                	String curstockcode = evt.getNewValue().toString();
 	                	clearGeGuTablesFilter ();
-	                	findInputedNodeInTable (curstockcode);
+	                	findInputedNodeInStcokTables (curstockcode);
 	                	
 	                	StockOfBanKuai sob = (StockOfBanKuai) ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel() ).getNode(curstockcode.substring(0, 6));
 	                	hightlightSpecificSector (sob);
@@ -2401,7 +2400,7 @@ public class BanKuaiFengXi extends JDialog
                 if (evt.getPropertyName().equals(BanKuaiFengXiPieChartPnl.SELECTED_PROPERTY)) {
                 	String curstockcode = evt.getNewValue().toString();
                 	clearGeGuTablesFilter ();
-                	findInputedNodeInTable (curstockcode);
+                	findInputedNodeInStcokTables (curstockcode);
                 	
                 	StockOfBanKuai sob = (StockOfBanKuai) ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel() ).getNode(curstockcode.substring(0, 6));
                 	hightlightSpecificSector (sob);
@@ -2430,7 +2429,13 @@ public class BanKuaiFengXi extends JDialog
 					if(userinputnode.getType() ==  BkChanYeLianTreeNode.TDXBK && ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getRowCount() <=0) 
 						gettBanKuaiZhanBiRangedByGrowthRateOfPeriod (dateChooser.getLocalDate(),globeperiod);
 					
-					unifiedOperationsAfterUserSelectABanKuai ( (BanKuai)userinputnode);
+					//找不到该股票
+					String stockcode = combxsearchbk.getSelectedItem().toString().substring(0, 6);
+					clearGeGuTablesFilter ();
+					if(!findInputedNodeInBanKuaiTables (stockcode) ) 
+						JOptionPane.showMessageDialog(null,"在板块表内没有发现该股，可能板块指数还未创建！","Warning",JOptionPane.WARNING_MESSAGE);
+					else
+						unifiedOperationsAfterUserSelectABanKuai ( (BanKuai)userinputnode);
 					
 					playAnaylsisFinishNoticeSound();
 					hourglassCursor = null;
@@ -2460,7 +2465,7 @@ public class BanKuaiFengXi extends JDialog
 						} catch (java.lang.StringIndexOutOfBoundsException e) {	logger.debug((String)combxstockcode.getSelectedItem());}
 					}
 
-					if(findInputedNodeInTable (nodecode)) { 
+					if(findInputedNodeInStcokTables (nodecode)) { 
 						panelGgDpCjeZhanBi.resetData();
 						pnlStockCandle.resetData();
 					}
@@ -2740,14 +2745,14 @@ public class BanKuaiFengXi extends JDialog
 			@Override
 			public void mouseClicked(MouseEvent arg0) 
 			{
-				int row = tableselectedwkbkzb.getSelectedRow();
-				if(row <0) {
-					JOptionPane.showMessageDialog(null,"请选择一个板块！","Warning",JOptionPane.WARNING_MESSAGE);
-					return;
-				}
-				int modelRow = tableselectedwkbkzb.convertRowIndexToModel(row);
-				BanKuai selectedbk = (BanKuai) ((BanKuaiInfoTableModel)tableselectedwkbkzb.getModel()).getNode(modelRow);
-				
+//				int row = tableselectedwkbkzb.getSelectedRow();
+//				if(row <0) {
+//					JOptionPane.showMessageDialog(null,"请选择一个板块！","Warning",JOptionPane.WARNING_MESSAGE);
+//					return;
+//				}
+//				int modelRow = tableselectedwkbkzb.convertRowIndexToModel(row);
+//				BanKuai selectedbk = (BanKuai) ((BanKuaiInfoTableModel)tableselectedwkbkzb.getModel()).getNode(modelRow);
+				BanKuai selectedbk =  getXuanDingZhouSelectedTDXBanKuai ();
 				Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
 				setCursor(hourglassCursor);
 				
@@ -3348,7 +3353,7 @@ public class BanKuaiFengXi extends JDialog
 			dapan.getServicesForNode(false);
 //			System.out.println("......显示large PNL 数据准备 DAPAN数据准备结束" + LocalTime.now() + " \r\n");
 		}
-		long end=System.currentTimeMillis(); //获取结束时间
+//		long end=System.currentTimeMillis(); //获取结束时间
 //		System.out.println("......显示large PNL 数据准备结束" + LocalTime.now() + "。.....导入耗费时间： "+(end-start)+"ms \r\n");
 
 				BanKuaiFengXiLargePnl largeinfo = null;
@@ -3372,7 +3377,7 @@ public class BanKuaiFengXi extends JDialog
 				
 				if(datekey != null)	largeinfo.highLightSpecificBarColumn(datekey);
 				else	largeinfo.highLightSpecificBarColumn(curselectdate);
-				end=System.currentTimeMillis(); //获取结束时间
+//				end=System.currentTimeMillis(); //获取结束时间
 //				System.out.println(".......显示large GUI GUI准备结束" + LocalTime.now() + "。.....导入耗费时间： "+(end-start)+"ms \r\n");
 				
 				playAnaylsisFinishNoticeSound ();
@@ -3388,6 +3393,17 @@ public class BanKuaiFengXi extends JDialog
 							, isInNotCalWholeWeekModeData, NodeGivenPeriodDataItem.WEEK, false);
 					svsnode.syncNodeData(node);
 					node.getServicesForNode(false);
+					
+					if(node.getType() != BkChanYeLianTreeNode.DAPAN) {
+						DaPan dapan = (DaPan) CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode("000000", BkChanYeLianTreeNode.DAPAN);
+						dapan.getServicesForNode(true).getNodeData(node, CommonUtility.getSettingRangeDate(curselectdate, "basic")
+								, isInNotCalWholeWeekModeData, NodeGivenPeriodDataItem.WEEK, false);
+						dapan.getServicesForNode(true).getNodeKXian(node, CommonUtility.getSettingRangeDate(curselectdate, "basic")
+								, isInNotCalWholeWeekModeData, NodeGivenPeriodDataItem.WEEK, false);
+						dapan.getServicesForNode(false);
+//						System.out.println("......显示large PNL 数据准备 DAPAN数据准备结束" + LocalTime.now() + " \r\n");
+					}
+					
 				}
 	}
 	/*
@@ -4022,18 +4038,7 @@ public class BanKuaiFengXi extends JDialog
 				public void mouseClicked(MouseEvent arg0) 
 				{
 					if(SwingUtilities.isLeftMouseButton(arg0) ) {
-						if(holdbackgrounddownload.getToolTipText().contains("重启")) {
-							ImageIcon icon = stockmanager.setGetNodeDataFromDbWhenSystemIdleThreadStatus(false);
-							holdbackgrounddownload.setToolTipText("后台下载数据,点击暂停下载。");
-							holdbackgrounddownload.setIcon(icon);
-						} else {
-							if(globecalwholeweek) { //非完整周不缓存数据，否则可能出错
-								ImageIcon icon = stockmanager.setGetNodeDataFromDbWhenSystemIdleThreadStatus(true);
-								holdbackgrounddownload.setToolTipText("后台下载数据暂停,点击重启下载。");
-								holdbackgrounddownload.setIcon(icon);
-							} else	JOptionPane.showMessageDialog(null,"系统处于计算非完整周状态， 为避免错误，无法缓存数据!","Warning",JOptionPane.WARNING_MESSAGE);
-						}
-						
+						startRestartBackGroundDownload ();
 					} else 
 					if (SwingUtilities.isRightMouseButton(arg0)) {
 					} else if (SwingUtilities.isMiddleMouseButton(arg0)) {							
@@ -4050,6 +4055,20 @@ public class BanKuaiFengXi extends JDialog
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//* 所有辅助性的函数都在这里
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	private void startRestartBackGroundDownload ()
+	{
+		if(holdbackgrounddownload.getToolTipText().contains("重启")) {
+			ImageIcon icon = stockmanager.setGetNodeDataFromDbWhenSystemIdleThreadStatus(false);
+			holdbackgrounddownload.setToolTipText("后台下载数据,点击暂停下载。");
+			holdbackgrounddownload.setIcon(icon);
+		} else {
+			if(globecalwholeweek) { //非完整周不缓存数据，否则可能出错
+				ImageIcon icon = stockmanager.setGetNodeDataFromDbWhenSystemIdleThreadStatus(true);
+				holdbackgrounddownload.setToolTipText("后台下载数据暂停,点击重启下载。");
+				holdbackgrounddownload.setIcon(icon);
+			} else	JOptionPane.showMessageDialog(null,"系统处于计算非完整周状态， 为避免错误，无法缓存数据!","Warning",JOptionPane.WARNING_MESSAGE);
+		}
+	}
 	/*
 	 * 个股表里的板块占比MAX暂时不用，先隐藏
 	 */
@@ -4338,74 +4357,92 @@ public class BanKuaiFengXi extends JDialog
 	/*
 	 * 在个股表中发现输入的个股,返回在主表中是否发现改个股
 	 */
-	private Boolean findInputedNodeInTable(String nodecode) 
+	private Boolean findInputedNodeInStcokTables(String nodecode) 
 	{
-		Boolean found = false; int rowindex;
+		int rowindexcount = 0;
 		nodecode = nodecode.substring(0,6);
 		
-		Component focus = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner();
-		
-		for(BanKuaiandGeGuTableBasic tmptable : this.tablealltableset ) {
-			if(  ((BandKuaiAndGeGuTableBasicModel)tmptable.getModel() ).getRowCount() <= 0 ) 
-				continue;
-			
-			if(tmptable == focus)
-				continue;
-			
-			rowindex = ((BandKuaiAndGeGuTableBasicModel)tmptable.getModel() ).getNodeRowIndex(nodecode);
-			if(rowindex < 0) continue;
-					
-			found = true;
-			if (!(tmptable.getParent() instanceof JViewport))	continue;
-
-			int modelRow = tmptable.convertRowIndexToView(rowindex); //convertRowIndexToModel
-//		    JViewport viewport = (JViewport)tmptable.getParent();
-//		        // This rectangle is relative to the table where the
-//		        // northwest corner of cell (0,0) is always (0,0).
-//		    Rectangle rect = tmptable.getCellRect(modelRow, 0, true);
-//		        // The location of the viewport relative to the table
-//		    Point pt = viewport.getViewPosition();
-//		        // Translate the cell location so that it is relative
-//		        // to the view, assuming the northwest corner of the
-//		        // view is (0,0)
-//		    rect.setLocation(rect.x-pt.x, rect.y-pt.y);
-//
-//		    tmptable.scrollRectToVisible(rect);
-			
-			JViewport viewport = (JViewport)tmptable.getParent();
-	        // view dimension
-	        Dimension dim = viewport.getExtentSize();
-	        // cell dimension
-	        Dimension dimOne = new Dimension(0,0);
-
-	        // This rectangle is relative to the table where the
-	        // northwest corner of cell (0,0) is always (0,0).
-	        Rectangle rect = tmptable.getCellRect(modelRow, 0, true);
-	        Rectangle rectOne;
-	        if (modelRow+1<tmptable.getRowCount()) {
-	            
-	            rectOne = tmptable.getCellRect(modelRow+1, 0, true);
-	            dimOne.width=rectOne.x-rect.x;
-	            dimOne.height=rectOne.y-rect.y;
-	        }
-
-	        // '+ veiw dimension - cell dimension' to set first selected row on the top
-	        rect.setLocation(rect.x+dim.width-dimOne.width, rect.y+dim.height-dimOne.height);
-
-	        tmptable.scrollRectToVisible(rect);
-			try {	tmptable.setRowSelectionInterval(modelRow, modelRow);
-			} catch ( java.lang.IllegalArgumentException e) { e.printStackTrace(); System.out.print(modelRow ); return false;}
-//				int curselectrow = tmptable.getSelectedRow();
-//				try {
-//					tmptable.setRowSelectionInterval(modelRow, modelRow);
-//					tmptable.scrollRectToVisible(new Rectangle(tmptable.getCellRect(modelRow, 0, true)));
-//				} catch (java.lang.IllegalArgumentException ex) {}
-			
-			tmptable.revalidate();
-			tmptable.repaint();
+		for(BanKuaiandGeGuTableBasic tmptable : this.tablebkggtableset ) {
+			Boolean found = findInputedNodeInSpecificTable( tmptable,  nodecode) ;
+			if(found != null && found) rowindexcount ++;
 		}
+		if(rowindexcount>0)	return true;
+		else return false;
+	}
+	private Boolean findInputedNodeInBanKuaiTables(String nodecode) 
+	{
+		int rowindexcount = 0;
+		nodecode = nodecode.substring(0,6);
+		
+		for(BanKuaiandGeGuTableBasic tmptable : this.tableallbktablesset ) {
+			Boolean found = findInputedNodeInSpecificTable( tmptable,  nodecode) ;
+			if(found != null && found) rowindexcount ++;
+		}
+		if(rowindexcount>0)	return true;
+		else return false;
+	}
+	private Boolean findInputedNodeInSpecificTable(BanKuaiandGeGuTableBasic tmptable, String nodecode) 
+	{
 
-		return found;
+		if(  ((BandKuaiAndGeGuTableBasicModel)tmptable.getModel() ).getRowCount() <= 0 ) 
+			return null;
+		
+		Component focus = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner();
+		if(tmptable == focus)
+			return true;
+
+		int rowindex = ((BandKuaiAndGeGuTableBasicModel)tmptable.getModel() ).getNodeRowIndex(nodecode);
+		if(rowindex < 0) return false;
+				
+		if (!(tmptable.getParent() instanceof JViewport))	return null;
+
+		int modelRow = tmptable.convertRowIndexToView(rowindex); //convertRowIndexToModel
+//	    JViewport viewport = (JViewport)tmptable.getParent();
+//	        // This rectangle is relative to the table where the
+//	        // northwest corner of cell (0,0) is always (0,0).
+//	    Rectangle rect = tmptable.getCellRect(modelRow, 0, true);
+//	        // The location of the viewport relative to the table
+//	    Point pt = viewport.getViewPosition();
+//	        // Translate the cell location so that it is relative
+//	        // to the view, assuming the northwest corner of the
+//	        // view is (0,0)
+//	    rect.setLocation(rect.x-pt.x, rect.y-pt.y);
+//
+//	    tmptable.scrollRectToVisible(rect);
+		
+		JViewport viewport = (JViewport)tmptable.getParent();
+        // view dimension
+        Dimension dim = viewport.getExtentSize();
+        // cell dimension
+        Dimension dimOne = new Dimension(0,0);
+
+        // This rectangle is relative to the table where the
+        // northwest corner of cell (0,0) is always (0,0).
+        Rectangle rect = tmptable.getCellRect(modelRow, 0, true);
+        Rectangle rectOne;
+        if (modelRow+1<tmptable.getRowCount()) {
+            
+            rectOne = tmptable.getCellRect(modelRow+1, 0, true);
+            dimOne.width=rectOne.x-rect.x;
+            dimOne.height=rectOne.y-rect.y;
+        }
+
+        // '+ veiw dimension - cell dimension' to set first selected row on the top
+        rect.setLocation(rect.x+dim.width-dimOne.width, rect.y+dim.height-dimOne.height);
+
+        tmptable.scrollRectToVisible(rect);
+		try {	tmptable.setRowSelectionInterval(modelRow, modelRow);
+		} catch ( java.lang.IllegalArgumentException e) { e.printStackTrace(); System.out.print(modelRow ); return false;}
+//			int curselectrow = tmptable.getSelectedRow();
+//			try {
+//				tmptable.setRowSelectionInterval(modelRow, modelRow);
+//				tmptable.scrollRectToVisible(new Rectangle(tmptable.getCellRect(modelRow, 0, true)));
+//			} catch (java.lang.IllegalArgumentException ex) {}
+		
+		tmptable.revalidate();
+		tmptable.repaint();
+		
+		return true;
 	}
 	private StockOfBanKuai getSelectedStockOfBanKuai ()
 	{

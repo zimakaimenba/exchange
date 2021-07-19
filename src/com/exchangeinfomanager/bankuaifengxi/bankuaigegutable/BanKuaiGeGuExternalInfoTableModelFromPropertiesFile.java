@@ -3,10 +3,10 @@ package com.exchangeinfomanager.bankuaifengxi.bankuaigegutable;
 import java.util.Properties;
 import org.apache.log4j.Logger;
 
-import com.exchangeinfomanager.nodes.Stock;
-import com.exchangeinfomanager.nodes.StockOfBanKuai;
-import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
-import com.exchangeinfomanager.nodes.stocknodexdata.StockNodesXPeriodData;
+import com.exchangeinfomanager.Core.Nodes.Stock;
+import com.exchangeinfomanager.Core.Nodes.StockOfBanKuai;
+import com.exchangeinfomanager.Core.Nodexdata.NodeXPeriodData;
+import com.exchangeinfomanager.Core.Nodexdata.StockNodesXPeriodData;
 
 public class BanKuaiGeGuExternalInfoTableModelFromPropertiesFile extends BanKuaiGeGuBasicTableModel
 {

@@ -12,6 +12,9 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.tree.TreePath;
 
+import com.exchangeinfomanager.A.MainGui.StockInfoManager;
+import com.exchangeinfomanager.Core.Nodes.BanKuai;
+import com.exchangeinfomanager.Core.Nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.TagManagment.JDialogForTagSearchMatrixPanelForAddSysNewsToNode;
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiGuanLi;
 import com.exchangeinfomanager.bankuaichanyelian.BanKuaiShuXingSheZhi;
@@ -20,9 +23,6 @@ import com.exchangeinfomanager.bankuaichanyelian.chanyeliannews.NewsPnl2.TDXNods
 import com.exchangeinfomanager.bankuaifengxi.ai.WeeklyFenXiWizard;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.exchangeinfomanager.database.StockCalendarAndNewDbOperation;
-import com.exchangeinfomanager.gui.StockInfoManager;
-import com.exchangeinfomanager.nodes.BanKuai;
-import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
 public class BanKuaiPopUpMenuForTable extends BanKuaiPopUpMenu
 {

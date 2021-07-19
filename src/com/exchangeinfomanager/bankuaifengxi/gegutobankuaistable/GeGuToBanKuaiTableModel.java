@@ -7,15 +7,15 @@ import java.util.Iterator;
 import java.util.Properties;
 import java.util.Set;
 
-import com.exchangeinfomanager.Trees.CreateExchangeTree;
+import com.exchangeinfomanager.Core.Nodes.BanKuai;
+import com.exchangeinfomanager.Core.Nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.Core.Nodes.DaPan;
+import com.exchangeinfomanager.Core.Nodes.Stock;
+import com.exchangeinfomanager.Core.Nodes.StockOfBanKuai;
+import com.exchangeinfomanager.Core.Nodexdata.NodeXPeriodData;
+import com.exchangeinfomanager.Core.Trees.CreateExchangeTree;
 import com.exchangeinfomanager.bankuaifengxi.BankuaiAndGeguTableBasic.BandKuaiAndGeGuTableBasicModel;
 import com.exchangeinfomanager.bankuaifengxi.BankuaiAndGeguTableBasic.SortByKeyWords.NodeChenJiaoErComparator;
-import com.exchangeinfomanager.nodes.BanKuai;
-import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.nodes.DaPan;
-import com.exchangeinfomanager.nodes.Stock;
-import com.exchangeinfomanager.nodes.StockOfBanKuai;
-import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 
 public class GeGuToBanKuaiTableModel  extends BandKuaiAndGeGuTableBasicModel 
 {

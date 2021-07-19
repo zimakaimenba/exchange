@@ -17,9 +17,9 @@ import javax.swing.table.TableRowSorter;
 
 import org.jsoup.Jsoup;
 
+import com.exchangeinfomanager.A.MainGui.StockInfoManager;
+import com.exchangeinfomanager.Core.Nodes.BanKuai;
 import com.exchangeinfomanager.commonlib.JTableToolTipHeader;
-import com.exchangeinfomanager.gui.StockInfoManager;
-import com.exchangeinfomanager.nodes.BanKuai;
 
 public class BanKuaiGeGuExternalInfoTableFromPropertiesFile extends BanKuaiGeGuBasicTable //implements BanKuaiGeGuMatchConditionListener
 {

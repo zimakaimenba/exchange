@@ -2,7 +2,7 @@ package com.exchangeinfomanager.Services;
 
 import java.util.List;
 
-import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.Core.Nodes.BkChanYeLianTreeNode;
 
 public interface ServicesOfChanYeLian 
 {

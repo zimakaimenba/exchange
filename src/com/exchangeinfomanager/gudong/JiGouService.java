@@ -3,8 +3,8 @@ package com.exchangeinfomanager.gudong;
 import java.time.LocalDate;
 import java.util.Collection;
 
+import com.exchangeinfomanager.Core.Nodes.Stock;
 import com.exchangeinfomanager.database.JiGouGuDongDbOperation;
-import com.exchangeinfomanager.nodes.Stock;
 
 
 public class JiGouService implements ServicesForJiGou

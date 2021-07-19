@@ -18,17 +18,17 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import com.exchangeinfomanager.Core.Nodes.BanKuai;
+import com.exchangeinfomanager.Core.Nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.Core.NodesDataServices.SvsForNodeOfBanKuai;
+import com.exchangeinfomanager.Core.NodesDataServices.SvsForNodeOfStock;
+import com.exchangeinfomanager.Core.Trees.CreateExchangeTree;
 import com.exchangeinfomanager.News.CreateNewsWithFurtherOperationDialog.AddController;
-import com.exchangeinfomanager.NodesServices.SvsForNodeOfBanKuai;
-import com.exchangeinfomanager.NodesServices.SvsForNodeOfStock;
 import com.exchangeinfomanager.Tag.Tag;
 import com.exchangeinfomanager.TagManagment.TagSearchOnNewsTableModel;
 import com.exchangeinfomanager.TagManagment.TagSearchOnNodesTableModel;
-import com.exchangeinfomanager.Trees.CreateExchangeTree;
 import com.exchangeinfomanager.guifactory.JLabelFactory;
 import com.exchangeinfomanager.guifactory.JPanelFactory;
-import com.exchangeinfomanager.nodes.BanKuai;
-import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.google.common.base.Splitter;
 
 public class ModifyNewsWithFurtherOperationDialog extends NewsFutherOperationDialog 

@@ -7,14 +7,13 @@ import java.util.List;
 import java.util.Set;
 import org.jsoup.Jsoup;
 
-
-import com.exchangeinfomanager.NodesServices.SvsForNodeOfStock;
-import com.exchangeinfomanager.Trees.CreateExchangeTree;
+import com.exchangeinfomanager.Core.Nodes.BanKuai;
+import com.exchangeinfomanager.Core.Nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.Core.Nodes.Stock;
+import com.exchangeinfomanager.Core.NodesDataServices.SvsForNodeOfStock;
+import com.exchangeinfomanager.Core.Trees.CreateExchangeTree;
+import com.exchangeinfomanager.Core.nodejibenmian.ServicesOfNodeJiBenMianInfo;
 import com.exchangeinfomanager.bankuaifengxi.bankuaiinfotable.BanKuaiInfoTableModel;
-import com.exchangeinfomanager.nodes.BanKuai;
-import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.nodes.Stock;
-import com.exchangeinfomanager.nodes.nodejibenmian.ServicesOfNodeJiBenMianInfo;
 import com.google.common.base.Strings;
 
 public class DisPlayNodeSuoShuBanKuaiListServices implements ServicesOfNodeJiBenMianInfo

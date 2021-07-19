@@ -10,9 +10,9 @@ import org.jeasy.rules.annotation.Fact;
 import org.jeasy.rules.annotation.Priority;
 import org.jeasy.rules.annotation.Rule;
 
+import com.exchangeinfomanager.Core.Nodes.TDXNodes;
+import com.exchangeinfomanager.Core.Nodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiAndGeGuMatchingConditions;
-import com.exchangeinfomanager.nodes.TDXNodes;
-import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 
 @Rule(name = "ChenJiaoEr ZhanBi Growing Rate Rule", description = "if it rains then take an umbrella" )
 public class RuleOfCjeZbGrowingRate 

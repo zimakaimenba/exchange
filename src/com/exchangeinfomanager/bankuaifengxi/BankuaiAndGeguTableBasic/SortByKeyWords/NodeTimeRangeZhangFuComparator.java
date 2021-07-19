@@ -3,10 +3,10 @@ package com.exchangeinfomanager.bankuaifengxi.BankuaiAndGeguTableBasic.SortByKey
 import java.time.LocalDate;
 import java.util.Comparator;
 
-import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.nodes.StockOfBanKuai;
-import com.exchangeinfomanager.nodes.TDXNodes;
-import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
+import com.exchangeinfomanager.Core.Nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.Core.Nodes.StockOfBanKuai;
+import com.exchangeinfomanager.Core.Nodes.TDXNodes;
+import com.exchangeinfomanager.Core.Nodexdata.NodeXPeriodData;
 
 public class NodeTimeRangeZhangFuComparator implements Comparator<BkChanYeLianTreeNode> 
 {

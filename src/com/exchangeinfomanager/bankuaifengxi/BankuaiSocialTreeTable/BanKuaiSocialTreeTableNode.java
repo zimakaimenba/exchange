@@ -2,7 +2,7 @@ package com.exchangeinfomanager.bankuaifengxi.BankuaiSocialTreeTable;
 
 import org.jdesktop.swingx.treetable.AbstractMutableTreeTableNode;
 
-import com.exchangeinfomanager.nodes.CylTreeNestedSetNode;
+import com.exchangeinfomanager.Core.Nodes.CylTreeNestedSetNode;
 
 public class BanKuaiSocialTreeTableNode extends AbstractMutableTreeTableNode
 {

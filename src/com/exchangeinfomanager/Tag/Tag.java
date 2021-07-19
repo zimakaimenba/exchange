@@ -3,7 +3,7 @@ package com.exchangeinfomanager.Tag;
 import java.awt.Color;
 import java.util.ArrayList;
 
-import com.exchangeinfomanager.nodes.HanYuPinYing;
+import com.exchangeinfomanager.Core.Nodes.HanYuPinYing;
 
 
 public class Tag 

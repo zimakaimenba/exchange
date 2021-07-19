@@ -6,13 +6,13 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Iterator;
 
+import com.exchangeinfomanager.Core.Nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.News.InsertedNews;
 import com.exchangeinfomanager.News.News;
 import com.exchangeinfomanager.News.NewsCache;
 import com.exchangeinfomanager.News.ServicesForNews;
 import com.exchangeinfomanager.TagServices.TagsNewsDbOperation;
 import com.exchangeinfomanager.database.StockCalendarAndNewDbOperation;
-import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
 public class DuanQiGuanZhuServices implements ServicesForNews 
 {

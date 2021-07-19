@@ -40,15 +40,15 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker.StateValue;
 
+import com.exchangeinfomanager.A.MainGui.StockInfoManager;
+import com.exchangeinfomanager.Core.Nodexdata.ohlcvaprimarydata.NodeGivenPeriodDataItem;
+import com.exchangeinfomanager.Core.Trees.CreateExchangeTree;
 import com.exchangeinfomanager.StockCalendar.OnCalendarDateChangeListener;
-import com.exchangeinfomanager.Trees.CreateExchangeTree;
 import com.exchangeinfomanager.bankuaifengxi.BanKuaiFengXi;
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfCjeZbDpMaxWk;
 import com.exchangeinfomanager.bankuaifengxi.xmlhandlerforbkfx.ServicesForBkfxEbkOutPutFileDirectRead;
 import com.exchangeinfomanager.commonlib.JComboCheckBox.JComboCheckBox;
-import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.guifactory.JLabelFactory;
-import com.exchangeinfomanager.nodes.stocknodexdata.ohlcvadata.NodeGivenPeriodDataItem;
 import com.exchangeinfomanager.systemconfigration.SetupSystemConfiguration;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;

@@ -4,6 +4,7 @@ import javax.swing.*;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.exchangeinfomanager.Core.Nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.News.CreateNewsDialog;
 import com.exchangeinfomanager.News.CreateNewsWithFurtherOperationDialog;
 import com.exchangeinfomanager.News.InsertedNews;
@@ -29,7 +30,6 @@ import com.exchangeinfomanager.bankuaifengxi.ai.WeeklyFenXiWizard;
 import com.exchangeinfomanager.commonlib.JMultiLineToolTip;
 import com.exchangeinfomanager.commonlib.WrapLayout;
 import com.exchangeinfomanager.guifactory.JPanelFactory;
-import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;

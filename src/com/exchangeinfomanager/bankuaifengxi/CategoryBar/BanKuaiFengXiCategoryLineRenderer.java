@@ -9,9 +9,9 @@ import org.jfree.chart.renderer.category.LineAndShapeRenderer;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.util.ShapeUtilities;
 
+import com.exchangeinfomanager.Core.Nodes.TDXNodes;
+import com.exchangeinfomanager.Core.Nodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.commonlib.CommonUtility;
-import com.exchangeinfomanager.nodes.TDXNodes;
-import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 
 class  BanKuaiFengXiCategoryLineRenderer extends LineAndShapeRenderer
 {

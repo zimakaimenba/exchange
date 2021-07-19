@@ -6,11 +6,11 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.logging.Logger;
 
+import com.exchangeinfomanager.Core.Nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.Tag.Tag;
 import com.exchangeinfomanager.TagServices.TagServicesForNews;
 import com.exchangeinfomanager.TagServices.TagsNewsDbOperation;
 import com.exchangeinfomanager.database.StockCalendarAndNewDbOperation;
-import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
 
 public class NewsServices implements ServicesForNews

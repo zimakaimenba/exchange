@@ -2,8 +2,8 @@ package com.exchangeinfomanager.bankuaifengxi;
 
 import java.time.LocalDate;
 
-import com.exchangeinfomanager.nodes.BanKuai;
-import com.exchangeinfomanager.nodes.TDXNodes;
+import com.exchangeinfomanager.Core.Nodes.BanKuai;
+import com.exchangeinfomanager.Core.Nodes.TDXNodes;
 
 public interface PieChartPanelDataChangedListener 
 {

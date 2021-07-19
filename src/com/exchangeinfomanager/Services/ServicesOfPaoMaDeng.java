@@ -1,6 +1,6 @@
 package com.exchangeinfomanager.Services;
 
-import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.Core.Nodes.BkChanYeLianTreeNode;
 
 public interface ServicesOfPaoMaDeng
 {

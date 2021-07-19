@@ -3,7 +3,7 @@ package com.exchangeinfomanager.News.ExternalNewsType;
 import java.time.LocalDate;
 import java.util.Collection;
 
-import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.Core.Nodes.BkChanYeLianTreeNode;
 
 public class ZhiShuBoLang extends ExternalNewsType
 {

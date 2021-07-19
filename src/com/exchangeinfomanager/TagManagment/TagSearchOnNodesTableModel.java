@@ -10,9 +10,9 @@ import java.util.Set;
 
 import javax.swing.table.DefaultTableModel;
 
+import com.exchangeinfomanager.Core.Nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.Tag.Tag;
 import com.exchangeinfomanager.TagServices.TagsServiceForNodes;
-import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
 public class TagSearchOnNodesTableModel extends DefaultTableModel 
 {

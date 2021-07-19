@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.joda.time.Interval;
 
-import com.exchangeinfomanager.nodes.Stock;
+import com.exchangeinfomanager.Core.Nodes.Stock;
 
 public class GuDong 
 {

@@ -1,6 +1,6 @@
 package com.exchangeinfomanager.database;
+import com.exchangeinfomanager.A.MainGui.StockInfoManager;
 import com.exchangeinfomanager.License.EncryptAndDecypt;
-import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.systemconfigration.*;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Splitter;

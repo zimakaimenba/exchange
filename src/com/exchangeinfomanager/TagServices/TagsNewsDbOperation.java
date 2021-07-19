@@ -17,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.Set;
 
+import com.exchangeinfomanager.Core.Nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.News.InsertedNews;
 import com.exchangeinfomanager.News.News;
 import com.exchangeinfomanager.Tag.InsertedTag;
@@ -24,7 +25,6 @@ import com.exchangeinfomanager.Tag.NodeInsertedTag;
 import com.exchangeinfomanager.Tag.Tag;
 
 import com.exchangeinfomanager.database.ConnectDataBase;
-import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.mysql.jdbc.MysqlDataTruncation;

@@ -3,8 +3,8 @@ package com.exchangeinfomanager.bankuaifengxi.xmlhandlerforbkfx;
 import java.io.File;
 import java.time.LocalDate;
 
-import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
-import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.Core.Nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.Core.Trees.BanKuaiAndStockTree;
 
 public interface ServicesForBkfxEbkOutPutFile 
 {

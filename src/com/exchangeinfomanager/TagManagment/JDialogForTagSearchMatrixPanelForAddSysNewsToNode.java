@@ -9,10 +9,10 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import com.exchangeinfomanager.Core.Nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.News.News;
 import com.exchangeinfomanager.News.NewsCache;
 import com.exchangeinfomanager.News.NewsCacheListener;
-import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
 public class JDialogForTagSearchMatrixPanelForAddSysNewsToNode extends JDialog implements NewsCacheListener
 {

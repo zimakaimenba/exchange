@@ -4,8 +4,8 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Set;
 
+import com.exchangeinfomanager.Core.Nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.TagServices.TagCache;
-import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
 public interface TagService 
 {

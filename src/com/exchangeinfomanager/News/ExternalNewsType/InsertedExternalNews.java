@@ -3,9 +3,9 @@ package com.exchangeinfomanager.News.ExternalNewsType;
 import java.time.LocalDate;
 import java.util.Collection;
 
+import com.exchangeinfomanager.Core.Nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.News.InsertedNews;
 import com.exchangeinfomanager.News.News;
-import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
 public class InsertedExternalNews extends ExternalNewsType
 {

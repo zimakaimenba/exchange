@@ -39,8 +39,8 @@ import com.exchangeinfomanager.accountconfiguration.AccountsInfo.CashAccountBasi
 import com.exchangeinfomanager.commonlib.TableCellListener;
 import com.exchangeinfomanager.database.AccountDbOperation;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
+import com.exchangeinfomanager.A.MainGui.StockInfoManager;
 import com.exchangeinfomanager.AccountAndChiCang.AccountAndChiCangConfiguration;
-import com.exchangeinfomanager.gui.StockInfoManager;
 import com.exchangeinfomanager.gui.subgui.BuyStockNumberPrice;
 
 import com.google.common.base.CharMatcher;

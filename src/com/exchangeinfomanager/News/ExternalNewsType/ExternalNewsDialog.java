@@ -47,6 +47,8 @@ import javax.swing.SwingUtilities;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 
+import com.exchangeinfomanager.Core.Nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.Core.Trees.CreateExchangeTree;
 import com.exchangeinfomanager.News.InsertedNews;
 import com.exchangeinfomanager.News.News;
 import com.exchangeinfomanager.News.NewsCache;
@@ -55,7 +57,6 @@ import com.exchangeinfomanager.News.Labels.ColorChooser;
 import com.exchangeinfomanager.StockCalendar.ColorScheme;
 import com.exchangeinfomanager.Tag.Tag;
 import com.exchangeinfomanager.TagServices.TagsServiceForURLAndFile;
-import com.exchangeinfomanager.Trees.CreateExchangeTree;
 import com.exchangeinfomanager.commonlib.JUpdatedTextField;
 import com.exchangeinfomanager.commonlib.JComboCheckBox.JComboCheckBox;
 import com.exchangeinfomanager.commonlib.JLocalDataChooser.JLocalDateChooser;
@@ -65,7 +66,6 @@ import com.exchangeinfomanager.gui.subgui.SelectMultiNode;
 import com.exchangeinfomanager.guifactory.JLabelFactory;
 import com.exchangeinfomanager.guifactory.JPanelFactory;
 import com.exchangeinfomanager.guifactory.JTextFactory;
-import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 import com.lc.nlp.keyword.algorithm.TextRank;
 
 public class ExternalNewsDialog <T extends ExternalNewsType> extends JDialog 

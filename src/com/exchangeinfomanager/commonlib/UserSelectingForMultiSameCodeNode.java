@@ -5,11 +5,11 @@ import java.util.List;
 
 import javax.swing.JOptionPane;
 
-import com.exchangeinfomanager.Trees.BanKuaiAndStockTree;
-import com.exchangeinfomanager.Trees.CreateExchangeTree;
+import com.exchangeinfomanager.Core.Nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.Core.Nodes.TDXNodes;
+import com.exchangeinfomanager.Core.Trees.BanKuaiAndStockTree;
+import com.exchangeinfomanager.Core.Trees.CreateExchangeTree;
 import com.exchangeinfomanager.gui.subgui.SelectMultiNode;
-import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
-import com.exchangeinfomanager.nodes.TDXNodes;
 
 public class UserSelectingForMultiSameCodeNode 
 {

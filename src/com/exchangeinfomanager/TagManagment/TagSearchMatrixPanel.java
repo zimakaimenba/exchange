@@ -10,6 +10,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
+import com.exchangeinfomanager.Core.Nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.News.InsertedNews;
 import com.exchangeinfomanager.News.News;
 import com.exchangeinfomanager.Tag.Tag;
@@ -23,7 +24,6 @@ import com.exchangeinfomanager.commonlib.TableCellListener;
 import com.exchangeinfomanager.guifactory.JLabelFactory;
 import com.exchangeinfomanager.guifactory.JPanelFactory;
 import com.exchangeinfomanager.guifactory.JTextFactory;
-import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;

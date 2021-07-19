@@ -22,7 +22,7 @@ import javax.swing.JTextArea;
 import javax.swing.JWindow;  
 import javax.swing.border.EtchedBorder;
 
-import com.exchangeinfomanager.gui.StockInfoManager;
+import com.exchangeinfomanager.A.MainGui.StockInfoManager;
 import com.exchangeinfomanager.systemconfigration.SetupSystemConfiguration;
   
 //https://xbgd.iteye.com/blog/755002

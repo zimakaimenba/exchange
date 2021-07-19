@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.exchangeinfomanager.NodesServices.ServicesForZhiDingYiBanKuai;
+import com.exchangeinfomanager.Core.NodesDataServices.ServicesForZhiDingYiBanKuai;
 import com.exchangeinfomanager.commonlib.ParseBanKuaiWeeklyFielGetStocksProcessor;
 import com.exchangeinfomanager.database.BanKuaiDbOperation;
 import com.google.common.base.Charsets;

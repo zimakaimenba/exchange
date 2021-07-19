@@ -2,7 +2,7 @@ package com.exchangeinfomanager.Tag;
 
 import java.util.Set;
 
-import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
+import com.exchangeinfomanager.Core.Nodes.BkChanYeLianTreeNode;
 
 public class InsertedTag extends Tag
 {

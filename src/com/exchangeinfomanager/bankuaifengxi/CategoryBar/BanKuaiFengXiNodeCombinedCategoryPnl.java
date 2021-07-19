@@ -24,6 +24,9 @@ import javax.swing.border.TitledBorder;
 
 import org.jfree.chart.renderer.category.CategoryItemRenderer;
 
+import com.exchangeinfomanager.Core.Nodes.DaPan;
+import com.exchangeinfomanager.Core.Nodes.TDXNodes;
+import com.exchangeinfomanager.Core.Nodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.bankuaifengxi.BarChartPanelDataChangedListener;
 import com.exchangeinfomanager.bankuaifengxi.BarChartPanelHightLightColumnListener;
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartCjePnl;
@@ -31,9 +34,6 @@ import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBa
 import com.exchangeinfomanager.bankuaifengxi.CategoryBar.BanKuaiFengXiCategoryBarChartPnl;
 import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiAndGeGuMatchingConditionListener;
 import com.exchangeinfomanager.bankuaifengxi.HighlightAndExportNodes.BanKuaiAndGeGuMatchingConditions;
-import com.exchangeinfomanager.nodes.DaPan;
-import com.exchangeinfomanager.nodes.TDXNodes;
-import com.exchangeinfomanager.nodes.stocknodexdata.NodeXPeriodData;
 
 public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel 
 		implements BarChartPanelDataChangedListener, BarChartPanelHightLightColumnListener ,PropertyChangeListener,BanKuaiAndGeGuMatchingConditionListener

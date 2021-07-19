@@ -10,7 +10,7 @@ import java.time.LocalDate;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
-import com.exchangeinfomanager.nodes.nodejibenmian.ServicesOfNodeJiBenMianInfo;
+import com.exchangeinfomanager.Core.nodejibenmian.ServicesOfNodeJiBenMianInfo;
 import com.google.common.collect.Multimap;
 
 public class DisplayNodeExchangeDataServicesPanel extends DisplayNodeInfoPanel 

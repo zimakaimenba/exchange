@@ -4,10 +4,10 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Set;
 
+import com.exchangeinfomanager.Core.Nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.News.News;
 import com.exchangeinfomanager.Tag.Tag;
 import com.exchangeinfomanager.Tag.TagService;
-import com.exchangeinfomanager.nodes.BkChanYeLianTreeNode;
 
 public class TagServicesForNews implements TagService 
 {

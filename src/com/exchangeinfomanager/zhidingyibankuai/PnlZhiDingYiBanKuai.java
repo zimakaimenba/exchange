@@ -12,7 +12,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import com.exchangeinfomanager.NodesServices.ServicesForZhiDingYiBanKuai;
+import com.exchangeinfomanager.Core.NodesDataServices.ServicesForZhiDingYiBanKuai;
 import com.exchangeinfomanager.commonlib.WrapLayout;
 
 import java.awt.BorderLayout;
