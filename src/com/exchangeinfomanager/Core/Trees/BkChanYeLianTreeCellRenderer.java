@@ -44,7 +44,9 @@ public class BkChanYeLianTreeCellRenderer extends DefaultTreeCellRenderer
 	         lblnodenameandcount.setIcon(bkcyliconfactory.getIcon((CylTreeNestedSetNode) value));
 	         
 	         //各种状态下的COLOR
-	         lblnodenameandcount.setForeground(this.getForeground());
+	         if(nodetype == BkChanYeLianTreeNode.DZHBK)
+	        	 lblnodenameandcount.setForeground(Color.BLUE);
+	         else	lblnodenameandcount.setForeground(this.getForeground());
 	         
         	 Font font=new Font("宋体",Font.PLAIN,14); 
 	         lblnodenameandcount.setFont(font);

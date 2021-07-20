@@ -171,6 +171,19 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 //		nodedpcjezbgr.setNotify(true);
 //		nodedpcjlzbgr.setNotify(true);
 	}
+	/*
+	 * 
+	 */
+	private LocalDate isnotcalwholeweekmodedate;
+	public void setNotCalWholeWeekMode(LocalDate date)
+	{
+		isnotcalwholeweekmodedate = date;
+	}
+	public LocalDate isInNotCalWholeWeekMode(){
+		if(isnotcalwholeweekmodedate == null) return null;
+		
+		return isnotcalwholeweekmodedate;
+	}
 	 /*
 	  * 
 	  */

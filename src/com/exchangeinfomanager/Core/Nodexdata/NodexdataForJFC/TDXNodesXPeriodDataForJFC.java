@@ -318,8 +318,8 @@ import com.udojava.evalex.Expression;
 		RegularTimePeriod dataitemperiod = dataitem.getPeriod();
 		Date start = dataitem.getPeriod().getStart();
 		LocalDate startdate = start.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-		LocalDate enddate = dataitem.getPeriod().getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();;
-	
+		LocalDate enddate = dataitem.getPeriod().getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		
 		if(super.getNodeperiodtype() == NodeGivenPeriodDataItem.WEEK) {
 			TemporalField fieldUS = WeekFields.of(Locale.US).dayOfWeek();
 			LocalDate fridayday = startdate.with(fieldUS, 6);
@@ -2105,16 +2105,4 @@ import com.udojava.evalex.Expression;
 			
 			return curlzdf;
 		}
-		
-		private LocalDate isnotcalwholeweekmodedate;
-		public void setNotCalWholeWeekMode(LocalDate date)
-		{
-			isnotcalwholeweekmodedate = date;
-		}
-		public LocalDate isInNotCalWholeWeekMode(){
-			if(isnotcalwholeweekmodedate == null) return null;
-			
-			return isnotcalwholeweekmodedate;
-		}
-		
  } //END OF 

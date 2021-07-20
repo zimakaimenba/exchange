@@ -82,17 +82,29 @@ public interface ServicesForNode
 				result  = requiredendday;
 				return result;
 			}
-				
-			LocalDate amorecordsenddate = nodeperioddata.getAmoRecordsEndDate();
-			if(amorecordsenddate != null && amorecordsenddate.isBefore(requiredendday))
-				nodeperioddata.removeNodeDataFromSpecificDate(amorecordsenddate);
-			else if(amorecordsenddate != null && amorecordsenddate.isAfter(requiredendday))
-				nodeperioddata.removeNodeDataFromSpecificDate(requiredendday);
-			
+			LocalDate amorecordsenddate = null;
+			try {
+				amorecordsenddate = nodeperioddata.getAmoRecordsEndDate();
+				if(amorecordsenddate == null)
+					;
+				else if( amorecordsenddate.isBefore(requiredendday))
+					nodeperioddata.removeNodeDataFromSpecificDate(amorecordsenddate);
+				else if( amorecordsenddate.isAfter(requiredendday))
+					nodeperioddata.removeNodeDataFromSpecificDate(requiredendday);
+				else if(amorecordsenddate.isEqual(requiredendday))
+					nodeperioddata.removeNodeDataFromSpecificDate(requiredendday);
+			} catch (java.lang.NullPointerException e) {
+				e.printStackTrace();
+			}
+
 			LocalDate ohlcrecordsenddate = nodexdataday.getOHLCRecordsEndDate();
-			if(ohlcrecordsenddate != null && ohlcrecordsenddate.isBefore(requiredendday))
+			if(ohlcrecordsenddate == null)
+				;
+			else if( ohlcrecordsenddate.isBefore(requiredendday))
 				nodexdataday.removeNodeDataFromSpecificDate(ohlcrecordsenddate);
-			else if(ohlcrecordsenddate != null && ohlcrecordsenddate.isAfter(requiredendday))
+			else if( ohlcrecordsenddate.isAfter(requiredendday))
+				nodexdataday.removeNodeDataFromSpecificDate(requiredendday);
+			else if(amorecordsenddate.isEqual(requiredendday))
 				nodexdataday.removeNodeDataFromSpecificDate(requiredendday);
 			
 			nodeperioddata.setNotCalWholeWeekMode (requiredendday);

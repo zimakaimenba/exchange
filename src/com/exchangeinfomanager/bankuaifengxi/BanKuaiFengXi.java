@@ -3477,19 +3477,9 @@ public class BanKuaiFengXi extends JDialog
 	private PaoMaDeng2 pnl_paomd;
 	private JTabbedPane tabbedPanebk;
 	private JButton btnexportcsv;
-//	private Action exportCancelAction;
 	private Action bkfxCancelAction;
-	
-//	private JMenuItem menuItemRmvNodeFmFile;
 	private JPopupMenu jPopupMenuoftabbedpane;
-//	private JMenuItem menuItemliutong ; //系统默认按流通市值排名
-//	private JMenuItem menuItemzongshizhi ;
-//	private JMenuItem menuItemchengjiaoer ;
-//	private JMenuItem menuItemstocktocsv ;
-//	private JPopupMenu jPopupMenuoftabbedpanebk;
-//	private JMenuItem menuItembktocsv ; //系统默认按流通市值排名
 	private JMenuItem menuItemsiglestocktocsv;
-//	private JProgressBar progressBarExport;
 	private JMenuItem menuItemsiglebktocsv;
 	private JMenuItem menuItemnonfixperiod;
 	private JScrollPane sclpselectedwkdata;
@@ -3499,7 +3489,6 @@ public class BanKuaiFengXi extends JDialog
 	private JMenuItem menuItemRuoShibk;
 	private JMenuItem menuItemQiangShigg;
 	private JMenuItem menuItemRuoShigg;
-//	private JMenuItem menuItemyangxianbktocsv;
 	private JMenuItem menuItemtimerangezhangfu;
 	private JCheckBox chxbxwholeweek;
 	private TagsPanel pnlbktags;
@@ -3531,52 +3520,32 @@ public class BanKuaiFengXi extends JDialog
 	private JMenuItem menuItemAddRmvBkToRedSign;
 	private JMenuItem menuItemcancelAllNodesReviewedtoday;
 	private JMenuItem menuItemsGeGuToBks;
-
 	private BanKuaiGeGuMergeTable tblmergeggtobks;
 	private BanKuaiInfoTable tblmergegegubkinfo;
 	private GeGuToBanKuaiTable tblmergegeguinfoinallbk;
-
 	private JMenuItem menuItemsGeGuToBksXuanDingZhou;
-
 	private JScrollPane scrollPangegutobankuaisInfo;
-
 	private JMenuItem menuItemcompareToOtherBk;
-
 	private TreeOfChanYeLian bksocialtreecopy;
 	private BanKuaiAndStockTree cyltreecopy;
-
 	private BanKuaiInfoTable tableBkSocialbkCurwkData;
 	private JPanel pnlsocialfriendbkdata;
 	private JScrollPane sclpselectwkbkfriendsdata;
-
 	private BanKuaiInfoTable tableBkSocialbkSelectwkData;
-
 	private JMenuItem menuItemmarkallreviewedtoday;
 	private BanKuaiInfoTable tblDzhBkCurWkZhanBi;
 	private BanKuaiInfoTable tblDzhBkCurSelectedWkZhanBi;
-
-//	private JPopupMenu jPopupMenuoftabbedpanebkDZH;
-
 	private JMenuItem menuItemAddRmvBkToRedSignDZH;
-
 	private JMenuItem menuItemAddRmvBkToYellowDZH;
-
 	private JMenuItem menuItemQiangShibkDZH;
-
 	private JMenuItem menuItemRuoShibkDZH;
-
 	private JMenuItem menuItemDuanQiGuanZhuDZH;
-
 	private JMenuItem menuItemsiglebktocsvDZH;
-
 	private JMenu historycsvfileMenuDZH;
-
 	private JMenuItem menuItemcompareToOtherBkDZH;
-
 	private JMenuItem menuItemSaveCurWkDataToData;
 	private BanKuaiFengXiLineChartPnl pnlbkcjecjezbgr;
 	private JTabbedPane tabbedPanePie;
-
 	private JLabel holdbackgrounddownload;
 
 	private void initializeGuiOf2560Resolution ()
@@ -4066,7 +4035,7 @@ public class BanKuaiFengXi extends JDialog
 				ImageIcon icon = stockmanager.setGetNodeDataFromDbWhenSystemIdleThreadStatus(true);
 				holdbackgrounddownload.setToolTipText("后台下载数据暂停,点击重启下载。");
 				holdbackgrounddownload.setIcon(icon);
-			} else	JOptionPane.showMessageDialog(null,"系统处于计算非完整周状态， 为避免错误，无法缓存数据!","Warning",JOptionPane.WARNING_MESSAGE);
+			} else	JOptionPane.showMessageDialog(null,"系统处于计算非完整周状态， 为避免错误，将无法缓存数据!","Warning",JOptionPane.WARNING_MESSAGE);
 		}
 	}
 	/*
@@ -4111,8 +4080,6 @@ public class BanKuaiFengXi extends JDialog
 	       
 	       menuItemnonshowselectbkinfo = new JMenuItem("同时分析选定周数据");
 	       panelbkwkcjezhanbi.addMenuItem (menuItemnonshowselectbkinfo,0);
-	       
-	
 	}
 	private void reFormatDZHBanKuaiGui ()
 	{
@@ -4293,7 +4260,7 @@ public class BanKuaiFengXi extends JDialog
 			}
 			
 			tabbedPanebkzb.setSelectedIndex(0);
-			tabpnlKxian.setSelectedIndex(0);
+			tabpnlKxian.setSelectedIndex(1);
 		} else	
 		if(node.getType() == BkChanYeLianTreeNode.DZHBK ) {
 			if( CommonUtility.isInSameWeek( analysisdate, curdate) )	{
@@ -4313,7 +4280,7 @@ public class BanKuaiFengXi extends JDialog
 			}
 			
 			tabbedPanebkzb.setSelectedIndex(0);
-			tabpnlKxian.setSelectedIndex(0);
+			tabpnlKxian.setSelectedIndex(1);
 		} else	
 		if(node.getType() == BkChanYeLianTreeNode.TDXGG ) {
 			tabbedPanebk.setSelectedIndex(2);
