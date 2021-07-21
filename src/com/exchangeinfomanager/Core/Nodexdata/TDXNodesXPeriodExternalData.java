@@ -106,20 +106,20 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 				nodeamozhanbi.add(kdata.getJFreeChartPeriod(this.nodeperiodtype),kdata.getNodeToDpChenJiaoErZhanbi(),false);
 				nodevolzhanbi.add(kdata.getJFreeChartPeriod(this.nodeperiodtype),kdata.getNodeToDpChenJiaoLiangZhanbi(),false);
 			} catch (org.jfree.data.general.SeriesException e) {
-				logger.info(getNodeCode() + getNodeperiodtype() 
-				+ kdata.getJFreeChartPeriod(getNodeperiodtype()).toString() 
-				+ kdata.getJFreeChartPeriod(getNodeperiodtype()).getStart().toString() 
-				+ "nodeamozhanbi 数据已经存在，重复添加！"  );
+//				logger.info(getNodeCode() + getNodeperiodtype() 
+//				+ kdata.getJFreeChartPeriod(getNodeperiodtype()).toString() 
+//				+ kdata.getJFreeChartPeriod(getNodeperiodtype()).getStart().toString() 
+//				+ "nodeamozhanbi 数据已经存在，重复添加！"  );
 			}
 			try{
 				nodeexchangedaysnumber.setNotify(false);
 				if(kdata.getExchangeDaysNumber() != null && kdata.getExchangeDaysNumber() != 5) //
 					nodeexchangedaysnumber.add(kdata.getJFreeChartPeriod(this.nodeperiodtype),kdata.getExchangeDaysNumber(),false);
 			} catch (org.jfree.data.general.SeriesException e) {
-				logger.info(getNodeCode() + getNodeperiodtype() 
-				+ kdata.getJFreeChartPeriod(getNodeperiodtype()).toString() 
-				+ kdata.getJFreeChartPeriod(getNodeperiodtype()).getStart().toString()
-				+ "nodeexchangedaysnumber 数据已经存在，重复添加！"  );
+//				logger.info(getNodeCode() + getNodeperiodtype() 
+//				+ kdata.getJFreeChartPeriod(getNodeperiodtype()).toString() 
+//				+ kdata.getJFreeChartPeriod(getNodeperiodtype()).getStart().toString()
+//				+ "nodeexchangedaysnumber 数据已经存在，重复添加！"  );
 			}
 			try {
 				if(nodezhangtingnum == null)
@@ -135,10 +135,10 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 					nodedietingnum.add(kdata.getJFreeChartPeriod(this.nodeperiodtype), kdata.getDieTingNumber() );
 				
 			} catch (org.jfree.data.general.SeriesException e) {
-				logger.info(getNodeCode() + getNodeperiodtype() 
-				+ kdata.getJFreeChartPeriod(getNodeperiodtype()).toString() 
-				+ kdata.getJFreeChartPeriod(getNodeperiodtype()).getStart().toString()
-				+ " nodezhangtingnum 数据已经存在，重复添加！"  ); 
+//				logger.info(getNodeCode() + getNodeperiodtype() 
+//				+ kdata.getJFreeChartPeriod(getNodeperiodtype()).toString() 
+//				+ kdata.getJFreeChartPeriod(getNodeperiodtype()).getStart().toString()
+//				+ " nodezhangtingnum 数据已经存在，重复添加！"  ); 
 			}
 			
 //			nodeamozhanbi.setNotify(true);
@@ -152,20 +152,20 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 			if( kdata.getDaPanChenJiaoErZhanBiGrowingRate() != null && kdata.getDaPanChenJiaoErZhanBiGrowingRate() != 0)
 				nodedpcjezbgr.add(kdata.getJFreeChartPeriod(this.getNodeperiodtype()), kdata.getDaPanChenJiaoErZhanBiGrowingRate(),false);
 		} catch (org.jfree.data.general.SeriesException e) {
-			logger.info(getNodeCode() + getNodeperiodtype() 
-			+ kdata.getJFreeChartPeriod(getNodeperiodtype()).toString() 
-			+ kdata.getJFreeChartPeriod(getNodeperiodtype()).getStart().toString()
-			+ "nodedpcjezbgr 数据已经存在，重复添加！"  ); 
+//			logger.info(getNodeCode() + getNodeperiodtype() 
+//			+ kdata.getJFreeChartPeriod(getNodeperiodtype()).toString() 
+//			+ kdata.getJFreeChartPeriod(getNodeperiodtype()).getStart().toString()
+//			+ "nodedpcjezbgr 数据已经存在，重复添加！"  ); 
 		}
 		try {	
 			nodedpcjlzbgr.setNotify(false);
 			if( kdata.getDaPanChenJiaoLiangZhanBiGrowingRate() != null && kdata.getDaPanChenJiaoLiangZhanBiGrowingRate() != 0.0)
 				nodedpcjlzbgr.add(kdata.getJFreeChartPeriod(this.getNodeperiodtype()), kdata.getDaPanChenJiaoLiangZhanBiGrowingRate(),false);
 		} catch (org.jfree.data.general.SeriesException e) {
-			logger.info(getNodeCode() + getNodeperiodtype() 
-			+ kdata.getJFreeChartPeriod(getNodeperiodtype()).toString() 
-			+ kdata.getJFreeChartPeriod(getNodeperiodtype()).getStart().toString()
-			+ "nodedpcjlzbgr 数据已经存在，重复添加！"  );
+//			logger.info(getNodeCode() + getNodeperiodtype() 
+//			+ kdata.getJFreeChartPeriod(getNodeperiodtype()).toString() 
+//			+ kdata.getJFreeChartPeriod(getNodeperiodtype()).getStart().toString()
+//			+ "nodedpcjlzbgr 数据已经存在，重复添加！"  );
 		}
 		
 //		nodedpcjezbgr.setNotify(true);

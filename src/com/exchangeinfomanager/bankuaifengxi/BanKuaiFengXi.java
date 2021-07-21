@@ -274,7 +274,15 @@ public class BanKuaiFengXi extends JDialog
 	 */
 	private void adjustDate(LocalDate dateneedtobeadjusted)
 	{
-		//每周日一是新的一周开始，因为还没有导入数据，会显示为没有数据，所以把时间调整到上一周六
+		BanKuai tdxsh = (BanKuai) CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode("999999", BkChanYeLianTreeNode.TDXBK);
+		LocalDate lastestdate = tdxsh.getShuJuJiLuInfo().getJyjlmaxdate();
+		if(lastestdate != null) {
+			this.dateChooser.setLocalDate(lastestdate);
+			btnresetdate.setEnabled(false);
+			return;
+		}
+		
+		//如果上证没有数据，那就按自然日来设置每周日一是新的一周开始，因为还没有导入数据，会显示为没有数据，所以把时间调整到上一周六
 				DayOfWeek dayofweek = LocalDate.now().getDayOfWeek();
 				if(dayofweek.equals(DayOfWeek.SUNDAY) ) {
 					 LocalDate friday = dateneedtobeadjusted.minus(2,ChronoUnit.DAYS);
@@ -3758,6 +3766,18 @@ public class BanKuaiFengXi extends JDialog
 		tableselectedwkbkzb = new BanKuaiInfoTable(this.stockmanager,bkzbtablepropFileName);
 		sclpselectedwkdata.setViewportView(tableselectedwkbkzb);
 		
+		JScrollPane sclpdzhbk = new JScrollPane();
+		tabbedPanebk.addTab("\u5927\u667A\u6167\u5F53\u524D\u5468", null, sclpdzhbk, null);
+		
+		tblDzhBkCurWkZhanBi = new BanKuaiInfoTable(this.stockmanager,bkzbtablepropFileName);
+		sclpdzhbk.setViewportView(tblDzhBkCurWkZhanBi);
+		
+		JScrollPane sclpdahselectedwkbk = new JScrollPane();
+		tabbedPanebk.addTab("\u5927\u667A\u6167\u9009\u5B9A\u5468", null, sclpdahselectedwkbk, null);
+		
+		tblDzhBkCurSelectedWkZhanBi = new BanKuaiInfoTable(this.stockmanager,bkzbtablepropFileName);
+		sclpdahselectedwkbk.setViewportView(tblDzhBkCurSelectedWkZhanBi);
+		
 		sclpinfosummary = new JScrollPane();
 		tabbedPanebk.addTab("\u7EFC\u5408\u4FE1\u606F", null, sclpinfosummary, null);
 		
@@ -3780,18 +3800,6 @@ public class BanKuaiFengXi extends JDialog
 		bksocialtreecopy = CreateExchangeTree.CreateCopyOfTDXBankuaiSocialTree();
 		CreateExchangeTree.CreateTreeOfBanKuaiSocialFriends().addCylTreeUpdatedListener (bksocialtreecopy);
 		scrollPanesocialbktree.setViewportView(bksocialtreecopy);
-		
-		JScrollPane sclpdzhbk = new JScrollPane();
-		tabbedPanebk.addTab("\u5927\u667A\u6167\u5F53\u524D\u5468", null, sclpdzhbk, null);
-		
-		tblDzhBkCurWkZhanBi = new BanKuaiInfoTable(this.stockmanager,bkzbtablepropFileName);
-		sclpdzhbk.setViewportView(tblDzhBkCurWkZhanBi);
-		
-		JScrollPane sclpdahselectedwkbk = new JScrollPane();
-		tabbedPanebk.addTab("\u5927\u667A\u6167\u9009\u5B9A\u5468", null, sclpdahselectedwkbk, null);
-		
-		tblDzhBkCurSelectedWkZhanBi = new BanKuaiInfoTable(this.stockmanager,bkzbtablepropFileName);
-		sclpdahselectedwkbk.setViewportView(tblDzhBkCurSelectedWkZhanBi);
 		
 		String ggzbtablepropFileName =   (new SetupSystemConfiguration()).getSystemInstalledPath() + "/config/" +  bkfxsettingprop.getProperty ("BkfxGeGuTableInfoSettingFile")  + "/";
 		String ggexternaltablepropFileName =   (new SetupSystemConfiguration()).getSystemInstalledPath() + "/config/" +  bkfxsettingprop.getProperty ("BkfxGeGuExternalTableInfoSettingFile")  + "/";
@@ -4226,15 +4234,15 @@ public class BanKuaiFengXi extends JDialog
 		} else	
 		if(node.getType() == BkChanYeLianTreeNode.DZHBK ) {
 			if( CommonUtility.isInSameWeek( analysisdate, curdate) )	{
-				tabbedPanebk.setSelectedIndex(6);
-				tabbedPanebk.setTitleAt(6,"大智慧当前周");
+				tabbedPanebk.setSelectedIndex(2);
+				tabbedPanebk.setTitleAt(2,"大智慧当前周");
 				
 				tabbedPanegegu.setSelectedIndex(0);
 				tabbedPanegegu.setTitleAt(0,"大智慧当前周" );
 				tabbedPanePie.setSelectedIndex(1);
 			}
-			else {	tabbedPanebk.setSelectedIndex(7);
-					tabbedPanebk.setTitleAt(7, "大智慧选定周" + analysisdate );
+			else {	tabbedPanebk.setSelectedIndex(3);
+					tabbedPanebk.setTitleAt(3, "大智慧选定周" + analysisdate );
 					
 					tabbedPanegegu.setSelectedIndex(2);
 					tabbedPanegegu.setTitleAt(2,"大智慧选定周" + analysisdate );
@@ -4245,7 +4253,7 @@ public class BanKuaiFengXi extends JDialog
 			tabpnlKxian.setSelectedIndex(1);
 		} else	
 		if(node.getType() == BkChanYeLianTreeNode.TDXGG ) {
-			tabbedPanebk.setSelectedIndex(2);
+//			tabbedPanebk.setSelectedIndex(2);
 			tabpnlKxian.setSelectedIndex(2);
 			return;
 		} 

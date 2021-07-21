@@ -237,10 +237,10 @@ import com.udojava.evalex.Expression;
 			nodeohlc.setNotify(false);
 			nodeohlc.add( (NodeGivenPeriodDataItemForJFC)kdata);
 		} catch (org.jfree.data.general.SeriesException e) {
-			logger.info(super.getNodeCode() + super.getNodeperiodtype() 
-				+ kdata.getJFreeChartPeriod(super.getNodeperiodtype()).toString() 
-				+ kdata.getJFreeChartPeriod(super.getNodeperiodtype()).getStart().toString() 
-				+ "nodeohlc 数据已经存在，重复添加！"  );
+//			logger.info(super.getNodeCode() + super.getNodeperiodtype() 
+//				+ kdata.getJFreeChartPeriod(super.getNodeperiodtype()).toString() 
+//				+ kdata.getJFreeChartPeriod(super.getNodeperiodtype()).getStart().toString() 
+//				+ "nodeohlc 数据已经存在，重复添加！"  );
 		} catch (java.lang.IllegalArgumentException e) {
 //			e.printStackTrace();
 		}
@@ -250,30 +250,30 @@ import com.udojava.evalex.Expression;
 			nodeamo.add(kdata.getJFreeChartPeriod( super.getNodeperiodtype()  ),kdata.getMyOwnChengJiaoEr(),false);
 			nodevol.add(kdata.getJFreeChartPeriod( super.getNodeperiodtype() ), kdata.getMyOwnChengJiaoLiang(),false);
 		} catch (org.jfree.data.general.SeriesException e) {
-			logger.info(super.getNodeCode() + super.getNodeperiodtype() 
-			+ kdata.getJFreeChartPeriod(super.getNodeperiodtype()).toString() 
-			+ kdata.getJFreeChartPeriod(super.getNodeperiodtype()).getStart().toString() 
-			+ "nodeamo 数据已经存在，重复添加！"  );
+//			logger.info(super.getNodeCode() + super.getNodeperiodtype() 
+//			+ kdata.getJFreeChartPeriod(super.getNodeperiodtype()).toString() 
+//			+ kdata.getJFreeChartPeriod(super.getNodeperiodtype()).getStart().toString() 
+//			+ "nodeamo 数据已经存在，重复添加！"  );
 		}
 		try {	
 			periodhighestzhangdiefu.setNotify(false);
 			if( kdata.getPeriodHighestZhangDieFu() != null && kdata.getPeriodHighestZhangDieFu() != 0)
 				periodhighestzhangdiefu.add(kdata.getJFreeChartPeriod(super.getNodeperiodtype()),kdata.getPeriodHighestZhangDieFu(),false);
 		} catch (org.jfree.data.general.SeriesException e) {
-			logger.info(super.getNodeCode() + super.getNodeperiodtype() 
-			+ kdata.getJFreeChartPeriod(super.getNodeperiodtype()).toString() 
-			+ kdata.getJFreeChartPeriod(super.getNodeperiodtype()).getStart().toString() 
-			+ "periodhighestzhangdiefu 数据已经存在，重复添加！"  );
+//			logger.info(super.getNodeCode() + super.getNodeperiodtype() 
+//			+ kdata.getJFreeChartPeriod(super.getNodeperiodtype()).toString() 
+//			+ kdata.getJFreeChartPeriod(super.getNodeperiodtype()).getStart().toString() 
+//			+ "periodhighestzhangdiefu 数据已经存在，重复添加！"  );
 		}
 		try {	
 			periodlowestzhangdiefu.setNotify(false);
 			if( kdata.getPeriodLowestZhangDieFu() != null && kdata.getPeriodLowestZhangDieFu() != 0)
 				periodlowestzhangdiefu.add(kdata.getJFreeChartPeriod(super.getNodeperiodtype()), kdata.getPeriodLowestZhangDieFu(),false);
 		} catch (org.jfree.data.general.SeriesException e) {
-			logger.info(super.getNodeCode() + super.getNodeperiodtype() +  "  "
-			+ kdata.getJFreeChartPeriod(super.getNodeperiodtype()).toString() 
-			+ kdata.getJFreeChartPeriod(super.getNodeperiodtype()).getStart().toString() 
-			+ "periodlowestzhangdiefu 数据已经存在，重复添加！"  );
+//			logger.info(super.getNodeCode() + super.getNodeperiodtype() +  "  "
+//			+ kdata.getJFreeChartPeriod(super.getNodeperiodtype()).toString() 
+//			+ kdata.getJFreeChartPeriod(super.getNodeperiodtype()).getStart().toString() 
+//			+ "periodlowestzhangdiefu 数据已经存在，重复添加！"  );
 		}
 		
 		super.addNewXPeriodData(kdata);
