@@ -61,11 +61,13 @@ public class RuleOfMA
 			}
 		}
 		
-		Double[] dailyma = nodexdataday.getNodeOhlcMA (evadate);
+		Double[] dailyma  = nodexdataday.getNodeOhlcMA (evadate);
 		if (dailyma != null) {
 			//用周K线的CLOSE
-			TDXNodesXPeriodDataForJFC nodexdata = (TDXNodesXPeriodDataForJFC)evanode.getNodeXPeroidData(evaperiod);//   bk.getStockXPeriodDataForABanKuai(stockofbank.getMyOwnCode(), period);
+			TDXNodesXPeriodDataForJFC nodexdata = (TDXNodesXPeriodDataForJFC)evanode.getNodeXPeroidData(evaperiod);  
 			ohlcdata = ((TDXNodesXPeriodDataForJFC)nodexdata).getSpecificDateOHLCData (evadate);
+			if(ohlcdata == null) return true; //说明还是没找到有数据的日期，都认为是true
+			
 		    Double close = ohlcdata.getCloseValue();
 
 		    analysisresultforvoice = analysisresultforvoice + "周收盘价" + close;

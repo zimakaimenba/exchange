@@ -275,7 +275,7 @@ public class BanKuai extends TDXNodes
 	/*
 	 * 返回stock
 	 */
-	public Collection<BkChanYeLianTreeNode> getSpecificPeriodBanKuaiGeGu(LocalDate requireddate,int difference)
+	public Collection<BkChanYeLianTreeNode> getSpecificPeriodBanKuaiGeGu(LocalDate requireddate)
 	{
 		if(this.stockofbklist == null)		return null;
 		

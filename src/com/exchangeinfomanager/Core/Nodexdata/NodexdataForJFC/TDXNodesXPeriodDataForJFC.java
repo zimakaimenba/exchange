@@ -1388,9 +1388,12 @@ import com.udojava.evalex.Expression;
 		}
 		
 		Integer itemindex = this.getIndexOfSpecificDateOHLCData(requireddate );
+		if(itemindex == null)
+			return null;
+		
 		Double ma5 = null;
 		Integer ma5index = this.nodeohlcma5.getIndex(expectedperiod);
-		if(ma5index == -1 && itemindex>=5) {
+		if(ma5index != null && ma5index <0 && itemindex>=5) {
 			ma5 = StatUtils.mean(closedata, itemindex-4, 5);
 			nodeohlcma5.add(expectedperiod,ma5,false);
 		} else	{
@@ -1401,7 +1404,7 @@ import com.udojava.evalex.Expression;
 		 
 		Double ma10 = null;
 		Integer ma10index = this.nodeohlcma10.getIndex(expectedperiod);
-		if(ma10index == -1 && itemindex>=10) {
+		if(ma10index != null && ma10index <0 && itemindex>=10) {
 			ma10 = StatUtils.mean(closedata, itemindex-9, 10);
 			nodeohlcma10.add(expectedperiod,ma10,false);
 		} else	{
@@ -1412,7 +1415,7 @@ import com.udojava.evalex.Expression;
 		
 		Double ma20 = null;
 		Integer ma20index = this.nodeohlcma20.getIndex(expectedperiod);
-		if(ma20index == -1 && itemindex>=20) {
+		if(ma20index != null && ma20index <0 && itemindex>=20) {
 			ma20 = StatUtils.mean(closedata, itemindex-19, 20);
 			nodeohlcma20.add(expectedperiod,ma20,false);
 		} else
@@ -1424,19 +1427,23 @@ import com.udojava.evalex.Expression;
 		
 		Double ma60 = null;
 		Integer ma60index = this.nodeohlcma60.getIndex(expectedperiod);
-		if(ma60index == -1 && itemindex>=60) {
-			ma60 = StatUtils.mean(closedata, itemindex-59, 60);
-			nodeohlcma60.add(expectedperiod,ma60,false);
-		} else
-		{
-			TimeSeriesDataItem ma60item = this.nodeohlcma60.getDataItem(expectedperiod);
-			if(ma60item != null)
-			ma60 = ma60item.getValue().doubleValue();
-		} 
+		try {
+			if(ma60index != null && ma60index <0 && itemindex>=60) {
+				ma60 = StatUtils.mean(closedata, itemindex-59, 60);
+				nodeohlcma60.add(expectedperiod,ma60,false);
+			} else
+			{
+				TimeSeriesDataItem ma60item = this.nodeohlcma60.getDataItem(expectedperiod);
+				if(ma60item != null)
+				ma60 = ma60item.getValue().doubleValue();
+			} 
+		} catch (java.lang.NullPointerException e) {
+			e.printStackTrace();
+		}
 		
 		Double ma250 = null;
 		Integer ma250index = this.nodeohlcma250.getIndex(expectedperiod);
-		if(ma250index == -1 && itemindex>=250) {
+		if(ma250index != null && ma250index <0 && itemindex>=250) {
 			ma250 = StatUtils.mean(closedata, itemindex-249, 250);
 			nodeohlcma250.add(expectedperiod,ma250,false);
 		} else

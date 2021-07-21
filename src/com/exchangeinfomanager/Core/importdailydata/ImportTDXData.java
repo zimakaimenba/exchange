@@ -1,4 +1,4 @@
-package com.exchangeinfomanager.gui.subgui;
+package com.exchangeinfomanager.Core.importdailydata;
 
 import java.awt.BorderLayout;
 

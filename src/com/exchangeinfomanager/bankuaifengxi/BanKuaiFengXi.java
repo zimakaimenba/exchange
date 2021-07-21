@@ -973,50 +973,6 @@ public class BanKuaiFengXi extends JDialog
 	/*
 	 * 
 	 */
-	private void refreshCurrentBanKuaiTags(BanKuai selectedbk, String globeperiod2) 
-	{
-		 TagsServiceForNodes tagsevofbk = new TagsServiceForNodes (selectedbk);
-		 Collection<Tag> tags;
-		try {
-			tags = tagsevofbk.getTags();
-			selectedbk.setNodeTags(tags);
-		} catch (SQLException e) {		e.printStackTrace();
-		} finally {	tagsevofbk = null;	}
-		
-		List<BkChanYeLianTreeNode> allbkgg = selectedbk.getAllGeGuOfBanKuaiInHistory();
-		if(allbkgg == null)
-			return;
-		
-		for(BkChanYeLianTreeNode stockofbk : allbkgg)   {
-		    	if( ((StockOfBanKuai)stockofbk).isInBanKuaiAtSpecificDate(this.dateChooser.getLocalDate() )  ) {
-		    		Stock stock = ((StockOfBanKuai)stockofbk).getStock ();
-		    		TagsServiceForNodes tagsevofnode = new TagsServiceForNodes (stock);
-	    			Collection<Tag> tagsofstock;
-					try {
-						tagsofstock = tagsevofnode.getTags();
-		    			stock.setNodeTags(tagsofstock);
-					} catch (SQLException e) { e.printStackTrace();
-					} finally {	tagsevofnode = null;}
-		    	 }
-		}
-			
-		SvsForNodeOfBanKuai svrforbk = new SvsForNodeOfBanKuai ();
-		selectedbk = svrforbk.getAllGeGuOfBanKuai(selectedbk);
-		Collection<BkChanYeLianTreeNode> bkstock = selectedbk.getSpecificPeriodBanKuaiGeGu (this.dateChooser.getLocalDate(),0);
-		if(bkstock == null || bkstock.isEmpty())
-			return;
-			
-		bkstock.add(selectedbk);
-		TagsServiceForNodes lbnodedbservice = new TagsServiceForNodes (bkstock);
-		CacheForInsertedTag bkstkkwcache = new CacheForInsertedTag (lbnodedbservice);
-		lbnodedbservice.setCache(bkstkkwcache);
-		pnlbktags.initializeTagsPanel (lbnodedbservice,bkstkkwcache);
-		pnlbktags.validate();
-		pnlbktags.repaint();
-	}
-	/*
-	 * 
-	 */
 	private void refreshDaPanFengXiResult ()
 	{
 		LocalDate curselectdate = null;
@@ -1180,17 +1136,6 @@ public class BanKuaiFengXi extends JDialog
 			readengine = new VoiceEngine (anaresult);
 			readengine.execute();
 		}
-	}
-	private void refreshCurrentStockTags(Stock selectedstock) 
-	{
-		Collection<BkChanYeLianTreeNode> bkstock = new HashSet<> ();
-		bkstock.add(selectedstock);
-		TagsServiceForNodes lbnodedbservice = new TagsServiceForNodes (bkstock);
-		CacheForInsertedTag bkstkkwcache = new CacheForInsertedTag (lbnodedbservice);
-		lbnodedbservice.setCache(bkstkkwcache);
-		pnlstocktags.initializeTagsPanel (lbnodedbservice,bkstkkwcache);
-		pnlstocktags.validate();
-		pnlstocktags.repaint();
 	}
 	/*
 	 * 
@@ -1610,18 +1555,6 @@ public class BanKuaiFengXi extends JDialog
 				((BanKuaiGeGuBasicTableModel)tablexuandingminustwo.getModel()).setInterSectionBanKuai(null); 
 				((BanKuaiGeGuBasicTableModel)tablexuandingplusone.getModel()).setInterSectionBanKuai(null); 
 			}
-		});
-		
-		pnlbktags.addPropertyChangeListener(new PropertyChangeListener() {
-
-            public void propertyChange(PropertyChangeEvent evt) {
-
-                if (evt.getPropertyName().equals(LabelTag.PROPERTYCHANGEDATAGWASSELECTED )) {
-                	Collection<Tag> newvalue = (Collection<Tag>) evt.getNewValue();
-                	 ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel() ).setCurrentHighlightKeyWords (newvalue);
-                	 tableGuGuZhanBiInBk.repaint();
-                }
-            }
 		});
 		
 		btnresetdate.addMouseListener(new MouseAdapter() {
@@ -2199,21 +2132,6 @@ public class BanKuaiFengXi extends JDialog
                 	break;
                 	case "选定周":	tabbedPanegegu.setSelectedIndex(2);
                 	break;
-                	case "关键词":	
-//                		int row = tableBkZhanBi.getSelectedRow();
-//        				if(row >0) {
-//        					int modelRow = tableBkZhanBi.convertRowIndexToModel(row);
-//            				BanKuai selectedbk = (BanKuai) ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getNode(modelRow);
-//        					refreshCurrentBanKuaiTags (selectedbk,globeperiod);
-//        				}
-        				
-                		BanKuai selectedbk = getSelectedTDXBanKuai ();
-    					if(selectedbk!=null) refreshCurrentBanKuaiTags (selectedbk,globeperiod);
-    					
-        				StockOfBanKuai selectstock = getSelectedStockOfBanKuai ();
-        				if(selectstock!=null)	refreshCurrentStockTags (selectstock.getStock());
-        				playAnaylsisFinishNoticeSound();
-                	break;
                 	case "大智慧当前周":	
                 		if(((BanKuaiInfoTableModel)tblDzhBkCurWkZhanBi.getModel()).getRowCount() <=0) {
                 			gettDZHBanKuaiZhanBiRangedByGrowthRateOfPeriod (dateChooser.getLocalDate(),globeperiod);
@@ -2291,10 +2209,10 @@ public class BanKuaiFengXi extends JDialog
 					}
 					
     	    	}
-    	    	
-    	    	combxsearchbk.updateUserSelectedNode(bankuai);
-    	    	
-    	    	playAnaylsisFinishNoticeSound();
+    	    	if(bankuai != null) {
+    	    		combxsearchbk.updateUserSelectedNode(bankuai);
+    	    		playAnaylsisFinishNoticeSound();
+    	    	}
     	    	
 				hourglassCursor = null;
 				Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
@@ -3248,16 +3166,6 @@ public class BanKuaiFengXi extends JDialog
 			extrainfotabpane.addTab(selectednode.getMyOwnName() + "基本面", displaybkjbmpnl);
 		}
 		
-		DisplayNodesRelatedTagsServices nodetags =  new DisplayNodesRelatedTagsServices (selectednode);
-		DisplayNodeInfoPanel displaybktagspnl = new DisplayNodeInfoPanel (nodetags);
-		if(displaybktagspnl.isHtmlContainedUsefulInfo() ) {
-			Dimension size4 = new Dimension(sclpinfosummary.getViewport().getSize().width,  displaybktagspnl.getContentHeight() + 10 );
-			displaybktagspnl.setPreferredSize(size4);
-			displaybktagspnl.setMinimumSize(size4);
-			displaybktagspnl.setMaximumSize(size4);
-			extrainfotabpane.addTab(selectednode.getMyOwnName() + "关键词", displaybktagspnl);
-		}
-		
 		if(BkChanYeLianTreeNode.isBanKuai(selectednode)) {
 			DisplayNodesRelatedNewsServices bknews = new DisplayNodesRelatedNewsServices (selectednode);
 			bknews.setTimeRangeForInfoRange(this.dateChooser.getLocalDate(), this.dateChooser.getLocalDate());
@@ -3295,6 +3203,68 @@ public class BanKuaiFengXi extends JDialog
 				extrainfotabpane.addTab(selectednode.getMyOwnName() + "股东信息", gdpnl);
 			}
 		}
+		
+		TagsPanel pnlnodetags = new TagsPanel ("",TagsPanel.HIDEHEADERMODE,TagsPanel.PARTCONTROLMODE);
+		extrainfotabpane.addTab(selectednode.getMyOwnName() + "关键词", pnlnodetags);
+		extrainfotabpane.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getButton() == MouseEvent.BUTTON1) {
+                	Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
+        			setCursor(hourglassCursor);
+        			
+                	String selecttitle = extrainfotabpane.getTitleAt( extrainfotabpane.getSelectedIndex() ).trim();
+                	if(selecttitle.contains("关键词"))  selecttitle = "关键词";
+                	switch(selecttitle) {
+                	case "关键词":	
+                		BkChanYeLianTreeNode node = nodejbm.getDisplayedNode();
+                		if(BkChanYeLianTreeNode.isBanKuai(node) ) {
+                			SvsForNodeOfBanKuai svrforbk = new SvsForNodeOfBanKuai ();
+                    		svrforbk.getAllGeGuOfBanKuai((BanKuai) node);
+                    		Collection<BkChanYeLianTreeNode> bkstock = ((BanKuai) node).getSpecificPeriodBanKuaiGeGu (dateChooser.getLocalDate());
+                    		svrforbk = null;
+                    		if(bkstock == null || bkstock.isEmpty())	return;
+                    			
+                    		bkstock.add(node);
+                    		TagsServiceForNodes lbnodedbservice = new TagsServiceForNodes (bkstock);
+                    		CacheForInsertedTag bkstkkwcache = new CacheForInsertedTag (lbnodedbservice);
+                    		lbnodedbservice.setCache(bkstkkwcache);
+                    		pnlnodetags.initializeTagsPanel (lbnodedbservice,bkstkkwcache);
+                    		pnlnodetags.revalidate();
+                    		pnlnodetags.repaint();
+                		} else {
+                			Collection<BkChanYeLianTreeNode> bkstock = new HashSet<> ();
+                			bkstock.add(node);
+                			TagsServiceForNodes lbnodedbservice = new TagsServiceForNodes (bkstock);
+                			CacheForInsertedTag bkstkkwcache = new CacheForInsertedTag (lbnodedbservice);
+                			lbnodedbservice.setCache(bkstkkwcache);
+                			pnlnodetags.initializeTagsPanel (lbnodedbservice,bkstkkwcache);
+                			pnlnodetags.validate();
+                			pnlnodetags.repaint();
+                		}
+                		playAnaylsisFinishNoticeSound();
+                	break;
+                	}
+                	
+                	hourglassCursor = null;
+    				Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
+        			setCursor(hourglassCursor2);
+                } else if (e.getButton() == MouseEvent.BUTTON3) {}
+            }
+		});
+		
+		pnlnodetags.addPropertyChangeListener(new PropertyChangeListener() {
+
+            public void propertyChange(PropertyChangeEvent evt) {
+
+                if (evt.getPropertyName().equals(LabelTag.PROPERTYCHANGEDATAGWASSELECTED )) {
+                	Collection<Tag> newvalue = (Collection<Tag>) evt.getNewValue();
+                	 ((BanKuaiGeGuBasicTableModel)tableGuGuZhanBiInBk.getModel() ).setCurrentHighlightKeyWords (newvalue);
+                	 tableGuGuZhanBiInBk.repaint();
+                }
+            }
+		});
+		
 		pnlextrainfo.add(extrainfotabpane);
 		sclpinfosummary.getVerticalScrollBar().setValue(pnlextrainfo.getHeight() - extrainfotabpane.getHeight() );
 		
@@ -3795,15 +3765,9 @@ public class BanKuaiFengXi extends JDialog
 		sclpinfosummary.setViewportView(pnlextrainfo);
 		pnlextrainfo.setLayout(new BoxLayout(pnlextrainfo, BoxLayout.Y_AXIS));
 		
-		JPanel pnlbkstocktags = new JPanel();
-		tabbedPanebk.addTab("\u5173\u952E\u8BCD", null, pnlbkstocktags, null);
-		pnlbkstocktags.setLayout(new BoxLayout(pnlbkstocktags, BoxLayout.Y_AXIS));
-		
-		pnlbktags = new TagsPanel("",TagsPanel.HIDEHEADERMODE,TagsPanel.PARTCONTROLMODE);
-		pnlbkstocktags.add(pnlbktags);
-		
-		pnlstocktags = new TagsPanel("",TagsPanel.HIDEHEADERMODE,TagsPanel.PARTCONTROLMODE);
-		pnlbkstocktags.add(pnlstocktags);
+//		JPanel pnlbkstocktags = new JPanel();
+//		tabbedPanebk.addTab("\u5173\u952E\u8BCD", null, pnlbkstocktags, null);
+//		pnlbkstocktags.setLayout(new BoxLayout(pnlbkstocktags, BoxLayout.Y_AXIS));
 		
 		JScrollPane scrollPanecyl = new JScrollPane();
 		tabbedPanebk.addTab("\u4EA7\u4E1A\u94FE", null, scrollPanecyl, null);
@@ -4213,8 +4177,6 @@ public class BanKuaiFengXi extends JDialog
 //		menuItemchengjiaoer.setText("X 按成交额排名");
 //    	menuItemliutong.setText("按流通市值排名");
     	menuItemtimerangezhangfu.setText("按阶段涨幅排名");
-    	
-		pnlstocktags.removeAll();
 	}
 	/*
 	 * 指定tabbedPanegegu的title，否则会出现几个地方不一致

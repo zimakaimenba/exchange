@@ -18,7 +18,10 @@ public class DisplayNodeJiBenMianService implements ServicesOfNodeJiBenMianInfo
 	{
 		this.node = node;
 	}
-	
+	public BkChanYeLianTreeNode getDisplayedNode ()
+	{
+		return this.node;
+	}
 	public String getRequiredHtmlInfo ()
 	{
 		String nodename = node.getMyOwnName();
