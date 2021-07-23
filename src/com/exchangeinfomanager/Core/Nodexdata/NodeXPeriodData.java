@@ -74,6 +74,7 @@ public interface NodeXPeriodData
 	public LocalDate getOHLCRecordsEndDate ();
 	
 	public TimeSeries getAMOData ();
+	public TimeSeries getVOLData ();
 	public LocalDate getAmoRecordsStartDate ();
 	public LocalDate getAmoRecordsEndDate ();
 

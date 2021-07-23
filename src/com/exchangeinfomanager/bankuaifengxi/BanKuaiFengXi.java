@@ -831,7 +831,8 @@ public class BanKuaiFengXi extends JDialog
 //				}
 //			}
 //		}
-
+		if(node.getType() == BkChanYeLianTreeNode.DAPAN) return;
+		
 		BkChanYeLianTreeNode parent;
 		try {	parent = (BkChanYeLianTreeNode)bksocialtreecopy.getSpecificNodeByHypyOrCode(node.getMyOwnCode(), node.getType()).getParent();
 		} catch (java.lang.NullPointerException e) { return; }
@@ -1060,7 +1061,7 @@ public class BanKuaiFengXi extends JDialog
 		hightlightSpecificSector (selectstockofbankuai); //餅圖
 
 		LocalDate curselectdate = dateChooser.getLocalDate();
-		if(this.globecalwholeweek)		curselectdate = curselectdate.with(DayOfWeek.SATURDAY);
+		if(this.globecalwholeweek)		curselectdate = curselectdate.with(DayOfWeek.FRIDAY);
 		
 		unifiedTabbedPanSelectionActions (selectstock,curselectdate);
 		
@@ -1085,7 +1086,6 @@ public class BanKuaiFengXi extends JDialog
 		chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(curselecteddate));
 		
 		displayNodeInfo (selectstock);
-
 		
 		//在产业链树上寻找该个股
 		cyltreecopy.searchAndLocateNodeInTree (selectstock);
@@ -2305,7 +2305,6 @@ public class BanKuaiFengXi extends JDialog
 		 */
 		pnlcurwkggcjezhanbi.addPropertyChangeListener(new PropertyChangeListener() 
 		{
-
 	            public void propertyChange(PropertyChangeEvent evt) {
 
 	                if (evt.getPropertyName().equals(BanKuaiFengXiPieChartPnl.SELECTED_PROPERTY)) {
@@ -2320,7 +2319,6 @@ public class BanKuaiFengXi extends JDialog
 		});
 		pnlCjeZbGrXuandingZhou.addPropertyChangeListener(new PropertyChangeListener() 
 		{
-
             public void propertyChange(PropertyChangeEvent evt) {
 
                 if (evt.getPropertyName().equals(BanKuaiFengXiPieChartPnl.SELECTED_PROPERTY)) {
@@ -2335,7 +2333,6 @@ public class BanKuaiFengXi extends JDialog
                 
             }
 		});
-
 
 		combxsearchbk.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent arg0) 
@@ -2370,7 +2367,6 @@ public class BanKuaiFengXi extends JDialog
 				}
 			}
 		});
-		
 		combxstockcode.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent arg0) 
 			{
@@ -2397,7 +2393,7 @@ public class BanKuaiFengXi extends JDialog
 					}
 			}
 				
-				if(arg0.getStateChange() == ItemEvent.DESELECTED) {	}
+				if(arg0.getStateChange() == ItemEvent.DESELECTED) {}
 			}
 		});
 		

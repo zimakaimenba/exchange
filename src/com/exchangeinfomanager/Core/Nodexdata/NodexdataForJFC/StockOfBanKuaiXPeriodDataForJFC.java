@@ -494,6 +494,11 @@ public class StockOfBanKuaiXPeriodDataForJFC implements NodeXPeriodData
 		// TODO Auto-generated method stub
 		
 	}
+	@Override
+	public TimeSeries getVOLData() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 
 	

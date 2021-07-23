@@ -44,7 +44,7 @@ public class BanKuaiFengXiPieChartCjePnl extends BanKuaiFengXiPieChartPnl
 		this.curdisplaybk = bankuai;
 		this.displayedweeknumber = weeknumber;
 		
-		Set<BkChanYeLianTreeNode> tmpallbkge = ((BanKuai)bankuai).getSpecificPeriodStockOfBanKuai(weeknumber,0);
+		Set<BkChanYeLianTreeNode> tmpallbkge = ((BanKuai)bankuai).getSpecificPeriodStockOfBanKuai(weeknumber);
 		
 		piechartdataset.clear();
 		super.piechart.setNotify(false);

@@ -47,8 +47,6 @@ public class BanKuaiInfoTable extends BanKuaiandGeGuTableBasic implements NewsCa
 	private BanKuaiPopUpMenu popupMenuGeguNews;
 	private static final long serialVersionUID = 1L;
 	private StockInfoManager stockmanager;
-//	private BanKuaiAndStockTree allbkskstree;
-//	private TableFilterHeader filterHeader;
 	
 	private Logger logger = Logger.getLogger(BanKuaiInfoTable.class);
 	private BanKuaiInfoTableRenderer renderer;
@@ -101,7 +99,11 @@ public class BanKuaiInfoTable extends BanKuaiandGeGuTableBasic implements NewsCa
 	{
 		TableRowSorter<TableModel> sorter = (TableRowSorter<TableModel>)this.getRowSorter();
 		List<RowSorter.SortKey> sortKeys = new ArrayList<>();
-		int columnIndexToSort = 2; //优先排序占比增长
+		String columnIndexToSortProp = super.prop.getProperty("columnIndexToSort"); //优先排序占比增长
+		int columnIndexToSort = 3;
+		if(columnIndexToSortProp != null)
+			columnIndexToSort = Integer.parseInt(columnIndexToSortProp);
+		
 		sortKeys.add(new RowSorter.SortKey(columnIndexToSort, SortOrder.DESCENDING));
 		sorter.setSortKeys(sortKeys);
 		sorter.sort();

@@ -756,7 +756,6 @@ public class ImportTDXData extends JDialog {
 					ckbxbuquanshuju.setEnabled(false);
 					ckbxbuquanshuju.setSelected(false);
 					chckbximportDZHbkdailyamodata.setSelected(true);
-					chckbximportdzhbk.setSelected(true);
 					
 					LocalTime tdytime = LocalTime.now(); 
 					Calendar cal = Calendar.getInstance();
@@ -767,12 +766,11 @@ public class ImportTDXData extends JDialog {
 					else
 						ckbxnetease.setSelected(true);
 					
-					if(wkday == 1 || wkday == 3 ) {
+					if(wkday == 1 || wkday == 3 ||  wkday == 5 ) {
 						chbxdaorutdxsysbk.setSelected(true);
-						
+						chckbximportdzhbk.setSelected(true);
 					}
 						
-					
 					//曾用名和现用名一周只要更新一次，周五即可
 //					Calendar cal = Calendar.getInstance();
 //					int wkday = cal.get(Calendar.DAY_OF_WEEK) - 1;

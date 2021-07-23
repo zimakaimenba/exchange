@@ -40,8 +40,7 @@ public class BanKuaiGeGuTableFromPropertiesFile extends BanKuaiGeGuBasicTable
 		super.setColumnPredefinedFilter();
 		
 		//sort http://www.codejava.net/java-se/swing/6-techniques-for-sorting-jtable-you-should-know
-		TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(this.getModel());
-		this.setRowSorter(sorter);
+		sortByZhanBiGrowthRate ();
 		
 	}
 	

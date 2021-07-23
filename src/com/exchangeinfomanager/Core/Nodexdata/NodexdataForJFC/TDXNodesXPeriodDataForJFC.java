@@ -297,11 +297,11 @@ import com.udojava.evalex.Expression;
 		LocalDate startdate = start.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 		LocalDate enddate = dataitem.getPeriod().getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 	
-		if(super.getNodeperiodtype() == NodeGivenPeriodDataItem.WEEK) {
+		if(super.getNodeperiodtype().equalsIgnoreCase(NodeGivenPeriodDataItem.WEEK) ) {
 			TemporalField fieldUS = WeekFields.of(Locale.US).dayOfWeek();
 			LocalDate mondayday = startdate.with(fieldUS, 2);
 			return mondayday;
-		} else if(super.getNodeperiodtype() == NodeGivenPeriodDataItem.DAY) 
+		} else if(super.getNodeperiodtype().equalsIgnoreCase(NodeGivenPeriodDataItem.DAY) ) 
 			return startdate;
 
 		return null;
@@ -320,11 +320,11 @@ import com.udojava.evalex.Expression;
 		LocalDate startdate = start.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 		LocalDate enddate = dataitem.getPeriod().getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 		
-		if(super.getNodeperiodtype() == NodeGivenPeriodDataItem.WEEK) {
+		if(super.getNodeperiodtype().equalsIgnoreCase( NodeGivenPeriodDataItem.WEEK) ) {
 			TemporalField fieldUS = WeekFields.of(Locale.US).dayOfWeek();
 			LocalDate fridayday = startdate.with(fieldUS, 6);
 			return fridayday;
-		} else if(super.getNodeperiodtype() == NodeGivenPeriodDataItem.DAY) {
+		} else if(super.getNodeperiodtype().equalsIgnoreCase( NodeGivenPeriodDataItem.DAY) ) {
 			return enddate;
 		}
 		
@@ -376,6 +376,9 @@ import com.udojava.evalex.Expression;
 	 */
 	public TimeSeries getAMOData ()	{
 		return this.nodeamo;
+	}
+	public TimeSeries getVOLData ()	{
+		return this.nodevol;
 	}
 	/*
 	 * 
@@ -572,10 +575,10 @@ import com.udojava.evalex.Expression;
 		LocalDate startdate = firstperiod.getStart().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 		LocalDate enddate = firstperiod.getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();;
 	
-		if(super.getNodeperiodtype() == NodeGivenPeriodDataItem.WEEK) {
+		if(super.getNodeperiodtype().equalsIgnoreCase (NodeGivenPeriodDataItem.WEEK) ) {
 			LocalDate mondayday = startdate.with(DayOfWeek.MONDAY);
 			return mondayday;
-		} else if(super.getNodeperiodtype() == NodeGivenPeriodDataItem.DAY) {
+		} else if(super.getNodeperiodtype().equalsIgnoreCase( NodeGivenPeriodDataItem.DAY)  ) {
 			return startdate;
 		}
 		
@@ -593,10 +596,10 @@ import com.udojava.evalex.Expression;
 		LocalDate startdate = firstperiod.getStart().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 		LocalDate enddate = firstperiod.getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();;
 	
-		if(super.getNodeperiodtype() == NodeGivenPeriodDataItem.WEEK) {
+		if(super.getNodeperiodtype().equalsIgnoreCase(NodeGivenPeriodDataItem.WEEK) ) {
 			LocalDate saturday = enddate.with(DayOfWeek.FRIDAY);
 			return saturday;
-		} else if(super.getNodeperiodtype() == NodeGivenPeriodDataItem.DAY) {
+		} else if(super.getNodeperiodtype().equalsIgnoreCase(NodeGivenPeriodDataItem.DAY) ) {
 			return enddate;
 		}
 		
@@ -813,33 +816,55 @@ import com.udojava.evalex.Expression;
 			else	return 1.0;
 	}
 	/*
-	 * 计算成交额日平均变化贡献率，即基于日平均成交额，板块成交额的变化占整个上级板块成交额增长量的比率�?
+	 * 计算成交额日平均变化贡献率，即基于日平均成交额，板块成交额的变化占整个上级板块成交额增长量的比率
 	 */
 	public Double getChenJiaoErChangeGrowthRateOfSuperBanKuaiOnDailyAverage (TDXNodes superbk, LocalDate requireddate ) 
 	{	
 		RegularTimePeriod curperiod = this.getJFreeChartFormateTimePeriod(requireddate ) ;
 		if(curperiod == null)	return null;
 		
-		TimeSeriesDataItem curcjlrecord = this.nodeamo.getDataItem( curperiod );
-		if( curcjlrecord == null)	return null;
+		TimeSeriesDataItem curcjerecord = this.nodeamo.getDataItem( curperiod );
+		if( curcjerecord == null)	return null;
 
-		//判断上级板块(大盘或�?�板�?)是否缩量,�?以了没有比较的意义，直接返回-100�?
+		//判断上级板块是否缩量,缩量没有比较的意义，直接返回-100
+		Boolean bkreachfirstday = false;
 		String nodept = getNodeperiodtype();
 		NodeXPeriodData bkxdata = superbk.getNodeXPeroidData(nodept);
-		Double bkcjediff = bkxdata.getChengJiaoErDailyAverageDifferenceWithLastPeriod(requireddate );
-		if(bkcjediff == null )	return null;
-		if(  bkcjediff < 0   )		return -100.0; //板块缩量�?
-		
-		TimeSeriesDataItem lastcjlrecord = null;
-		int index = this.nodeamo.getIndex( curperiod );
-		try{	lastcjlrecord = nodeamo.getDataItem( index - 1);
+		int bkindex = bkxdata.getAMOData().getIndex(curperiod);
+		try {	TimeSeriesDataItem bklastcjerecord = bkxdata.getAMOData().getDataItem( bkindex - 1);
 		}	catch (java.lang.IndexOutOfBoundsException ex) {
-			logger.debug("index = 0，可能是新股第一周，可能是数据记录最早记录周，无法判�?");
-			Boolean reachfirstday = super.isLocalDateReachFristDayInHistory (requireddate ); 
-			if(reachfirstday != null && reachfirstday == true)
-				return null;
+			logger.debug("index = 0，可能是新股第一周，可能是数据记录最早记录周，无法判断");
+			bkreachfirstday = bkxdata.isLocalDateReachFristDayInHistory (requireddate );
+			if(bkreachfirstday == null) return null;
 		}
-		if(this.isNodeDataFuPaiAfterTingPai(superbk,requireddate)) { //说明是停牌后复牌了，或�?�新�?
+		
+		if( bkreachfirstday ) { //板块到了第一周，个股所有的成交量都计算, 这里一个无法解决的BUG是板块诞生日可能不是从周一开始，也就是说个股可能是5天平均，板块可能是2天平均，比较复杂，情况特殊就不仔细计算了 
+			Double ggcurggcje = this.getAverageDailyChengJiaoErOfWeek(requireddate); //新板块所有成交量都应该计算入
+			Double bkcurggcje = bkxdata.getAverageDailyChengJiaoErOfWeek(requireddate); //新板块所有成交量都应该计算入
+			return ggcurggcje/bkcurggcje;
+		}
+		
+		Double bkcjediff = bkxdata.getChengJiaoErDailyAverageDifferenceWithLastPeriod(requireddate );
+		//板块缩量
+		if(bkcjediff == null )	return null;
+		if(  bkcjediff < 0   )		return -100.0;
+		 
+		Boolean gegureachfirstday = false ; 
+		int index = this.nodeamo.getIndex( curperiod );
+		try {	TimeSeriesDataItem lastcjerecord = nodeamo.getDataItem( index - 1);
+		}	catch (java.lang.IndexOutOfBoundsException ex) {
+			logger.debug("index = 0，可能是新股第一周，可能是数据记录最早记录周，无法判断");
+			gegureachfirstday = super.isLocalDateReachFristDayInHistory (requireddate ); 
+			if(gegureachfirstday == null )	return null;
+		}
+		
+		if(gegureachfirstday) {//新个股，所有的成交量、成交额都应该计入，计算的是个股在整个板块成交量的占比,同样问题是个股诞生日可能不是从周一开始，
+			try {	Double curggcje = this.getAverageDailyChengJiaoErOfWeek(requireddate); //新板块所有成交量都应该计算入
+					return curggcje/bkcjediff;
+			} catch (java.lang.ArrayIndexOutOfBoundsException e) {e.printStackTrace(); return null;}
+		}
+		
+		if(this.isNodeDataFuPaiAfterTingPai(superbk,requireddate)) { //说明是停牌后复牌了
 			try {	Double curggcje = this.getAverageDailyChengJiaoErOfWeek(requireddate); //新板块所有成交量都应该计算入
 					return curggcje/bkcjediff;
 			} catch (java.lang.ArrayIndexOutOfBoundsException e) {e.printStackTrace();}
@@ -1085,34 +1110,57 @@ import com.udojava.evalex.Expression;
 		public Double getChenJiaoLiangChangeGrowthRateOfSuperBanKuaiOnDailyAverage (TDXNodes superbk, LocalDate requireddate ) 
 		{	
 			RegularTimePeriod curperiod = this.getJFreeChartFormateTimePeriod(requireddate ) ;
-			if(curperiod == null) return null;
+			if(curperiod == null)	return null;
 			
 			TimeSeriesDataItem curcjlrecord = this.nodevol.getDataItem( curperiod );
-			if( curcjlrecord == null) return null;
-			
-			//判断上级板块(大盘或�?�板�?)是否缩量,�?以了没有比较的意义，直接返回-100�?
+			if( curcjlrecord == null)	return null;
+
+			//判断上级板块是否缩量,缩量没有比较的意义，直接返回-100
+			Boolean bkreachfirstday = false;
 			String nodept = getNodeperiodtype();
 			NodeXPeriodData bkxdata = superbk.getNodeXPeroidData(nodept);
-			Double bkcjediff = bkxdata.getChengJiaoLiangDailyAverageDifferenceWithLastPeriod(requireddate );
-			if(bkcjediff == null )	return null;
-			if(  bkcjediff < 0   )  return -100.0;//板块缩量�?
-			
-			TimeSeriesDataItem lastcjlrecord = null;
-			int index = this.nodevol.getIndex( curperiod );
-			try{ lastcjlrecord = nodevol.getDataItem( index - 1);
+			int bkindex = bkxdata.getVOLData().getIndex(curperiod);
+			try {	TimeSeriesDataItem bklastcjlrecord = bkxdata.getVOLData().getDataItem( bkindex - 1);
 			}	catch (java.lang.IndexOutOfBoundsException ex) {
-				logger.debug("index = 0，可能是新股第一周，可能是数据记录最早记录周，无法判�?");
-				Boolean reachfirstday = super.isLocalDateReachFristDayInHistory (requireddate ); 
-				if(reachfirstday != null && reachfirstday == true)	return null;
+				logger.debug("index = 0，可能是新股第一周，可能是数据记录最早记录周，无法判断");
+				bkreachfirstday = bkxdata.isLocalDateReachFristDayInHistory (requireddate );
+				if(bkreachfirstday == null) return null;
 			}
-			if(this.isNodeDataFuPaiAfterTingPai(superbk,requireddate)) { //说明是停牌后复牌了，或�?�新�?
-				try {	Double curggcje = this.getAverageDailyChengJiaoLiangOfWeek(requireddate); //新板块所有成交量都应该计算入
-					return curggcje/bkcjediff;
-				} catch (java.lang.ArrayIndexOutOfBoundsException e) {	e.printStackTrace();}
+			
+			if( bkreachfirstday ) { //板块到了第一周，个股所有的成交量都计算, 这里一个无法解决的BUG是板块诞生日可能不是从周一开始，也就是说个股可能是5天平均，板块可能是2天平均，比较复杂，情况特殊就不仔细计算了 
+				Double ggcurggcjl = this.getAverageDailyChengJiaoLiangOfWeek(requireddate); //新板块所有成交量都应该计算入
+				Double bkcurggcjl = bkxdata.getAverageDailyChengJiaoLiangOfWeek(requireddate); //新板块所有成交量都应该计算入
+				return ggcurggcjl/bkcurggcjl;
+			}
+			
+			Double bkcjldiff = bkxdata.getChengJiaoLiangDailyAverageDifferenceWithLastPeriod(requireddate );
+			//板块缩量
+			if(bkcjldiff == null )	return null;
+			if(  bkcjldiff < 0   )		return -100.0;
+			 
+			Boolean gegureachfirstday = false ; 
+			int index = this.nodevol.getIndex( curperiod );
+			try {	TimeSeriesDataItem lastcjerecord = nodevol.getDataItem( index - 1);
+			}	catch (java.lang.IndexOutOfBoundsException ex) {
+				logger.debug("index = 0，可能是新股第一周，可能是数据记录最早记录周，无法判断");
+				gegureachfirstday = super.isLocalDateReachFristDayInHistory (requireddate ); 
+				if(gegureachfirstday == null )	return null;
+			}
+			
+			if(gegureachfirstday) {//新个股，所有的成交量、成交额都应该计入，计算的是个股在整个板块成交量的占比,同样问题是个股诞生日可能不是从周一开始，
+				try {	Double curggcjl = this.getAverageDailyChengJiaoLiangOfWeek(requireddate); //新板块所有成交量都应该计算入
+						return curggcjl/bkcjldiff;
+				} catch (java.lang.ArrayIndexOutOfBoundsException e) {e.printStackTrace(); return null;}
+			}
+			
+			if(this.isNodeDataFuPaiAfterTingPai(superbk,requireddate)) { //说明是停牌后复牌了
+				try {	Double curggcjl = this.getAverageDailyChengJiaoLiangOfWeek(requireddate); //新板块所有成交量都应该计算入
+						return curggcjl/bkcjldiff;
+				} catch (java.lang.ArrayIndexOutOfBoundsException e) {e.printStackTrace();}
 			}
 			
 			Double nodeavediff = this.getChengJiaoLiangDailyAverageDifferenceWithLastPeriod(requireddate );
-			return nodeavediff/bkcjediff;
+			return nodeavediff/bkcjldiff;
 		}
 //		@Override
 //		public Integer getCjlLianXuFangLiangPeriodNumber(LocalDate requireddate) 
@@ -1678,7 +1726,7 @@ import com.udojava.evalex.Expression;
 			LocalDate expectdate = requireddate;
 			if(ohlcdata == null) { //日线有可能当日是停牌的，如果停牌，就找到本周有数据的�?新天
 				String nodeperiod = this.getNodeperiodtype();
-				if( nodeperiod.equals(NodeGivenPeriodDataItem.DAY ) ) {
+				if( nodeperiod.equalsIgnoreCase(NodeGivenPeriodDataItem.DAY ) ) {
 					DayOfWeek dayOfWeek = requireddate.getDayOfWeek();
 					int dayOfWeekIntValue = dayOfWeek.getValue();
 					for(int i = 0;i < dayOfWeekIntValue;i++) { 
@@ -1690,7 +1738,7 @@ import com.udojava.evalex.Expression;
 				    		break;
 						}
 				    }
-				} else if( nodeperiod.equals(NodeGivenPeriodDataItem.WEEK ) ) { //�?周没有数据，说明停牌，目前周线MA不�?�么用，直接回F
+				} else if( nodeperiod.equalsIgnoreCase(NodeGivenPeriodDataItem.WEEK ) ) { //�?周没有数据，说明停牌，目前周线MA不�?�么用，直接回F
 					return false;
 				}
 			}
@@ -1915,7 +1963,6 @@ import com.udojava.evalex.Expression;
 			 } else if(value != null && value.getClass() == java.lang.Integer.class ) {
 				 result[i] = String.valueOf(value);
 			 } else {
-//				logger.debug(super.getNodeCode() + "�?" + requireddate.toString() + "没有数据，可能停牌�??");
 				result[i] = String.valueOf("0");
 			 }
 		 }

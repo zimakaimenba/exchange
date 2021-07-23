@@ -239,11 +239,10 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 		if(this.firstdayinhistory == null)
 			return null;
 		
-		RegularTimePeriod requiredperiod = this.getJFreeChartFormateTimePeriod (requireddate);
-		if(requiredperiod == null)
-			return null;
-		
-		requireddate = requiredperiod.getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+//		RegularTimePeriod requiredperiod = this.getJFreeChartFormateTimePeriod (requireddate);
+//		if(requiredperiod == null)	return null;
+//		
+//		requireddate = requiredperiod.getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 		if(this.nodeperiodtype.equals(NodeGivenPeriodDataItem.DAY) ) {
 			if(requireddate.equals(this.firstdayinhistory))
 				return true;
@@ -257,7 +256,7 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 		return null;
 	}
 	/*
-	 * 
+	 * 原来用来设置上市日期，但实际用下来，上市日期常常不可考证，干脆用来存数据在数据库中的第一条日期
 	 */
 	public void setShangShiRiQi (LocalDate requireddate)
 	{
@@ -551,10 +550,10 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 		LocalDate startdate = firstperiod.getStart().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();;
 		LocalDate enddate = firstperiod.getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();;
 	
-		if(this.nodeperiodtype == NodeGivenPeriodDataItem.WEEK) {
+		if(this.nodeperiodtype.equalsIgnoreCase(NodeGivenPeriodDataItem.WEEK) ) {
 			LocalDate mondayday = startdate.with(DayOfWeek.MONDAY);
 			return mondayday;
-		} else if(this.nodeperiodtype == NodeGivenPeriodDataItem.DAY) {
+		} else if(this.nodeperiodtype.equalsIgnoreCase(NodeGivenPeriodDataItem.DAY) ) {
 			return startdate;
 		}
 		
@@ -573,10 +572,10 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 		LocalDate startdate = firstperiod.getStart().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();;
 		LocalDate enddate = firstperiod.getEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();;
 	
-		if(this.nodeperiodtype == NodeGivenPeriodDataItem.WEEK) {
+		if(this.nodeperiodtype.equalsIgnoreCase(NodeGivenPeriodDataItem.WEEK) ) {
 			LocalDate saturday = enddate.with(DayOfWeek.FRIDAY);
 			return saturday;
-		} else if(this.nodeperiodtype == NodeGivenPeriodDataItem.DAY) {
+		} else if(this.nodeperiodtype.equalsIgnoreCase( NodeGivenPeriodDataItem.DAY) ) {
 			return enddate;
 		}
 		
@@ -693,25 +692,28 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 		RegularTimePeriod expectedperiod = getJFreeChartFormateTimePeriod(requireddate);
 		if(expectedperiod == null)	return null;
 		
-		TimeSeriesDataItem curcjlrecord = this.nodeamozhanbi.getDataItem(expectedperiod );
-		if( curcjlrecord == null) { //可能是日线，要去 nodedpcjezbgr 取值
+		TimeSeriesDataItem curcjerecord = this.nodeamozhanbi.getDataItem(expectedperiod );
+		if( curcjerecord == null && this.getNodeperiodtype().equalsIgnoreCase(NodeGivenPeriodDataItem.DAY ) ) { //可能是日线，要去 nodedpcjezbgr 取值
 			TimeSeriesDataItem curcjezbgrrecord = this.nodedpcjezbgr.getDataItem(expectedperiod );
 			if(curcjezbgrrecord != null) {
 				Double cjezbgr = curcjezbgrrecord.getValue().doubleValue();
 				return cjezbgr;
 			}
-		}
+		} else if( curcjerecord == null && this.getNodeperiodtype().equalsIgnoreCase(NodeGivenPeriodDataItem.WEEK ) )  
+				return null;
+		else if( curcjerecord == null && this.getNodeperiodtype().equalsIgnoreCase(NodeGivenPeriodDataItem.MONTH ) )  
+			return null;
 		
 		try {
 			int index = this.nodeamozhanbi.getIndex(expectedperiod);
-			TimeSeriesDataItem lastcjlrecord = nodeamozhanbi.getDataItem( index -1  );
-			if(lastcjlrecord == null) { //休市前还是空，说明要是新板块。板块没有停牌的
+			TimeSeriesDataItem lastcjerecord = nodeamozhanbi.getDataItem( index -1  );
+			if(lastcjerecord == null) { //休市前还是空，说明要是新板块。板块没有停牌的
 				logger.debug(getNodeCode() + "可能是一个新个股或板块");
 				return 100.0;
 			}
 			
-			Double curzhanbiratio = curcjlrecord.getValue().doubleValue();
-			Double lastzhanbiratio = lastcjlrecord.getValue().doubleValue();
+			Double curzhanbiratio = curcjerecord.getValue().doubleValue();
+			Double lastzhanbiratio = lastcjerecord.getValue().doubleValue();
 			Double zhanbigrowthrate = (curzhanbiratio - lastzhanbiratio)/lastzhanbiratio;
 			
 			return zhanbigrowthrate;
@@ -826,13 +828,16 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 			if(curperiod == null )	return null;		
 			
 			TimeSeriesDataItem curcjlrecord = this.nodevolzhanbi.getDataItem( curperiod);
-			if( curcjlrecord == null) { //可能是日线，要去 nodedpcjezbgr 取值
+			if( curcjlrecord == null && this.getNodeperiodtype().equalsIgnoreCase(NodeGivenPeriodDataItem.DAY) ) { //可能是日线，要去 nodedpcjezbgr 取值
 				TimeSeriesDataItem curcjlzbgrrecord = this.nodedpcjlzbgr.getDataItem(curperiod );
 				if(curcjlzbgrrecord != null) {
 					Double cjezbgr = curcjlzbgrrecord.getValue().doubleValue();
 					return cjezbgr;
 				} 
-			}
+			} else if( curcjlrecord == null && this.getNodeperiodtype().equalsIgnoreCase(NodeGivenPeriodDataItem.WEEK ) )  
+				return null;
+			else if( curcjlrecord == null && this.getNodeperiodtype().equalsIgnoreCase(NodeGivenPeriodDataItem.MONTH ) )  
+				return null;
 			
 			int index = this.nodevolzhanbi.getIndex(curperiod);
 			try {

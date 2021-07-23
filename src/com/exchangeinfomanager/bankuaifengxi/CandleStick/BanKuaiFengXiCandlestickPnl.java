@@ -538,7 +538,8 @@ public class BanKuaiFengXiCandlestickPnl extends JPanel implements BarChartPanel
 		
 		tmpdapanDataset.addSeries(dapanohlcSeries);
 	
-		try {	candlestickChart.getXYPlot().getRangeAxis(1).setRange(0, highestHigh*1.02);
+		try { if(highestHigh == 0.0) highestHigh = 0.1;	
+			candlestickChart.getXYPlot().getRangeAxis(1).setRange(0, highestHigh*1.02);
 		} catch (java.lang.IllegalArgumentException e ) { e.printStackTrace();	}
 		
 		try {

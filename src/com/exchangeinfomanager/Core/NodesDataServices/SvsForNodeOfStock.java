@@ -478,6 +478,27 @@ public class SvsForNodeOfStock implements ServicesForNode, ServicesOfNodeStock
 
 		return node;
 	}
+	public BkChanYeLianTreeNode getNodeSuoShuBanKuaiList (BkChanYeLianTreeNode node,Boolean forcetorefreshdata)
+	{
+		if(forcetorefreshdata) {
+			bkdbopt.getTDXBanKuaiSetForStock ((Stock)node ); //通达信板块信息
+			
+			BanKuaiDZHDbOperation dzhdbopt = new BanKuaiDZHDbOperation ();
+			dzhdbopt.getDZHBanKuaiForAStock((Stock)node);
+			dzhdbopt = null;
+		} else {
+			if(  ((Stock)node).getGeGuCurSuoShuTDXSysBanKuaiList() == null ||  ((Stock)node).getGeGuCurSuoShuTDXSysBanKuaiList().isEmpty() )
+				bkdbopt.getTDXBanKuaiSetForStock ((Stock)node ); //通达信板块信息
+			
+			if( ((Stock)node).getGeGuCurSuoShuDZHSysBanKuaiList() == null || ((Stock)node).getGeGuCurSuoShuDZHSysBanKuaiList().isEmpty() ) {
+				BanKuaiDZHDbOperation dzhdbopt = new BanKuaiDZHDbOperation ();
+				dzhdbopt.getDZHBanKuaiForAStock((Stock)node);
+				dzhdbopt = null;
+			}
+		}
+		
+		return node;
+	}
 
 	@Override
 	public Collection<BkChanYeLianTreeNode> getSubSetOfTheNodesWithSpecificGntxString(String requiredgntxstring) {

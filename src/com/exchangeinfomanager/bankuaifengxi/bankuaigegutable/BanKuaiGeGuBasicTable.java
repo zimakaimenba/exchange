@@ -64,8 +64,6 @@ public abstract class BanKuaiGeGuBasicTable extends BanKuaiandGeGuTableBasic
 //		filterHeader = new TableFilterHeader(this, AutoChoices.ENABLED); //https://coderazzi.net/tablefilter/index.html#    //https://stackoverflow.com/questions/16277700/i-want-to-obtain-auto-filtering-in-jtable-as-in-ms-excel
 	}
 	
-	private static Logger logger = Logger.getLogger(BanKuaiGeGuBasicTable.class);
-	
 	protected StockCalendarAndNewDbOperation newsdbopt;
 	protected BanKuaiDbOperation bkdbopt;
 	protected StockInfoManager stockmanager;
@@ -95,29 +93,21 @@ public abstract class BanKuaiGeGuBasicTable extends BanKuaiandGeGuTableBasic
 	/*
 	 * 
 	 */
-	public void sortByParsedFile ()
+	protected void sortByZhanBiGrowthRate ()
 	{
 		TableRowSorter<TableModel> sorter = (TableRowSorter<TableModel>)this.getRowSorter();
-		List<RowSorter.SortKey> sortKeys = new ArrayList<>();
-		int columnIndexToSort = 6; //优先排序占比增长
-		sortKeys.add(new RowSorter.SortKey(columnIndexToSort, SortOrder.DESCENDING));
-		sorter.setSortKeys(sortKeys);
-		sorter.sort();
-	}
-	/*
-	 * 
-	 */
-	public void sortByZhanBiGrowthRate ()
-	{
-		TableRowSorter<TableModel> sorter = (TableRowSorter<TableModel>)this.getRowSorter();
-		List<RowSorter.SortKey> sortKeys = new ArrayList<>();
-		int columnIndexToSort = 4; //优先排序占比增长
-		sortKeys.add(new RowSorter.SortKey(columnIndexToSort, SortOrder.DESCENDING));
-		sorter.setSortKeys(sortKeys);
-		sorter.sort();
 		
-		sortKeys = null;
+		String columnIndexToSortProp = super.prop.getProperty("columnIndexToSort"); //优先排序占比增长
+		int columnIndexToSort = 4;
+		if(columnIndexToSortProp != null)
+			columnIndexToSort = Integer.parseInt(columnIndexToSortProp);
+		
+		List<RowSorter.SortKey> sortKeys = new ArrayList<>();
+		sortKeys.add(new RowSorter.SortKey(columnIndexToSort, SortOrder.DESCENDING));
+		sorter.setSortKeys(sortKeys);
+		sorter.sort();
 	}
+
 
 	protected void createMenuForTable ()
 	{

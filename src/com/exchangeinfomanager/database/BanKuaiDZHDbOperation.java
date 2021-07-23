@@ -1069,6 +1069,12 @@ public class BanKuaiDZHDbOperation extends BanKuaiDbOperation
 		    		}
 		    		try {	LocalDate shmindate = rs.getDate("DZHminjytime").toLocalDate();
 		    				dzhbk.getShuJuJiLuInfo().setJyjlmindate(shmindate);
+		    				
+		    				NodeXPeriodData bkxdatawk = dzhbk.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
+	        				NodeXPeriodData bkxdataday = dzhbk.getNodeXPeroidData(NodeGivenPeriodDataItem.DAY);
+	        				bkxdatawk.setShangShiRiQi(shmindate);
+	        				bkxdataday.setShangShiRiQi(shmindate);
+
 		    		} catch(java.lang.NullPointerException e) {
 		    				dzhbk.getShuJuJiLuInfo().setJyjlmaxdate(null);
 		    		}

@@ -260,7 +260,7 @@ public class BanKuai extends TDXNodes
 	/*
 	 * 返回stockofBanKuai
 	 */
-	public Set<BkChanYeLianTreeNode> getSpecificPeriodStockOfBanKuai(LocalDate requireddate,int difference) 
+	public Set<BkChanYeLianTreeNode> getSpecificPeriodStockOfBanKuai(LocalDate requireddate) 
 	{
 		Set<BkChanYeLianTreeNode> result = new HashSet<> ();
 		if(this.stockofbklist == null)	return result;

@@ -574,26 +574,12 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 			java.sql.Date lastdayofweek = java.sql.Date.valueOf(requireddate);
 			period = new org.jfree.data.time.Day (lastdayofweek);
 		}  else if(nodeperiod.equals(NodeGivenPeriodDataItem.MONTH)) {
-//			expectedate = requireddate.plus(difference,ChronoUnit.MONTHS);
+			java.sql.Date lastdayofweek = java.sql.Date.valueOf(requireddate);
+			period = new org.jfree.data.time.Month (lastdayofweek);
 		}
 		
 		return period;
 	}
-	
-//	protected LocalDate getRequiredLocalDate (LocalDate requireddate)
-//	{
-//		String nodeperiod = this.getNodeperiodtype();
-//		LocalDate expectedate = null;
-//		if(nodeperiod.equals(NodeGivenPeriodDataItem.WEEK)) { 
-//			expectedate = requireddate.plus(difference,ChronoUnit.WEEKS);
-//		} else if(nodeperiod.equals(NodeGivenPeriodDataItem.DAY)) {
-//			expectedate = requireddate.plus(difference,ChronoUnit.DAYS);
-//		}  else if(nodeperiod.equals(NodeGivenPeriodDataItem.MONTH)) {
-//			expectedate = requireddate.plus(difference,ChronoUnit.MONTHS);
-//		}
-//		
-//		return expectedate;
-//	}
 
 	@Override
 	public LocalDate getAmoRecordsStartDate() {
@@ -686,6 +672,13 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 		NodeXPeriodData shanghaiperiodrecords = shanghai.getNodeXPeroidData(recordsperiod);
 		TimeSeries shamodata = shanghaiperiodrecords.getAMOData();
 		return shamodata;
+	}
+	@Override
+	public TimeSeries getVOLData() {
+		String recordsperiod = getNodeperiodtype();
+		NodeXPeriodData shanghaiperiodrecords = shanghai.getNodeXPeroidData(recordsperiod);
+		TimeSeries shvoldata = shanghaiperiodrecords.getVOLData();
+		return shvoldata;
 	}
 
 	@Override
@@ -814,5 +807,7 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 		// TODO Auto-generated method stub
 		
 	}
+
+	
 }
 

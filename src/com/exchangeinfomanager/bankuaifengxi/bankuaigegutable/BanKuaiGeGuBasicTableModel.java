@@ -56,7 +56,7 @@ public abstract class BanKuaiGeGuBasicTableModel extends BandKuaiAndGeGuTableBas
 		super.curperiod = period;
 
 		entryList = null;
-		entryList = new ArrayList<>( bankuai.getSpecificPeriodStockOfBanKuai(wknum,0) );
+		entryList = new ArrayList<>( bankuai.getSpecificPeriodStockOfBanKuai(wknum) );
 		
 		 Iterator itr = entryList.iterator(); 
 	     while (itr.hasNext())      { 

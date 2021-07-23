@@ -113,7 +113,7 @@ public class BanKuaiShuXingSheZhi extends JPanel
 		if(bg != null)	colorButton.setBackground(bg);
 		else	colorButton.setBackground(Color.BLACK );
 		
-		if( ((BanKuai)settingnode).getBanKuaiLeiXing().equals(BanKuai.NOGGNOSELFCJL)) { //没有个股没有成交量的板块肯定不做板块分析等动作
+		if( ((BanKuai)settingnode).getBanKuaiLeiXing().equals(BanKuai.NOGGNOSELFCJL)	) { //没有个股没有成交量的板块肯定不做板块分析等动作
 			cbxnotimport.setSelected(true);
 			cbxnotgephi.setSelected(true);
 			cbxnotbkfx.setSelected(true);
@@ -176,6 +176,7 @@ public class BanKuaiShuXingSheZhi extends JPanel
 					cbxnotgephi.setSelected(true);
 					cbxnotshowincyltree.setSelected(true);
 					chkbxnotexportwklyfile.setSelected(true);
+					cbxcorezhishu.setSelected(false);
 				} 
 			}
 		});
