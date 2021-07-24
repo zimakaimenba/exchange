@@ -72,8 +72,10 @@ public class SvsForNodeOfStock implements ServicesForNode, ServicesOfNodeStock
 		LocalDate bkamostartday =	nodexdatawk.getAmoRecordsStartDate();
 		LocalDate bkamoendday = nodexdatawk.getAmoRecordsEndDate();
 				
-		if(bkohlcstartday == null && bkamostartday == null) return ;
-		LocalDate requiredstartday; LocalDate requiredendday = null;
+		if(bkamostartday == null )  //有时候当周的新股，在非完整周的时候，当周的数据已经被删除后，指定日期在AMO产生前，导致bkamostartday == null, 但bkohlcstartday数据没有删除
+			return;
+
+		LocalDate requiredstartday = null; LocalDate requiredendday = null;
 		if(bkohlcstartday == null) {
 			requiredstartday = bkamostartday;
 			requiredendday = bkamoendday;

@@ -82,8 +82,9 @@ public interface ServicesForNode
 				result  = requiredendday;
 				return result;
 			}
-			LocalDate amorecordsenddate = null;
+			
 			try {
+				LocalDate amorecordsenddate = null;
 				amorecordsenddate = nodeperioddata.getAmoRecordsEndDate();
 				if(amorecordsenddate == null)
 					;
@@ -97,15 +98,19 @@ public interface ServicesForNode
 				e.printStackTrace();
 			}
 
-			LocalDate ohlcrecordsenddate = nodexdataday.getOHLCRecordsEndDate();
-			if(ohlcrecordsenddate == null)
-				;
-			else if( ohlcrecordsenddate.isBefore(requiredendday))
-				nodexdataday.removeNodeDataFromSpecificDate(ohlcrecordsenddate);
-			else if( ohlcrecordsenddate.isAfter(requiredendday))
-				nodexdataday.removeNodeDataFromSpecificDate(requiredendday);
-			else if(amorecordsenddate.isEqual(requiredendday))
-				nodexdataday.removeNodeDataFromSpecificDate(requiredendday);
+			try {
+				LocalDate ohlcrecordsenddate = nodexdataday.getOHLCRecordsEndDate();
+				if(ohlcrecordsenddate == null)
+					;
+				else if( ohlcrecordsenddate.isBefore(requiredendday))
+					nodexdataday.removeNodeDataFromSpecificDate(ohlcrecordsenddate);
+				else if( ohlcrecordsenddate.isAfter(requiredendday))
+					nodexdataday.removeNodeDataFromSpecificDate(requiredendday);
+				else if(ohlcrecordsenddate.isEqual(requiredendday))
+					nodexdataday.removeNodeDataFromSpecificDate(requiredendday);
+			} catch (java.lang.NullPointerException e) {
+				e.printStackTrace();
+			}
 			
 			nodeperioddata.setNotCalWholeWeekMode (requiredendday);
 			nodexdataday.setNotCalWholeWeekMode (requiredendday);
