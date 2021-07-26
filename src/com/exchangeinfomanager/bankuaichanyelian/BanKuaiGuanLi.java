@@ -206,16 +206,23 @@ private Set<JTreeTable> tableallbktableset;
 		tfldsearchsysbk.addActionListener(new ActionListener(){
 
             public void actionPerformed(ActionEvent e){
-            	if(!Strings.isNullOrEmpty(tfldsearchsysbk.getText() ) )
-					findInputedNodeInTable (tfldsearchsysbk.getText().trim());
+            	if(!Strings.isNullOrEmpty(tfldsearchsysbk.getText() ) ) {
+            		BkChanYeLianTreeNode node = findInputedNodeInTable (tfldsearchsysbk.getText().trim());
+            		tdxbksocialtree.searchAndLocateNodeInTree(node);
+            	}
+            	
+            	
+            	
             }});
 		btnsearchsysbk.addMouseListener(new MouseAdapter() 
 		{
 			@Override
 			public void mouseClicked(MouseEvent arg0) 
 			{
-				if(!Strings.isNullOrEmpty(tfldsearchsysbk.getText() ) )
-					findInputedNodeInTable (tfldsearchsysbk.getText().trim());
+				if(!Strings.isNullOrEmpty(tfldsearchsysbk.getText() ) ) {
+					BkChanYeLianTreeNode node = findInputedNodeInTable (tfldsearchsysbk.getText().trim());
+					tdxbksocialtree.searchAndLocateNodeInTree(node);
+				}
 			}
 			
 		});
@@ -1094,9 +1101,10 @@ private Set<JTreeTable> tableallbktableset;
            }
 	    }
 	 
-	private Boolean findInputedNodeInTable(String nodecode) 
+	private BkChanYeLianTreeNode findInputedNodeInTable(String nodecode) 
 	{
-			Boolean found = false; int rowindex;
+			int rowindex;
+			BkChanYeLianTreeNode findnode = null;
 			nodecode = nodecode.substring(0,6);
 			
 			for( JTreeTable tmptable: tableallbktableset) {
@@ -1139,7 +1147,8 @@ private Set<JTreeTable> tableallbktableset;
 
 			        tmptable.scrollRectToVisible(rect);
 					try {	tmptable.setRowSelectionInterval(row, row);
-					} catch ( java.lang.IllegalArgumentException e) { e.printStackTrace(); System.out.print(row ); return false;}
+							findnode = bk; 
+					} catch ( java.lang.IllegalArgumentException e) { e.printStackTrace(); System.out.print(row ); return null;}
 //						int curselectrow = tmptable.getSelectedRow();
 //						try {
 //							tmptable.setRowSelectionInterval(modelRow, modelRow);
@@ -1151,7 +1160,7 @@ private Set<JTreeTable> tableallbktableset;
 
 			panelsetting.disableAllSettingComponents();
 			
-			return true;
+			return findnode;
 	}
 	
 }

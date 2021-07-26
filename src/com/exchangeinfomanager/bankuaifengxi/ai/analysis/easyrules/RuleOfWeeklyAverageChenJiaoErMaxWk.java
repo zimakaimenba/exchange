@@ -35,7 +35,8 @@ public class RuleOfWeeklyAverageChenJiaoErMaxWk
 		NodeXPeriodData nodexdata = evanode.getNodeXPeroidData(evaperiod);
 		int dpmaxwk;
 		try { dpmaxwk = nodexdata.getAverageDailyChenJiaoErMaxWeek (evadate);
-		} catch (java.lang.NullPointerException ex) { logger.info(evanode.getMyOwnName() + "reach the oldest data!");
+		} catch (java.lang.NullPointerException ex) { 
+//			ex.printStackTrace();
 			return false;
 		}
     	

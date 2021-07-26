@@ -937,15 +937,31 @@ public class BanKuaiFengXi extends JDialog
 	 */
 	protected void saveBanKuaiDailyDataToDatabase() 
 	{
-//		Set<BanKuaiandGeGuTableBasic> tablecurbk = new HashSet<>();
-//		tablecurbk.add(tableBkZhanBi);
-//		tablecurbk.add(tblDzhBkCurWkZhanBi);
+
+		SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai ();
+	
+//		for (BanKuaiandGeGuTableBasic tmpbktbl : tableallbktablesset ) {
+//			if( ((BanKuaiInfoTableModel)tmpbktbl.getModel()).getRowCount() <=0)
+//				continue;
+//			
+//			LocalDate curselectdate =  ((BanKuaiInfoTableModel)tmpbktbl.getModel()).getCurDisplayedDate();
+//			int rowcount = ((BanKuaiInfoTableModel)tmpbktbl.getModel()).getRowCount();
+//			int columnIndexCjeZbGr = ((BanKuaiInfoTableModel)tmpbktbl.getModel()).getKeyWrodColumnIndex ("CjeZbGrowRate");
+//			int columnIndexCjlZbGr = ((BanKuaiInfoTableModel)tmpbktbl.getModel()).getKeyWrodColumnIndex ("CjlZbGrowRate");
+//			for(int i=0;i<rowcount;i++) {
+//				BanKuai bk = (BanKuai) ((BanKuaiInfoTableModel)tmpbktbl.getModel()).getNode(i);
+//				Double cjezhgr = (Double) ((BanKuaiInfoTableModel)tmpbktbl.getModel()).getValueAt(i, columnIndexCjeZbGr);
+//				if(cjezhgr == 100.0) 
+//					continue; //新板块，数据无意义
+//				
+//				String[] kwlists =  {"CjeZbGrowRate","CjlZbGrowRate" }; 
+//				svsbk.saveBanKuaiExtraDataToDatabase(bk, curselectdate,kwlists);
+//			}
+//		}
 		
 		LocalDate curselectdate = complexSolutionForDateChooserWithCalWholeWeek ();
-		SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai ();
-		
 		String title  = tabbedPanebk.getTitleAt(tabbedPanebk.getSelectedIndex() );
-		if(!title.contains("大智慧")) { //通达信
+//		if(!title.contains("大智慧")) { //通达信
 			if(((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getRowCount() <=0)
 				return;
 			int rowcount = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getRowCount();
@@ -960,12 +976,12 @@ public class BanKuaiFengXi extends JDialog
 				String[] kwlists =  {"CjeZbGrowRate","CjlZbGrowRate" }; 
 				svsbk.saveBanKuaiExtraDataToDatabase(bk, curselectdate,kwlists);
 			}
-		} else { //大智慧
+//		} else { //大智慧
 			if(((BanKuaiInfoTableModel)tblDzhBkCurWkZhanBi.getModel()).getRowCount() <=0)
 				return;
-			int rowcount = ((BanKuaiInfoTableModel)tblDzhBkCurWkZhanBi.getModel()).getRowCount();
-			int columnIndexCjeZbGr = ((BanKuaiInfoTableModel)tblDzhBkCurWkZhanBi.getModel()).getKeyWrodColumnIndex ("CjeZbGrowRate");
-			int columnIndexCjlZbGr = ((BanKuaiInfoTableModel)tblDzhBkCurWkZhanBi.getModel()).getKeyWrodColumnIndex ("CjlZbGrowRate");
+			rowcount = ((BanKuaiInfoTableModel)tblDzhBkCurWkZhanBi.getModel()).getRowCount();
+			columnIndexCjeZbGr = ((BanKuaiInfoTableModel)tblDzhBkCurWkZhanBi.getModel()).getKeyWrodColumnIndex ("CjeZbGrowRate");
+			columnIndexCjlZbGr = ((BanKuaiInfoTableModel)tblDzhBkCurWkZhanBi.getModel()).getKeyWrodColumnIndex ("CjlZbGrowRate");
 			for(int i=0;i<rowcount;i++) {
 				BanKuai bk = (BanKuai) ((BanKuaiInfoTableModel)tblDzhBkCurWkZhanBi.getModel()).getNode(i);
 				Double cjezhgr = (Double) ((BanKuaiInfoTableModel)tblDzhBkCurWkZhanBi.getModel()).getValueAt(i, columnIndexCjeZbGr);
@@ -975,7 +991,7 @@ public class BanKuaiFengXi extends JDialog
 				String[] kwlists =  {"CjeZbGrowRate","CjlZbGrowRate" }; 
 				svsbk.saveBanKuaiExtraDataToDatabase(bk, curselectdate,kwlists);
 			}
-		}
+//		}
 					
 		svsbk = null;
 	}
@@ -1421,13 +1437,6 @@ public class BanKuaiFengXi extends JDialog
 			if( !isworkingday  && !hasselecteddatedata)	finialdate = sjjlmaxdate;
 			else	if( !isworkingday  && hasselecteddatedata)	finialdate = userselecteddate.with(DayOfWeek.FRIDAY);;
 		}
-//		if(!iscurwk && !this.globecalwholeweek) {
-//			if( isworkingday && !hasselecteddatedata)	finialdate = sjjlmaxdate;
-//			else if( isworkingday && hasselecteddatedata) finialdate = userselecteddate;
-//			
-//			if( !isworkingday  && !hasselecteddatedata)	finialdate = sjjlmaxdate;
-//			else	if( !isworkingday  && hasselecteddatedata)	finialdate = userselecteddate;
-//		}
 		
 		if( this.globecalwholeweek ) {
 			if( isworkingday && !hasselecteddatedata)	finialdate = sjjlmaxdate;
@@ -1436,13 +1445,6 @@ public class BanKuaiFengXi extends JDialog
 			if( !isworkingday  && !hasselecteddatedata)	finialdate = sjjlmaxdate;
 			else	if( !isworkingday  && hasselecteddatedata)	finialdate = userselecteddate.with(DayOfWeek.FRIDAY);
 		}
-//		if(!iscurwk && this.globecalwholeweek) {
-//			if( isworkingday && !hasselecteddatedata)	finialdate = sjjlmaxdate;
-//			else if( isworkingday && hasselecteddatedata) finialdate = userselecteddate;
-//			
-//			if( !isworkingday  && !hasselecteddatedata)	finialdate = sjjlmaxdate;
-//			else	if( !isworkingday  && hasselecteddatedata)	finialdate = userselecteddate.with(DayOfWeek.FRIDAY);
-//		}
 
 		return finialdate;
 	}
@@ -3279,9 +3281,6 @@ public class BanKuaiFengXi extends JDialog
 	 */
 	protected void displayNodeLargerPeriodData(TDXNodes node, LocalDate datekey, String guisource) 
 	{
-//		if(!this.globecalwholeweek) { JOptionPane.showMessageDialog(null,"不是整周分析模式，不支持更大范围显示分析结果数据!","Warning",JOptionPane.WARNING_MESSAGE);
-//			return;
-//		}
 		LocalDate isInNotCalWholeWeekModeData = null;
 		if(!this.globecalwholeweek) {
 			NodeXPeriodData nodexdatawk = ((TDXNodes)node).getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);

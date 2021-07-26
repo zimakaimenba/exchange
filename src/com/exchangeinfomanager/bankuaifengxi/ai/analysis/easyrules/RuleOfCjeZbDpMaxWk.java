@@ -56,7 +56,9 @@ public class RuleOfCjeZbDpMaxWk
     	if(cjedpmaxwk == null || cjedpmaxwk <= 0 ) {
     		Integer cjedpminwk = null;
     		try { cjedpminwk = 0- nodexdata.getChenJiaoErZhanBiMinWeekForDaPan (evadate);
-    		} catch (java.lang.NullPointerException ex) { logger.info(evanode.getMyOwnName() + "reach the oldest data!");return false;}
+    		} catch (java.lang.NullPointerException ex) { 
+//    			ex.printStackTrace();
+    			return false;}
     		
     		int minfazhi;
 	    	try {		minfazhi = evacond.getSettingCjeZbDpMinWkMax();

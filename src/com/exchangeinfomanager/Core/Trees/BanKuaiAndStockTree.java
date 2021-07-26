@@ -427,23 +427,27 @@ public class BanKuaiAndStockTree extends JTree
 	}
 	public  Boolean searchAndLocateNodeInTree(BkChanYeLianTreeNode node) 
 	{
-		   BkChanYeLianTreeNode findnode = this.getSpecificNodeByHypyOrCode (node.getMyOwnCode(),node.getType());
-		   if(findnode == null)
+//		   BkChanYeLianTreeNode findnode = this.getSpecificNodeByHypyOrCode (node.getMyOwnCode(),node.getType());
+		List<BkChanYeLianTreeNode> findnodelist = this.getSpecificNodeByHypyOrCodeList (node.getMyOwnCode(),node.getType());
+		
+		   if(findnodelist == null)
 			   return false;
 		   
-		   TreePath bkpath = new TreePath(findnode.getPath());
-		   if(bkpath != null) {
-			   this.setSelectionPath(bkpath);
-			   this.scrollPathToVisible(bkpath);
-			   this.expandTreePathAllNode(bkpath);
-			   
-			   return true;
-			}
-		return null;
+		   InvisibleTreeModel treeModel = (InvisibleTreeModel)this.getModel();
+	       BkChanYeLianTreeNode treeroot = (BkChanYeLianTreeNode)treeModel.getRoot();
+	       treeModel.reload(treeroot);
+	       
+		   for(BkChanYeLianTreeNode findnode : findnodelist) {
+			   TreePath bkpath = new TreePath(findnode.getPath());
+			   if(bkpath != null) {
+				   super.setSelectionPath(bkpath);
+				   super.scrollPathToVisible(bkpath);
+//				   this.expandTreePathAllNode(bkpath);
+				}
+		   }
+	       
+		return true;
 	}
-	
-	
-	
 }
 
 
