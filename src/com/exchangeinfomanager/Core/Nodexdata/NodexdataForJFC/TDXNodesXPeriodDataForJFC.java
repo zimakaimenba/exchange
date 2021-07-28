@@ -2119,15 +2119,21 @@ import com.udojava.evalex.Expression;
 					return;
 				}
 				
-				if( CommonUtility.round(curzhangfu,6).compareTo( CommonUtility.round(diefu,6) ) !=0) {
-					try{
-						this.periodlowestzhangdiefu.delete(recordwk);
-						periodlowestzhangdiefu.add(recordwk, diefu, false );
-					} catch(Exception e) { logger.info(super.getNodeCode() + ":periodlowestzhangdiefu" + recordwk + "/" + recordwk.getEnd() + "已经存在数据！\r\n");
+				try {
+					if( CommonUtility.round(curzhangfu,6).compareTo( CommonUtility.round(diefu,6) ) !=0) {
+						try{
+							this.periodlowestzhangdiefu.delete(recordwk);
+							periodlowestzhangdiefu.add(recordwk, diefu, false );
+						} catch(Exception e) { logger.info(super.getNodeCode() + ":periodlowestzhangdiefu" + recordwk + "/" + recordwk.getEnd() + "已经存在数据！\r\n");
+							return;
+						}
 						return;
 					}
-					return;
+				} catch (java.lang.NullPointerException e ) {
+					e.printStackTrace();
+					System.out.print(super.getNodeCode() + "curzhangfu / diefu:" +  curzhangfu / diefu);
 				}
+				
 			} catch (org.jfree.data.general.SeriesException e) {}
 		}
 		/*

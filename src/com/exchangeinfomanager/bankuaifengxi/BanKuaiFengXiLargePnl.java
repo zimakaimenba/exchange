@@ -290,7 +290,9 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 			BanKuaiAndStockTree treeofbkstk = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks();
 			DaPan dapan = (DaPan) treeofbkstk.getModel().getRoot();
 			nodecombinedpnl.setDisplayBarOfSpecificBanKuaiCjeCjlInsteadOfSelfCjeCjl (dapan);
-			this.nodebkcjezblargepnl.updatedDate(dapan, displayedstartdate1, displayedenddate1, period);
+			
+			TDXNodes chuangyeban = (TDXNodes) treeofbkstk.getSpecificNodeByHypyOrCode("399006", BkChanYeLianTreeNode.TDXBK);
+			this.nodebkcjezblargepnl.updatedDate(chuangyeban, displayedstartdate1, displayedenddate1, period);
 		}
 		
 		this.nodecombinedpnl.updatedDate(node, displayedstartdate1,displayedenddate1, period);
@@ -339,10 +341,14 @@ public  class BanKuaiFengXiLargePnl extends JPanel implements BarChartPanelHight
 		this.nodecombinedpnl.setDrawAverageDailyCjeOfWeekLine(true); //保证个股显示是上日均成交额，下占比线
 		nodecombinedpnl.setDisplayZhanBiInLine(true);
 		
-		if(guitype.toUpperCase().equals("CJE"))
+		if(guitype.toUpperCase().equals("CJE")) {
 			this.nodebkcjezblargepnl = new BanKuaiFengXiCategoryBarChartCjePnl ();
-		else
+			((BanKuaiFengXiCategoryBarChartCjePnl)nodebkcjezblargepnl).setDrawAverageDailyCjeOfWeekLine(true) ;
+		} else {
 			this.nodebkcjezblargepnl = new BanKuaiFengXiCategoryBarChartCjlPnl ();
+			((BanKuaiFengXiCategoryBarChartCjlPnl)nodebkcjezblargepnl).setDrawAverageDailyCjlOfWeekLine(true) ;
+		}
+		
 		
 		this.centerPanel.add(this.nodecombinedpnl);
 		this.centerPanel.add(this.nodebkcjezblargepnl);

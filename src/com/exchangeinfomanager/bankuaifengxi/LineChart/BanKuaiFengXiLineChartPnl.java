@@ -19,14 +19,15 @@ import org.jfree.chart.plot.CategoryMarker;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.Marker;
 import org.jfree.chart.plot.ValueMarker;
+import org.jfree.chart.renderer.category.LineAndShapeRenderer;
 import org.jfree.data.Range;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.ui.Layer;
 import org.jfree.ui.LengthAdjustmentType;
 import org.jfree.ui.RectangleAnchor;
 import org.jfree.ui.TextAnchor;
+import org.jfree.util.ShapeUtilities;
 
-import com.exchangeinfomanager.Core.Nodes.BkChanYeLianTreeNode;
 import com.exchangeinfomanager.Core.Nodes.TDXNodes;
 import com.exchangeinfomanager.Core.Nodexdata.NodeXPeriodData;
 import com.exchangeinfomanager.Core.Nodexdata.ohlcvaprimarydata.NodeGivenPeriodDataItem;
@@ -83,7 +84,7 @@ public class BanKuaiFengXiLineChartPnl extends JPanel
 					}
 					
 					DayOfWeek dayofweek = tmpdate.getDayOfWeek();
-					if(dayofweek.equals(DayOfWeek.FRIDAY) ) 
+					if(dayofweek.equals(DayOfWeek.MONDAY) ) 
 						columnlocaldates.add(tmpdate);
 					
 					if(period.equals(NodeGivenPeriodDataItem.WEEK))
@@ -100,7 +101,7 @@ public class BanKuaiFengXiLineChartPnl extends JPanel
 		double curaxislow = curaxisrange.getLowerBound();
 		curaxisupper = highesthigh*1.12;
 		curaxislow = lowestlow * 1.12;  
-		try{	((CategoryPlot)chart.getPlot()).getRangeAxis(0).setRange(curaxislow, curaxisupper);
+		try {	((CategoryPlot)chart.getPlot()).getRangeAxis(0).setRange(curaxislow, curaxisupper);
 		} catch(java.lang.IllegalArgumentException e) {
 			((CategoryPlot)chart.getPlot()).getRangeAxis(0).setRange(0, 1);
 		}
@@ -154,9 +155,9 @@ public class BanKuaiFengXiLineChartPnl extends JPanel
 		        "", // Y-Axis Label
 		        dataset
 		        );
-
+		    ((LineAndShapeRenderer)((CategoryPlot) chart.getPlot()).getRenderer()).setBaseShape(ShapeUtilities.createDiamond(.5f));
+		    ((LineAndShapeRenderer)((CategoryPlot) chart.getPlot()).getRenderer()).setBaseShapesVisible(true);
 		    ChartPanel linepanel = new ChartPanel(chart);
-		    
 		    
 		    this.add(linepanel);
 			

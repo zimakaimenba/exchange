@@ -427,10 +427,9 @@ public class BanKuaiAndStockTree extends JTree
 	}
 	public  Boolean searchAndLocateNodeInTree(BkChanYeLianTreeNode node) 
 	{
-//		   BkChanYeLianTreeNode findnode = this.getSpecificNodeByHypyOrCode (node.getMyOwnCode(),node.getType());
 		List<BkChanYeLianTreeNode> findnodelist = this.getSpecificNodeByHypyOrCodeList (node.getMyOwnCode(),node.getType());
 		
-		   if(findnodelist == null)
+		   if(findnodelist == null || findnodelist.size() == 0)
 			   return false;
 		   
 		   InvisibleTreeModel treeModel = (InvisibleTreeModel)this.getModel();

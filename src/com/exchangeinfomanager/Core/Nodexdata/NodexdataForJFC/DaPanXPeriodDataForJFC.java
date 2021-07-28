@@ -531,11 +531,10 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 				return maxweek;
 			try {
 				Double lastcje = this.getAverageDailyChengJiaoErOfWeek(lastcjlrecorddate);
-				if(curcje > lastcje)
-					maxweek ++;
+				if(curcje > lastcje)	maxweek ++;
 				else	break;
 			} catch (java.lang.NullPointerException e) {
-				logger.info(requireddate.toString() + " value is null.");
+//				logger.info(requireddate.toString() + " value is null.");
 				break;
 			}
 		}

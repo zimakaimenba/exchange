@@ -447,19 +447,18 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 	/*
 	 * 
 	 */
-	Integer displayQueKouLineDataToGui(NodeXPeriodData nodexdata, String period) 
+	public Integer displayQueKouLineDataToGui(NodeXPeriodData nodexdata, String period) 
 	{
 		((BanKuaiFengXiCategoryBarRenderer)super.plot.getRenderer()).unhideBarMode();
 		
 		DaPan dapan = (DaPan)CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getModel().getRoot(); //alwayse use tdx tree fro dapan;
-//		if(super.getCurDisplayedNode().getType() == BkChanYeLianTreeNode.BKGEGU) {
-//			BanKuai bk = ((StockOfBanKuai)super.getCurDisplayedNode() ).getBanKuai();
-//			dapan = (DaPan)bk.getRoot();
-//		} else
-//			dapan = (DaPan)(this.getCurDisplayedNode().getRoot());
 		
-		LocalDate indexrequirestart = (LocalDate) barchartdataset.getColumnKey(0);
-		LocalDate indexrequireend = (LocalDate) barchartdataset.getColumnKey(barchartdataset.getColumnCount()-1);
+		LocalDate indexrequirestart; LocalDate indexrequireend;
+		try {
+			indexrequirestart = (LocalDate) barchartdataset.getColumnKey(0);
+			indexrequireend = (LocalDate) barchartdataset.getColumnKey(barchartdataset.getColumnCount()-1);
+		} catch ( java.lang.IndexOutOfBoundsException ex) {ex.printStackTrace(); return 0;}
+		
 		
 		LocalDate requireend = indexrequireend.with(DayOfWeek.SATURDAY);
 		LocalDate requirestart = indexrequirestart.with(DayOfWeek.SATURDAY);

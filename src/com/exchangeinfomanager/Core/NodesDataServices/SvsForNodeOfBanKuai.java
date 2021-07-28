@@ -4,17 +4,15 @@ import java.awt.Color;
 import java.sql.SQLException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.ZoneId;
+
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
+
 import java.util.Collection;
-import java.util.Date;
+
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.jfree.data.time.RegularTimePeriod;
-import org.jfree.data.time.TimeSeries;
-import org.jfree.data.time.TimeSeriesDataItem;
+
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 
@@ -131,7 +129,6 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 				bankuai = bkdbopt.getBanKuaiZhanBi ((BanKuai) bankuai,requiredstartday,requiredendday,period);
 		}
 		
-//		checkBanKuaiDataCompletion ((BanKuai) bankuai);
 		return bankuai;
 	}
 
@@ -197,13 +194,11 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 		if(bankuai.getMyOwnCode().equals("999999") ) {
 			this.getShangZhengZhangDieTingInfo (bankuai,requiredstartday,requiredendday,period);
 			return bankuai;
-		}
-		else
+		} else
 		if(bankuai.getMyOwnCode().equals("399001") ) {
 			this.getShenZhenZhangDieTingInfo (bankuai,requiredstartday,requiredendday,period);
 			return bankuai;
-		}
-		else
+		} else
 		if(bankuai.getMyOwnCode().equals("399006") ) {
 			this.getChuangYeBanZhangDieTingInfo (bankuai,requiredstartday,requiredendday,period);
 			return bankuai;

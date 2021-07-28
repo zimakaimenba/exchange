@@ -3390,7 +3390,7 @@ public class BanKuaiDbOperation
 		String filenamerule = volamooutput.get(1);
 		String csvfilename = (filenamerule.replaceAll("YY",jiaoyisuo.toUpperCase())).replaceAll("XXXXXX", stockcode).replace("TXT", "CSV") ;
 		File csvfile = new File(csvfilepath + "/" + csvfilename);
-		if (!csvfile.exists() || csvfile.isDirectory() || !csvfile.canRead()) {  
+		if (!csvfile.exists()  || csvfile.isDirectory() || !csvfile.canRead()) {  
 				logger.info("读取" + csvfilename + "发生错误！没有获得" + stock.getMyOwnName() +  "的K线数据。");
 				return stock;
 		} 

@@ -451,7 +451,6 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 	{
 		cjecjlzbpnldown.BanKuaiAndGeGuMatchingConditionValuesChanges(expc) ;
 		cjecjlpnlup.BanKuaiAndGeGuMatchingConditionValuesChanges(expc) ;
-		
 	}
 
 
