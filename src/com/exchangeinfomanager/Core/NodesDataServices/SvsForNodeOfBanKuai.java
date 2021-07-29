@@ -58,23 +58,29 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 		LocalDate bkamostartday =	nodexdatawk.getAmoRecordsStartDate();
 		LocalDate bkamoendday = nodexdatawk.getAmoRecordsEndDate();
 		
+		if(bkohlcstartday == null && bkamostartday == null) return ;
+		
 		Boolean calwholeweek = true;
 		LocalDate notcalwholewkmodedate = nodexdatawk.isInNotCalWholeWeekMode() ;
-		if(notcalwholewkmodedate != null) 	
+		if(notcalwholewkmodedate != null) {
 			calwholeweek = false;
-				
-		if(bkohlcstartday == null && bkamostartday == null) return ;
-		LocalDate requiredstartday; LocalDate requiredendday = null;
-		if(bkohlcstartday == null) {
-			requiredstartday = bkamostartday;
-			requiredendday = bkamoendday;
-		} else {
-			if(bkohlcstartday.isBefore(bkamostartday)) requiredstartday = bkohlcstartday;
-			else	requiredstartday = bkamostartday;
-			
-			if(bkohlcendday.isAfter(bkamoendday)) requiredendday = bkohlcendday;
-			else	requiredendday = bkamoendday;
+			bkamoendday = notcalwholewkmodedate;
 		}
+		
+		LocalDate requiredstartday; LocalDate requiredendday = null;
+		requiredstartday = bkamostartday;
+		requiredendday = bkamoendday;
+		
+//		if(bkohlcstartday == null) {
+//			requiredstartday = bkamostartday;
+//			requiredendday = bkamoendday;
+//		} else {
+//			if(bkohlcstartday.isBefore(bkamostartday)) requiredstartday = bkohlcstartday;
+//			else	requiredstartday = bkamostartday;
+//			
+//			if(bkohlcendday.isAfter(bkamoendday)) requiredendday = bkohlcendday;
+//			else	requiredendday = bkamoendday;
+//		}
 		
 		bankuai = this.getNodeKXian(bankuai, requiredstartday,requiredendday, NodeGivenPeriodDataItem.DAY,calwholeweek);
 		extraActionsForBanKuai ((BanKuai) bankuai);
@@ -93,10 +99,10 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 			return bankuai; //bankuai without data records should not be displayed
 		
 		if(requiredendday.isBefore(jlmindate))
-			return bankuai;
+				return bankuai;
 		if(requiredstartday.isBefore(jlmindate) )
-			requiredstartday = jlmindate;
-
+				requiredstartday = jlmindate;
+		
 		NodeXPeriodData nodexdatawk = ((BanKuai)bankuai).getNodeXPeroidData(period);
 		if(nodexdatawk.getAmoRecordsStartDate() == null) {
 			bankuai = bkdbopt.getBanKuaiZhanBi ((BanKuai)bankuai,requiredstartday,requiredendday,period);
@@ -152,10 +158,14 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 			LocalDate requiredendday, String period,Boolean calwholeweek) 
 	{
 		requiredstartday = requiredstartday.with(DayOfWeek.MONDAY);
+		requiredendday = ServicesForNode.getNodeCaculateEndDateAndRelatedActions(bankuai, period, requiredendday, calwholeweek);
 		
 		NodeXPeriodData nodexdatawk = ((BanKuai) bankuai).getNodeXPeroidData(period);
-		if(nodexdatawk.isInNotCalWholeWeekMode() == null || calwholeweek) 
-			requiredendday   = requiredendday.with(DayOfWeek.FRIDAY);
+//		LocalDate isinnotcalwholewkdate = nodexdatawk.isInNotCalWholeWeekMode();
+//		if(nodexdatawk.isInNotCalWholeWeekMode() == null || calwholeweek) 
+//			requiredendday   = requiredendday.with(DayOfWeek.FRIDAY);
+//		else if(isinnotcalwholewkdate != null) 
+//			requiredendday   =  isinnotcalwholewkdate;
 
 		if(nodexdatawk.getOHLCRecordsStartDate() == null) {
 			bankuai = bkdbopt.getBanKuaiKXianZouShi (((BanKuai) bankuai),requiredstartday,requiredendday,period);

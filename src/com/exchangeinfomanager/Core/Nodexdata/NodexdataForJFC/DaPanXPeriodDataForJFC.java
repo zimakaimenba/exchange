@@ -807,6 +807,12 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 		
 	}
 
+	@Override
+	public Double[] getSpcificDateOHLCData(LocalDate requireddate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	
 }
 

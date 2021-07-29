@@ -68,7 +68,7 @@ public interface NodeXPeriodData
 	public LocalDate getLocalDateOfSpecificIndexOfOHLCData (Integer index);
 	public Double getSpecificOHLCZhangDieFu (LocalDate requireddate );
 	public Double getSpecificTimeRangeOHLCHightestZhangFu (LocalDate requiredstart,LocalDate requiredend);
-	
+	public Double[] getSpcificDateOHLCData (LocalDate requireddate );
 	public OHLCSeries getOHLCData ();
 	public LocalDate getOHLCRecordsStartDate ();
 	public LocalDate getOHLCRecordsEndDate ();
@@ -131,7 +131,9 @@ public interface NodeXPeriodData
 			
 			"ChenJiaoEr",	"AverageChenJiaoEr",	"ChengJiaoErDailyAverageGrowingRate",	"ChengJiaoErDailyAverageDifferenceWithLastPeriod",	"AverageChenJiaoErMaxWeek", 
 			
-			"ChenJiaoLiang",	"AverageChenJiaoLiang",	"ChengJiaoLiangDailyAverageGrowingRate",	"ChengJiaoLiangDailyAverageDifferenceWithLastPeriod", "AverageChenJiaoLiangMaxWeek" 
+			"ChenJiaoLiang",	"AverageChenJiaoLiang",	"ChengJiaoLiangDailyAverageGrowingRate",	"ChengJiaoLiangDailyAverageDifferenceWithLastPeriod", "AverageChenJiaoLiangMaxWeek",
+			
+			"ZhangDieFu", "Open", "High", "Low", "Close"
 	};
 	
 	public static String[] NODEXDATACSVDATAHEADLINE = { 		 
@@ -157,7 +159,7 @@ public interface NodeXPeriodData
 			1,1,
 			1,1,new DecimalFormat("%#0.000"),1,1,
 			1,1,new DecimalFormat("%#0.000"),1,1,
-			1,1,1,1,1
+			new DecimalFormat("%#0.0000"),1,1,1,1
 	};
 
 	public static  String [] OuputColorControl = {
@@ -176,7 +178,7 @@ public interface NodeXPeriodData
 			0,0,
 			1,1,1,1,1,
 			1,1,1,1,1,
-			1,0,0,1
+			1,0,0,0,1
 	};
 
 	public void setNotCalWholeWeekMode(LocalDate date);

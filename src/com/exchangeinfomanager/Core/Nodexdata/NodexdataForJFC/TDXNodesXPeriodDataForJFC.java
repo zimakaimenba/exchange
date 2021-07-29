@@ -237,10 +237,10 @@ import com.udojava.evalex.Expression;
 			nodeohlc.setNotify(false);
 			nodeohlc.add( (NodeGivenPeriodDataItemForJFC)kdata);
 		} catch (org.jfree.data.general.SeriesException e) {
-//			logger.info(super.getNodeCode() + super.getNodeperiodtype() 
-//				+ kdata.getJFreeChartPeriod(super.getNodeperiodtype()).toString() 
-//				+ kdata.getJFreeChartPeriod(super.getNodeperiodtype()).getStart().toString() 
-//				+ "nodeohlc 数据已经存在，重复添加！"  );
+			logger.info(super.getNodeCode() + super.getNodeperiodtype() 
+				+ kdata.getJFreeChartPeriod(super.getNodeperiodtype()).toString() 
+				+ kdata.getJFreeChartPeriod(super.getNodeperiodtype()).getStart().toString() 
+				+ "nodeohlc 数据已经存在，重复添加！"  );
 		} catch (java.lang.IllegalArgumentException e) {
 //			e.printStackTrace();
 		}
@@ -486,6 +486,25 @@ import com.udojava.evalex.Expression;
 			
 			double zhangfu = (curclose - lastclose) / lastclose;
 			return zhangfu;
+		} catch (java.lang.NullPointerException e) {e.printStackTrace();}
+		
+		return null;
+	}
+	public Double[] getSpcificDateOHLCData (LocalDate requireddate )
+	{
+		Integer indexofcur = this.getIndexOfSpecificDateOHLCData(requireddate);
+		if(indexofcur == null)	return null;
+		
+		try {
+			OHLCItem curohlc = (OHLCItem) this.getOHLCData().getDataItem(indexofcur.intValue());
+
+			double open = curohlc.getOpenValue();
+			double high = curohlc.getHighValue();
+			double low = curohlc.getLowValue();
+			double close = curohlc.getCloseValue();
+			
+			Double[] ohlcdata = {open,high,low,close};
+			return ohlcdata;
 		} catch (java.lang.NullPointerException e) {e.printStackTrace();}
 		
 		return null;
@@ -1847,6 +1866,7 @@ import com.udojava.evalex.Expression;
 		 if(value != null)
 			 return value;
 		 
+		 Double[] ohlc = this.getSpcificDateOHLCData(date);
 		 switch(keyword) {
 		 case "ChenJiaoEr" :
 		      	 Double curcje  = this.getChengJiaoEr(date) ;
@@ -1939,6 +1959,16 @@ import com.udojava.evalex.Expression;
 		 case "DieTing":
 			 Integer dietingnum = this.getDieTingTongJi(date);
 			 value = dietingnum;
+		 break;
+		 case "Open":try {	 value = ohlc[0];  } catch (java.lang.NullPointerException e) {	 value = null;}
+		 break;
+		 case "High":try {	 value = ohlc[1]; } catch (java.lang.NullPointerException e) {value = null;}
+		 break;
+		 case "Low":
+			 try {	 value = ohlc[2]; } catch (java.lang.NullPointerException e) {value = null;}
+		 break;
+		 case "Close":
+			 try {	 value = ohlc[3]; } catch (java.lang.NullPointerException e) {value = null;}
 		 break;
 		 }
 		 return value;

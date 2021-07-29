@@ -345,6 +345,22 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 			
 		 return joined;
 	 }
+	 private String[] getNodeXDataCsvDataForStockXPeriodData (TDXNodes superbk, LocalDate requireddate)
+	 {
+		 Double hsl = this.getSpecificTimeHuanShouLv(requireddate);
+		 Double hslf = this.getSpecificTimeHuanShouLvFree(requireddate);
+		 Double liutongshizhi = this.getSpecificTimeLiuTongShiZhi(requireddate);
+		 Double zongshizhi = this.getSpecificTimeZongShiZhi(requireddate);
+		 
+		 String strhsl = null; String strhslf = null; String strliutongshizhi = null;String strzongshizhi = null;
+		 try { strhsl = hsl.toString();	 } catch (java.lang.NullPointerException e) { strhsl = String.valueOf("0"); }
+		 try { strhslf = hslf.toString();	 } catch (java.lang.NullPointerException e) { strhslf = String.valueOf("0"); }
+		 try { strliutongshizhi	 =   liutongshizhi.toString(); } catch (java.lang.NullPointerException e) {	 strliutongshizhi	= String.valueOf("0"); }
+		 try { strzongshizhi	 =   zongshizhi.toString(); } catch (java.lang.NullPointerException e) {	 strzongshizhi	= String.valueOf("0"); }
+		 String[] curcsvline = {strhsl,strhslf, strliutongshizhi,strzongshizhi };
+
+		 return curcsvline;
+	 }
 	 /*
 		 * (non-Javadoc)
 		 * @see com.exchangeinfomanager.nodes.nodexdata.NodeXPeriodDataBasic#getNodeXDataInHtml(java.time.LocalDate, int)
@@ -357,7 +373,7 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 			org.jsoup.select.Elements content = doc.select("body");
 			org.jsoup.select.Elements dl = content.select("dl");
 			
-			String[] csvdataresult = getNodeXDataCsvData (superbk,requireddate);
+			String[] csvdataresult = getNodeXDataCsvDataForStockXPeriodData (superbk,requireddate);
 			
 				 for(int i=0;i<StockNodesXPeriodData.NODEXDATACSVDATAHEADLINE.length;i++) {
 					 String value = csvdataresult[i];

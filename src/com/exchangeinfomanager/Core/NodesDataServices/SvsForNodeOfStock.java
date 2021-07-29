@@ -65,29 +65,40 @@ public class SvsForNodeOfStock implements ServicesForNode, ServicesOfNodeStock
 	public void syncNodeData(BkChanYeLianTreeNode stk) 
 	{
 		Stock stock = (Stock)stk;
-		LocalDate bkohlcstartday = stock.getNodeXPeroidData(NodeGivenPeriodDataItem.DAY).getOHLCRecordsStartDate();
-		LocalDate bkohlcendday = stock.getNodeXPeroidData(NodeGivenPeriodDataItem.DAY).getOHLCRecordsEndDate();
+		LocalDate stkohlcstartday = stock.getNodeXPeroidData(NodeGivenPeriodDataItem.DAY).getOHLCRecordsStartDate();
+		LocalDate stkohlcendday = stock.getNodeXPeroidData(NodeGivenPeriodDataItem.DAY).getOHLCRecordsEndDate();
 		
 		NodeXPeriodData nodexdatawk = stock.getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
-		LocalDate bkamostartday =	nodexdatawk.getAmoRecordsStartDate();
-		LocalDate bkamoendday = nodexdatawk.getAmoRecordsEndDate();
+		LocalDate stkamostartday =	nodexdatawk.getAmoRecordsStartDate();
+		LocalDate stkamoendday = nodexdatawk.getAmoRecordsEndDate();
 				
-		if(bkamostartday == null )  //有时候当周的新股，在非完整周的时候，当周的数据已经被删除后，指定日期在AMO产生前，导致bkamostartday == null, 但bkohlcstartday数据没有删除
+		if(stkamostartday == null )  //有时候当周的新股，在非完整周的时候，当周的数据已经被删除后，指定日期在AMO产生前，导致bkamostartday == null, 但bkohlcstartday数据没有删除
 			return;
 
-		LocalDate requiredstartday = null; LocalDate requiredendday = null;
-		if(bkohlcstartday == null) {
-			requiredstartday = bkamostartday;
-			requiredendday = bkamoendday;
-		} else {
-			if(bkohlcstartday.isBefore(bkamostartday)) requiredstartday = bkohlcstartday;
-			else	requiredstartday = bkamostartday;
-			
-			if(bkohlcendday.isAfter(bkamoendday)) requiredendday = bkohlcendday;
-			else	requiredendday = bkamoendday;
+		Boolean calwholeweek = true;
+		LocalDate notcalwholewkmodedate = nodexdatawk.isInNotCalWholeWeekMode() ;
+		if(notcalwholewkmodedate != null) {
+			calwholeweek = false;
+			stkamoendday = notcalwholewkmodedate;
 		}
 		
-		stk = this.getNodeKXian(stk, requiredstartday,requiredendday, NodeGivenPeriodDataItem.DAY,true);
+		LocalDate requiredstartday; LocalDate requiredendday = null;
+		requiredstartday = stkamostartday;
+		requiredendday = stkamoendday;
+		
+//		LocalDate requiredstartday = null; LocalDate requiredendday = null;
+//		if(bkohlcstartday == null) {
+//			requiredstartday = bkamostartday;
+//			requiredendday = bkamoendday;
+//		} else {
+//			if(bkohlcstartday.isBefore(bkamostartday)) requiredstartday = bkohlcstartday;
+//			else	requiredstartday = bkamostartday;
+//			
+//			if(bkohlcendday.isAfter(bkamoendday)) requiredendday = bkohlcendday;
+//			else	requiredendday = bkamoendday;
+//		}
+		
+		stk = this.getNodeKXian(stk, requiredstartday,requiredendday, NodeGivenPeriodDataItem.DAY,calwholeweek);
 		extraActionsForStock ((Stock) stk);
 		return;
 	}
@@ -101,7 +112,6 @@ public class SvsForNodeOfStock implements ServicesForNode, ServicesOfNodeStock
 		requiredendday = ServicesForNode.getNodeCaculateEndDateAndRelatedActions(stock, period, requiredendday, calwholeweek);
 		
 		NodeXPeriodData nodexdatawk = stock.getNodeXPeroidData(period);
-
 		if(nodexdatawk.getAmoRecordsStartDate() == null) {
 			stock = bkdbopt.getStockZhanBi (stock,requiredstartday,requiredendday,period);
 			return stock;
@@ -132,6 +142,7 @@ public class SvsForNodeOfStock implements ServicesForNode, ServicesOfNodeStock
 		
 //		((TDXNodesXPeriodExternalData)nodedayperioddata).getKLearnResult ();
 		return stock;
+
 	}
 
 	@Override
@@ -158,11 +169,10 @@ public class SvsForNodeOfStock implements ServicesForNode, ServicesOfNodeStock
 			LocalDate requiredendday, String period,Boolean calwholeweek)
 	{
 		Stock stk = (Stock) stock;
-		NodeXPeriodData nodedayperioddata = stk.getNodeXPeroidData(period);
 		requiredstartday = requiredstartday.with(DayOfWeek.MONDAY);
-		if(nodedayperioddata.isInNotCalWholeWeekMode() == null ) 
-			requiredendday = requiredendday.with(DayOfWeek.FRIDAY);
+		requiredendday = ServicesForNode.getNodeCaculateEndDateAndRelatedActions(stock, period, requiredendday, calwholeweek);
 
+		NodeXPeriodData nodedayperioddata = stk.getNodeXPeroidData(period);
 		if(nodedayperioddata.getOHLCRecordsStartDate() == null) {
 			try {
 				stock = (Stock)bkdbopt.getStockDailyKXianZouShiFromCsv (stk,requiredstartday,requiredendday,period);

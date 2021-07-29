@@ -662,6 +662,9 @@ public class BanKuaiFengXi extends JDialog
 	{
 		selectedbk.getShuJuJiLuInfo().setHasReviewedToday(true);
 
+		if(this.globecalwholeweek)
+			curselectdate = curselectdate.with(DayOfWeek.FRIDAY);
+		
 		ServicesForNodeBanKuai svsbk = (ServicesForNodeBanKuai) selectedbk.getBanKuaiService (true);
 		//一次性同步板块数据以及所属个股数据
 		try {	svsbk.syncBanKuaiAndItsStocksForSpecificTime(selectedbk, CommonUtility.getSettingRangeDate(curselectdate,"large"), curselectdate,
@@ -939,7 +942,6 @@ public class BanKuaiFengXi extends JDialog
 	 */
 	protected void saveBanKuaiDailyDataToDatabase() 
 	{
-
 		SvsForNodeOfBanKuai svsbk = new SvsForNodeOfBanKuai ();
 	
 //		for (BanKuaiandGeGuTableBasic tmpbktbl : tableallbktablesset ) {
@@ -962,27 +964,23 @@ public class BanKuaiFengXi extends JDialog
 //		}
 		
 		LocalDate curselectdate = complexSolutionForDateChooserWithCalWholeWeek ();
-//		String title  = tabbedPanebk.getTitleAt(tabbedPanebk.getSelectedIndex() );
-//		if(!title.contains("大智慧")) { //通达信
-			if(((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getRowCount() <=0)
-				return;
-			int rowcount = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getRowCount();
-			int columnIndexCjeZbGr = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getKeyWrodColumnIndex ("CjeZbGrowRate");
-//			int columnIndexCjlZbGr = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getKeyWrodColumnIndex ("CjlZbGrowRate");
-			for(int i=0;i<rowcount;i++) {
-				BanKuai bk = (BanKuai) ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getNode(i);
-				Double cjezhgr = (Double) ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getValueAt(i, columnIndexCjeZbGr);
-				if(cjezhgr == 100.0) 
-					continue; //新板块，数据无意义
-				
-				String[] kwlists =  {"CjeZbGrowRate","CjlZbGrowRate" }; 
-				svsbk.saveBanKuaiExtraDataToDatabase(bk, curselectdate,kwlists);
+		if(((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getRowCount() >0) {
+				int rowcount = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getRowCount();
+				int columnIndexCjeZbGr = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getKeyWrodColumnIndex ("CjeZbGrowRate");
+//				int columnIndexCjlZbGr = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getKeyWrodColumnIndex ("CjlZbGrowRate");
+				for(int i=0;i<rowcount;i++) {
+					BanKuai bk = (BanKuai) ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getNode(i);
+					Double cjezhgr = (Double) ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getValueAt(i, columnIndexCjeZbGr);
+					if(cjezhgr == 100.0) 
+						continue; //新板块，数据无意义
+					
+					String[] kwlists =  {"CjeZbGrowRate","CjlZbGrowRate" }; 
+					svsbk.saveBanKuaiExtraDataToDatabase(bk, curselectdate,kwlists);
+				}
 			}
-//		} else { //大智慧
-			if(((BanKuaiInfoTableModel)tblDzhBkCurWkZhanBi.getModel()).getRowCount() <=0)
-				return;
-			rowcount = ((BanKuaiInfoTableModel)tblDzhBkCurWkZhanBi.getModel()).getRowCount();
-			columnIndexCjeZbGr = ((BanKuaiInfoTableModel)tblDzhBkCurWkZhanBi.getModel()).getKeyWrodColumnIndex ("CjeZbGrowRate");
+		if(((BanKuaiInfoTableModel)tblDzhBkCurWkZhanBi.getModel()).getRowCount() >0) {
+			int rowcount = ((BanKuaiInfoTableModel)tblDzhBkCurWkZhanBi.getModel()).getRowCount();
+			int columnIndexCjeZbGr = ((BanKuaiInfoTableModel)tblDzhBkCurWkZhanBi.getModel()).getKeyWrodColumnIndex ("CjeZbGrowRate");
 //			columnIndexCjlZbGr = ((BanKuaiInfoTableModel)tblDzhBkCurWkZhanBi.getModel()).getKeyWrodColumnIndex ("CjlZbGrowRate");
 			for(int i=0;i<rowcount;i++) {
 				BanKuai bk = (BanKuai) ((BanKuaiInfoTableModel)tblDzhBkCurWkZhanBi.getModel()).getNode(i);
@@ -993,8 +991,7 @@ public class BanKuaiFengXi extends JDialog
 				String[] kwlists =  {"CjeZbGrowRate","CjlZbGrowRate" }; 
 				svsbk.saveBanKuaiExtraDataToDatabase(bk, curselectdate,kwlists);
 			}
-//		}
-					
+		}
 		svsbk = null;
 	}
 	/*
@@ -1081,7 +1078,7 @@ public class BanKuaiFengXi extends JDialog
 		LocalDate curselectdate = dateChooser.getLocalDate();
 		if(this.globecalwholeweek)		curselectdate = curselectdate.with(DayOfWeek.FRIDAY);
 		
-		unifiedTabbedPanSelectionActions (selectstock,curselectdate);
+		unifiedTabbedPanSelectionActions (selectstock,curselectdate); 
 		
 		this.panelGgDpCjeZhanBi.setDrawAverageDailyCjeOfWeekLine(true); //保证个股显示是上边是日均成交额，下边是占比线
 		selectstock.getShuJuJiLuInfo().setHasReviewedToday(true);
