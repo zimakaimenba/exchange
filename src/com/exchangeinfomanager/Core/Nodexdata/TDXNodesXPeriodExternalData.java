@@ -96,6 +96,44 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 	private TimeSeries nodedpcjezbgr;
 	private TimeSeries nodedpcjlzbgr;
 	
+	 /*
+	  * 
+	  */
+	 public void removeNodeDataFromSpecificDate (LocalDate requireddate )
+	 {
+		 RegularTimePeriod period = this.getJFreeChartFormateTimePeriod(requireddate);
+		 if(period == null) return;
+		 
+		 try {	Integer curindex = this.nodeamozhanbi.getIndex(period);
+				if(curindex >= 0 ) {
+					int itemcount = this.nodeamozhanbi.getItemCount();
+					nodeamozhanbi.delete(curindex, itemcount-1);
+					nodevolzhanbi.delete(curindex, itemcount-1);
+				}
+		} catch (java.lang.IndexOutOfBoundsException e) {	e.printStackTrace();	}
+		 
+		 try { int curindex =  this.nodeexchangedaysnumber.getIndex(period);
+				if(curindex >= 0 ) {
+					int itemcount = this.nodeexchangedaysnumber.getItemCount();
+					nodeexchangedaysnumber.delete(curindex, itemcount-1);
+				}
+		} catch (java.lang.IndexOutOfBoundsException e) {	e.printStackTrace();	}
+		 
+//		 try { int curindex =  this.nodedpcjezbgr.getIndex(period);
+//			if(curindex >= 0 ) {
+//				int itemcount = this.nodedpcjezbgr.getItemCount();
+//				nodedpcjezbgr.delete(curindex, itemcount-1);
+//			}
+//		 } catch (java.lang.IndexOutOfBoundsException e) {	e.printStackTrace();	}
+//		 
+//		 try { int curindex =  this.nodedpcjlzbgr.getIndex(period);
+//			if(curindex >= 0 ) {
+//				int itemcount = this.nodedpcjlzbgr.getItemCount();
+//				nodedpcjlzbgr.delete(curindex, itemcount-1);
+//			}
+//		 } catch (java.lang.IndexOutOfBoundsException e) {	e.printStackTrace();	}
+	 }
+	 
 	public void addNewXPeriodData (NodeGivenPeriodDataItem kdata)
 	{
 		if(kdata.getNodeToDpChenJiaoErZhanbi() != null ) {
@@ -141,15 +179,15 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 //				+ " nodezhangtingnum 数据已经存在，重复添加！"  ); 
 			}
 			
-//			nodeamozhanbi.setNotify(true);
-//			nodevolzhanbi.setNotify(true);
-//			nodeexchangedaysnumber.setNotify(true);
-//			nodezhangtingnum.setNotify(true);
-//			nodedietingnum.setNotify(true);
+			nodeamozhanbi.setNotify(true);
+			nodevolzhanbi.setNotify(true);
+			nodeexchangedaysnumber.setNotify(true);
+			nodezhangtingnum.setNotify(true);
+			nodedietingnum.setNotify(true);
 		}
 		try {	
 			nodedpcjezbgr.setNotify(false);
-			if( kdata.getDaPanChenJiaoErZhanBiGrowingRate() != null && kdata.getDaPanChenJiaoErZhanBiGrowingRate() != 0)
+			if( kdata.getDaPanChenJiaoErZhanBiGrowingRate() != null )
 				nodedpcjezbgr.add(kdata.getJFreeChartPeriod(this.getNodeperiodtype()), kdata.getDaPanChenJiaoErZhanBiGrowingRate(),false);
 		} catch (org.jfree.data.general.SeriesException e) {
 //			logger.info(getNodeCode() + getNodeperiodtype() 
@@ -159,7 +197,7 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 		}
 		try {	
 			nodedpcjlzbgr.setNotify(false);
-			if( kdata.getDaPanChenJiaoLiangZhanBiGrowingRate() != null && kdata.getDaPanChenJiaoLiangZhanBiGrowingRate() != 0.0)
+			if( kdata.getDaPanChenJiaoLiangZhanBiGrowingRate() != null )
 				nodedpcjlzbgr.add(kdata.getJFreeChartPeriod(this.getNodeperiodtype()), kdata.getDaPanChenJiaoLiangZhanBiGrowingRate(),false);
 		} catch (org.jfree.data.general.SeriesException e) {
 //			logger.info(getNodeCode() + getNodeperiodtype() 
@@ -168,8 +206,8 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 //			+ "nodedpcjlzbgr 数据已经存在，重复添加！"  );
 		}
 		
-//		nodedpcjezbgr.setNotify(true);
-//		nodedpcjlzbgr.setNotify(true);
+		nodedpcjezbgr.setNotify(true);
+		nodedpcjlzbgr.setNotify(true);
 	}
 	/*
 	 * 
@@ -184,32 +222,6 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 		
 		return isnotcalwholeweekmodedate;
 	}
-	 /*
-	  * 
-	  */
-	 public void removeNodeDataFromSpecificDate (LocalDate requireddate )
-	 {
-		 int itemcount = this.nodeamozhanbi.getItemCount();
-		 RegularTimePeriod period = this.getJFreeChartFormateTimePeriod(requireddate);
-		 if(period == null) return;
-		 
-		 Integer curindex = this.nodeamozhanbi.getIndex(period);
-		 try {
-				if(curindex >= 0 ) {
-					nodeamozhanbi.delete(curindex, itemcount-1);
-					nodevolzhanbi.delete(curindex, itemcount-1);
-				}
-		} catch (java.lang.IndexOutOfBoundsException e) {	e.printStackTrace();	}
-		 
-		 itemcount = this.nodeexchangedaysnumber.getItemCount(); 
-		 curindex =  this.nodeexchangedaysnumber.getIndex(period);
-		 try {
-				if(curindex >= 0 ) {
-					nodeexchangedaysnumber.delete(curindex, itemcount-1);
-				}
-		} catch (java.lang.IndexOutOfBoundsException e) {	e.printStackTrace();	}
-		  
-	 }
 	/*
 	 * 
 	 */

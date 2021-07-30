@@ -83,9 +83,9 @@ public class SvsForNodeOfDaPan implements ServicesForNode
 		BanKuai szdpbankuai = (BanKuai) allbkstk.getSpecificNodeByHypyOrCode("399001",BkChanYeLianTreeNode.TDXBK);
 		BanKuai cybdpbankuai = (BanKuai) allbkstk.getSpecificNodeByHypyOrCode("399006",BkChanYeLianTreeNode.TDXBK);
 		
-		shdpbankuai = (BanKuai) shdpbankuai.getServicesForNode(true).getNodeKXian(shdpbankuai, requiredstartday, requiredendday,period,calwholeweek);
-		szdpbankuai = (BanKuai) shdpbankuai.getServicesForNode(true).getNodeKXian(szdpbankuai, requiredstartday, requiredendday,period,calwholeweek);
-		cybdpbankuai = (BanKuai) shdpbankuai.getServicesForNode(true).getNodeKXian(cybdpbankuai, requiredstartday, requiredendday, period,calwholeweek);
+		shdpbankuai = (BanKuai) shdpbankuai.getServicesForNode(true).getNodeKXian(shdpbankuai, requiredstartday, requiredendday,NodeGivenPeriodDataItem.DAY,calwholeweek);
+		szdpbankuai = (BanKuai) shdpbankuai.getServicesForNode(true).getNodeKXian(szdpbankuai, requiredstartday, requiredendday,NodeGivenPeriodDataItem.DAY,calwholeweek);
+		cybdpbankuai = (BanKuai) shdpbankuai.getServicesForNode(true).getNodeKXian(cybdpbankuai, requiredstartday, requiredendday, NodeGivenPeriodDataItem.DAY,calwholeweek);
 	
 		return null;
 	}

@@ -51,16 +51,28 @@ public interface ServicesForNode
 		NodeXPeriodData nodexdataperiod = ((TDXNodes)node).getNodeXPeroidData(period);
 		
 		Boolean origmode = true; //原来数据是否处于NCW / CW状态, true表示是计算whole wk
-		LocalDate isInNotCalWholeWeekModeData = nodexdataperiod.isInNotCalWholeWeekMode ();
-		if(nodexdataperiod.isInNotCalWholeWeekMode () != null ) 
-			origmode = false;
+		LocalDate finialisInNotCalWholeWeekModeData = null;
+		if(period.equalsIgnoreCase(NodeGivenPeriodDataItem.DAY)) { //day 周期从属于上级 week
+			NodeXPeriodData nodexdatawk = ((TDXNodes)node).getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
+			LocalDate isInNotCalWholeWeekModeData = nodexdatawk.isInNotCalWholeWeekMode ();
+			if(isInNotCalWholeWeekModeData != null ) {
+				origmode = false;
+				finialisInNotCalWholeWeekModeData = isInNotCalWholeWeekModeData; 
+			}
+		} else if(period.equalsIgnoreCase(NodeGivenPeriodDataItem.WEEK)) {
+			LocalDate isInNotCalWholeWeekModeData = nodexdataperiod.isInNotCalWholeWeekMode ();
+			if(isInNotCalWholeWeekModeData != null ) {
+				origmode = false;
+				finialisInNotCalWholeWeekModeData = isInNotCalWholeWeekModeData;
+			}
+		}
 		
 		if(calwholeweek && origmode) { //CW TO CW
 			nodexdataperiod.setNotCalWholeWeekMode (null);
 			result  = requiredendday.with(DayOfWeek.FRIDAY);
 			return result;
 		}
-		if(calwholeweek && !origmode) { //NCW TO CW，那就把最后一周的数据删除
+		if(calwholeweek && !origmode) { //NCW TO CW，最后一周的数据是不完整的，那就把最后一周的数据删除，这里isInNotCalWholeWeekModeData必然和amorecordsenddate在同一周
 			LocalDate amorecordsenddate = nodexdataperiod.getAmoRecordsEndDate();
 			LocalDate ohlcrecordsenddate = nodexdataperiod.getOHLCRecordsEndDate(); //日线AMODATE可能为NULL
 			
@@ -79,46 +91,39 @@ public interface ServicesForNode
 			return result; 
 		}
 		if(!calwholeweek && !origmode) {  //NCW TO NCW
-			if(isInNotCalWholeWeekModeData == requiredendday) { //说明已经在相同日期计算过了
-				result  = requiredendday;
-				return result;
-			}
-			
-				LocalDate curdatadate = null; LocalDate removestartdate = null;
-				curdatadate = isInNotCalWholeWeekModeData;
-				if( curdatadate.isBefore(requiredendday)) {
-					removestartdate = curdatadate;
-				} else if( curdatadate.isAfter(requiredendday)) {
-					removestartdate = requiredendday;
-				}
-				else if(curdatadate.isEqual(requiredendday))
-					removestartdate = requiredendday;
-				
-				if(period.equalsIgnoreCase(NodeGivenPeriodDataItem.DAY))
-					nodexdataperiod.removeNodeDataFromSpecificDate(removestartdate.with(DayOfWeek.MONDAY)); //那一周的数据都不要了
-				else nodexdataperiod.removeNodeDataFromSpecificDate(removestartdate);
-					
-				nodexdataperiod.setNotCalWholeWeekMode (requiredendday);
-				result  = requiredendday;
-				return result;
-		}
-		if(!calwholeweek && origmode) {  //CW TO NCW
+			LocalDate curdatadate ;
 			LocalDate amorecordsenddate = nodexdataperiod.getAmoRecordsEndDate();
 			LocalDate ohlcrecordsenddate = nodexdataperiod.getOHLCRecordsEndDate(); //日线AMODATE可能为NULL
-			LocalDate curdatadate = null; LocalDate removestartdate = null;
 			if(amorecordsenddate != null) curdatadate = amorecordsenddate;
 			else if(ohlcrecordsenddate != null) curdatadate = ohlcrecordsenddate;
-			else { //两个都是NULL,说明是日线第一次读取数据，必须从周线里读到截止日期的数据
-				NodeXPeriodData nodexdatawk = ((TDXNodes)node).getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
-				LocalDate wkisinnotcalwholeweekmodedate = nodexdatawk.isInNotCalWholeWeekMode();
-				if(wkisinnotcalwholeweekmodedate != null)
-					curdatadate = wkisinnotcalwholeweekmodedate;
-				else curdatadate = nodexdatawk.getAmoRecordsEndDate();
-			}
+			else curdatadate = requiredendday; //两个都是NULL,说明是板块或个股日线第一次读取数据
 			
-			if(curdatadate == null) //说明AMO/OHLC都没有数据，周线也没有数据，个股第一次会出现这样的情况
+			LocalDate removestartdate = null;
+			if( curdatadate.isBefore(requiredendday)) {
+				removestartdate = curdatadate;
+			} else if( curdatadate.isAfter(requiredendday)) {
 				removestartdate = requiredendday;
-			else if( curdatadate.isBefore(requiredendday))
+			} else if(curdatadate.isEqual(requiredendday))
+				removestartdate = requiredendday;
+				
+			if(period.equalsIgnoreCase(NodeGivenPeriodDataItem.DAY))
+				nodexdataperiod.removeNodeDataFromSpecificDate(removestartdate.with(DayOfWeek.MONDAY)); //那一周的数据都不要了
+			else nodexdataperiod.removeNodeDataFromSpecificDate(removestartdate);
+					
+			nodexdataperiod.setNotCalWholeWeekMode (requiredendday);
+			result  = requiredendday;
+			return result;
+		}
+		if(!calwholeweek && origmode) {  //CW TO NCW，
+			LocalDate amorecordsenddate = nodexdataperiod.getAmoRecordsEndDate();
+			LocalDate ohlcrecordsenddate = nodexdataperiod.getOHLCRecordsEndDate(); //日线AMODATE可能为NULL
+			LocalDate curdatadate = null; 
+			if(amorecordsenddate != null) curdatadate = amorecordsenddate;
+			else if(ohlcrecordsenddate != null) curdatadate = ohlcrecordsenddate;
+			else curdatadate = requiredendday; //两个都是NULL,说明是日线第一次读取数据
+
+			LocalDate removestartdate = null;
+			if( curdatadate.isBefore(requiredendday))
 				removestartdate = curdatadate;
 			else if( curdatadate.isAfter(requiredendday))
 				removestartdate = requiredendday;

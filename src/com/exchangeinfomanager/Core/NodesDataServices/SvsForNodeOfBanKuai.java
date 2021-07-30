@@ -161,11 +161,6 @@ public class SvsForNodeOfBanKuai implements ServicesForNode, ServicesForNodeBanK
 		requiredendday = ServicesForNode.getNodeCaculateEndDateAndRelatedActions(bankuai, period, requiredendday, calwholeweek);
 		
 		NodeXPeriodData nodexdatawk = ((BanKuai) bankuai).getNodeXPeroidData(period);
-//		LocalDate isinnotcalwholewkdate = nodexdatawk.isInNotCalWholeWeekMode();
-//		if(nodexdatawk.isInNotCalWholeWeekMode() == null || calwholeweek) 
-//			requiredendday   = requiredendday.with(DayOfWeek.FRIDAY);
-//		else if(isinnotcalwholewkdate != null) 
-//			requiredendday   =  isinnotcalwholewkdate;
 
 		if(nodexdatawk.getOHLCRecordsStartDate() == null) {
 			bankuai = bkdbopt.getBanKuaiKXianZouShi (((BanKuai) bankuai),requiredstartday,requiredendday,period);

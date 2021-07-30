@@ -79,6 +79,11 @@ import com.udojava.evalex.Expression;
 		
 		this.nodeamoma5 = new TimeSeries(nodeperiodtype);
 		this.nodeamoma10 = new TimeSeries(nodeperiodtype);
+		this.nodeamoma20 = new TimeSeries(nodeperiodtype);
+		this.nodeamoma30 = new TimeSeries(nodeperiodtype);
+		this.nodeamoma60 = new TimeSeries(nodeperiodtype);
+		this.nodeamoma120 = new TimeSeries(nodeperiodtype);
+		this.nodeamoma250 = new TimeSeries(nodeperiodtype);
 		
 		this.periodhighestzhangdiefu = new TimeSeries(nodeperiodtype);
 		this.periodlowestzhangdiefu = new TimeSeries(nodeperiodtype);
@@ -89,7 +94,6 @@ import com.udojava.evalex.Expression;
 	protected OHLCSeries nodeohlc; 
 	protected TimeSeries nodeamo; 
 	protected TimeSeries nodevol; 
-
 	//均线
 	protected TimeSeries nodeohlcma5;
 	protected TimeSeries nodeohlcma10;
@@ -143,75 +147,92 @@ import com.udojava.evalex.Expression;
 				}
 		} catch (java.lang.IndexOutOfBoundsException e) {	e.printStackTrace();	}
 		 
-		 try { int curindex =  this.nodeohlcma250.getIndex(period);
-				if(curindex >= 0 ) {
-					int itemcount = this.nodeohlcma250.getItemCount();
-					nodeohlcma250.delete(curindex, itemcount-1);
-				}
-		} catch (java.lang.IndexOutOfBoundsException e) {	e.printStackTrace();	}
-		 
-		 try { int curindex =  this.nodeohlcma60.getIndex(period);
-				if(curindex >= 0 ) {
-					int itemcount = this.nodeohlcma60.getItemCount();
-					nodeohlcma60.delete(curindex, itemcount-1);
-				}
-		} catch (java.lang.IndexOutOfBoundsException e) {	e.printStackTrace();	}
-
+		 //OHLC
 		 try {	int curindex =  this.nodeohlcma5.getIndex(period);
 				if(curindex >= 0 ) {
 					int itemcount = this.nodeohlcma5.getItemCount();
 					nodeohlcma5.delete(curindex, itemcount-1);
 				}
 		} catch (java.lang.IndexOutOfBoundsException e) {	e.printStackTrace();	}
-		 
 		 try {	int curindex =  this.nodeohlcma10.getIndex(period);
 				if(curindex >= 0 ) {
 					int itemcount = this.nodeohlcma10.getItemCount();
 					nodeohlcma10.delete(curindex, itemcount-1);
 				}
 		} catch (java.lang.IndexOutOfBoundsException e) {	e.printStackTrace();	}
-		 
 		 try {	int curindex =  this.nodeohlcma20.getIndex(period);
 				if(curindex >= 0 ) {
 					int itemcount = this.nodeohlcma20.getItemCount();
 					nodeohlcma20.delete(curindex, itemcount-1);
 				}
 		} catch (java.lang.IndexOutOfBoundsException e) {	e.printStackTrace();	}
-		
 		 try {	int curindex =  this.nodeohlcma30.getIndex(period);
 				if(curindex >= 0 ) {
 					int itemcount = this.nodeohlcma30.getItemCount();
 					nodeohlcma30.delete(curindex, itemcount-1);
 				}
 		} catch (java.lang.IndexOutOfBoundsException e) {	e.printStackTrace();	}
-		  
+		 try {	int curindex =  this.nodeohlcma60.getIndex(period);
+			if(curindex >= 0 ) {
+				int itemcount = this.nodeohlcma60.getItemCount();
+				nodeohlcma60.delete(curindex, itemcount-1);
+			}
+		 } catch (java.lang.IndexOutOfBoundsException e) {	e.printStackTrace();	}
 		 try {	int curindex =  this.nodeohlcma120.getIndex(period);
 				if(curindex >= 0 ) {
 					int itemcount = this.nodeohlcma120.getItemCount();
 					nodeohlcma120.delete(curindex, itemcount-1);
 				}
 		} catch (java.lang.IndexOutOfBoundsException e) {	e.printStackTrace();	}
- 
+		 try {	int curindex =  this.nodeohlcma250.getIndex(period);
+			if(curindex >= 0 ) {
+				int itemcount = this.nodeohlcma250.getItemCount();
+				nodeohlcma250.delete(curindex, itemcount-1);
+			}
+		 } catch (java.lang.IndexOutOfBoundsException e) {	e.printStackTrace();	}
+		 // AMO
 		 try {	int curindex =  this.nodeamoma5.getIndex(period);
 				if(curindex >= 0 ) {
 					int itemcount = this.nodeamoma5.getItemCount();
 					nodeamoma5.delete(curindex, itemcount-1);
 				}
 		} catch (java.lang.IndexOutOfBoundsException e) {	e.printStackTrace();	}
-		 
 		 try {	int curindex =  this.nodeamoma10.getIndex(period);
 				if(curindex >= 0 ) {
 					int itemcount = this.nodeamoma10.getItemCount();
 					nodeamoma10.delete(curindex, itemcount-1);
 				}
 		} catch (java.lang.IndexOutOfBoundsException e) {	e.printStackTrace();	}
-		 
-		 try {	int curindex =  this.nodeamoma10.getIndex(period);
-				if(curindex >= 0 ) {
-					int itemcount = this.nodeamoma10.getItemCount();
-					nodeamoma10.delete(curindex, itemcount-1);
+		 try {	Integer curindex =  this.nodeamoma20.getIndex(period);
+				if(curindex != null && curindex >= 0 ) {
+					int itemcount = this.nodeamoma20.getItemCount();
+					nodeamoma20.delete(curindex, itemcount-1);
 				}
 		} catch (java.lang.IndexOutOfBoundsException e) {	e.printStackTrace();	}
+		 try {	Integer curindex =  this.nodeamoma30.getIndex(period);
+			if(curindex != null && curindex >= 0 ) {
+				int itemcount = this.nodeamoma30.getItemCount();
+				nodeamoma30.delete(curindex, itemcount-1);
+			}
+		 } catch (java.lang.IndexOutOfBoundsException e) {	e.printStackTrace();	}
+		 try {	Integer curindex =  this.nodeamoma60.getIndex(period);
+			if(curindex != null && curindex >= 0 ) {
+				int itemcount = this.nodeamoma60.getItemCount();
+				nodeamoma60.delete(curindex, itemcount-1);
+			}
+		 } catch (java.lang.IndexOutOfBoundsException e) {	e.printStackTrace();	}
+		 try {	Integer curindex =  this.nodeamoma120.getIndex(period);
+			if(curindex != null && curindex >= 0 ) {
+				int itemcount = this.nodeamoma20.getItemCount();
+				nodeamoma120.delete(curindex, itemcount-1);
+			}
+		 } catch (java.lang.IndexOutOfBoundsException e) {	e.printStackTrace();	}
+		 try {	Integer curindex =  this.nodeamoma250.getIndex(period);
+			if( curindex != null && curindex >= 0 ) {
+				int itemcount = this.nodeamoma250.getItemCount();
+				nodeamoma250.delete(curindex, itemcount-1);
+			}
+		 } catch (java.lang.IndexOutOfBoundsException e) {	e.printStackTrace();	}
 		 
 		 try {	int curindex = this.nodeohlc.indexOf(period);
 				if(curindex >= 0 ) {
@@ -470,6 +491,7 @@ import com.udojava.evalex.Expression;
 			OHLCItem curohlc = (OHLCItem) this.getOHLCData().getDataItem(indexofcur.intValue());
 			
 			double curclose = curohlc.getCloseValue();
+			double curopen = curohlc.getOpenValue();
 			if(curclose == 0.0) { //0.0可能是没有数据，也可能是前复权导致的，要判断�?�?
 				double curhigh = curohlc.getHighValue();
 				double curlow = curohlc.getLowValue();
@@ -480,7 +502,10 @@ import com.udojava.evalex.Expression;
 			OHLCItem lastholc = null; Double lastclose = 0.0;
 			try {	lastholc = (OHLCItem) this.getOHLCData().getDataItem(indexofcur.intValue() -1 );
 				lastclose = lastholc.getCloseValue();
-			}	catch (java.lang.IndexOutOfBoundsException ex) {return null;} //第一�?
+			}	catch (java.lang.IndexOutOfBoundsException ex) { //新股或者新板块
+				double zhangfu = (curclose - curopen) / curopen;
+				return zhangfu;
+			} //第一�?
 			
 			if(lastclose == 0.0)	return null;
 			
@@ -2063,6 +2088,8 @@ import com.udojava.evalex.Expression;
 				e.printStackTrace();
 			}
 			if(dapcurindx == 0 ) return false ;//大盘都到第一周了，肯定没停牌
+			if(dapcurindx < 0 ) return false ;
+			
 			LocalDate dplstwkdata = null;
 			try {
 				for(int i= 1;i<=4;i++) { //大盘连续停牌4周的可能性大概为0

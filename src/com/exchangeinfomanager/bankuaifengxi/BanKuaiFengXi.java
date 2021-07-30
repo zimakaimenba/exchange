@@ -478,7 +478,7 @@ public class BanKuaiFengXi extends JDialog
     	//这里必须先同步一下TDXDAN, 因为refresh里面的superbk用的tdx dapan，必须要有数据
     	DaPan tdxdapan = (DaPan) CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode("000000", BkChanYeLianTreeNode.DAPAN);
     	tdxdapan.getServicesForNode(true).getNodeData(tdxdapan, requirestart, curselectdate,this.globeperiod,this.globecalwholeweek);
-    	tdxdapan.getServicesForNode(true).getNodeKXian(tdxdapan, requirestart, curselectdate,this.globeperiod,this.globecalwholeweek);
+    	tdxdapan.getServicesForNode(true).getNodeKXian(tdxdapan, requirestart, curselectdate,NodeGivenPeriodDataItem.DAY,this.globecalwholeweek);
     	tdxdapan.getServicesForNode(false);
     	
     	List<BkChanYeLianTreeNode> dzhbk = getDZHBanKuaiFenXiQualifiedNodes (curselectdate,this.globeperiod,this.globecalwholeweek,true);
@@ -3282,6 +3282,10 @@ public class BanKuaiFengXi extends JDialog
 			NodeXPeriodData nodexdatawk = ((TDXNodes)node).getNodeXPeroidData(NodeGivenPeriodDataItem.WEEK);
 			NodeXPeriodData nodexdataday = ((TDXNodes)node).getNodeXPeroidData(NodeGivenPeriodDataItem.DAY);
 			isInNotCalWholeWeekModeData = nodexdatawk.isInNotCalWholeWeekMode ();
+			if(isInNotCalWholeWeekModeData == null)
+				isInNotCalWholeWeekModeData = nodexdataday.isInNotCalWholeWeekMode ();
+//			if(isInNotCalWholeWeekModeData == null) 
+//				JOptionPane.showMessageDialog(null, "this.globecalwholeweek = true 同时 isInNotCalWholeWeekModeData == null", "严重错误！", JOptionPane.OK_CANCEL_OPTION);
 		}
 		
 		//保证显示时间范围为当前日期前后有数据的36个月(3年)
@@ -3301,18 +3305,18 @@ public class BanKuaiFengXi extends JDialog
 			node.getServicesForNode(false);
 		}
 
-		if(node.getType() == BkChanYeLianTreeNode.TDXGG) { 
-			BanKuai bkcur = null;
-			//如果是个股的话，还要显示其当前所属的板块占比信息，所以要把板块的数据也找出来。
-			int row = tableBkZhanBi.getSelectedRow();
-			if(row != -1) {
-				int modelRow = tableBkZhanBi.convertRowIndexToModel(row);
-				bkcur = (BanKuai) ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getNode(modelRow);
-				bkcur = (BanKuai) bkcur.getServicesForNode(true).getNodeData(bkcur, bufferdatastartday, requireend, globeperiod, true);
-				bkcur.getServicesForNode(true).syncNodeData(bkcur);
-				bkcur.getServicesForNode(false);
-			}
-		}
+//		if(node.getType() == BkChanYeLianTreeNode.TDXGG) { 
+//			BanKuai bkcur = null;
+//			//如果是个股的话，还要显示其当前所属的板块占比信息，所以要把板块的数据也找出来。
+//			int row = tableBkZhanBi.getSelectedRow();
+//			if(row != -1) {
+//				int modelRow = tableBkZhanBi.convertRowIndexToModel(row);
+//				bkcur = (BanKuai) ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getNode(modelRow);
+//				bkcur = (BanKuai) bkcur.getServicesForNode(true).getNodeData(bkcur, bufferdatastartday, requireend, globeperiod, true);
+//				bkcur.getServicesForNode(true).syncNodeData(bkcur);
+//				bkcur.getServicesForNode(false);
+//			}
+//		}
 				
 		DaPan dapan = (DaPan) CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode("000000", BkChanYeLianTreeNode.DAPAN);
 		dapan.getServicesForNode(true).getNodeData(dapan, bufferdatastartday, requireend, this.globeperiod, true);
@@ -3354,6 +3358,20 @@ public class BanKuaiFengXi extends JDialog
 								, isInNotCalWholeWeekModeData, NodeGivenPeriodDataItem.WEEK, false);
 						node.getServicesForNode(true).syncNodeData(node);
 						node.getServicesForNode(false);
+						
+//						if(node.getType() == BkChanYeLianTreeNode.TDXGG) { 
+//							BanKuai bkcur = null;
+//							//如果是个股的话，还要显示其当前所属的板块占比信息，所以要把板块的数据也找出来。
+//							int row = tableBkZhanBi.getSelectedRow();
+//							if(row != -1) {
+//								int modelRow = tableBkZhanBi.convertRowIndexToModel(row);
+//								bkcur = (BanKuai) ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getNode(modelRow);
+//								bkcur = (BanKuai) bkcur.getServicesForNode(true).getNodeData(bkcur, CommonUtility.getSettingRangeDate(curselectdate, "basic"),
+//										isInNotCalWholeWeekModeData, NodeGivenPeriodDataItem.WEEK, false);
+//								bkcur.getServicesForNode(true).syncNodeData(bkcur);
+//								bkcur.getServicesForNode(false);
+//							}
+//						}
 					}
 //					DaPan dapan = (DaPan) CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode("000000", BkChanYeLianTreeNode.DAPAN);
 					dapan.getServicesForNode(true).getNodeData(node, CommonUtility.getSettingRangeDate(curselectdate, "basic")

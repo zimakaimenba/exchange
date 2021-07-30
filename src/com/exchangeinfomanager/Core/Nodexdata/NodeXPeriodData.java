@@ -153,13 +153,13 @@ public interface NodeXPeriodData
 		};
 	
 	public static  Object [] OuputFormatControl = {
-			new DecimalFormat("%#0.0000"),1,1,new DecimalFormat("%#0.000"),
-			new DecimalFormat("%#0.0000"),1,1,new DecimalFormat("%#0.000"),
+			new DecimalFormat("%#0.00000"),1,1,new DecimalFormat("%#0.0000"),
+			new DecimalFormat("%#0.00000"),1,1,new DecimalFormat("%#0.0000"),
 			1,1,1,1,
 			1,1,
-			1,1,new DecimalFormat("%#0.000"),1,1,
-			1,1,new DecimalFormat("%#0.000"),1,1,
-			new DecimalFormat("%#0.0000"),1,1,1,1
+			1,1,new DecimalFormat("%#0.0000"),1,1,
+			1,1,new DecimalFormat("%#0.0000"),1,1,
+			new DecimalFormat("%#0.00000"),1,1,1,1
 	};
 
 	public static  String [] OuputColorControl = {
