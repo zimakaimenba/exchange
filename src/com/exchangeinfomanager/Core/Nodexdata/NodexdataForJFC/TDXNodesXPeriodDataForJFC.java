@@ -117,7 +117,7 @@ import com.udojava.evalex.Expression;
 	 * 
 	 */
 	public void removeNodeDataFromSpecificDate (LocalDate requireddate)
-	 {
+	{
 		super.removeNodeDataFromSpecificDate(requireddate);
 
 		RegularTimePeriod period = super.getJFreeChartFormateTimePeriod(requireddate);

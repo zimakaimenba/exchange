@@ -18,6 +18,7 @@ import com.exchangeinfomanager.commonlib.FormatDoubleToShort;
 import com.google.common.collect.ObjectArrays;
 
 import org.apache.log4j.Logger;
+import org.jfree.data.ComparableObjectItem;
 import org.jfree.data.time.RegularTimePeriod;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesDataItem;
@@ -38,8 +39,6 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 		stockhuanshoulvfree = new TimeSeries(nodeperiodtype1);
 		stockliutongshizhi = new TimeSeries(nodeperiodtype1);
 		stockzongshizhi = new TimeSeries(nodeperiodtype1);
-//		periodhighestzhangdiefu = new TimeSeries(nodeperiodtype1);
-//		periodlowestzhangdiefu = new TimeSeries(nodeperiodtype1);
 	}
 	
 	private Logger logger = Logger.getLogger(StockXPeriodDataForJFC.class);
@@ -48,13 +47,97 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 	private  TimeSeries stockhuanshoulvfree; //自由流�?�股份换手率
 	private  TimeSeries stockliutongshizhi; //流�?�市�?
 	private  TimeSeries stockzongshizhi; //总市�?
-//	private  TimeSeries periodhighestzhangdiefu; //�?高涨�?
-//	private  TimeSeries periodlowestzhangdiefu; //�?高涨�?
 	private  TimeSeries stockgzjl; //关注记录
 	private  TimeSeries stockmairujl; //买入记录
 	private  TimeSeries stockmaichuujl; //卖出记录
 	
+	public void removeNodeDataFromSpecificDate (LocalDate requireddate)
+	{
+		super.removeNodeDataFromSpecificDate(requireddate);
+
+		RegularTimePeriod period = super.getJFreeChartFormateTimePeriod(requireddate);
+		if(period == null) return;
+
+		try {
+			Integer curindex = this.stockhuanshoulv.getIndex(period);
+				if(curindex >= 0 ) {
+					int itemcount = this.stockhuanshoulv.getItemCount();
+					stockhuanshoulv.delete(curindex, itemcount-1);
+				}
+		} catch (java.lang.IndexOutOfBoundsException e) {	e.printStackTrace();	}
+		 
+		 try {
+			 	Integer curindex = this.stockhuanshoulvfree.getIndex(period);
+				if(curindex >= 0 ) {
+					int itemcount = this.stockhuanshoulvfree.getItemCount();
+					stockhuanshoulvfree.delete(curindex, itemcount-1);
+				}
+		} catch (java.lang.IndexOutOfBoundsException e) {	e.printStackTrace();	}
+
+		 try {	int  curindex =  this.stockliutongshizhi.getIndex(period);
+				if(curindex >= 0 ) {
+					int itemcount = this.stockliutongshizhi.getItemCount();
+					stockliutongshizhi.delete(curindex, itemcount-1);
+				}
+		} catch (java.lang.IndexOutOfBoundsException e) {	e.printStackTrace();	}
+		 
+		 try {	int curindex =  this.stockzongshizhi.getIndex(period);
+				if(curindex >= 0 ) {
+					int itemcount = this.stockzongshizhi.getItemCount();
+					stockzongshizhi.delete(curindex, itemcount-1);
+				}
+		} catch (java.lang.IndexOutOfBoundsException e) {	e.printStackTrace();	}
+	 }
 	
+	/*
+	 * (non-Javadoc)
+	 * @see com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData#addNewXPeriodData(com.exchangeinfomanager.asinglestockinfo.NodeGivenPeriodDataItem)
+	 */
+	public void addNewXPeriodData (NodeGivenPeriodDataItem kdata)
+	{
+		super.addNewXPeriodData(kdata);
+		
+		try {
+			stockhuanshoulv.setNotify(false);
+			if(kdata.getHuanShouLv() != null && kdata.getHuanShouLv() !=0.0 )
+				stockhuanshoulv.add(kdata.getJFreeChartPeriod(super.getNodeperiodtype()),kdata.getHuanShouLv(),false);
+		} catch (org.jfree.data.general.SeriesException e) {
+			logger.info(super.getNodeCode() + super.getNodeperiodtype() 
+			+ kdata.getJFreeChartPeriod(super.getNodeperiodtype()).toString() 
+			+ kdata.getJFreeChartPeriod(super.getNodeperiodtype()).getStart().toString() 
+			+ "nodeohlc 数据已经存在，重复添加！"  );
+		}
+		try {
+			stockhuanshoulvfree.setNotify(false);
+			if(kdata.getHuanShouLvFree() != null && kdata.getHuanShouLvFree() !=0.0 )
+				stockhuanshoulvfree.add(kdata.getJFreeChartPeriod(super.getNodeperiodtype()),kdata.getHuanShouLvFree(),false);
+		} catch (org.jfree.data.general.SeriesException e) {
+			logger.info(super.getNodeCode() + super.getNodeperiodtype() 
+			+ kdata.getJFreeChartPeriod(super.getNodeperiodtype()).toString() 
+			+ kdata.getJFreeChartPeriod(super.getNodeperiodtype()).getStart().toString() 
+			+ "nodeohlc 数据已经存在，重复添加！"  );
+		}
+		try {
+			stockliutongshizhi.setNotify(false);
+			if(kdata.getLiuTongShiZhi() != null && kdata.getLiuTongShiZhi() !=  0.0 )
+				stockliutongshizhi.add(kdata.getJFreeChartPeriod(super.getNodeperiodtype()),kdata.getLiuTongShiZhi(),false);
+		} catch (org.jfree.data.general.SeriesException e) {
+			logger.info(super.getNodeCode() + super.getNodeperiodtype() 
+			+ kdata.getJFreeChartPeriod(super.getNodeperiodtype()).toString() 
+			+ kdata.getJFreeChartPeriod(super.getNodeperiodtype()).getStart().toString() 
+			+ "nodeohlc 数据已经存在，重复添加！"  );
+		}
+		try {	
+			stockzongshizhi.setNotify(false);
+			if( kdata.getZongShiZhi() != null && kdata.getZongShiZhi() != 0)
+				stockzongshizhi.add(kdata.getJFreeChartPeriod(super.getNodeperiodtype()),kdata.getZongShiZhi(),false);
+		} catch (org.jfree.data.general.SeriesException e) {
+			logger.info(super.getNodeCode() + super.getNodeperiodtype() 
+			+ kdata.getJFreeChartPeriod(super.getNodeperiodtype()).toString() 
+			+ kdata.getJFreeChartPeriod(super.getNodeperiodtype()).getStart().toString() 
+			+ "nodeohlc 数据已经存在，重复添加！"  );
+		}
+	}
 	/*
 	 * 
 	 */
@@ -167,51 +250,7 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 //			e.printStackTrace();
 		}
 	}
-	/*
-	 * (non-Javadoc)
-	 * @see com.exchangeinfomanager.asinglestockinfo.BkChanYeLianTreeNode.NodeXPeriodData#addNewXPeriodData(com.exchangeinfomanager.asinglestockinfo.NodeGivenPeriodDataItem)
-	 */
-	public void addNewXPeriodData (NodeGivenPeriodDataItem kdata)
-	{
-		super.addNewXPeriodData(kdata);
-		
-		try {
-			stockhuanshoulv.setNotify(false);
-			if(kdata.getHuanShouLv() != null && kdata.getHuanShouLv() !=0.0 )
-				stockhuanshoulv.add(kdata.getJFreeChartPeriod(super.getNodeperiodtype()),kdata.getHuanShouLv(),false);
-		} catch (org.jfree.data.general.SeriesException e) {}
-		try {
-			stockhuanshoulvfree.setNotify(false);
-			if(kdata.getHuanShouLvFree() != null && kdata.getHuanShouLvFree() !=0.0 )
-				stockhuanshoulvfree.add(kdata.getJFreeChartPeriod(super.getNodeperiodtype()),kdata.getHuanShouLvFree(),false);
-		} catch (org.jfree.data.general.SeriesException e) {}
-		try {
-			stockliutongshizhi.setNotify(false);
-			if(kdata.getLiuTongShiZhi() != null && kdata.getLiuTongShiZhi() !=  0.0 )
-				stockliutongshizhi.add(kdata.getJFreeChartPeriod(super.getNodeperiodtype()),kdata.getLiuTongShiZhi(),false);
-		} catch (org.jfree.data.general.SeriesException e) {
-//			System.out.println(kdata.getMyOwnCode() + kdata.getPeriod() + "数据已经存在�?" + kdata.getPeriod().getStart() + "," + kdata.getPeriod().getEnd() + ")");
-//			e.printStackTrace();
-		}
-		try {	
-			stockzongshizhi.setNotify(false);
-			if( kdata.getZongShiZhi() != null && kdata.getZongShiZhi() != 0)
-				stockzongshizhi.add(kdata.getJFreeChartPeriod(super.getNodeperiodtype()),kdata.getZongShiZhi(),false);
-		} catch (org.jfree.data.general.SeriesException e) {
-//			System.out.println(kdata.getMyOwnCode() + kdata.getPeriod() + "数据已经存在�?" + kdata.getPeriod().getStart() + "," + kdata.getPeriod().getEnd() + ")");
-//			e.printStackTrace();
-		}
-//		try {	
-//			periodhighestzhangdiefu.setNotify(false);
-//			if( kdata.getPeriodHighestZhangDieFu() != null && kdata.getPeriodHighestZhangDieFu() != 0)
-//				periodhighestzhangdiefu.add(kdata.getJFreeChartPeriod(super.getNodeperiodtype()),kdata.getPeriodHighestZhangDieFu(),false);
-//		} catch (org.jfree.data.general.SeriesException e) {}
-//		try {	
-//			periodlowestzhangdiefu.setNotify(false);
-//			if( kdata.getPeriodLowestZhangDieFu() != null && kdata.getPeriodLowestZhangDieFu() != 0)
-//				periodlowestzhangdiefu.add(kdata.getJFreeChartPeriod(super.getNodeperiodtype()), kdata.getPeriodLowestZhangDieFu(),false);
-//		} catch (org.jfree.data.general.SeriesException e) {}
-	}
+	
 	/*
 	 * 
 	 */
@@ -222,8 +261,6 @@ public class StockXPeriodDataForJFC extends TDXNodesXPeriodDataForJFC implements
 		try {stockhuanshoulvfree.clear();} catch (java.lang.NullPointerException e) {}
 		try {stockliutongshizhi.clear();} catch (java.lang.NullPointerException e) {}
 		try {stockzongshizhi.clear();} catch (java.lang.NullPointerException e) {}
-//		try {periodhighestzhangdiefu.clear();} catch (java.lang.NullPointerException e) {}
-//		try {periodlowestzhangdiefu.clear();} catch (java.lang.NullPointerException e) {}
 		try { stockgzjl.clear();	} catch (java.lang.NullPointerException e) {}
 	}
 	/*

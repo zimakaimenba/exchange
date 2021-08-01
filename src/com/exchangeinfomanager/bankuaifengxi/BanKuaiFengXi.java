@@ -1514,6 +1514,32 @@ public class BanKuaiFengXi extends JDialog
 			}
 		});
 		
+		menuItemQuickCalBkZhangDieFu.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent evt) {
+				Cursor hourglassCursor = new Cursor(Cursor.WAIT_CURSOR);
+				setCursor(hourglassCursor);
+				
+				LocalDate curselectdate = dateChooser.getLocalDate();
+				LocalDate requirestart = CommonUtility.getSettingRangeDate(curselectdate,"middle").with(DayOfWeek.MONDAY);
+				
+				if(((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getRowCount() >0 ) {
+					List<BkChanYeLianTreeNode> allbk = ((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getAllNodes();
+					for(BkChanYeLianTreeNode tmpbk : allbk) {
+						((BanKuai)tmpbk).getServicesForNode(true).getNodeKXian(tmpbk, requirestart, curselectdate, NodeGivenPeriodDataItem.DAY, globecalwholeweek);
+						((BanKuai)tmpbk).getServicesForNode(false);
+					}
+					tableBkZhanBi.revalidate();
+			    	tableBkZhanBi.repaint();
+				}
+				
+				playAnaylsisFinishNoticeSound();
+				hourglassCursor = null;
+				Cursor hourglassCursor2 = new Cursor(Cursor.DEFAULT_CURSOR);
+				setCursor(hourglassCursor2);
+			}
+		});
+		
 		menuItemSaveCurWkDataToData.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent evt) {
@@ -3523,6 +3549,8 @@ public class BanKuaiFengXi extends JDialog
 	private JTabbedPane tabbedPanePie;
 	private JLabel holdbackgrounddownload;
 
+	private JMenuItem menuItemQuickCalBkZhangDieFu;
+
 	private void initializeGuiOf2560Resolution ()
 	{
 		setTitle("\u677F\u5757\u5206\u6790");
@@ -4016,11 +4044,17 @@ public class BanKuaiFengXi extends JDialog
 	     jPopupMenuoftabbedpanebk = new JPopupMenu();
 	     menuItemcancelBanKaiReviewedtoday = new JMenuItem("取消已经阅读状态"); //系统默认按成交额排名
 	     jPopupMenuoftabbedpanebk.add(menuItemcancelBanKaiReviewedtoday);
+	     
 	     menuItemcancelAllNodesReviewedtoday = new JMenuItem("取消所有板块个股阅读状态"); //系统默认按成交额排名
 	     jPopupMenuoftabbedpanebk.add(menuItemcancelAllNodesReviewedtoday);
+	     
 	     menuItemSaveCurWkDataToData = new JMenuItem("保存本表数据到数据库");
 	     menuItemSaveCurWkDataToData.setEnabled(false);
 	     jPopupMenuoftabbedpanebk.add(menuItemSaveCurWkDataToData);
+	     
+	     menuItemQuickCalBkZhangDieFu = new JMenuItem("快速计算所有板块涨跌幅");
+//	     menuItemQuickCalBkZhangDieFu.setEnabled(false);
+	     jPopupMenuoftabbedpanebk.add(menuItemQuickCalBkZhangDieFu);
 	     
 		   JMenu biaojiMenu = new JMenu("标记板块");
 	       menuItemAddRmvBkToRedSign = new JMenuItem("设置/取消红标");
