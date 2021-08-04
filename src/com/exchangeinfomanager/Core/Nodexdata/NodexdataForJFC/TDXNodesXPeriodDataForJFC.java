@@ -258,10 +258,10 @@ import com.udojava.evalex.Expression;
 			nodeohlc.setNotify(false);
 			nodeohlc.add( (NodeGivenPeriodDataItemForJFC)kdata);
 		} catch (org.jfree.data.general.SeriesException e) {
-			logger.info(super.getNodeCode() + super.getNodeperiodtype() 
-				+ kdata.getJFreeChartPeriod(super.getNodeperiodtype()).toString() 
-				+ kdata.getJFreeChartPeriod(super.getNodeperiodtype()).getStart().toString() 
-				+ "nodeohlc 数据已经存在，重复添加！"  );
+//			logger.info(super.getNodeCode() + super.getNodeperiodtype() 
+//				+ kdata.getJFreeChartPeriod(super.getNodeperiodtype()).toString() 
+//				+ kdata.getJFreeChartPeriod(super.getNodeperiodtype()).getStart().toString() 
+//				+ "nodeohlc 数据已经存在，重复添加！"  );
 		} catch (java.lang.IllegalArgumentException e) {
 //			e.printStackTrace();
 		}

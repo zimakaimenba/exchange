@@ -92,7 +92,7 @@ public class ExportMatchedNode2
 				childnode = ((SvsForNodeOfBanKuai)((BanKuai) childnode).getServicesForNode(true)).getAllGeGuOfBanKuai((BanKuai) childnode);
 				((BanKuai) childnode).getServicesForNode(false);
 //				
-				Collection<BkChanYeLianTreeNode> nowbkallgg = ((BanKuai)childnode).getSpecificPeriodBanKuaiGeGu(exportdate,0);
+				Collection<BkChanYeLianTreeNode> nowbkallgg = ((BanKuai)childnode).getSpecificPeriodBanKuaiGeGu(exportdate);
 				if(nowbkallgg == null) continue;
 
 				for (BkChanYeLianTreeNode ggstock : nowbkallgg) {
@@ -185,7 +185,7 @@ public class ExportMatchedNode2
 				childnode = ((SvsForNodeOfBanKuai)((BanKuai) childnode).getServicesForNode(true)).getAllGeGuOfBanKuai((BanKuai) childnode);
 				((BanKuai) childnode).getServicesForNode(false);
 //				
-				Collection<BkChanYeLianTreeNode> nowbkallgg = ((BanKuai)childnode).getSpecificPeriodBanKuaiGeGu(exportdate,0);
+				Collection<BkChanYeLianTreeNode> nowbkallgg = ((BanKuai)childnode).getSpecificPeriodBanKuaiGeGu(exportdate);
 				if(nowbkallgg == null) continue;
 
 				for (BkChanYeLianTreeNode ggstock : nowbkallgg) {

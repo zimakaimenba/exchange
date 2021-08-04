@@ -236,14 +236,35 @@ public class BanKuaiFengXiCategoryBarChartCjlZhanbiPnl extends BanKuaiFengXiCate
 				if(cjlzb < lowestLow)
 					lowestLow = cjlzb;
 				
-				//标记该NODE本周是阳线还是阴线
-				Double zhangdiefu = nodexdata.getSpecificOHLCZhangDieFu(wkfriday);
-				if(zhangdiefu != null && zhangdiefu >0) {
-					CategoryTextAnnotation cpa  = new CategoryTextAnnotation ("\u21B1", wkfriday , 0.0);
+//				//标记该NODE本周是阳线还是阴线
+//				Double zhangdiefu = nodexdata.getSpecificOHLCZhangDieFu(wkfriday);
+//				if(zhangdiefu != null && zhangdiefu >0) {
+//					CategoryTextAnnotation cpa  = new CategoryTextAnnotation ("\u21B1", wkfriday , 0.0);
+//					//cpa.setBaseRadius(0.0);
+//					// cpa.setTipRadius(25.0);
+//					cpa.setFont(new Font("SansSerif", Font.BOLD, 10));
+//					cpa.setPaint(Color.RED);
+//					cpa.setTextAnchor(TextAnchor.CENTER);
+//					super.plot.addAnnotation(cpa);
+//				}
+				
+//				标记大盘该周是涨还是跌
+				NodeXPeriodData dpnodexdata = dapan.getNodeXPeroidData(period);
+				Double dpzdf = dpnodexdata.getSpecificOHLCZhangDieFu(wkfriday);
+				if(dpzdf != null && dpzdf > 0 ) {
+					CategoryTextAnnotation cpa  = new CategoryTextAnnotation ("\u2B08", wkfriday ,cjlzb);
 					//cpa.setBaseRadius(0.0);
-					// cpa.setTipRadius(25.0);
-					cpa.setFont(new Font("SansSerif", Font.BOLD, 10));
+					//cpa.setTipRadius(25.0);
+//					cpa.setFont(new Font("SansSerif", Font.BOLD, 10));
 					cpa.setPaint(Color.RED);
+					cpa.setTextAnchor(TextAnchor.CENTER);
+					super.plot.addAnnotation(cpa);
+				} else if(dpzdf != null && dpzdf <= 0 ) {
+					CategoryTextAnnotation cpa  = new CategoryTextAnnotation ("\u2B08", wkfriday , cjlzb);
+					//cpa.setBaseRadius(0.0);
+					//cpa.setTipRadius(25.0);
+//					cpa.setFont(new Font("SansSerif", Font.BOLD, 10));
+					cpa.setPaint(Color.GREEN);
 					cpa.setTextAnchor(TextAnchor.CENTER);
 					super.plot.addAnnotation(cpa);
 				}
@@ -262,6 +283,8 @@ public class BanKuaiFengXiCategoryBarChartCjlZhanbiPnl extends BanKuaiFengXiCate
 					continue;
 				}
 			}
+			
+ 
 			
 			//对个股有关注记录的时候
 			if(super.getCurDisplayedNode().getType() == BkChanYeLianTreeNode.TDXGG) { //对个股有关注记录的时候

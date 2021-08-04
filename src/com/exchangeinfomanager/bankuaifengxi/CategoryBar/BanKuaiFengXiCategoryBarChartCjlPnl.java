@@ -233,26 +233,6 @@ public class BanKuaiFengXiCategoryBarChartCjlPnl extends BanKuaiFengXiCategoryBa
 						cpa.setTextAnchor(TextAnchor.CENTER);
 						super.plot.addAnnotation(cpa);
 					}
-					//标记大盘成交量该周是涨还是跌;;
-//					NodeXPeriodData dpnodexdata = dapan.getNodeXPeroidData(period);
-//					Double dpdiff = dpnodexdata.getChengJiaoErDifferenceWithLastPeriod(tmpdate, 0);
-//					if(dpdiff != null && dpdiff >0) {
-//						CategoryTextAnnotation cpa  = new CategoryTextAnnotation ("\u2B08", wkfriday , 0.0);
-//						//cpa.setBaseRadius(0.0);
-//						// cpa.setTipRadius(25.0);
-//						cpa.setFont(new Font("SansSerif", Font.BOLD, 10));
-//						cpa.setPaint(Color.RED);
-//						cpa.setTextAnchor(TextAnchor.CENTER);
-//						super.plot.addAnnotation(cpa);
-//					} else {
-//						CategoryTextAnnotation cpa  = new CategoryTextAnnotation ("\u21B1", wkfriday , 0.0);
-//						//cpa.setBaseRadius(0.0);
-//						//cpa.setTipRadius(25.0);
-//						cpa.setFont(new Font("SansSerif", Font.BOLD, 10));
-//						cpa.setPaint(Color.GREEN);
-//						cpa.setTextAnchor(TextAnchor.CENTER);
-//						super.plot.addAnnotation(cpa);
-//					}
 					
 				} else {
 					if( !dapan.isDaPanXiuShi(tmpdate,period) ) {

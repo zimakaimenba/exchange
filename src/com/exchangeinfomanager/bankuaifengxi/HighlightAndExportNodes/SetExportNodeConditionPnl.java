@@ -196,7 +196,7 @@ public class SetExportNodeConditionPnl extends JPanel implements OnCalendarDateC
 			          switch ((StateValue) eventexport.getNewValue()) {
 			          case DONE:
 			            try {
-			              final int count = exporttask.get();
+//			              final int count = exporttask.get();
 			              int exchangeresult = JOptionPane.showConfirmDialog(null, "导出完成，是否打开" + filefmxx.getAbsolutePath() + "查看","导出完成", JOptionPane.OK_CANCEL_OPTION);
 			      		  if(exchangeresult != JOptionPane.CANCEL_OPTION) {
 			      			try {	String path = filefmxx.getAbsolutePath();

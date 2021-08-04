@@ -1329,19 +1329,28 @@ public class BanKuaiFengXi extends JDialog
 		clearTheGuiBeforDisplayNewInfoSection3 ();
 		
 		if(lastselecteddate == null) { //user first set date
-			String firstshowvendordata = bkfxsettingprop.getProperty ("firstshowvendordata");
-    		if(firstshowvendordata == null || firstshowvendordata.equalsIgnoreCase("TDX")) {
-    			unifiedOperationForDaPanSyncData (userselecteddate , NodeGivenPeriodDataItem.WEEK);
-    			gettBanKuaiZhanBiRangedByGrowthRateOfPeriod (userselecteddate, NodeGivenPeriodDataItem.WEEK);
-    			unifiedTabbedPanSelectionActions ( (BanKuai)CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode("999999", BkChanYeLianTreeNode.TDXBK)
-    				,userselecteddate );
-    		}
-    		else	if(firstshowvendordata.equalsIgnoreCase("DZH")) {
-    			gettDZHBanKuaiZhanBiRangedByGrowthRateOfPeriod (userselecteddate, NodeGivenPeriodDataItem.WEEK);
-    			unifiedTabbedPanSelectionActions ( (BanKuai)CreateExchangeTree.CreateTreeOfDZHBanKuaiAndStocks().getSpecificNodeByHypyOrCode("999999", BkChanYeLianTreeNode.DZHBK)
-	    				,userselecteddate );
-    		}
+//			String firstshowvendordata = bkfxsettingprop.getProperty ("firstshowvendordata");
+//    		if(firstshowvendordata == null || firstshowvendordata.equalsIgnoreCase("TDX")) {
+//    			unifiedOperationForDaPanSyncData (userselecteddate , NodeGivenPeriodDataItem.WEEK);
+//    			gettBanKuaiZhanBiRangedByGrowthRateOfPeriod (userselecteddate, NodeGivenPeriodDataItem.WEEK);
+//    			unifiedTabbedPanSelectionActions ( (BanKuai)CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode("999999", BkChanYeLianTreeNode.TDXBK)
+//    				,userselecteddate );
+//    		}
+//    		else	if(firstshowvendordata.equalsIgnoreCase("DZH")) {
+//    			gettDZHBanKuaiZhanBiRangedByGrowthRateOfPeriod (userselecteddate, NodeGivenPeriodDataItem.WEEK);
+//    			unifiedTabbedPanSelectionActions ( (BanKuai)CreateExchangeTree.CreateTreeOfDZHBanKuaiAndStocks().getSpecificNodeByHypyOrCode("999999", BkChanYeLianTreeNode.DZHBK)
+//	    				,userselecteddate );
+//    		}
     		
+    		unifiedOperationForDaPanSyncData (userselecteddate , NodeGivenPeriodDataItem.WEEK);
+			gettBanKuaiZhanBiRangedByGrowthRateOfPeriod (userselecteddate, NodeGivenPeriodDataItem.WEEK);
+			unifiedTabbedPanSelectionActions ( (BanKuai)CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode("999999", BkChanYeLianTreeNode.TDXBK)
+				,userselecteddate );
+			
+			gettDZHBanKuaiZhanBiRangedByGrowthRateOfPeriod (userselecteddate, NodeGivenPeriodDataItem.WEEK);
+			unifiedTabbedPanSelectionActions ( (BanKuai)CreateExchangeTree.CreateTreeOfDZHBanKuaiAndStocks().getSpecificNodeByHypyOrCode("999999", BkChanYeLianTreeNode.DZHBK)
+    				,userselecteddate );
+			
     		
 		}	else  { 
 			lbllastselect.setText(lastselecteddate.toString());
