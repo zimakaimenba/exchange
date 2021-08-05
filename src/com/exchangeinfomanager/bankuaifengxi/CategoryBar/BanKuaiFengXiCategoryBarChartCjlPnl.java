@@ -164,8 +164,9 @@ public class BanKuaiFengXiCategoryBarChartCjlPnl extends BanKuaiFengXiCategoryBa
 					 Double avecje2 = displayAverageDailyCjlOfWeekLineDataToGuiUsingLeftAxis(nodexdata,startdate,enddate,period);
 				}
 			} else { //显示大盘的平均成交额，大盘的平均成交额比个股平均成交额大很多，所以用独立的成交量坐标系，
-				NodeXPeriodData nodexdataOfSuperBk = shouldDisplayBarOfSuperBanKuaiCjeInsteadOfSelfCje.getNodeXPeroidData(period);
 				Double leftrangeaxix = displayAverageBarDataToGui (nodexdata,startdate,enddate,period);
+				
+				NodeXPeriodData nodexdataOfSuperBk = shouldDisplayBarOfSuperBanKuaiCjeInsteadOfSelfCje.getNodeXPeroidData(period);
 //				Double avecje2 = displayAverageDailyCjeOfWeekLineDataToGuiUsingLeftAxis(nodexdataOfSuperBk,startdate,enddate,period);
 				Double avecjeaxix = displayAverageDailyCjlOfWeekLineDataToGuiUsingRightAxix(nodexdataOfSuperBk ,startdate,enddate,period);
 				((BanKuaiFengXiCategoryBarRenderer)super.plot.getRenderer()).setBarDisplayedColor( "CjlAverageColumnColor" );
@@ -445,12 +446,31 @@ public class BanKuaiFengXiCategoryBarChartCjlPnl extends BanKuaiFengXiCategoryBa
 				LocalDate wkfriday = tmpdate.with(DayOfWeek.FRIDAY);
 				
 				Double avecjl = nodexdata.getAverageDailyChengJiaoLiangOfWeek(wkfriday);
-					
-					if(avecjl != null) {
-						linechartdataset.setValue(avecjl,"AverageDailyCje", wkfriday);
+				if(avecjl != null) {
+						linechartdataset.setValue(avecjl,"AverageDailyCjl", wkfriday);
 						
 						if(avecjl > avecjeaxix)
 							avecjeaxix = avecjl;
+						
+//						Double dpzdf = nodexdata.getSpecificOHLCZhangDieFu(wkfriday);
+//						if(dpzdf != null && dpzdf > 0 ) {
+//							CategoryTextAnnotation cpa  = new CategoryTextAnnotation ("\u2B08", wkfriday ,avecjl);
+//							//cpa.setBaseRadius(0.0);
+//							//cpa.setTipRadius(25.0);
+////							cpa.setFont(new Font("SansSerif", Font.BOLD, 10));
+//							cpa.setPaint(Color.RED);
+//							cpa.setTextAnchor(TextAnchor.CENTER);
+//							super.plot.addAnnotation(cpa);
+//						} else if(dpzdf != null && dpzdf <= 0 ) {
+//							CategoryTextAnnotation cpa  = new CategoryTextAnnotation ("\u2B08", wkfriday , avecjl);
+//							//cpa.setBaseRadius(0.0);
+//							//cpa.setTipRadius(25.0);
+////							cpa.setFont(new Font("SansSerif", Font.BOLD, 10));
+//							cpa.setPaint(Color.GREEN);
+//							cpa.setTextAnchor(TextAnchor.CENTER);
+//							super.plot.addAnnotation(cpa);
+//						} 
+						
 					} else {
 						if( !dapan.isDaPanXiuShi(tmpdate,period) ) 
 							linechartdataset.setValue(0.0,"AverageDailyCje",wkfriday);
@@ -508,6 +528,7 @@ public class BanKuaiFengXiCategoryBarChartCjlPnl extends BanKuaiFengXiCategoryBa
 			super.plot.getRenderer(3).setSeriesPaint(2, new Color(178,102,255) );
 			super.plot.getRenderer(3).setSeriesPaint(3, new Color(178,102,255) );
 			
+			this.barchart.fireChartChanged();//必须有这句
 		}
 	
 		public void resetLineDate ()

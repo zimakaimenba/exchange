@@ -249,8 +249,8 @@ public class BanKuaiFengXiCategoryBarChartCjlZhanbiPnl extends BanKuaiFengXiCate
 //				}
 				
 //				标记大盘该周是涨还是跌
-				NodeXPeriodData dpnodexdata = dapan.getNodeXPeroidData(period);
-				Double dpzdf = dpnodexdata.getSpecificOHLCZhangDieFu(wkfriday);
+//				NodeXPeriodData dpnodexdata = dapan.getNodeXPeroidData(period);
+				Double dpzdf = nodexdata.getSpecificOHLCZhangDieFu(wkfriday);
 				if(dpzdf != null && dpzdf > 0 ) {
 					CategoryTextAnnotation cpa  = new CategoryTextAnnotation ("\u2B08", wkfriday ,cjlzb);
 					//cpa.setBaseRadius(0.0);
@@ -349,6 +349,41 @@ public class BanKuaiFengXiCategoryBarChartCjlZhanbiPnl extends BanKuaiFengXiCate
 				tmpdate = tmpdate.plus(1, ChronoUnit.MONTHS) ;
 			
 		} while (tmpdate.isBefore( requireend) || tmpdate.isEqual(requireend));
+		
+//		标记大盘该周是涨还是跌
+		tmpdate = requirestart;
+		do {
+			LocalDate wkfriday = tmpdate.with(DayOfWeek.FRIDAY);
+			
+			NodeXPeriodData dpnodexdata = dapan.getNodeXPeroidData(period);
+			Double dpzdf = dpnodexdata.getSpecificOHLCZhangDieFu(wkfriday);
+			if(dpzdf != null && dpzdf > 0 ) {
+				CategoryTextAnnotation cpa  = new CategoryTextAnnotation ("\u2B08", wkfriday ,lowestLow * 0.7);
+				//cpa.setBaseRadius(0.0);
+				//cpa.setTipRadius(25.0);
+//				cpa.setFont(new Font("SansSerif", Font.BOLD, 10));
+				cpa.setPaint(Color.RED);
+				cpa.setTextAnchor(TextAnchor.CENTER);
+				super.plot.addAnnotation(cpa);
+			} else if(dpzdf != null && dpzdf <= 0 ) {
+				CategoryTextAnnotation cpa  = new CategoryTextAnnotation ("\u2B08", wkfriday , lowestLow * 0.7);
+				//cpa.setBaseRadius(0.0);
+				//cpa.setTipRadius(25.0);
+//				cpa.setFont(new Font("SansSerif", Font.BOLD, 10));
+				cpa.setPaint(Color.GREEN);
+				cpa.setTextAnchor(TextAnchor.CENTER);
+				super.plot.addAnnotation(cpa);
+			}
+			
+			if(period.equals(NodeGivenPeriodDataItem.WEEK))
+				tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ;
+			else if(period.equals(NodeGivenPeriodDataItem.DAY))
+				tmpdate = tmpdate.plus(1, ChronoUnit.DAYS) ;
+			else if(period.equals(NodeGivenPeriodDataItem.MONTH))
+				tmpdate = tmpdate.plus(1, ChronoUnit.MONTHS) ;
+			
+		} while (tmpdate.isBefore( requireend) || tmpdate.isEqual(requireend));
+
 		
 		xiuShiLeftRangeAxixAfterDispalyDate (nodexdata,startdate,enddate,highestHigh,lowestLow,period);
 		

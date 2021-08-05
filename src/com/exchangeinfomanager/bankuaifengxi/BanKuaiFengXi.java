@@ -74,6 +74,7 @@ import com.exchangeinfomanager.News.ExternalNewsType.DuanQiGuanZhuServices;
 import com.exchangeinfomanager.News.ExternalNewsType.QiangShi;
 import com.exchangeinfomanager.News.ExternalNewsType.QiangShiServices;
 import com.exchangeinfomanager.News.ExternalNewsType.RuoShiServices;
+import com.exchangeinfomanager.News.ExternalNewsType.ZhiShuBoLangServices;
 import com.exchangeinfomanager.ServicesOfDisplayNodeInfo.DisPlayNodeSuoShuBanKuaiListPanel;
 import com.exchangeinfomanager.ServicesOfDisplayNodeInfo.DisPlayNodeSuoShuBanKuaiListServices;
 import com.exchangeinfomanager.ServicesOfDisplayNodeInfo.DisplayNodeExchangeDataServices;
@@ -2169,7 +2170,8 @@ public class BanKuaiFengXi extends JDialog
                 	case "当前周":	
                 		if(((BanKuaiInfoTableModel)tableBkZhanBi.getModel()).getRowCount() <=0) {
 	                			gettBanKuaiZhanBiRangedByGrowthRateOfPeriod (dateChooser.getLocalDate(),globeperiod);
-                			playAnaylsisFinishNoticeSound();
+	                			tabbedPanegegu.setSelectedIndex(0);
+	                			playAnaylsisFinishNoticeSound();
                 		}
                 	break;
                 	case "选定周":	tabbedPanegegu.setSelectedIndex(2);
@@ -2177,6 +2179,7 @@ public class BanKuaiFengXi extends JDialog
                 	case "大智慧当前周":	
                 		if(((BanKuaiInfoTableModel)tblDzhBkCurWkZhanBi.getModel()).getRowCount() <=0) {
                 			gettDZHBanKuaiZhanBiRangedByGrowthRateOfPeriod (dateChooser.getLocalDate(),globeperiod);
+                			tabbedPanegegu.setSelectedIndex(0);
                 			playAnaylsisFinishNoticeSound();
                 		}
                 	break;
@@ -2273,11 +2276,18 @@ public class BanKuaiFengXi extends JDialog
                 if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.SELECTED_PROPERTY)) {
                     tabpnlKxian.setSelectedIndex(0);
                     if(evt.getNewValue() != null ) {
-                    	@SuppressWarnings("unchecked")
-                        String selectedinfo = evt.getNewValue().toString();
-                    	LocalDate selectdate = LocalDate.parse(selectedinfo);
-                        refreshAfterUserSelectBanKuaiColumn (bkcur,selectdate);
-                        playAnaylsisFinishNoticeSound();
+                    	try {
+                    		@SuppressWarnings("unchecked")
+                            String selectedinfo = evt.getNewValue().toString();
+                        	LocalDate selectdate = LocalDate.parse(selectedinfo);
+                            refreshAfterUserSelectBanKuaiColumn (bkcur,selectdate);
+                            playAnaylsisFinishNoticeSound();
+                    	} catch (java.time.format.DateTimeParseException e) {
+                    		String newv = (String) evt.getNewValue();
+                    		if(newv.equalsIgnoreCase("CJE") || newv.equalsIgnoreCase("CJL"))
+                    			tabpnlKxian.setSelectedIndex(0);
+                    		else tabpnlKxian.setSelectedIndex(1);
+                    	}
                     }
                 } else if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.MOUSEDOUBLECLICK_PROPERTY)) {
                 	String key = evt.getNewValue().toString();
@@ -2302,29 +2312,36 @@ public class BanKuaiFengXi extends JDialog
                     if(evt.getNewValue() != null) {
                         @SuppressWarnings("unchecked")
                         String selectedinfo = evt.getNewValue().toString();
-                        LocalDate datekey = LocalDate.parse(selectedinfo);
-        				chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(datekey));
-        				
-        				setUserSelectedColumnMessage(selectstock, datekey);
-        				
-        				if( !(selectstock instanceof Stock) ) return;
-        				
-        				String ShowSelectGeGuColumnRemindInfo    = bkfxsettingprop.getProperty ("ShowSelectGeGuColumnRemindInfo");
-        				if(ShowSelectGeGuColumnRemindInfo   != null && ShowSelectGeGuColumnRemindInfo  .toUpperCase().equals("TRUE") )
-        					showReminderMessage (bkfxremind.getStockcolumnremind() );
-        				
-        				Class<? extends Object> source = evt.getSource().getClass();
-        				if(source.equals(BanKuaiFengXiCategoryBarChartCjePnl.class) ) {
-        					String readingsettinginprop  = bkfxsettingprop.getProperty ("readoutfxresultinvoice");
-        					if(readingsettinginprop != null  && readingsettinginprop.toUpperCase().equals("TRUE"))
-        						readAnalysisResult ( null,  (Stock)selectstock, datekey );
-        				}
-                    }
+                        try {
+                        	LocalDate datekey = LocalDate.parse(selectedinfo);
+            				chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(datekey));
+            				
+            				setUserSelectedColumnMessage(selectstock, datekey);
+            				
+            				if( !(selectstock instanceof Stock) ) return;
+            				
+            				String ShowSelectGeGuColumnRemindInfo    = bkfxsettingprop.getProperty ("ShowSelectGeGuColumnRemindInfo");
+            				if(ShowSelectGeGuColumnRemindInfo   != null && ShowSelectGeGuColumnRemindInfo  .toUpperCase().equals("TRUE") )
+            					showReminderMessage (bkfxremind.getStockcolumnremind() );
+            				
+            				Class<? extends Object> source = evt.getSource().getClass();
+            				if(source.equals(BanKuaiFengXiCategoryBarChartCjePnl.class) ) {
+            					String readingsettinginprop  = bkfxsettingprop.getProperty ("readoutfxresultinvoice");
+            					if(readingsettinginprop != null  && readingsettinginprop.toUpperCase().equals("TRUE"))
+            						readAnalysisResult ( null,  (Stock)selectstock, datekey );
+            				}
+                        } catch (java.time.format.DateTimeParseException e) {
+                    		String newv = (String) evt.getNewValue();
+                    		if(newv.equalsIgnoreCase("CJE") || newv.equalsIgnoreCase("CJL"))
+                    			tabpnlKxian.setSelectedIndex(2);
+                    		else tabpnlKxian.setSelectedIndex(3);
+                    	}
+                    } 
                 } else if (evt.getPropertyName().equals(BanKuaiFengXiCategoryBarChartPnl.MOUSEDOUBLECLICK_PROPERTY)) {
                 	String key = evt.getNewValue().toString();
                 	Class<? extends Object> source = evt.getSource().getClass();
-                	List<String> tmpbkinfo = Splitter.on(",").omitEmptyStrings().splitToList(key); //内蒙板块|880232|3|1|0|32
-                	try{   		displayNodeLargerPeriodData (selectstock,LocalDate.parse(tmpbkinfo.get(1)),tmpbkinfo.get(0));
+                	List<String> tmpbkinfo = Splitter.on(",").omitEmptyStrings().splitToList(key); 
+                	try {	displayNodeLargerPeriodData (selectstock,LocalDate.parse(tmpbkinfo.get(1)),tmpbkinfo.get(0));
                 	} catch (java.time.format.DateTimeParseException e) {
                 		displayNodeLargerPeriodData (selectstock,null,tmpbkinfo.get(0));
                 	}
@@ -3657,8 +3674,11 @@ public class BanKuaiFengXi extends JDialog
 		pnlStockCandle = new BanKuaiFengXiCandlestickPnl();
 		tabpnlKxian.addTab("\u4E2A\u80A1K\u7EBF", null, pnlStockCandle, null);
 		
+		JPanel pnlgeguextradata = new JPanel ();
+		tabpnlKxian.addTab("个股所有板块数据", null, pnlgeguextradata, null);
+		pnlgeguextradata.setLayout(new BoxLayout(pnlgeguextradata, BoxLayout.X_AXIS));
 		scrollPangegutobankuaisInfo = new JScrollPane();
-		tabpnlKxian.addTab("个股所有板块数据", null, scrollPangegutobankuaisInfo, null);
+		pnlgeguextradata.add(scrollPangegutobankuaisInfo);
 		String BkfxGeGuToBanKuaisMergeTableInfoSettingFile = bkfxsettingprop.getProperty ("BkfxGeGuToBanKuaisMergeTableInfoSettingFile") ;
 		List<String> mergeprop = Splitter.on(",").omitEmptyStrings().splitToList(BkfxGeGuToBanKuaisMergeTableInfoSettingFile);
 		String BkfxGeGuToBanKuaisMergeTableInfoSettingFilebkfile =   (new SetupSystemConfiguration()).getSystemInstalledPath() + "/config/" + mergeprop.get(0).trim()   + "/";
@@ -3670,6 +3690,12 @@ public class BanKuaiFengXi extends JDialog
 		String ggmergekeywds = mergeprop.get(3).trim();
 		tblmergeggtobks = new BanKuaiGeGuMergeTable (tblmergegegubkinfo, bkmergekeywds, tblmergegeguinfoinallbk, ggmergekeywds);
 		scrollPangegutobankuaisInfo.setViewportView(tblmergeggtobks);
+
+		JScrollPane scrollPangeguGuanJianRiQiInfo = new JScrollPane();
+		pnlgeguextradata.add(scrollPangeguGuanJianRiQiInfo);
+		StockVsZhiShuGuanJianRiQiModel modelstkvszsgjri = new StockVsZhiShuGuanJianRiQiModel (new ZhiShuBoLangServices () );
+		JTable tblstkvszhishuguanjianriqi = new JTable (modelstkvszsgjri);
+		scrollPangeguGuanJianRiQiInfo.setViewportView(tblstkvszhishuguanjianriqi);
 		
 		tfldselectedmsg = new JPanel ();
 		scrldailydata.setViewportView(tfldselectedmsg);
@@ -4051,7 +4077,7 @@ public class BanKuaiFengXi extends JDialog
 	{
 
 	     jPopupMenuoftabbedpanebk = new JPopupMenu();
-	     menuItemcancelBanKaiReviewedtoday = new JMenuItem("取消已经阅读状态"); //系统默认按成交额排名
+	     menuItemcancelBanKaiReviewedtoday = new JMenuItem("取消已阅读状态"); //系统默认按成交额排名
 	     jPopupMenuoftabbedpanebk.add(menuItemcancelBanKaiReviewedtoday);
 	     
 	     menuItemcancelAllNodesReviewedtoday = new JMenuItem("取消所有板块个股阅读状态"); //系统默认按成交额排名
@@ -4126,7 +4152,7 @@ public class BanKuaiFengXi extends JDialog
 		menuItemtimerangezhangfu = new JMenuItem("按阶段涨幅排名"); //系统默认按成交额排名
        jPopupMenuoftabbedpane.add(menuItemtimerangezhangfu);
       
-       menuItemcancelreviewedtoday = new JMenuItem("取消已经阅读状态"); //系统默认按成交额排名
+       menuItemcancelreviewedtoday = new JMenuItem("取消已阅读状态"); //系统默认按成交额排名
        jPopupMenuoftabbedpane.add(menuItemcancelreviewedtoday);
        
        menuItemmarkallreviewedtoday = new JMenuItem("全部标记已经阅读"); //系统默认按成交额排名

@@ -37,6 +37,7 @@ import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfGeGuDai
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfGeGuPrice;
 
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfHuanShouLv;
+import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfHuanShouLvFree;
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfLiuTongShiZhi;
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfMA;
 import com.exchangeinfomanager.bankuaifengxi.ai.analysis.easyrules.RuleOfQueKou;
@@ -680,6 +681,17 @@ public class BanKuaiAndGeguTableBasicRenderer extends DefaultTableCellRenderer
         	else if(predefinedcolor != null && predefinedcolor.toUpperCase().equals("SYSTEM") )
         	 	background = hslRule.getBackGround();
 		    else   	background = hslRule.getBackGround();
+        	break;
+        case "HuanShouLvFree" :
+        	RuleOfHuanShouLvFree hslRulefree = new RuleOfHuanShouLvFree ();
+            rules.register(hslRulefree);
+            rulesEngine.fire(rules, facts);
+            
+        	if(predefinedcolor != null && !predefinedcolor.toUpperCase().equals("SYSTEM") && hslRulefree.getRuleResult() )
+		    	background = Color.decode( predefinedcolor );
+        	else if(predefinedcolor != null && predefinedcolor.toUpperCase().equals("SYSTEM") )
+        	 	background = hslRulefree.getBackGround();
+		    else   	background = hslRulefree.getBackGround();
         	break;
         case "GuJiaCLOSE" :
         	RuleOfGeGuPrice priceRule = new RuleOfGeGuPrice ();

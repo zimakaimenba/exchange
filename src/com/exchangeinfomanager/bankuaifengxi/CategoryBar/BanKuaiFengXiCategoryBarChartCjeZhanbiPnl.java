@@ -244,10 +244,10 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 					lowestLow = cjezb;
 				
 //				标记大盘该周是涨还是跌
-				NodeXPeriodData dpnodexdata = dapan.getNodeXPeroidData(period);
-				Double dpzdf = dpnodexdata.getSpecificOHLCZhangDieFu(wkfriday);
+//				NodeXPeriodData dpnodexdata = dapan.getNodeXPeroidData(period);
+				Double dpzdf = nodexdata.getSpecificOHLCZhangDieFu(wkfriday);
 				if(dpzdf != null && dpzdf > 0 ) {
-					CategoryTextAnnotation cpa  = new CategoryTextAnnotation ("\u2B08", wkfriday ,cjezb);
+					CategoryTextAnnotation cpa  = new CategoryTextAnnotation ("\u21B1", wkfriday ,cjezb);
 					//cpa.setBaseRadius(0.0);
 					//cpa.setTipRadius(25.0);
 //					cpa.setFont(new Font("SansSerif", Font.BOLD, 10));
@@ -255,7 +255,7 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 					cpa.setTextAnchor(TextAnchor.CENTER);
 					super.plot.addAnnotation(cpa);
 				} else if(dpzdf != null && dpzdf <= 0 ) {
-					CategoryTextAnnotation cpa  = new CategoryTextAnnotation ("\u2B08", wkfriday , cjezb);
+					CategoryTextAnnotation cpa  = new CategoryTextAnnotation ("\u21B1", wkfriday , cjezb);
 					//cpa.setBaseRadius(0.0);
 					//cpa.setTipRadius(25.0);
 //					cpa.setFont(new Font("SansSerif", Font.BOLD, 10));
@@ -333,6 +333,40 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 			        cpa.setTextAnchor(TextAnchor.CENTER);
 					super.plot.addAnnotation(cpa);
 				}
+			}
+			
+			if(period.equals(NodeGivenPeriodDataItem.WEEK))
+				tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ;
+			else if(period.equals(NodeGivenPeriodDataItem.DAY))
+				tmpdate = tmpdate.plus(1, ChronoUnit.DAYS) ;
+			else if(period.equals(NodeGivenPeriodDataItem.MONTH))
+				tmpdate = tmpdate.plus(1, ChronoUnit.MONTHS) ;
+			
+		} while (tmpdate.isBefore( requireend) || tmpdate.isEqual(requireend));
+
+//		标记大盘该周是涨还是跌
+		tmpdate = requirestart;
+		do {
+			LocalDate wkfriday = tmpdate.with(DayOfWeek.FRIDAY);
+			
+			NodeXPeriodData dpnodexdata = dapan.getNodeXPeroidData(period);
+			Double dpzdf = dpnodexdata.getSpecificOHLCZhangDieFu(wkfriday);
+			if(dpzdf != null && dpzdf > 0 ) {
+				CategoryTextAnnotation cpa  = new CategoryTextAnnotation ("\u2B08", wkfriday ,lowestLow * 0.7);
+				//cpa.setBaseRadius(0.0);
+				//cpa.setTipRadius(25.0);
+//				cpa.setFont(new Font("SansSerif", Font.BOLD, 10));
+				cpa.setPaint(Color.RED);
+				cpa.setTextAnchor(TextAnchor.CENTER);
+				super.plot.addAnnotation(cpa);
+			} else if(dpzdf != null && dpzdf <= 0 ) {
+				CategoryTextAnnotation cpa  = new CategoryTextAnnotation ("\u2B08", wkfriday , lowestLow * 0.7);
+				//cpa.setBaseRadius(0.0);
+				//cpa.setTipRadius(25.0);
+//				cpa.setFont(new Font("SansSerif", Font.BOLD, 10));
+				cpa.setPaint(Color.GREEN);
+				cpa.setTextAnchor(TextAnchor.CENTER);
+				super.plot.addAnnotation(cpa);
 			}
 			
 			if(period.equals(NodeGivenPeriodDataItem.WEEK))
@@ -596,20 +630,6 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 			super.plot.getRangeAxis(0).setRange(0, 1);
 		}
 		
-//		if(zblevel[0] != null) {
-//			ValueMarker downmarker = new ValueMarker(zblevel[0]);
-//			downmarker.setPaint(Color.red);
-//		    plot.addRangeMarker(0,downmarker, Layer.FOREGROUND);
-//		    super.valuemarkerlist.add(downmarker);
-//		}
-//		if(zblevel[1] != null) {
-//			ValueMarker upmarker = new ValueMarker(zblevel[1]);
-//			upmarker.setPaint(Color.GREEN);
-//		    plot.addRangeMarker(0,upmarker, Layer.FOREGROUND);
-//		    super.valuemarkerlist.add(upmarker);
-//		}
-		
-//		setPanelTitle ("成交额",enddate);
 		super.decorateXaxisWithYearOrMonth("month".trim());
 		super.redecorateExtremeZhanbiLevel (zblevel);
 	}

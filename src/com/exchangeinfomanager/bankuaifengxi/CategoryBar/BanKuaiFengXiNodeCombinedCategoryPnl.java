@@ -223,11 +223,16 @@ public class BanKuaiFengXiNodeCombinedCategoryPnl extends JPanel
 		case BanKuaiFengXiCategoryBarChartPnl.SELECTED_PROPERTY:
 			if(evt.getNewValue() != null ) {
 				String selectedinfo = evt.getNewValue().toString();
-				chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(LocalDate.parse(selectedinfo) ) );
-	    		//特别标记点击的日期，这样界面上看比较清晰
-	    		if(cjecjlzbpnldown.isAllowDrawAnnoation()) {
-					cjecjlzbpnldown.setAnnotations( LocalDate.parse(selectedinfo)  );
-					cjecjlpnlup.setAnnotations( LocalDate.parse(selectedinfo)  );
+				try {
+					LocalDate selecteddate = LocalDate.parse(selectedinfo);
+					chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(LocalDate.parse(selectedinfo) ) );
+		    		//特别标记点击的日期，这样界面上看比较清晰
+		    		if(cjecjlzbpnldown.isAllowDrawAnnoation()) {
+						cjecjlzbpnldown.setAnnotations( LocalDate.parse(selectedinfo)  );
+						cjecjlpnlup.setAnnotations( LocalDate.parse(selectedinfo)  );
+					}
+				} catch (java.time.format.DateTimeParseException e) {
+//					e.printStackTrace();
 				}
 			}
 			

@@ -648,6 +648,12 @@ public class BkfxHightLightForGeGuPropertyFilePnl extends JPanel implements OnCa
 			if(ckbxhighlight.isSelected() &&  !Strings.isNullOrEmpty(max) &&  !min.trim().equalsIgnoreCase("MAX") ) hslmin = Double.parseDouble( max ) ;
 			globeexpc.setSettingHuanShouLv(hslmin,hslmax);
 			break;
+		case "HuanShouLvFree":
+			Double hslminf = null; Double hslmaxf = null;
+			if(ckbxhighlight.isSelected() &&  !Strings.isNullOrEmpty(min) &&  !min.trim().equalsIgnoreCase("MIN") ) hslminf = Double.parseDouble( min ) ;
+			if(ckbxhighlight.isSelected() &&  !Strings.isNullOrEmpty(max) &&  !min.trim().equalsIgnoreCase("MAX") ) hslmaxf = Double.parseDouble( max ) ;
+			globeexpc.setSettingHuanShouLvFree(hslminf,hslmaxf);
+			break;
 		case "QueKou" :
 			if(ckbxhighlight.isSelected()) globeexpc.setHuiBuDownQueKou(true);	
 			else  globeexpc.setHuiBuDownQueKou(false);	

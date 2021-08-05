@@ -22,6 +22,7 @@ import org.jfree.chart.annotations.CategoryTextAnnotation;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.renderer.category.CategoryItemRenderer;
+import org.jfree.chart.renderer.category.LineAndShapeRenderer;
 import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.jfree.data.Range;
 import org.jfree.data.category.CategoryDataset;
@@ -193,8 +194,9 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 			}
 			
 		} else { //显示大盘的平均成交额，大盘的平均成交额比个股平均成交额大很多，所以用独立的成交量坐标系，
-			NodeXPeriodData nodexdataOfSuperBk = shouldDisplayBarOfSuperBanKuaiCjeInsteadOfSelfCje.getNodeXPeroidData(period);
 			Double leftrangeaxix = displayAverageBarDataToGui (nodexdata,startdate,enddate,period);
+			
+			NodeXPeriodData nodexdataOfSuperBk = shouldDisplayBarOfSuperBanKuaiCjeInsteadOfSelfCje.getNodeXPeroidData(period);
 //			Double avecje2 = displayAverageDailyCjeOfWeekLineDataToGuiUsingLeftAxis(nodexdataOfSuperBk,startdate,enddate,period);
 			Double avecjeaxix = displayAverageDailyCjeOfWeekLineDataToGuiUsingRightAxix(nodexdataOfSuperBk ,startdate,enddate,period);
 			((BanKuaiFengXiCategoryBarRenderer)super.plot.getRenderer()).setBarDisplayedColor( "CjeAverageColumnColor" );
@@ -507,11 +509,6 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 	public Double displayAverageDailyCjeOfWeekLineDataToGuiUsingRightAxix (NodeXPeriodData nodexdata,LocalDate startdate, LocalDate enddate, String period)
 	{
 		DaPan dapan = (DaPan)CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getModel().getRoot(); //alwayse use tdx tree fro dapan;
-//		if(super.getCurDisplayedNode().getType() == BkChanYeLianTreeNode.BKGEGU) {
-//			BanKuai bk = ((StockOfBanKuai)super.getCurDisplayedNode() ).getBanKuai();
-//			dapan = (DaPan)bk.getRoot();
-//		} else
-//			dapan = (DaPan)(this.getCurDisplayedNode().getRoot());
 		
 		LocalDate indexrequirestart = startdate;
 		LocalDate indexrequireend = enddate;//(LocalDate) barchartdataset.getColumnKey(barchartdataset.getColumnCount()-1);
@@ -525,12 +522,30 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 			LocalDate wkfriday = tmpdate.with(DayOfWeek.FRIDAY);
 			
 			Double avecje = nodexdata.getAverageDailyChengJiaoErOfWeek(wkfriday);
-				
-				if(avecje != null) {
+			if(avecje != null) {
 					super.linechartdataset.setValue(avecje,"AverageDailyCje", wkfriday);
 					
 					if(avecje > avecjeaxix)
 						avecjeaxix = avecje;
+					
+//					Double dpzdf = nodexdata.getSpecificOHLCZhangDieFu(wkfriday);
+//					if(dpzdf != null && dpzdf > 0 ) {
+//						CategoryTextAnnotation cpa  = new CategoryTextAnnotation ("\u2B08", wkfriday ,avecje);
+//						//cpa.setBaseRadius(0.0);
+//						//cpa.setTipRadius(25.0);
+////						cpa.setFont(new Font("SansSerif", Font.BOLD, 10));
+//						cpa.setPaint(Color.RED);
+//						cpa.setTextAnchor(TextAnchor.CENTER);
+//						super.plot.addAnnotation(cpa);
+//					} else if(dpzdf != null && dpzdf <= 0 ) {
+//						CategoryTextAnnotation cpa  = new CategoryTextAnnotation ("\u2B08", wkfriday , avecje);
+//						//cpa.setBaseRadius(0.0);
+//						//cpa.setTipRadius(25.0);
+////						cpa.setFont(new Font("SansSerif", Font.BOLD, 10));
+//						cpa.setPaint(Color.GREEN);
+//						cpa.setTextAnchor(TextAnchor.CENTER);
+//						super.plot.addAnnotation(cpa);
+//					} 
 				} else {
 					if( !dapan.isDaPanXiuShi(tmpdate,period) ) 
 						super.linechartdataset.setValue(0.0,"AverageDailyCje",wkfriday);
@@ -690,6 +705,7 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 		super.plot.getRenderer(3).setSeriesPaint(2, new Color(178,102,255) );
 		super.plot.getRenderer(3).setSeriesPaint(3, new Color(178,102,255) );
 		
+		this.barchart.fireChartChanged();//必须有这句
 	}
 	/*
 	 * (non-Javadoc)

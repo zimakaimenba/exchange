@@ -163,6 +163,7 @@ public class BanKuaiAndGeGuMatchingConditions implements Cloneable {
 			
 			bkfxhighlightvaluesoftableslisteners.forEach(l -> l.BanKuaiAndGeGuMatchingConditionValuesChanges( this ) );
 		}
+		
 		private Double settinghslmin; //
 		private Double settinghslmax; //
 		public Double getSettingHuanShouLvMin() {
@@ -177,6 +178,22 @@ public class BanKuaiAndGeGuMatchingConditions implements Cloneable {
 			
 			bkfxhighlightvaluesoftableslisteners.forEach(l -> l.BanKuaiAndGeGuMatchingConditionValuesChanges( this ) );
 		}
+		
+		private Double settinghslminfree; //
+		private Double settinghslmaxfree; //
+		public Double getSettingHuanShouLvFreeMin() {
+			return settinghslminfree;
+		}
+		public Double getSettingHuanShouLvFreeMax() {
+			return settinghslmaxfree;
+		}
+		public void setSettingHuanShouLvFree(Double settinghslfmin, Double settinghslfmax) {
+			this.settinghslminfree = settinghslfmin;
+			this.settinghslmaxfree = settinghslfmax;
+			
+			bkfxhighlightvaluesoftableslisteners.forEach(l -> l.BanKuaiAndGeGuMatchingConditionValuesChanges( this ) );
+		}
+		
 		private String settingbk;
 		public String getSettingBanKuai() {
 			return settingbk;
