@@ -504,6 +504,11 @@ public class StockOfBanKuaiXPeriodDataForJFC implements NodeXPeriodData
 		// TODO Auto-generated method stub
 		return null;
 	}
+	@Override
+	public Integer getOHLCLianXuYangXianPeriodNumber(LocalDate requireddate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 
 	

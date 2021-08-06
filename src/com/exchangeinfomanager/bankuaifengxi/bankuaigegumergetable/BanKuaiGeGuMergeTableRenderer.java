@@ -24,6 +24,13 @@ public class BanKuaiGeGuMergeTableRenderer extends DefaultTableCellRenderer
 		
 		BanKuaiandGeGuTableBasic[] mergetables = ((BanKuaiGeGuMergeTable)table).getMergeTables();
 		DefaultTableModel[] mergemodels = ((BanKuaiGeGuMergeTableModel)table.getModel()).getTableMergeModels();
+		
+		if(mergemodels[0].getRowCount() == 0)
+			return comp;
+		
+		if(mergemodels[1].getRowCount() == 0)
+			return comp;
+		
 		int bkcolcount = mergemodels[0].getColumnCount();
 		int ggcolcount = mergemodels[1].getColumnCount();
 		
@@ -32,12 +39,17 @@ public class BanKuaiGeGuMergeTableRenderer extends DefaultTableCellRenderer
 			mergetables[0].setRowSelectionInterval(row, row);
 			if(rightrow!= null)	mergetables[1].setRowSelectionInterval(rightrow, rightrow);
 		} else {
-			mergetables[0].removeRowSelectionInterval(row, row);
+			try {
+				mergetables[0].removeRowSelectionInterval(row, row);
+			} catch (java.lang.IllegalArgumentException e) {}
+			
 			if(rightrow!= null)	mergetables[1].removeRowSelectionInterval(rightrow, rightrow);
 		}
 		if(col < bkcolcount) {
 //			int modelRow = mergetables[0].convertRowIndexToModel(row);
-			comp = mergetables[0].getCellRenderer(row, col).getTableCellRendererComponent(mergetables[0], value, isSelected, hasFocus, row, col);
+			try {
+				comp = mergetables[0].getCellRenderer(row, col).getTableCellRendererComponent(mergetables[0], value, isSelected, hasFocus, row, col);
+			} catch (java.lang.ArrayIndexOutOfBoundsException e ) {}
 		}
 		else {	 if(rightrow != null)
 					comp = mergetables[1].getCellRenderer(rightrow, col - bkcolcount).getTableCellRendererComponent(mergetables[1], value, isSelected, hasFocus, rightrow, col - bkcolcount );

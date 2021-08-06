@@ -243,8 +243,6 @@ public class BanKuaiFengXiCategoryBarChartCjeZhanbiPnl extends BanKuaiFengXiCate
 				if(cjezb < lowestLow)
 					lowestLow = cjezb;
 				
-//				标记大盘该周是涨还是跌
-//				NodeXPeriodData dpnodexdata = dapan.getNodeXPeroidData(period);
 				Double dpzdf = nodexdata.getSpecificOHLCZhangDieFu(wkfriday);
 				if(dpzdf != null && dpzdf > 0 ) {
 					CategoryTextAnnotation cpa  = new CategoryTextAnnotation ("\u21B1", wkfriday ,cjezb);

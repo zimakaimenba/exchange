@@ -252,7 +252,7 @@ public class BanKuaiFengXiCategoryBarChartCjlZhanbiPnl extends BanKuaiFengXiCate
 //				NodeXPeriodData dpnodexdata = dapan.getNodeXPeroidData(period);
 				Double dpzdf = nodexdata.getSpecificOHLCZhangDieFu(wkfriday);
 				if(dpzdf != null && dpzdf > 0 ) {
-					CategoryTextAnnotation cpa  = new CategoryTextAnnotation ("\u2B08", wkfriday ,cjlzb);
+					CategoryTextAnnotation cpa  = new CategoryTextAnnotation ("\u21B1", wkfriday ,cjlzb);
 					//cpa.setBaseRadius(0.0);
 					//cpa.setTipRadius(25.0);
 //					cpa.setFont(new Font("SansSerif", Font.BOLD, 10));
@@ -260,7 +260,7 @@ public class BanKuaiFengXiCategoryBarChartCjlZhanbiPnl extends BanKuaiFengXiCate
 					cpa.setTextAnchor(TextAnchor.CENTER);
 					super.plot.addAnnotation(cpa);
 				} else if(dpzdf != null && dpzdf <= 0 ) {
-					CategoryTextAnnotation cpa  = new CategoryTextAnnotation ("\u2B08", wkfriday , cjlzb);
+					CategoryTextAnnotation cpa  = new CategoryTextAnnotation ("\u21B1", wkfriday , cjlzb);
 					//cpa.setBaseRadius(0.0);
 					//cpa.setTipRadius(25.0);
 //					cpa.setFont(new Font("SansSerif", Font.BOLD, 10));

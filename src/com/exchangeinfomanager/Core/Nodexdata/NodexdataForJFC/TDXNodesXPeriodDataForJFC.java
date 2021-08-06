@@ -457,7 +457,8 @@ import com.udojava.evalex.Expression;
 		OHLCItem indexrecord = (OHLCItem)this.nodeohlc.getDataItem(index);
 		Date start = indexrecord.getPeriod().getStart();
 		Date end = indexrecord.getPeriod().getEnd();
-		return end.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		LocalDate ldend =  end.toInstant().atZone(ZoneId.systemDefault()).toLocalDate().with(DayOfWeek.FRIDAY);
+		return ldend;
 	}
 	/*
 	 * (non-Javadoc)
@@ -515,6 +516,9 @@ import com.udojava.evalex.Expression;
 		
 		return null;
 	}
+	/*
+	 * 
+	 */
 	public Double[] getSpcificDateOHLCData (LocalDate requireddate )
 	{
 		Integer indexofcur = this.getIndexOfSpecificDateOHLCData(requireddate);
@@ -533,6 +537,24 @@ import com.udojava.evalex.Expression;
 		} catch (java.lang.NullPointerException e) {e.printStackTrace();}
 		
 		return null;
+	}
+	/*
+	 * 
+	 */
+	public Integer getOHLCLianXuYangXianPeriodNumber (LocalDate requireddate)
+	{
+		Integer indexofcur = this.getIndexOfSpecificDateOHLCData(requireddate);
+		if(indexofcur == null)	return null;
+		
+		int max =0;
+		for(int i= indexofcur;i>=0; i--) {
+			LocalDate tmpld = this.getLocalDateOfSpecificIndexOfOHLCData (i);
+			Double tmpzdf = this.getSpecificOHLCZhangDieFu(tmpld);
+			if(tmpzdf != null && tmpzdf >0) max++;
+			else break;
+		}
+		
+		return max;
 	}
 	/*
 	 * (non-Javadoc)
@@ -1994,6 +2016,9 @@ import com.udojava.evalex.Expression;
 		 break;
 		 case "Close":
 			 try {	 value = ohlc[3]; } catch (java.lang.NullPointerException e) {value = null;}
+		 break;
+		 case "LianXuYangXian": 
+			 value = this.getOHLCLianXuYangXianPeriodNumber(date);
 		 break;
 		 }
 		 return value;

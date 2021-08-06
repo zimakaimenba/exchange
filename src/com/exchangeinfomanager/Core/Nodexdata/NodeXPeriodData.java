@@ -72,6 +72,7 @@ public interface NodeXPeriodData
 	public OHLCSeries getOHLCData ();
 	public LocalDate getOHLCRecordsStartDate ();
 	public LocalDate getOHLCRecordsEndDate ();
+	public Integer getOHLCLianXuYangXianPeriodNumber (LocalDate requireddate );
 	
 	public TimeSeries getAMOData ();
 	public TimeSeries getVOLData ();

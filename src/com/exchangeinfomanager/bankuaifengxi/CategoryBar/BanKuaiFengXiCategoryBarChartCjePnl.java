@@ -302,7 +302,7 @@ public class BanKuaiFengXiCategoryBarChartCjePnl extends BanKuaiFengXiCategoryBa
 
 				Double zhangdiefu = nodexdata.getSpecificOHLCZhangDieFu(tmpdate);
 				if(zhangdiefu != null && zhangdiefu >0) {
-					CategoryTextAnnotation cpa  = new CategoryTextAnnotation ("\u2B08", wkfriday , 0.0);
+					CategoryTextAnnotation cpa  = new CategoryTextAnnotation ("\u21B1", wkfriday , 0.0);
 					//cpa.setBaseRadius(0.0);
 					// cpa.setTipRadius(25.0);
 					cpa.setFont(new Font("SansSerif", Font.BOLD, 10));
