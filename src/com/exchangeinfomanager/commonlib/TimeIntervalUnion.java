@@ -44,7 +44,13 @@ public class TimeIntervalUnion {
 		}
 		DateTime requiredstartdt= new DateTime(requiredstartday.getYear(), requiredstartday.getMonthValue(), requiredstartday.getDayOfMonth(), 0, 0, 0, 0);
 		DateTime requiredenddt= new DateTime(requiredendday.getYear(), requiredendday.getMonthValue(), requiredendday.getDayOfMonth(), 0, 0, 0, 0);
-		Interval requiredinterval = new Interval(requiredstartdt,requiredenddt);
+		Interval requiredinterval = null;
+		try {
+			requiredinterval = new Interval(requiredstartdt,requiredenddt);
+		} catch (java.lang.IllegalArgumentException e) {
+			e.printStackTrace();
+			return result;
+		}
 		
 		Interval overlapinterval = requiredinterval.overlap(nodeinterval);
 		if(overlapinterval != null) {

@@ -113,7 +113,8 @@ public class BanKuai extends TDXNodes
 	public void addSocialFriendsPostive (String friend)
 	{
 		if(socialfriendspos == null)	socialfriendspos = new HashSet<String> ();
-		socialfriendspos.add(friend);
+		if(!socialfriendspos.contains(friend))
+			socialfriendspos.add(friend);
 	}
 	public Set<String> getSocialFriendsSetPostive ()
 	{
@@ -125,78 +126,13 @@ public class BanKuai extends TDXNodes
 	public void addSocialFriendsNegtive (String friend)
 	{
 		if(socialfriendsneg == null)	socialfriendsneg = new HashSet<String> ();
-		socialfriendsneg.add(friend);
+		if(!socialfriendsneg.contains(friend))
+			socialfriendsneg.add(friend);
 	}
 	public Set<String> getSocialFriendsSetNegtive ()	{
 		if(this.socialfriendsneg == null)	this.socialfriendsneg = new HashSet<String> ();
 		return this.socialfriendsneg;
 	}
-//	public  Boolean isExportTowWlyFile ()	{
-//		if(exporttowklyfile == null)	return true;
-//		else	return this.exporttowklyfile;
-//	}
-//	public void setExportTowWlyFile (Boolean exporttofile)
-//	{
-//		if(exporttofile != null)	this.exporttowklyfile = exporttofile;
-//	}
-//	
-//	public Boolean isShowincyltree () {
-//		if(this.showincyltree != null)	return this.showincyltree;
-//		else	return true;
-//	}
-//	public void setShowincyltree (Boolean showincyltree) {
-//		if(showincyltree != null)	this.showincyltree = showincyltree;
-//	}
-//	public boolean isExporttogehpi() {
-//		if(exporttogehpi != null)	return exporttogehpi;
-//		else	return true;
-//	}
-//	/*
-//	 * 设置是否导出数据到Gephi
-//	 */
-//	public void setExporttogehpi(Boolean exporttogehpi) {
-//		if(exporttogehpi != null)	this.exporttogehpi = exporttogehpi;
-//	}
-//	/*
-//	 * 设置是否要每天导入交易数据，设置为false的则在每天导入数据的时�?�跳�?
-//	 */
-//	public boolean isImportdailytradingdata() {
-//		if(importdailytradingdata != null)
-//			return importdailytradingdata;
-//		else
-//			return true;
-//	}
-//	/*
-//	 * 设置是否导入每日交易数据
-//	 */
-//	public void setImportdailytradingdata(Boolean importdailytradingdata) {
-//		if(importdailytradingdata != null)
-//			this.importdailytradingdata = importdailytradingdata;
-//	}
-//	/*
-//	 * 
-//	 */
-//	public boolean isShowinbkfxgui() {
-//		if(showinbkfxgui != null)
-//			return showinbkfxgui;
-//		else
-//			return true;
-//	}
-//	/*
-//	 * 设置是否显示在板块分析窗�?
-//	 */
-//	public void setShowinbkfxgui(Boolean showinbkfxgui) {
-//		if(showinbkfxgui != null)
-//			this.showinbkfxgui = showinbkfxgui;
-//	}
-//	public void setImportBKGeGu(Boolean importgegu) 	{
-//		if(importgegu != null)			this.importbkgegu = importgegu;
-//		
-//	}
-//	public  Boolean isImportBKGeGu ()	{
-//		if(importbkgegu == null)			return true;
-//		else			return this.importbkgegu;
-//	}
 	/*
 	 * 
 	 */

@@ -25,6 +25,8 @@ import com.exchangeinfomanager.bankuaifengxi.BankuaiAndGeguTableBasic.SortByKeyW
 public class BanKuaiInfoTableModel extends BandKuaiAndGeGuTableBasicModel 
 {
 
+	private BanKuai intersectionbk;
+
 	public BanKuaiInfoTableModel(Properties prop) 
 	{
 		super (prop);
@@ -84,7 +86,15 @@ public class BanKuaiInfoTableModel extends BandKuaiAndGeGuTableBasicModel
 	      
 	      return clazz;
 	 }
-	
+	 
+	 public BanKuai getInterSectionBanKuai ()
+	 {
+		 return this.intersectionbk;
+	 }
+	 public void setInterSectionBanKuai (BanKuai insbk)
+	 {
+		 this.intersectionbk = insbk;
+	 }
 }
 
 

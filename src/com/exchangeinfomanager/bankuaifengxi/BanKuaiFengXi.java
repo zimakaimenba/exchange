@@ -117,6 +117,7 @@ import com.exchangeinfomanager.commonlib.CommonUtility;
 import com.exchangeinfomanager.commonlib.ParseBanKuaiWeeklyFielGetStocksProcessor;
 import com.exchangeinfomanager.commonlib.ReminderPopToolTip;
 import com.exchangeinfomanager.commonlib.ScrollUtil;
+import com.exchangeinfomanager.commonlib.Season;
 import com.exchangeinfomanager.commonlib.JScrollBarNodesMark.JScrollBarNodesMark;
 import com.exchangeinfomanager.commonlib.jstockcombobox.JStockComboBox;
 import com.exchangeinfomanager.commonlib.jstockcombobox.JStockComboBoxModel;
@@ -178,8 +179,7 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-
-
+import javax.swing.table.TableCellRenderer;
 import javax.swing.UIManager;
 
 import javax.swing.AbstractAction;
@@ -650,6 +650,7 @@ public class BanKuaiFengXi extends JDialog
 		findInputedNodeInBanKuaiTables(selectedbk.getMyOwnCode());
 		
 		for(BanKuaiandGeGuTableBasic tmptbl : tableallbktablesset ) {
+			((BanKuaiInfoTableModel)tmptbl.getModel()).setInterSectionBanKuai(selectedbk);
 			tmptbl.revalidate();
 	    	tmptbl.repaint();
 		}
@@ -729,6 +730,8 @@ public class BanKuaiFengXi extends JDialog
 		if(ShowSelectBanKuaiColumnRemindInfo   != null && ShowSelectBanKuaiColumnRemindInfo.equalsIgnoreCase("TRUE") )
 			showReminderMessage (bkfxremind.getBankuaicolumnremind() );
 
+		((StockVsZhiShuGuanJianRiQiModel)tblstkvszhishuguanjianriqi.getModel()).setCurHighLightDisplayDate(selectdate); //突出指数关键日期信息
+		
 		//根据设置，显示选定周分析数据
 		if(!menuItemnonshowselectbkinfo.getText().contains("X"))	return;
 		
@@ -854,6 +857,8 @@ public class BanKuaiFengXi extends JDialog
 				} catch ( java.lang.NullPointerException e) {e.printStackTrace();}
 			}
 			
+			((BanKuai)node).addSocialFriendsPostive(parent.getMyOwnCode());
+			
 			slidingnodelist = bksocialtreecopy.getSlidingInChanYeLianInfo (node.getMyOwnCode(),node.getType());
 			for(BkChanYeLianTreeNode tmpnode : slidingnodelist) {
 				if(tmpnode.getType() == BkChanYeLianTreeNode.DZHBK) {
@@ -867,6 +872,8 @@ public class BanKuaiFengXi extends JDialog
 						((BanKuaiInfoTableModel)socialtable.getModel()).addBanKuai ( (BanKuai)friend);
 					} catch ( java.lang.NullPointerException e) {e.printStackTrace();}
 				}
+				
+				((BanKuai)node).addSocialFriendsPostive(tmpnode.getMyOwnCode());
 			}
 		}
 		
@@ -883,6 +890,8 @@ public class BanKuaiFengXi extends JDialog
 					((BanKuaiInfoTableModel)socialtable.getModel()).addBanKuai ( (BanKuai)friend);
 				} catch ( java.lang.NullPointerException e) {e.printStackTrace();}
 			}
+			
+			((BanKuai)node).addSocialFriendsPostive(tmpnode.getMyOwnCode());
 		}
 		
 		((BanKuaiInfoTableModel)socialtable.getModel()).refresh(curselectdate,globeperiod);
@@ -1109,7 +1118,8 @@ public class BanKuaiFengXi extends JDialog
 			showReminderMessage (bkfxremind.getStockremind());
 		
 		//指数关键日期对比
-		((StockVsZhiShuGuanJianRiQiModel)tblstkvszhishuguanjianriqi.getModel()).refresh(selectstock, curselectdate);
+		((StockVsZhiShuGuanJianRiQiModel)tblstkvszhishuguanjianriqi.getModel()).refresh(selectstock);
+		((StockVsZhiShuGuanJianRiQiModel)tblstkvszhishuguanjianriqi.getModel()).setCurHighLightDisplayDate(curselecteddate);
 		
 		//语言播报
 		String readingsettinginprop  = bkfxsettingprop.getProperty ("readoutfxresultinvoice");
@@ -2330,6 +2340,8 @@ public class BanKuaiFengXi extends JDialog
                         try {
                         	LocalDate datekey = LocalDate.parse(selectedinfo);
             				chartpanelhighlightlisteners.forEach(l -> l.highLightSpecificBarColumn(datekey));
+            				
+            				((StockVsZhiShuGuanJianRiQiModel)tblstkvszhishuguanjianriqi.getModel()).setCurHighLightDisplayDate(datekey); //突出指数关键日期信息
             				
             				setUserSelectedColumnMessage(selectstock, datekey);
             				
@@ -3711,7 +3723,70 @@ public class BanKuaiFengXi extends JDialog
 		JScrollPane scrollPangeguGuanJianRiQiInfo = new JScrollPane();
 		pnlgeguextradata.add(scrollPangeguGuanJianRiQiInfo);
 		StockVsZhiShuGuanJianRiQiModel modelstkvszsgjri = new StockVsZhiShuGuanJianRiQiModel (new ZhiShuBoLangServices () );
-		tblstkvszhishuguanjianriqi = new JTable (modelstkvszsgjri);
+		tblstkvszhishuguanjianriqi = new JTable (modelstkvszsgjri) {
+		    public Component prepareRenderer(TableCellRenderer renderer, int row, int col) {
+		 
+		        Component comp = super.prepareRenderer(renderer, row, col);
+	
+		        LocalDate hldate = ((StockVsZhiShuGuanJianRiQiModel)this.getModel()).getCurHighLightDisplayDate();
+		        if(hldate == null) return comp;
+	
+		        Color forground = Color.BLACK;
+		        LocalDate rowdate = (LocalDate)getModel().getValueAt(row, 0);
+		        if(rowdate == null) return comp;
+		        
+		        if( CommonUtility.isInSameWeek(hldate, rowdate)  ) {
+		        	forground = Color.RED;
+		        	
+		        	JViewport viewport = (JViewport)this.getParent();
+		            // view dimension
+		            Dimension dim = viewport.getExtentSize();
+		            // cell dimension
+		            Dimension dimOne = new Dimension(0,0);
+
+		            // This rectangle is relative to the table where the
+		            // northwest corner of cell (0,0) is always (0,0).
+		            Rectangle rect = this.getCellRect(row, 0, true);
+		            Rectangle rectOne;
+		            if (row+1<this.getRowCount()) {
+		                rectOne = this.getCellRect(row+1, 0, true);
+		                dimOne.width=rectOne.x-rect.x;
+		                dimOne.height=rectOne.y-rect.y;
+		            }
+
+		            // '+ veiw dimension - cell dimension' to set first selected row on the top
+		            int finialX = rect.x+dim.width-dimOne.width;
+		            int finialY = rect.y+dim.height-dimOne.height;
+		            rect.setLocation(finialX, finialY - 55 );
+
+		            this.scrollRectToVisible(rect);
+		    		try {	this.setRowSelectionInterval(row, row);
+		    		} catch ( java.lang.IllegalArgumentException e) { }
+	    		
+		    		this.revalidate();
+		    		this.repaint();
+		        }
+		        
+	            comp.setForeground(forground);
+		        
+	            return comp;
+		    }
+		    
+//		    public String getToolTipText(MouseEvent e) {
+//                String tip = null;
+//                java.awt.Point p = e.getPoint();
+//                int rowIndex = rowAtPoint(p);
+//                int colIndex = columnAtPoint(p);
+//                
+//                if(colIndex != 0)
+//                	return "";
+//                
+//                try {  tip = getValueAt(rowIndex, 0).toString() + ":" +  getValueAt(rowIndex, 5).toString();
+//                } catch (RuntimeException e1) {tip = getValueAt(rowIndex, 0).toString();}
+//
+//                return tip;
+//            }
+		};
 		scrollPangeguGuanJianRiQiInfo.setViewportView(tblstkvszhishuguanjianriqi);
 		
 		tfldselectedmsg = new JPanel ();
@@ -4594,7 +4669,6 @@ public class BanKuaiFengXi extends JDialog
 			    						tableBkZhanBi.setRowSelectionInterval(modelRow, modelRow);
 			    				}
 			        		}
-			        			
 			        	}
 			        }
 			});

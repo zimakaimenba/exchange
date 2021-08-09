@@ -171,6 +171,8 @@ public class SvsForNodeOfStock implements ServicesForNode, ServicesOfNodeStock
 		Stock stk = (Stock) stock;
 		requiredstartday = requiredstartday.with(DayOfWeek.MONDAY);
 		requiredendday = ServicesForNode.getNodeCaculateEndDateAndRelatedActions(stock, period, requiredendday, calwholeweek);
+		if(requiredendday.isBefore(requiredstartday))
+			return stk;
 
 		NodeXPeriodData nodedayperioddata = stk.getNodeXPeroidData(period);
 		if(nodedayperioddata.getOHLCRecordsStartDate() == null) {

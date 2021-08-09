@@ -68,12 +68,18 @@ public class StockVsZhiShuGuanJianRiQiModel  extends DefaultTableModel
 		} catch (SQLException e) { e.printStackTrace();}
 	}
 	
-	public void refresh  (TDXNodes node, LocalDate displaydate1)
+	public void refresh  (TDXNodes node)
 	{
 		this.curnode = node;
-		this.displaydate = displaydate1;
-		
 		this.fireTableDataChanged();
+	}
+	public void setCurHighLightDisplayDate(LocalDate  displaydate1)
+	{
+		this.displaydate = displaydate1;
+	}
+	public LocalDate getCurHighLightDisplayDate()
+	{
+		return this.displaydate;
 	}
 	 public int getRowCount() 
 	 {
@@ -105,17 +111,19 @@ public class StockVsZhiShuGuanJianRiQiModel  extends DefaultTableModel
 	    	switch (columnIndex) {
             case 0:
                 value = riqilist.get(rowIndex);
-                break;
+            break;
             case 1:
             	value = riqidescplist.get(rowIndex); 
-            	break;
+            break;
             case 2:
             	NodeXPeriodData nodexdataday = this.curnode.getNodeXPeroidData(NodeGivenPeriodDataItem.DAY);
             	Double zhangdiefu = nodexdataday.getSpecificOHLCZhangDieFu(gjrq);
-            	DecimalFormat decimalformate = new DecimalFormat("%#0.00000");
-            	String formatresult = decimalformate.format((Double)zhangdiefu);
-            	value = formatresult;
-                break;
+            	if(zhangdiefu != null) {
+            		DecimalFormat decimalformate = new DecimalFormat("%#0.00000");
+                	String formatresult = decimalformate.format((Double)zhangdiefu);
+                	value = formatresult;
+            	} else value = null;
+            break;
             }
 
         return value;

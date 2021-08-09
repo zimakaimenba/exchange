@@ -765,15 +765,17 @@ public class BanKuaiDbOperation
 			while((line = bufr.readLine()) != null) {
 				List<String> tmpbkinfo = Splitter.on("|").omitEmptyStrings().splitToList(line); //0|000001|T1001|440101
 				String stockcode = tmpbkinfo.get(1).trim();
-				String stockbkcode = tmpbkinfo.get(2).trim(); //T开头的代码,不是880开头的
+				String stockbkcode = null;
+				try {	stockbkcode = tmpbkinfo.get(2).trim(); //T开头的代码,不是880开头的
+				} catch (java.lang.IndexOutOfBoundsException e) {
+					System.out.print(tmpbkinfo + "似乎没有行业板块数据！");
+//					e.printStackTrace();
+				}
 				String stockbkname = null;
-				 
-				try {
-					stockbkname = hydmmap.get(stockbkcode).trim();
-				 }catch(java.lang.NullPointerException e){
+				try {	stockbkname = hydmmap.get(stockbkcode).trim();
+				} catch(java.lang.NullPointerException e) {
 					stockbkname = "未知";
 				}
-				
 				 
 				//先在数据库中找出该股票，比较行业，如果不一样旧更新，如果相同就不更新
 				CachedRowSetImpl rs = null;
@@ -783,8 +785,7 @@ public class BanKuaiDbOperation
 //   			    							+ " AND 对应TDXSWID=" +  "'" + stockbkcode + "'"
    			    							+ " AND isnull(移除时间)"
    			    							;
-   			    	logger.debug(sqlquerystat);
-   			    	rs = connectdb.sqlQueryStatExecute(sqlquerystat);
+  			    	rs = connectdb.sqlQueryStatExecute(sqlquerystat);
    			    	
    			        rs.last(); 
    			        int rows = rs.getRow();  //个股和行业是一对一的，如果有大于1的行数，说明有问题,可能是过去同步发生的问题，现在要纠正
@@ -797,11 +798,10 @@ public class BanKuaiDbOperation
 //		   						+ 10
 //		   						+ ")"
 //		   						;
-   			        	String sqlinsertstat =  "insert into 股票通达信行业板块对应表(股票代码,板块代码,对应TDXSWID,股票权重)"
+   			        	String sqlinsertstat =  "INSERT INTO 股票通达信行业板块对应表(股票代码,板块代码,对应TDXSWID,股票权重)"
 												+ " SELECT '" + stockcode.trim() + "', 通达信板块列表.`板块ID`,'" + stockbkcode + "',10 "
 												+ " FROM 通达信板块列表  where 通达信板块列表.`对应TDXSWID` = '" + stockbkcode + "'"
 												;
-		   				logger.debug(sqlinsertstat);
 		   				int autoIncKeyFromApi = connectdb.sqlInsertStatExecute(sqlinsertstat);
 		   	            Files.append("加入：" + stockcode.trim() + " " + stockbkname.trim()  +  System.getProperty("line.separator") ,tmprecordfile,sysconfig.charSet());
 		   				
@@ -880,8 +880,8 @@ public class BanKuaiDbOperation
 		} catch (FileNotFoundException e) {e.printStackTrace();return -1;
 		} catch (IOException e) {e.printStackTrace();return -1;
 		} finally {
-			try {fr.close(); fr = null;} catch (IOException e) {e.printStackTrace();}
-			try {bufr.close();bufr = null; } catch (IOException e) {e.printStackTrace();}
+			try { fr.close(); fr = null; } catch (IOException e) { e.printStackTrace(); }
+			try { bufr.close(); bufr = null; } catch (IOException e) { e.printStackTrace(); }
 		}
 		 
 		 return allupdatednum;
@@ -964,9 +964,9 @@ public class BanKuaiDbOperation
 	   			        	BkChanYeLianTreeNode bankuai = CreateExchangeTree.CreateTreeOfBanKuaiAndStocks().getSpecificNodeByHypyOrCode(bkcode, BkChanYeLianTreeNode.TDXBK);
 		   			        if( bankuai != null && !((BanKuai)bankuai).getBanKuaiOperationSetting().isImportBKGeGu()   ) 
 		            		   continue;
-	   			    } catch(java.lang.NullPointerException e){ e.printStackTrace();
-	   			    } catch (SQLException e) {e.printStackTrace();
-	   			    } catch(Exception e){e.printStackTrace();
+	   			    } catch (java.lang.NullPointerException e){ e.printStackTrace();
+	   			    } catch (SQLException e) { e.printStackTrace();
+	   			    } catch (Exception e){ e.printStackTrace();
 	   			    } finally {
 	   			    	if(rspd != null) try {rspd.close();rspd = null; } catch (SQLException e) {e.printStackTrace();}
 	   			    }
