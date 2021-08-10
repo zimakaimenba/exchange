@@ -622,17 +622,20 @@ public abstract class TDXNodesXPeriodExternalData implements NodeXPeriodData
 	/*
 	 * 
 	 */
-	public Double getDaPanChenJiaoLiangZhanBiGrowingRate (LocalDate requireddate)
-	{
-		if(nodedpcjlzbgr == null) return null;
-		
-		RegularTimePeriod curperiod = getJFreeChartFormateTimePeriod (requireddate);
-		if(curperiod == null)	return null;
-		
-		TimeSeriesDataItem cjlzbgrdata = nodedpcjlzbgr.getDataItem(curperiod);
-		Double value = cjlzbgrdata.getValue().doubleValue();
-		return value;
-	}
+//	private Double getDaPanChenJiaoLiangZhanBiGrowingRate (LocalDate requireddate)
+//	{
+//		if(nodedpcjlzbgr == null) return null;
+//		
+//		RegularTimePeriod curperiod = getJFreeChartFormateTimePeriod (requireddate);
+//		if(curperiod == null)	return null;
+//		
+//		TimeSeriesDataItem cjlzbgrdata = nodedpcjlzbgr.getDataItem(curperiod);
+//		Double value = cjlzbgrdata.getValue().doubleValue();
+//		return value;
+//	}
+	/*
+	 * 
+	 */
 		public void addDaPanChenJiaoLiangZhanBiGrowingRate (LocalDate requireddate, Double cjezbgr)
 		{
 			try {	

@@ -821,6 +821,12 @@ public class DaPanXPeriodDataForJFC implements NodeXPeriodData
 		return null;
 	}
 
+	@Override
+	public String getThroughAnalysisConcolusionResultOfNodeData(TDXNodes superbk, LocalDate requireddate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	
 }
 

@@ -121,6 +121,8 @@ public interface NodeXPeriodData
 
 	public void removeNodeDataFromSpecificDate (LocalDate requireddate );
 	
+	public String getThroughAnalysisConcolusionResultOfNodeData (TDXNodes superbk, LocalDate requireddate );
+	
 	public static String[] NODEXDATACSVKeyWords = {
 			"ChengJiaoErZhanBi",	 "CjeZbDpMaxWk", "CjeZbDpMinWk", "CjeZbGrowRate",
 			

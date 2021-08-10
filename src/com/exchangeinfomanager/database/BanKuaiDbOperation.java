@@ -768,14 +768,12 @@ public class BanKuaiDbOperation
 				String stockbkcode = null;
 				try {	stockbkcode = tmpbkinfo.get(2).trim(); //T开头的代码,不是880开头的
 				} catch (java.lang.IndexOutOfBoundsException e) {
-					System.out.print(tmpbkinfo + "似乎没有行业板块数据！");
+					System.out.print(tmpbkinfo + "似乎没有行业板块数据！\r\n");
 //					e.printStackTrace();
 				}
 				String stockbkname = null;
 				try {	stockbkname = hydmmap.get(stockbkcode).trim();
-				} catch(java.lang.NullPointerException e) {
-					stockbkname = "未知";
-				}
+				} catch(java.lang.NullPointerException e) { stockbkname = "未知"; }
 				 
 				//先在数据库中找出该股票，比较行业，如果不一样旧更新，如果相同就不更新
 				CachedRowSetImpl rs = null;
@@ -923,12 +921,10 @@ public class BanKuaiDbOperation
                byte[] itemBuf = new byte[fileheadbytenumber];
                dis.read(itemBuf, 0, fileheadbytenumber); 
                String fileHead =new String(itemBuf,0,fileheadbytenumber);  
-               logger.debug(fileHead);
                
                //板块个数：2字节
                dis.read(itemBuf, 0, 2); 
                String bknumber =new String(itemBuf,0,2);  
-               logger.debug(bknumber);
 			 
                //各板块数据存储结构（紧跟板块数目依次存放）
 //               第一个版块的起始位置为0x182h。

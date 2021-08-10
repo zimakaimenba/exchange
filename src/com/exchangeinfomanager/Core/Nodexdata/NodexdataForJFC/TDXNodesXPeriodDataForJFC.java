@@ -2077,6 +2077,11 @@ import com.udojava.evalex.Expression;
 						 font.attr("color", OuputColorControl[i]);
 					 } 
 				 }
+				 
+				 String analysisresult = this.getThroughAnalysisConcolusionResultOfNodeData(superbk, requireddate);
+				 org.jsoup.nodes.Element li = dl.appendElement("li");
+				 org.jsoup.nodes.Element font = li.appendElement("font");
+				 font.appendText("综合分析:" + ":" + analysisresult  );
 			}
 			
 			return doc.toString();
@@ -2247,4 +2252,59 @@ import com.udojava.evalex.Expression;
 			
 			return curlzdf;
 		}
+		/*
+		 * 
+		 */
+		public String getThroughAnalysisConcolusionResultOfNodeData (TDXNodes superbk, LocalDate requireddate )
+		{
+			String nodept = getNodeperiodtype();
+//			DaPan dapan = (DaPan)superbk.getRoot();
+			NodeXPeriodData dpxdata = superbk.getNodeXPeroidData(nodept);
+			Double dpcjediff = dpxdata.getChengJiaoErDailyAverageDifferenceWithLastPeriod(requireddate);
+			Double dpcjldiff = dpxdata.getChengJiaoLiangDailyAverageDifferenceWithLastPeriod(requireddate);
+			Double dpzdf = dpxdata.getSpecificOHLCZhangDieFu(requireddate);
+			
+			Double selfcjediff = this.getChengJiaoErDailyAverageDifferenceWithLastPeriod(requireddate);
+			Double selfcjldiff = this.getChengJiaoLiangDailyAverageDifferenceWithLastPeriod(requireddate);
+			Double selfzdf = this.getSpecificOHLCZhangDieFu(requireddate);
+			Double selfcjezbgr = this.getChenJiaoErZhanBiGrowthRateForDaPan(requireddate);
+			Double selfcjlzbgr = this.getChenJiaoLiangZhanBiGrowthRateForDaPan(requireddate);
+			
+			String result = "";
+			if(dpcjediff != null) {
+				if(dpcjediff >0) result = result + "大盘成交额涨,";
+				else result = result + "大盘成交额跌,";
+			}
+			if(dpcjldiff != null) {
+				if(dpcjldiff >0) result = result + "大盘成交量涨,";
+				else result = result + "大盘成交量跌,";
+			}
+			if(dpzdf != null) {
+				if(dpzdf >0) result = result + "大盘阳线,";
+				else result = result + "大盘阴线,";
+			}
+			if(selfzdf != null ) {
+				if(selfzdf >0) result = result + "自身阳线,";
+				else result = result + "自身阴线,";
+			}
+			if(selfcjediff != null) {
+				if(selfcjediff >0) result = result + "自身成交额涨,";
+				else result = result + "自身成交额跌,";
+			}
+			if(selfcjezbgr != null) {
+				if(selfcjezbgr >0) result = result + "自身成交额占比涨,";
+				else result = result + "自身成交额占比跌,";
+			}
+			if(selfcjldiff != null) {
+				if(selfcjldiff >0) result = result + "自身成交量涨,";
+				else result = result + "自身成交量跌,";
+			}
+			if(selfcjlzbgr != null) {
+				if(selfcjlzbgr >0) result = result + "自身成交量占比涨。";
+				else result = result + "自身成交量占比跌。";
+			}
+			
+			return result;
+		}
+		
  } //END OF 

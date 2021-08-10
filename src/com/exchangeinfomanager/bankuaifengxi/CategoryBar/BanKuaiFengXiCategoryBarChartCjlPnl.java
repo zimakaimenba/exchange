@@ -218,7 +218,7 @@ public class BanKuaiFengXiCategoryBarChartCjlPnl extends BanKuaiFengXiCategoryBa
 
 					Double zhangdiefu = nodexdata.getSpecificOHLCZhangDieFu(tmpdate);
 					if(zhangdiefu != null && zhangdiefu >0) {
-						CategoryTextAnnotation cpa  = new CategoryTextAnnotation ("\u2B08", wkfriday , 0.0);
+						CategoryTextAnnotation cpa  = new CategoryTextAnnotation ("\u2B08", wkfriday , cjl);
 						//cpa.setBaseRadius(0.0);
 						// cpa.setTipRadius(25.0);
 						cpa.setFont(new Font("SansSerif", Font.BOLD, 10));
@@ -226,7 +226,7 @@ public class BanKuaiFengXiCategoryBarChartCjlPnl extends BanKuaiFengXiCategoryBa
 						cpa.setTextAnchor(TextAnchor.CENTER);
 						super.plot.addAnnotation(cpa);
 					} else {
-						CategoryTextAnnotation cpa  = new CategoryTextAnnotation ("\u21B1", wkfriday , 0.0);
+						CategoryTextAnnotation cpa  = new CategoryTextAnnotation ("\u21B1", wkfriday , cjl);
 						//cpa.setBaseRadius(0.0);
 						//cpa.setTipRadius(25.0);
 						cpa.setFont(new Font("SansSerif", Font.BOLD, 10));
@@ -234,7 +234,6 @@ public class BanKuaiFengXiCategoryBarChartCjlPnl extends BanKuaiFengXiCategoryBa
 						cpa.setTextAnchor(TextAnchor.CENTER);
 						super.plot.addAnnotation(cpa);
 					}
-					
 				} else {
 					if( !dapan.isDaPanXiuShi(tmpdate,period) ) {
 						barchartdataset.setValue(0.0,super.getRowKey(),wkfriday);
@@ -242,6 +241,39 @@ public class BanKuaiFengXiCategoryBarChartCjlPnl extends BanKuaiFengXiCategoryBa
 					}
 				}
 
+				if(period.equals(NodeGivenPeriodDataItem.WEEK))
+					tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ;
+				else if(period.equals(NodeGivenPeriodDataItem.DAY))
+					tmpdate = tmpdate.plus(1, ChronoUnit.DAYS) ;
+				else if(period.equals(NodeGivenPeriodDataItem.MONTH))
+					tmpdate = tmpdate.plus(1, ChronoUnit.MONTHS) ;
+			} while (tmpdate.isBefore( requireend) || tmpdate.isEqual(requireend));
+			
+//			标记大盘该周是涨还是跌
+			tmpdate = requirestart;
+			do {
+				LocalDate wkfriday = tmpdate.with(DayOfWeek.FRIDAY);
+				
+				NodeXPeriodData dpnodexdata = dapan.getNodeXPeroidData(period);
+				Double dpzdf = dpnodexdata.getSpecificOHLCZhangDieFu(wkfriday);
+				if(dpzdf != null && dpzdf > 0 ) {
+					CategoryTextAnnotation cpa  = new CategoryTextAnnotation ("\u2B08", wkfriday ,0.0);
+					//cpa.setBaseRadius(0.0);
+					//cpa.setTipRadius(25.0);
+//					cpa.setFont(new Font("SansSerif", Font.BOLD, 10));
+					cpa.setPaint(Color.RED);
+					cpa.setTextAnchor(TextAnchor.CENTER);
+					super.plot.addAnnotation(cpa);
+				} else if(dpzdf != null && dpzdf <= 0 ) {
+					CategoryTextAnnotation cpa  = new CategoryTextAnnotation ("\u2B08", wkfriday ,  0.0);
+					//cpa.setBaseRadius(0.0);
+					//cpa.setTipRadius(25.0);
+//					cpa.setFont(new Font("SansSerif", Font.BOLD, 10));
+					cpa.setPaint(Color.GREEN);
+					cpa.setTextAnchor(TextAnchor.CENTER);
+					super.plot.addAnnotation(cpa);
+				}
+				
 				if(period.equals(NodeGivenPeriodDataItem.WEEK))
 					tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ;
 				else if(period.equals(NodeGivenPeriodDataItem.DAY))
@@ -305,6 +337,39 @@ public class BanKuaiFengXiCategoryBarChartCjlPnl extends BanKuaiFengXiCategoryBa
 				
 			} while (tmpdate.isBefore( requireend) || tmpdate.isEqual(requireend));
 			
+//			标记大盘该周是涨还是跌
+			tmpdate = requirestart;
+			do {
+				LocalDate wkfriday = tmpdate.with(DayOfWeek.FRIDAY);
+				
+				NodeXPeriodData dpnodexdata = dapan.getNodeXPeroidData(period);
+				Double dpzdf = dpnodexdata.getSpecificOHLCZhangDieFu(wkfriday);
+				if(dpzdf != null && dpzdf > 0 ) {
+					CategoryTextAnnotation cpa  = new CategoryTextAnnotation ("\u2B08", wkfriday ,0.0);
+					//cpa.setBaseRadius(0.0);
+					//cpa.setTipRadius(25.0);
+//					cpa.setFont(new Font("SansSerif", Font.BOLD, 10));
+					cpa.setPaint(Color.RED);
+					cpa.setTextAnchor(TextAnchor.CENTER);
+					super.plot.addAnnotation(cpa);
+				} else if(dpzdf != null && dpzdf <= 0 ) {
+					CategoryTextAnnotation cpa  = new CategoryTextAnnotation ("\u2B08", wkfriday ,  0.0);
+					//cpa.setBaseRadius(0.0);
+					//cpa.setTipRadius(25.0);
+//					cpa.setFont(new Font("SansSerif", Font.BOLD, 10));
+					cpa.setPaint(Color.GREEN);
+					cpa.setTextAnchor(TextAnchor.CENTER);
+					super.plot.addAnnotation(cpa);
+				}
+				
+				if(period.equals(NodeGivenPeriodDataItem.WEEK))
+					tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ;
+				else if(period.equals(NodeGivenPeriodDataItem.DAY))
+					tmpdate = tmpdate.plus(1, ChronoUnit.DAYS) ;
+				else if(period.equals(NodeGivenPeriodDataItem.MONTH))
+					tmpdate = tmpdate.plus(1, ChronoUnit.MONTHS) ;
+			} while (tmpdate.isBefore( requireend) || tmpdate.isEqual(requireend));
+			
 //			this.xiuShiRightRangeAxixAfterDispalyDate(nodexdata, avecjeaxix, true);
 			xiuShiLeftRangeAxixAfterDispalyDate (nodexdata,startdate,enddate,avecjeaxix,period);
 			
@@ -340,7 +405,7 @@ public class BanKuaiFengXiCategoryBarChartCjlPnl extends BanKuaiFengXiCategoryBa
 					
 					Double zhangdiefu = nodexdata.getSpecificOHLCZhangDieFu(tmpdate);
 					if(zhangdiefu != null && zhangdiefu >0) {
-						CategoryTextAnnotation cpa  = new CategoryTextAnnotation ("\u21B1", wkfriday , 0.0);
+						CategoryTextAnnotation cpa  = new CategoryTextAnnotation ("\u21B1", wkfriday , cjl);
 						//cpa.setBaseRadius(0.0);
 						//cpa.setTipRadius(25.0);
 						cpa.setFont(new Font("SansSerif", Font.BOLD, 10));
@@ -348,7 +413,7 @@ public class BanKuaiFengXiCategoryBarChartCjlPnl extends BanKuaiFengXiCategoryBa
 						cpa.setTextAnchor(TextAnchor.CENTER);
 						super.plot.addAnnotation(cpa);
 					} else {
-						CategoryTextAnnotation cpa  = new CategoryTextAnnotation ("\u21B1", wkfriday , 0.0);
+						CategoryTextAnnotation cpa  = new CategoryTextAnnotation ("\u21B1", wkfriday , cjl);
 						//cpa.setBaseRadius(0.0);
 						//cpa.setTipRadius(25.0);
 						cpa.setFont(new Font("SansSerif", Font.BOLD, 10));
@@ -382,6 +447,40 @@ public class BanKuaiFengXiCategoryBarChartCjlPnl extends BanKuaiFengXiCategoryBa
 					tmpdate = tmpdate.plus(1, ChronoUnit.DAYS) ;
 				else if(period.equals(NodeGivenPeriodDataItem.MONTH))
 					tmpdate = tmpdate.plus(1, ChronoUnit.MONTHS) ;
+			} while (tmpdate.isBefore( requireend) || tmpdate.isEqual(requireend));
+			
+//			标记大盘该周是涨还是跌
+			tmpdate = requirestart;
+			do {
+				LocalDate wkfriday = tmpdate.with(DayOfWeek.FRIDAY);
+				
+				NodeXPeriodData dpnodexdata = dapan.getNodeXPeroidData(period);
+				Double dpzdf = dpnodexdata.getSpecificOHLCZhangDieFu(wkfriday);
+				if(dpzdf != null && dpzdf > 0 ) {
+					CategoryTextAnnotation cpa  = new CategoryTextAnnotation ("\u2B08", wkfriday ,0.0);
+					//cpa.setBaseRadius(0.0);
+					//cpa.setTipRadius(25.0);
+//					cpa.setFont(new Font("SansSerif", Font.BOLD, 10));
+					cpa.setPaint(Color.RED);
+					cpa.setTextAnchor(TextAnchor.CENTER);
+					super.plot.addAnnotation(cpa);
+				} else if(dpzdf != null && dpzdf <= 0 ) {
+					CategoryTextAnnotation cpa  = new CategoryTextAnnotation ("\u2B08", wkfriday ,  0.0);
+					//cpa.setBaseRadius(0.0);
+					//cpa.setTipRadius(25.0);
+//					cpa.setFont(new Font("SansSerif", Font.BOLD, 10));
+					cpa.setPaint(Color.GREEN);
+					cpa.setTextAnchor(TextAnchor.CENTER);
+					super.plot.addAnnotation(cpa);
+				}
+				
+				if(period.equals(NodeGivenPeriodDataItem.WEEK))
+					tmpdate = tmpdate.plus(1, ChronoUnit.WEEKS) ;
+				else if(period.equals(NodeGivenPeriodDataItem.DAY))
+					tmpdate = tmpdate.plus(1, ChronoUnit.DAYS) ;
+				else if(period.equals(NodeGivenPeriodDataItem.MONTH))
+					tmpdate = tmpdate.plus(1, ChronoUnit.MONTHS) ;
+				
 			} while (tmpdate.isBefore( requireend) || tmpdate.isEqual(requireend));
 
 //			super.barchart.setNotify(true);
